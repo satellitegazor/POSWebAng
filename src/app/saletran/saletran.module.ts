@@ -22,6 +22,9 @@ import { SaleItemEffects } from './saletranstore/saleitemstore/saleitem.effects'
 import { GetLocationConfigReducer } from './saletranstore/locationconfigstore/locationconfig.reducer';
 import { LOC_CONFIG_STATE } from './saletranstore/locationconfigstore/locationconfig.selector';
 import { LocationConfigEffects } from './saletranstore/locationconfigstore/locationconfig.effects';
+import { LOC_Assoc_STATE } from './saletranstore/localtionassociates/locationassociates.selector';
+import { LocationAssocEffects } from './saletranstore/localtionassociates/locationassociates.effects';
+import { GetLocationAssocReducer } from './saletranstore/localtionassociates/locationassociates.reducer';
 
 @NgModule({
     declarations: [DeptListComponent, SalesCartComponent, SalesCategoryComponent, SaleItemComponent,
@@ -33,9 +36,11 @@ import { LocationConfigEffects } from './saletranstore/locationconfigstore/locat
         SharedSubjectModule,
         ModalModule,
         StoreModule.forFeature(SHARED_SALE_ITEMS_MENU_STATE, GetSaleItemMenuReducer),
-        StoreModule.forFeature(LOC_CONFIG_STATE, GetLocationConfigReducer),
         EffectsModule.forFeature([SaleItemEffects]),
-        EffectsModule.forFeature([LocationConfigEffects])
+        StoreModule.forFeature(LOC_CONFIG_STATE, GetLocationConfigReducer),
+        EffectsModule.forFeature([LocationConfigEffects]),
+        StoreModule.forFeature(LOC_Assoc_STATE, GetLocationAssocReducer),
+        EffectsModule.forFeature([LocationAssocEffects])
     ],
     providers: [authinterceptorProviders, TicketObjService]
     //exports: [VendorLTComponent, VendorSTComponent, SbmComponent]

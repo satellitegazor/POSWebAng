@@ -8,3 +8,11 @@ export const getLocationConfigSelector = createSelector(getLocConfigState,
     (state) => {
     return state ? state.locationCnfg : null;
 });
+
+export const getLocCnfgIsAllowTipsSelector = createSelector(getLocConfigState,
+    (state) => {
+        if(state.locationCnfg == null)
+            return;
+
+        return state && state.locationCnfg && state.locationCnfg.configs && state.locationCnfg.configs.length > 0 ? state.locationCnfg.configs[0].allowTips : false;
+    })

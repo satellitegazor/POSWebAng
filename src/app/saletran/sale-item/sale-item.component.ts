@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { SharedSubjectService } from '../../shared-subject/shared-subject.service';
 import { SaleItem } from '../models/sale.item';
+
  
 @Component({
   selector: 'app-sale-item',
@@ -13,8 +15,8 @@ export class SaleItemComponent implements OnInit {
     @Input() saleItemList: SaleItem[] = [];
 
     ngOnInit(): void {
-
     }
+    
     public salesItemClick(event: Event, itemId: number): void {
         this._sharedSvc.SaleItem.next(this.saleItemList.filter(itm => itm.salesItemID == itemId)[0]);
     }

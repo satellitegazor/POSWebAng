@@ -42,7 +42,7 @@ export class VendorLTComponent implements OnInit {
 
     DoLogon(event: any) {
         let selectedLocId: number = this.selectedLocationId;
-        let location = this.LocationList.filter(k => k.locationUID === selectedLocId)[0];
+        let location = this.LocationList.filter(k => k.locationUID == selectedLocId)[0];
         let locModel = new VLogonModel();
         locModel.exchangeNumber = location.exchangeNumber;
         locModel.facilityNumber = location.facilityNumber;
@@ -79,7 +79,7 @@ export class VendorLTComponent implements OnInit {
             }
 
             let selectedLocId: number = this.selectedLocationId;
-            let location = this.LocationList.filter(k => k.locationUID === selectedLocId)[0];
+            let location = this.LocationList.filter(k => k.locationUID == selectedLocId)[0];
 
             this._localStorageSvc.setItemData('contract_vendor_number', this.vendornum);
             this._localStorageSvc.setItemData('contract_exchange_number', location.exchangeNumber);

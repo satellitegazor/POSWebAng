@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { AuthState } from 'src/app/authstate/auth.state';
 import { SharedSubjectService } from '../../shared-subject/shared-subject.service';
+import { LTC_Associates } from '../models/location.associates';
 import { SaleItem } from '../models/sale.item'; 
 import { TktSaleItem } from '../models/ticket.detail';
+import { getLocationAssocSelector } from '../saletranstore/localtionassociates/locationassociates.selector';
+import { getLocCnfgIsAllowTipsSelector } from '../saletranstore/locationconfigstore/locationconfig.selector';
 
 @Component({
     selector: 'app-tkt-sale-item',
@@ -10,9 +15,11 @@ import { TktSaleItem } from '../models/ticket.detail';
 })
 export class TktSaleItemComponent implements OnInit {
 
-    constructor(private _sharedSvc: SharedSubjectService) { }
+    constructor(private _sharedSvc: SharedSubjectService, private _store: Store) { }
 
     tktSaleItems: TktSaleItem[] = [];
+    public allowTips: boolean = false;
+    public SaleAssocList: LTC_Associates[] = [];
     ngOnInit(): void {
         this._sharedSvc.SaleItem.subscribe(data => {
             let tktsi: TktSaleItem = new TktSaleItem();
@@ -22,6 +29,17 @@ export class TktSaleItemComponent implements OnInit {
             tktsi.quantity = 1;
             this.tktSaleItems.push(tktsi);
         });
+
+        this._store.select(getLocCnfgIsAllowTipsSelector).subscribe(data => {
+            if(data != null)
+                this.allowTips = data;
+        })
+
+        this._store.select(getLocationAssocSelector).subscribe(data => {
+            if(data != null) {
+                this.SaleAssocList = data.associates;
+            }
+        })
     }
 
     btnMinusClicked(evt: Event, i: number) {
@@ -37,5 +55,9 @@ export class TktSaleItemComponent implements OnInit {
 
     public btnCheckoutClicked() {
         this._sharedSvc.TktSaleItems.next(this.tktSaleItems);
+    }
+
+    onAssociateChange(evt: Event, individualUID: number) {
+
     }
 }

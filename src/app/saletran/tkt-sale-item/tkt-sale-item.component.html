@@ -12,7 +12,7 @@
                 </thead>
                 <tr *ngFor="let itm of tktSaleItems; let i = index;">
                     <td><h4><label class="label label-default">{{itm.salesItemDesc}}</label></h4></td>
-                    <td>
+                    <td *ngIf="!allowTips">
                         <div class="row">
                             <button type="button" class="btn-primary btn" id="btnm{{i}}" (click)="btnMinusClicked($event, i);">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash-lg" viewBox="0 0 16 16">
@@ -26,6 +26,16 @@
                                 </svg>
                             </button>
                         </div>
+                    </td>
+                    <td *ngIf="allowTips">
+                        <label for="ddlAssociate">Associate</label>
+                        <select #ddlAssociate id="ddlAssociate" class="form-control dropdown" (change)="onAssociateChange($event, +ddlAssociate.value)">
+                            <option *ngFor="let loc of SaleAssocList"
+                                    value="{{loc.IndividualUID}}">
+                                {{loc.FirstName + ' ' + loc.LastName}}
+                            </option>
+                        </select>
+
                     </td>
                     <td class="rightjustfy">
                         <h4><label class="label label-default">{{itm.unitPrice | number:'1.2-2'}}</label></h4>

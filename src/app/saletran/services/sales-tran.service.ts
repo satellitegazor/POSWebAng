@@ -9,6 +9,7 @@ import { VendorLoginResultsModel } from '../../models/vendor.login.results.model
 import { LogonDataService } from '../../global/logon-data-service.service';
 import { LTC_CustomerLookupResultsModel } from '../../models/customer';
 import { LocationConfigModel } from '../models/location-config';
+import { LTC_LocationAssociatesResultsModel } from '../models/location.associates';
 
 @Injectable({
   providedIn: 'root'
@@ -72,6 +73,13 @@ export class SalesTranService {
 
         return this.httpClient.get<LocationConfigModel>(GlobalConstants.CPOS_SVCS_URL + '/ltc/GetLocationConfigs?guid=' + GlobalConstants.GET_GUID +
             '&uid=' + individualUID.toString() + '&lid=' + locationId.toString(),
+            { headers: this.headerObjs });
+    }
+
+    public getLocationAssociates(locationId: number, individualUID: number) {
+
+        return this.httpClient.get<LTC_LocationAssociatesResultsModel>(GlobalConstants.CPOS_SVCS_URL + '/ltc/GetLocationAssociates?guid=' + GlobalConstants.GET_GUID +
+            '&lid=' + locationId.toString() + '&uid=' + individualUID.toString() + '&active=1',
             { headers: this.headerObjs });
     }
 
