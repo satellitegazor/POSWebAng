@@ -18,6 +18,7 @@ import { Observable } from 'rxjs';
 import { getSaleItemListSelector } from '../saletranstore/saleitemstore/saleitem.selector';
 import { getLocationConfigSelector } from '../saletranstore/locationconfigstore/locationconfig.selector';
 import { getLocationConfigStart } from '../saletranstore/locationconfigstore/locationconfig.action';
+import { getAuthLoginSelector } from 'src/app/authstate/auth.selector';
 
 
 @Component({
@@ -49,20 +50,29 @@ export class SalesCartComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         console.log('SalesCart ngOnInit')
-        this.vendorLoginResult = this._sharedSvc.getLTVendorLogonData();
-        this._buildTktObj();
-        // this._saleTranSvc.getSaleItemListFromDB(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID).subscribe(data => {
-        //     this.allItemButtonMenuList = data.itemButtonMenuResults;
-        //     this.getDeptList();
-        // });
-        this._store.select(getSaleItemListSelector).subscribe(data => {
-            if(data != null) {
-                this.allItemButtonMenuList = data.itemButtonMenuResults;
-                this.getDeptList();
-            }
+        this._store.select(getAuthLoginSelector).subscribe(rslt => {
+            if(rslt == null)
+                return;
+
+            this.vendorLoginResult = rslt;
+
+            //this.vendorLoginResult = this._sharedSvc.getLTVendorLogonData();
+            this._buildTktObj();
+            // this._saleTranSvc.getSaleItemListFromDB(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID).subscribe(data => {
+            //     this.allItemButtonMenuList = data.itemButtonMenuResults;
+            //     this.getDeptList();
+            // });
+            this._store.select(getSaleItemListSelector).subscribe(data => {
+                if(data != null) {
+                    this.allItemButtonMenuList = data.itemButtonMenuResults;
+                    this.getDeptList();
+                }
+            });
+            this._store.dispatch(getSaleItemsStart({locationId: +this.vendorLoginResult.locationUID, contractid: this.vendorLoginResult.contractUID}));
+            this._store.dispatch(getLocationConfigStart({locationId: +this.vendorLoginResult.locationUID, individualUID: +this.vendorLoginResult.individualUID}))
+
         });
-        this._store.dispatch(getSaleItemsStart({locationId: +this.vendorLoginResult.locationUID, contractid: this.vendorLoginResult.contractUID}));
-        this._store.dispatch(getLocationConfigStart({locationId: +this.vendorLoginResult.locationUID, individualUID: +this.vendorLoginResult.individualUID}))
+
     }
 
     ngOnDestroy(): void {
