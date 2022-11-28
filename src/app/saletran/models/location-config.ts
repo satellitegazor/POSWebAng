@@ -2,67 +2,76 @@ import { MobileBase } from "src/app/models/mobile.base";
 
 export class LocationConfigModel {
 
-    public Results: MobileBase = {} as MobileBase;
-    public Data: LocationConfig[] = [];
+    public results: MobileBase = {} as MobileBase;
+    public configs: LocationConfig[] = [];
+    public individuals: LocationIndividual[] = [];
+    public hoursOfOperations: LTC_HoursOfOperation[] = [];
 }
 
 export class LocationConfig {
-    public BusinessFunctionUID: number = 0;
-    public BusinessModel: number = 0;
-    public AllowPartPay: boolean = false;
-    public AllowSaveTkt: boolean = false;
-    public AllowTips: boolean = false;
-    public OpenCashDrawer: boolean = false;
-    public ExchCouponsAfterTax: boolean = false;
-    public VendCouponsAfterTax: boolean = false;
-    public FacilityUID: number = 0;
-    public FacilityNumber: string = '';
-    public LocationUID: number = 0;
-    public LocationName: string = '';
-    public StoreName: string = '';
-    public PINReqdForSalesTran: boolean = false;
-    public AssociateName: string = '';
-    public AssociateRole: string = '';
-    public AssociateRoleDesc: string = '';
-    public ContractUID: number = 0;
-    public ContractNumber: string = '';
-    public VendorNumber: string = '';
-    public VendorName: string = '';
-    public FacilityName: string = '';
-    public IndividualUID: number = 0;
-    public IndLocUID: number = 0;
-    public ContractStart: Date = {} as Date;
-    public ContractEnd: Date = {} as Date;
-    public BusFuncCode: string = '';
-    public AssocEmail: string = '';
-    public IsVendorLogin: boolean = false;
-    public SBMUserFirstName: string = '';
-    public SBMUserMiddleName: string = '';
-    public SBMUserLastName: string = '';
-    public SBMUserJobTitle: string = '';
-    public SBMUserFullName: string = '';
-    public SBMFaciltyNumber: string = '';
-    public SBMFacilityName: string = '';
-    public RgnCode: string = '';
-    public CountryCode: string = '';
-    public CurrCode: string = '';
-    public CCDevice: string = '';
-    public RegionId: string = '';
-    public DefaultCurrency: string = '';
-    public USDFastcash: string = '';
-    public FrgnFastcash: string = '';
-    public CountryDialCode: string = '';
-    public AddressLine1: string = '';
-    public AddressLine2: string = '';
-    public City: string = '';
-    public StateProvice: string = '';
-    public PhoneNumber: string = '';
-    public PostalCode: string = '';
-    public HoursOfOperations: LTC_HoursOfOperation[] = [];
-    public EagleCashOptn: boolean = false;
-    public UseShipHndlng: boolean = false;
+    public businessFunctionUID: number = 0;
+    public businessModel: number = 0;
+    public allowPartPay: boolean = false;
+    public allowSaveTkt: boolean = false;
+    public allowTips: boolean = false;
+    public openCashDrawer: boolean = false;
+    public exchCouponsAfterTax: boolean = false;
+    public vendCouponsAfterTax: boolean = false;
+    public facilityUID: number = 0;
+    public facilityNumber: string = '';
+    public locationUID: number = 0;
+    public locationName: string = '';
+    public storeName: string = '';
+    public pINReqdForSalesTran: boolean = false;
+    public associateName: string = '';
+    public associateRole: string = '';
+    public associateRoleDesc: string = '';
+    public contractUID: number = 0;
+    public contractNumber: string = '';
+    public vendorNumber: string = '';
+    public vendorName: string = '';
+    public facilityName: string = '';
+    public individualUID: number = 0;
+    public indLocUID: number = 0;
+    public contractStart: Date = {} as Date;
+    public contractEnd: Date = {} as Date;
+    public busFuncCode: string = '';
+    public assocEmail: string = '';
+    public isVendorLogin: boolean = false;
+    public sBMUserFirstName: string = '';
+    public sBMUserMiddleName: string = '';
+    public sBMUserLastName: string = '';
+    public sBMUserJobTitle: string = '';
+    public sBMUserFullName: string = '';
+    public sBMFaciltyNumber: string = '';
+    public sBMFacilityName: string = '';
+    public rgnCode: string = '';
+    public countryCode: string = '';
+    public currCode: string = '';
+    public cCDevice: string = '';
+    public regionId: string = '';
+    public defaultCurrency: string = '';
+    public uSDFastcash: string = '';
+    public frgnFastcash: string = '';
+    public countryDialCode: string = '';
+    public addressLine1: string = '';
+    public addressLine2: string = '';
+    public city: string = '';
+    public stateProvice: string = '';
+    public phoneNumber: string = '';
+    public postalCode: string = '';
+    public hoursOfOperations: LTC_HoursOfOperation[] = [];
+    public eagleCashOptn: boolean = false;
+    public useShipHndlng: boolean = false;
 }
 
+export class LocationIndividual 
+{
+    public individualUID: number = 0
+    public associateName: string = '';
+    public emailAddress: string = '';
+    public indLocUID: number = 0
+}
 
 export class LTC_HoursOfOperation {
     public HrsOfOperationID: number = 0;
