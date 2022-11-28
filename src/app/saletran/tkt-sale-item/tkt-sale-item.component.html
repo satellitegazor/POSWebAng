@@ -1,0 +1,41 @@
+<div class="panel" style="background-color:lightgrey;">
+    <div class="panel-body ms-2 me-2 mt-2 mb-2">
+        <div class="row">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <td><h4>Sale Item</h4></td>
+                        <td><h4>Quantity</h4></td>
+                        <td class="rightjustfy"><h4>Unit Price</h4></td>
+                        <td class="rightjustfy"><h4>Total Price</h4></td>
+                    </tr>
+                </thead>
+                <tr *ngFor="let itm of tktSaleItems; let i = index;">
+                    <td><h4><label class="label label-default">{{itm.salesItemDesc}}</label></h4></td>
+                    <td>
+                        <div class="row">
+                            <button type="button" class="btn-primary btn" id="btnm{{i}}" (click)="btnMinusClicked($event, i);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash-lg" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M2 8a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11A.5.5 0 0 1 2 8Z" />
+                                </svg>
+                            </button>
+                            <h4><span class="label label-default">&nbsp; {{itm.quantity}} &nbsp;</span></h4>
+                            <button type="button" class="btn-primary btn" id="btnp{{i}}" (click)="btnPlusClicked($event, i);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                    <td class="rightjustfy">
+                        <h4><label class="label label-default">{{itm.unitPrice | number:'1.2-2'}}</label></h4>
+                    </td>
+                    <td class="rightjustfy">
+                        <h4><label class="label label-default">{{itm.unitPrice * itm.quantity | number:'1.2-2'}}</label></h4>
+                    </td>
+
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

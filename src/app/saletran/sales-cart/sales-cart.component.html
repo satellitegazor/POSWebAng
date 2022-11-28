@@ -1,0 +1,48 @@
+<div class="container-fluid" style="width:100%">
+    <app-deptlist [deptList]="deptList" (deptClicked)="deptClicked($event)">
+    </app-deptlist>
+</div>
+<div class="container-fluid" style="width:100%">
+    <app-sales-category [saleCatList]="saleCatList" (saleCatClicked)="saleCatClicked($event)"></app-sales-category>
+</div>
+<div class="row container-fluid" style="width:100%">
+    <div class="col-md-5">
+        <app-sale-item [saleItemList]="saleItemList" (saleItemClicked)="saleItemClicked($event)"></app-sale-item>
+    </div>
+    <div class="col-md-7">
+        <app-tkt-sale-item #tktSaleItemComponent></app-tkt-sale-item>
+    </div>
+</div>
+<div class="footer fixed-bottom cncsnFooter">
+    <div id="stButtonBottomBar" class="row">
+        <button class="border border-white btn btn-info btn-lg ftrbtn goToST" style="width:20%;" id="btnCustDetails" aria-label="Left Align" (click)="btnCustDetailsClick($event)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+            </svg> Customer
+        </button>
+        <button class="border border-white btn btn-info btn-lg ftrbtn" style="width:20%;" id="btnSalesTransCheckOut" aria-label="Left Align" (click)="btnCheckoutClick($event)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-check" viewBox="0 0 16 16">
+                <path d="M11.354 6.354a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z" />
+                <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+            </svg> Checkout
+        </button>
+        <button class="border border-white btn btn-info btn-lg ftrbtn" style="width:20%;" id="btnSaveCheckoutOne" aria-label="Left Align">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-save" viewBox="0 0 16 16">
+                <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3.5 3.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7.5 9.293V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z" />
+            </svg> Save Ticket
+        </button>
+        <button class="border border-white btn btn-info btn-lg ftrbtn" style="width:20%;" id="btnSalesTransCancel" aria-label="Left Align">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+            </svg> Cancel
+        </button>
+        <button class="border border-white btn btn-info btn-lg ftrbtn gotoTktLookUp" style="width:20%;" aria-label="Left Align">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z" />
+                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
+            </svg> Ticket Look-Up
+        </button>
+    </div>
+</div>
+ 
+

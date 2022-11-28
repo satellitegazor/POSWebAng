@@ -1,0 +1,47 @@
+<div class="container-fluid">
+    <div class="col-md-4"></div> 
+    <div class="col-md-4"> 
+        <div class="card form-group" style="width: 36rem;">
+            <h5 class="card-header">Login</h5>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label" for="exchangenumber">Exchange</label>
+                    <input type="text" class="form-control" id="exchangenumber" [(ngModel)]="exchangenum" maxlength="4"
+                           (change)="OnChangeExchangeNum($event)" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="vendornumber">Vendor Number</label>
+                    <input type="text" class="form-control" id="vendornumber" [(ngModel)]="vendornum" maxlength="8"
+                           (change)="OnChangeVendorNum($event)" />
+                </div>
+                <div class="mb-3">
+                    <label for="ddLocation">Location</label>
+                    <select #ddlLocation id="ddLocation" class="form-control dropdown" (change)="onLocationChange($event, ddlLocation.value)">
+                        <option *ngFor="let loc of LocationList"
+                                value="{{loc.locationUID}}">
+                            {{loc.facilityName}}
+                        </option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="pin">PIN</label>
+                    <input type="password" id="pin" [(ngModel)]="lpin" class="form-control" maxlength="4"
+                           minlength="4" />
+                </div>
+                <button name="btnSubmit" class="btn btn-primary" (click)="DoLogon($event)">Logon</button>
+            </div>
+        </div>
+        <div id="nolocationsalert" class="alert alert-warning" role="alert" style="display:none">
+            No Locations matched the given Exchange Number
+        </div>
+        <div id="logonSuccessMsg" class="bar bar-footer bar-balanced alert alert-success alert-dismissible fade" style="display: {{successMsgDisplay}};">
+            <strong>Success!</strong> Your message has been sent successfully.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div id="logonFailMsg" class="alert alert-danger alert-dismissible fade" style="display: {{errorMsgDisplay}};">
+            <strong>Error!</strong> Unable to login. Please verify the credentials entered.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+    <div class="col-md-4"></div>
+</div>

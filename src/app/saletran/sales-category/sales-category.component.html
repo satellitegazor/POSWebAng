@@ -1,0 +1,13 @@
+
+<div class="panel" style="background-color:lightgrey;"> 
+    <div class="panel-body ms-2 me-2 mt-2 mb-2">
+        <div class="row">
+            <div class="col-md-2" *ngFor="let catg of saleCatList">
+                <button type="button" class="btn btn-info btn-block" 
+                        style="margin-left: 10px;margin-right: 10px;margin-top: 10px;margin-bottom: 10px;" 
+                        id="{{catg.salesCategoryID}}"
+                        (click)="salesCatgClick($event, catg.salesCategoryID);">{{catg.salesCategoryDescription}}</button>
+            </div>
+        </div>
+    </div>
+    </div>
