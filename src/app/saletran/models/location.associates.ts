@@ -13,21 +13,21 @@ export class LTC_LocationAssociatesResultsModel
 
 export class LTC_Associates
 {
-    public IndividualUID: number = 0;
-    public IndividualRoleTypeUID: number = 0;
-    public PIN: string = '';
-    public FirstName: string = '';
-    public LastName: string = '';
-    public EmailAddress: string = '';
-    public PhoneNumber: string = '';
-    public CODE: string = '';
-    public Description: string = '';
-    public HasUpdates: string = '';
-    public IndividualLocationUID: number = 0;
-    public MaintTimestamp: Date = {} as Date;
-    public MaintUserId: string = '';
-    public IndividualActive: boolean = false;    
-    public PrivActConfmComplete: boolean =false;
-    public IndCountryDialCode: string = '';
+    public individualUID: number = 0;
+    public individualRoleTypeUID: number = 0;
+    public pIN: string = '';
+    public firstName: string = '';
+    public lastName: string = '';
+    public emailAddress: string = '';
+    public phoneNumber: string = '';
+    public cODE: string = '';
+    public description: string = '';
+    public hasUpdates: string = '';
+    public individualLocationUID: number = 0;
+    public maintTimestamp: Date = {} as Date;
+    public maintUserId: string = '';
+    public individualActive: boolean = false;    
+    public privActConfmComplete: boolean =false;
+    public indCountryDialCode: string = '';
 
 }

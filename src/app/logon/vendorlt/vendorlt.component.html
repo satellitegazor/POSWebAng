@@ -17,7 +17,7 @@
                 <div class="mb-3">
                     <label for="ddLocation">Location</label>
                     <select #ddlLocation id="ddLocation" class="form-control dropdown" (change)="onLocationChange($event, ddlLocation.value)">
-                        <option *ngFor="let loc of LocationList"
+                        <option *ngFor="let loc of LocationList" [selected]="loc.locationUID == selectedLocationId"
                                 value="{{loc.locationUID}}">
                             {{loc.facilityName}}
                         </option>

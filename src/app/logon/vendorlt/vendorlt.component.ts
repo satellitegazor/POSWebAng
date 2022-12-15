@@ -11,6 +11,7 @@ import { LocalStorageService } from '../../global/local-storage.service';
 import { Store } from '@ngrx/store';
 import { getAuthLoginSelector } from 'src/app/authstate/auth.selector';
 import { getLoginStart } from 'src/app/authstate/auth.action';
+import { SalesTranService } from 'src/app/saletran/services/sales-tran.service';
  
 @Component({
     selector: 'app-logon-vendorlt',
@@ -23,12 +24,18 @@ export class VendorLTComponent implements OnInit {
     vendornum: string = '';
     lpin: string = '';
     selectedLocationId = 0;
+    isSelected: string = '';
     LocationList: AbbrLocationsModel[] = [];
     successMsgDisplay: string = 'none';
     errorMsgDisplay: string = 'none';
 
-    constructor(private logonSvc: LogonSvc, private authSvc: AuthService, private router: Router,
-        private _sharedSvc: LogonDataService, private _localStorageSvc: LocalStorageService, private _store: Store) { }
+    constructor(private logonSvc: LogonSvc, 
+        private authSvc: AuthService, 
+        private router: Router,
+        private _sharedSvc: LogonDataService, 
+        private _localStorageSvc: LocalStorageService, 
+        private _saleTranSvc: SalesTranService,
+        private _store: Store) { }
     cookieVal = '';
     ngOnInit() {
 
@@ -45,7 +52,7 @@ export class VendorLTComponent implements OnInit {
         let location = this.LocationList.filter(k => k.locationUID == selectedLocId)[0];
         let locModel = new VLogonModel();
         locModel.exchangeNumber = location.exchangeNumber;
-        locModel.facilityNumber = location.facilityNumber;
+        locModel.facilityNumber = location.locationUID.toString();
         locModel.facilityName = location.facilityName;
         locModel.vendorNumber = this.vendornum;
         locModel.pin = this.lpin;
@@ -62,10 +69,10 @@ export class VendorLTComponent implements OnInit {
         locModel.showPrivTrngConfrm = 0;
         locModel.regionId = "conus";
 
-        this._store.select(getAuthLoginSelector).subscribe(data => {
+        //this._store.select(getAuthLoginSelector).subscribe(data => {
             
-            //this.logonSvc.logonUser(locModel).subscribe(data => {
-            if(data == null) {
+        this.logonSvc.logonUser(locModel).subscribe(data => {
+            if(data == null || data.locationUID == null) {
                 return;
             }
 
@@ -85,6 +92,7 @@ export class VendorLTComponent implements OnInit {
             this._localStorageSvc.setItemData('contract_exchange_number', location.exchangeNumber);
             this._localStorageSvc.setItemData('location_facility_number', location.facilityNumber);
             this._localStorageSvc.setItemData('location_ddlContract_Type', true.toString());
+            this._localStorageSvc.setItemData('location_facility_name', location.facilityName);
 
             let cstart: Date = new Date(Date.parse(data.contractStart));
             let today: Date = new Date();
@@ -94,11 +102,16 @@ export class VendorLTComponent implements OnInit {
             console.log('vendorlt sending data to subject');
             this._sharedSvc.setLTVendorLogonData(data);
 
-            console.log('vendorlt navigating to SalesCart');
-            this.router.navigate(['/salestran']);
+            this._saleTranSvc.getLocationConfig(+data.locationUID, +data.individualUID).subscribe(data => {
+
+                this._sharedSvc.setLocationConfig(data);
+                console.log('vendorlt navigating to SalesCart');
+                this.router.navigate(['/salestran']);    
+            });
+
         });
 
-        this._store.dispatch(getLoginStart({logonMdl: locModel}));        
+        //this._store.dispatch(getLoginStart({logonMdl: locModel}));        
     }
 
     OnChangeExchangeNum(event: any) {
@@ -116,20 +129,25 @@ export class VendorLTComponent implements OnInit {
     }
 
     private GetLocations() {
-        this.logonSvc.GetLocations(this.vendornum).subscribe(
-            data => {
-                this.LocationList = data.locations.filter((fac: { exchangeNumber: string; }) => fac.exchangeNumber === this.exchangenum);
+
+        this.logonSvc.GetLocations(this.vendornum).subscribe({
+            next: data => {
+                this.LocationList = data.locations.filter((fac: { exchangeNumber: string; }) => fac.exchangeNumber === this.exchangenum) 
                 if (this.LocationList.length > 0) {
-                    this.selectedLocationId = this.LocationList[0].locationUID;
+                    const ary = this.LocationList.filter((loc) => loc.facilityName == this._localStorageSvc.getItemData('location_facility_name'));
+                    this.selectedLocationId = ary.length > 0 ? ary[0].locationUID : this.LocationList[0].locationUID;
+                   
                 } else {
                     alert('No locations found for given Vendor, Exchange Number.');
                 }
             },
-            error => {
-                console.log(error);
+            error: err => {
+                alert('No locations found for given Vendor, Exchange Number.');
+                console.log(err);
             }
-        );
+        })
     }
+
     onLocationChange(event: any, val: string) {
         this.selectedLocationId = +val;
     }

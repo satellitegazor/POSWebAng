@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AuthState } from 'src/app/authstate/auth.state';
+import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { SharedSubjectService } from '../../shared-subject/shared-subject.service';
 import { LTC_Associates } from '../models/location.associates';
 import { SaleItem } from '../models/sale.item'; 
-import { TktSaleItem } from '../models/ticket.detail';
-import { getLocationAssocSelector } from '../saletranstore/localtionassociates/locationassociates.selector';
-import { getLocCnfgIsAllowTipsSelector } from '../saletranstore/locationconfigstore/locationconfig.selector';
+import { TktSaleItem } from '../../models/ticket.detail';
+import { getLocationAssocSelector } from '../store/localtionassociates/locationassociates.selector';
+import { getLocCnfgIsAllowTipsSelector } from '../store/locationconfigstore/locationconfig.selector';
+import { SalesTranService } from '../services/sales-tran.service';
 
 @Component({
     selector: 'app-tkt-sale-item',
@@ -15,11 +17,15 @@ import { getLocCnfgIsAllowTipsSelector } from '../saletranstore/locationconfigst
 })
 export class TktSaleItemComponent implements OnInit {
 
-    constructor(private _sharedSvc: SharedSubjectService, private _store: Store) { }
+    constructor(private _sharedSvc: SharedSubjectService, private _saleTranSvc: SalesTranService,
+        private _logonDataSvc: LogonDataService,
+        private _store: Store) { }
 
     tktSaleItems: TktSaleItem[] = [];
     public allowTips: boolean = false;
     public SaleAssocList: LTC_Associates[] = [];
+    public indivId: number = 0;
+
     ngOnInit(): void {
         this._sharedSvc.SaleItem.subscribe(data => {
             let tktsi: TktSaleItem = new TktSaleItem();
@@ -27,18 +33,16 @@ export class TktSaleItemComponent implements OnInit {
             tktsi.salesItemDesc = data.salesItemDescription;
             tktsi.unitPrice = data.price;
             tktsi.quantity = 1;
+            tktsi.locAssociateList =  JSON.parse(JSON.stringify(this.SaleAssocList));
             this.tktSaleItems.push(tktsi);
         });
 
-        this._store.select(getLocCnfgIsAllowTipsSelector).subscribe(data => {
-            if(data != null)
-                this.allowTips = data;
-        })
+        const locConfig = this._logonDataSvc.getLocationConfig();
+        this.allowTips = locConfig.configs[0].allowTips;
+        this.indivId = +this._logonDataSvc.getLTVendorLogonData().individualUID;        
 
-        this._store.select(getLocationAssocSelector).subscribe(data => {
-            if(data != null) {
-                this.SaleAssocList = data.associates;
-            }
+        this._saleTranSvc.getLocationAssociates(locConfig.configs[0].locationUID, +this._logonDataSvc.getLTVendorLogonData().individualUID).subscribe(data => {
+            this.SaleAssocList = data.associates
         })
     }
 

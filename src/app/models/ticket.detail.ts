@@ -1,4 +1,7 @@
-﻿export class TktSaleItem {
+﻿import { LTC_Associates } from "../saletran/models/location.associates";
+
+
+export class TktSaleItem {
     public ticketDetailId: number = 0; 
     public tktTransactionID: number = 0;
     public salesItemDesc: string = '';
@@ -47,4 +50,5 @@
     public lineItmKatsaCpnAmt: number = 0;
     public fCLineItmKatsaCpnAmt: number = 0;
     public fCLineItemEnvTaxAmount: number = 0;
+    public locAssociateList: LTC_Associates[] = [];
 }

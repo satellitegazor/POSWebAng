@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { VLogonModel } from './models/vlogon.model';
+import { VendorLocationsResultModel, VLogonModel } from './models/vlogon.model';
 import { GlobalConstants } from '../global/global.constants';
 import { VendorLoginResultsModel } from '../models/vendor.login.results.model';
 
@@ -17,13 +17,12 @@ export class LogonSvc {
         this.headerObjs = this.headerObjs.append('Accept', '*/*');
     } 
 
-    public GetLocations(vendornum: String): Observable<any> {
+    public GetLocations(vendornum: String): Observable<VendorLocationsResultModel> {
 
         let CliTimeVar = GlobalConstants.GetClientTimeVariance();
-        return this.httpclient.get<any>(GlobalConstants.CPOS_SVCS_URL + '/common/GetVendorLocations?guid=' + GlobalConstants.GET_GUID + '&vid=' + vendornum + '&CliTimeVar=' + CliTimeVar,
+        return this.httpclient.get<VendorLocationsResultModel>(GlobalConstants.CPOS_SVCS_URL + '/common/GetVendorLocations?guid=' + GlobalConstants.GET_GUID + '&vid=' + vendornum + '&CliTimeVar=' + CliTimeVar,
             { headers: this.headerObjs });
     }
-
 
     public logonUser(mdl: VLogonModel): Observable<VendorLoginResultsModel> {
             

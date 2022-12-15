@@ -1,4 +1,4 @@
-﻿import { SaleItem } from "../saletran/models/sale.item";
+﻿import { SalesTransactionCheckoutItem } from "../saletran/models/salesTransactionCheckoutItem";
 import { AssociateSaleTips } from "./associate.sale.tips";
 import { LTC_Customer } from "./customer";
 import { ExchCardTndr } from "./exch.card.tndr";
@@ -23,7 +23,7 @@ export class TicketSplit {
     public refundCode: string = '';
     public refundReason: string = '';
     public taxExempted: boolean = false;
-    public tktList: SaleItem[] = [];
+    public tktList: SalesTransactionCheckoutItem[] = [];
     public ticketTenderList: TicketTender[] = [];
     public totalSale: number = 0;
     public totalSaleFC: number = 0;

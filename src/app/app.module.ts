@@ -18,6 +18,8 @@ import { EffectsModule } from '@ngrx/effects';
 import { LoginAuthEffects } from './authstate/auth.effects';
 import { GetAuthLoginReducer } from './authstate/auth.reducer';
 import { LOGIN_AUTH_STATE } from './authstate/auth.selector';
+import { LogonDataService } from './global/logon-data-service.service';
+import { LogonSvc } from './logon/logonsvc.service';
  
 @NgModule({
   schemas: [
@@ -45,11 +47,11 @@ import { LOGIN_AUTH_STATE } from './authstate/auth.selector';
       autoPause: true
     }),
   ],
-  providers: [{
+  providers: [{provide: LogonDataService}, {
         provide: HTTP_INTERCEPTORS,
         useClass: AuthInterceptor,
         multi: true
-    }],
+      }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

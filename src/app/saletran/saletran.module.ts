@@ -13,22 +13,26 @@ import { CustomerSearchComponent } from './customer-search/customer-search.compo
 import { CustomerNewComponent } from './customer-new/customer-new.component';
 import { ModalModule } from '@independer/ng-modal';
 import { TicketObjService } from './ticket-obj.service';
-import { CheckoutComponent } from './checkout/checkout.component';
 import { StoreModule } from '@ngrx/store';
-import { GET_SALE_ITEM_MENU, SHARED_SALE_ITEMS_MENU_STATE } from './saletranstore/saleitemstore/saleitem.selector';
-import { GetSaleItemMenuReducer } from './saletranstore/saleitemstore/saleitem.reducers';
+import { GET_SALE_ITEM_MENU, SHARED_SALE_ITEMS_MENU_STATE } from './store/saleitemstore/saleitem.selector';
+import { GetSaleItemMenuReducer } from './store/saleitemstore/saleitem.reducers';
 import { EffectsModule } from '@ngrx/effects';
-import { SaleItemEffects } from './saletranstore/saleitemstore/saleitem.effects';
-import { GetLocationConfigReducer } from './saletranstore/locationconfigstore/locationconfig.reducer';
-import { LOC_CONFIG_STATE } from './saletranstore/locationconfigstore/locationconfig.selector';
-import { LocationConfigEffects } from './saletranstore/locationconfigstore/locationconfig.effects';
-import { LOC_Assoc_STATE } from './saletranstore/localtionassociates/locationassociates.selector';
-import { LocationAssocEffects } from './saletranstore/localtionassociates/locationassociates.effects';
-import { GetLocationAssocReducer } from './saletranstore/localtionassociates/locationassociates.reducer';
+import { SaleItemEffects } from './store/saleitemstore/saleitem.effects';
+import { GetLocationConfigReducer } from './store/locationconfigstore/locationconfig.reducer';
+import { LOC_CONFIG_STATE } from './store/locationconfigstore/locationconfig.selector';
+import { LocationConfigEffects } from './store/locationconfigstore/locationconfig.effects';
+import { LOC_Assoc_STATE } from './store/localtionassociates/locationassociates.selector';
+import { LocationAssocEffects } from './store/localtionassociates/locationassociates.effects';
+import { GetLocationAssocReducer } from './store/localtionassociates/locationassociates.reducer';
+import { CouponsComponent } from './checkout/coupons/coupons.component';
+import { PartPayComponent } from './checkout/part-pay/part-pay.component';
+import { BalanceDueComponent } from './checkout/balance-due/balance-due.component';
+import { SaleTotalsComponent } from './checkout/sale-totals/sale-totals.component';
 
 @NgModule({
     declarations: [DeptListComponent, SalesCartComponent, SalesCategoryComponent, SaleItemComponent,
-        TktSaleItemComponent, CustomerNewComponent, CustomerSearchComponent, CheckoutComponent],
+        TktSaleItemComponent, CustomerNewComponent, CustomerSearchComponent,  
+        CouponsComponent, PartPayComponent, BalanceDueComponent, SaleTotalsComponent],
     imports: [
         CommonModule,
         FormsModule,

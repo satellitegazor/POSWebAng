@@ -1,3 +1,5 @@
+import { MobileBase } from "src/app/models/mobile.base";
+
  
 export class VLogonModel {
     public cliTimeVar: number = 0;
@@ -28,4 +30,10 @@ export class AbbrLocationsModel {
     public facilityNumber: string = '';
     public locationUID: number = 0;
     public regionId: number = 0;
+    public selected: string = '';
+}
+
+export class VendorLocationsResultModel {
+    results: MobileBase = {} as MobileBase;
+    locations: AbbrLocationsModel[] = [];
 }

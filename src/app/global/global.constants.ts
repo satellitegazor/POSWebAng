@@ -10,7 +10,7 @@
         var nowStr = (now.getMonth() + 1).toString() + '/' + now.getDate().toString() + '/' + now.getFullYear().toString() + ' ' + now.getHours().toString() + ':' + (now.getMinutes()).toString() + ':' + now.getSeconds().toString()
         var d2 = new Date(nowStr);
         
-        now = new Date(Date.parse((new Date(nowStr)).toLocaleString("en-US", { timeZone: "America/Los_Angeles" })));
+        now = new Date(Date.parse((new Date(nowStr)).toLocaleString("en-US", { timeZone: "America/Chicago" })));
         var minutes = Math.floor((d2.getTime() - now.getTime()) / 60000);
         
         return minutes;
