@@ -2,9 +2,9 @@ export class SalesTransactionCheckoutItem
 {
     public ticketDetailId: number = 0;
     public tktTransactionID: number = 0;
-    public salesItemDesc: number = 0;
-    public SalesItemUID: number = 0;
-    public SalesCategoryUID: number = 0;
+    public salesItemDesc: string = '';
+    public salesItemUID: number = 0;
+    public salesCategoryUID: number = 0;
     public quantity: number = 0;
     public unitPrice: number = 0;
     public salesTaxPct: number = 0;
@@ -25,7 +25,7 @@ export class SalesTransactionCheckoutItem
     public facilityUID: number = 0;
     public departmentUID: number = 0;
     public businessFunctionUID: number = 0;
-    public deptName: number = 0;
+    public deptName: string = '';
     public custInfoReq: boolean = false;
     public applyCouponsAfterTax: boolean = false;
     public allowPartPay: boolean = false;

@@ -2,6 +2,7 @@
 import { AssociateSaleTips } from "./associate.sale.tips";
 import { LTC_Customer } from "./customer";
 import { ExchCardTndr } from "./exch.card.tndr";
+import { MobileBase } from "./mobile.base";
 import { TicketTender } from "./ticket.tender";
  
 export class TicketSplit {
@@ -41,4 +42,21 @@ export class TicketSplit {
     public shipHandlingTaxAmtFC: number = 0;
     public cliTimeVar: number = 0;
     public vMTndr: ExchCardTndr = new ExchCardTndr();
+    }
+
+    export class SaveTicketResultsModel {
+
+        public results: MobileBase = {} as MobileBase;
+        public transactionId: number = 0;
+        public pOSResponse: string = '';
+        public pOSAuthNumber: string = '';
+        public balanceDue: number = 0;
+        public totalAmount: number = 0;
+        public tenderTypeCode: string = '';
+        public mSCN: string = '';
+        public ticketNumber: number = 0;
+        public ticketTenderId: number = 0;
+        public partPayId: number = 0;
+        public refundCount: number = 0;
+
     }

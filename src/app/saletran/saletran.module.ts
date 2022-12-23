@@ -28,6 +28,9 @@ import { CouponsComponent } from './checkout/coupons/coupons.component';
 import { PartPayComponent } from './checkout/part-pay/part-pay.component';
 import { BalanceDueComponent } from './checkout/balance-due/balance-due.component';
 import { SaleTotalsComponent } from './checkout/sale-totals/sale-totals.component';
+import { getTktObjSelector, TKT_OBJ_STATE } from './store/ticketstore/ticket.selector';
+import { TktObjReducer } from './store/ticketstore/ticket.reducer';
+import { TicketObjectEffects } from './store/ticketstore/ticket.effects';
 
 @NgModule({
     declarations: [DeptListComponent, SalesCartComponent, SalesCategoryComponent, SaleItemComponent,
@@ -39,12 +42,14 @@ import { SaleTotalsComponent } from './checkout/sale-totals/sale-totals.componen
         SalesTranRoutingModule,
         SharedSubjectModule,
         ModalModule,
-        StoreModule.forFeature(SHARED_SALE_ITEMS_MENU_STATE, GetSaleItemMenuReducer),
+        StoreModule.forFeature(TKT_OBJ_STATE, TktObjReducer),
         EffectsModule.forFeature([SaleItemEffects]),
         StoreModule.forFeature(LOC_CONFIG_STATE, GetLocationConfigReducer),
         EffectsModule.forFeature([LocationConfigEffects]),
         StoreModule.forFeature(LOC_Assoc_STATE, GetLocationAssocReducer),
-        EffectsModule.forFeature([LocationAssocEffects])
+        EffectsModule.forFeature([LocationAssocEffects]),
+        StoreModule.forFeature(TKT_OBJ_STATE, TktObjReducer),
+        EffectsModule.forFeature([TicketObjectEffects])
     ],
     providers: [authinterceptorProviders, TicketObjService]
     //exports: [VendorLTComponent, VendorSTComponent, SbmComponent]

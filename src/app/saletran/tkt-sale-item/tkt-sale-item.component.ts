@@ -9,6 +9,11 @@ import { TktSaleItem } from '../../models/ticket.detail';
 import { getLocationAssocSelector } from '../store/localtionassociates/locationassociates.selector';
 import { getLocCnfgIsAllowTipsSelector } from '../store/locationconfigstore/locationconfig.selector';
 import { SalesTranService } from '../services/sales-tran.service';
+import { tktObjInterface } from '../store/ticketstore/ticket.state';
+import { addSaleItem } from '../store/ticketstore/ticket.action';
+import { SalesTransactionCheckoutItem } from '../models/salesTransactionCheckoutItem';
+import { ConditionalExpr } from '@angular/compiler';
+import { getCheckoutItemsSelector } from '../store/ticketstore/ticket.selector';
 
 @Component({
     selector: 'app-tkt-sale-item',
@@ -19,7 +24,7 @@ export class TktSaleItemComponent implements OnInit {
 
     constructor(private _sharedSvc: SharedSubjectService, private _saleTranSvc: SalesTranService,
         private _logonDataSvc: LogonDataService,
-        private _store: Store) { }
+        private _store: Store<tktObjInterface>) { }
 
     tktSaleItems: TktSaleItem[] = [];
     public allowTips: boolean = false;
@@ -27,14 +32,20 @@ export class TktSaleItemComponent implements OnInit {
     public indivId: number = 0;
 
     ngOnInit(): void {
-        this._sharedSvc.SaleItem.subscribe(data => {
-            let tktsi: TktSaleItem = new TktSaleItem();
-            tktsi.salesItemUID = data.salesItemID;
-            tktsi.salesItemDesc = data.salesItemDescription;
-            tktsi.unitPrice = data.price;
-            tktsi.quantity = 1;
-            tktsi.locAssociateList =  JSON.parse(JSON.stringify(this.SaleAssocList));
-            this.tktSaleItems.push(tktsi);
+
+        this._store.select(getCheckoutItemsSelector).subscribe(data => {
+        //this._sharedSvc.SaleItem.subscribe(data => {
+            if(data == undefined)
+                return;
+            data.forEach((item) => {
+                let tktsi: TktSaleItem = new TktSaleItem();
+                tktsi.salesItemUID = item.salesItemUID;
+                tktsi.salesItemDesc = item.salesItemDesc;
+                tktsi.unitPrice = item.unitPrice
+                tktsi.quantity = item.quantity;
+                tktsi.locAssociateList =  JSON.parse(JSON.stringify(this.SaleAssocList));
+                this.tktSaleItems.push(tktsi);                    
+            })           
         });
 
         const locConfig = this._logonDataSvc.getLocationConfig();

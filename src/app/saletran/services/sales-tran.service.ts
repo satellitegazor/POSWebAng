@@ -10,6 +10,7 @@ import { LogonDataService } from '../../global/logon-data-service.service';
 import { LTC_CustomerLookupResultsModel } from '../../models/customer';
 import { LocationConfigModel } from '../models/location-config';
 import { LTC_LocationAssociatesResultsModel } from '../models/location.associates';
+import { SaveTicketResultsModel, TicketSplit } from 'src/app/models/ticket.split';
 
 @Injectable({
   providedIn: 'root'
@@ -80,6 +81,13 @@ export class SalesTranService {
 
         return this.httpClient.get<LTC_LocationAssociatesResultsModel>(GlobalConstants.CPOS_SVCS_URL + '/ltc/GetLocationAssociates?guid=' + GlobalConstants.GET_GUID +
             '&lid=' + locationId.toString() + '&uid=' + individualUID.toString() + '&active=1',
+            { headers: this.headerObjs });
+    }
+
+    public saveTicketSplit(tktObj: TicketSplit) {
+        return this.httpClient.put<SaveTicketResultsModel>(
+            GlobalConstants.CPOS_SVCS_URL + 'ltc/SaveSplitPayments?guid=' + GlobalConstants.PUT_GUID + '&uid=' + tktObj.individualUID + '&DBVal=0',
+            tktObj,
             { headers: this.headerObjs });
     }
 
