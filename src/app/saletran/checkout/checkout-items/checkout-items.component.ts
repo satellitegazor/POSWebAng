@@ -16,8 +16,12 @@ export class CheckoutItemsComponent implements OnInit {
   ngOnInit(): void {
     
     this._store.select(getCheckoutItemsSelector).subscribe(saleItems => {
-      this.tktDtlItems = saleItems;
+      this.tktDtlItems = saleItems == null ? [] : saleItems;
     })
   }
+
+  btnAddRemove() {}
+
+  btnCancelClicked() {}
 
 }

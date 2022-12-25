@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { VendorLoginResultsModel } from '../models/vendor.login.results.model';
-import { LocationConfigModel } from '../saletran/models/location-config';
+import { LocationConfig, LocationConfigModel } from '../saletran/models/location-config';
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +40,7 @@ export class LogonDataService {
         sessionStorage.setItem('busModel', ltVendorLogonData.busModel.toString());
         sessionStorage.setItem('eventEnded', ltVendorLogonData.eventEnded.toString());
         sessionStorage.setItem('emailAddr', ltVendorLogonData.emailAddr);
-        sessionStorage.setItem('privActConfmComplete', ltVendorLogonData.privActConfmComplete.toString());
+        sessionStorage.setItem('privActConfmComplete', String(ltVendorLogonData.privActConfmComplete != null ? ltVendorLogonData.privActConfmComplete : false));
         sessionStorage.setItem('regionId', ltVendorLogonData.regionId);
         sessionStorage.setItem('rgnCode', ltVendorLogonData.rgnCode);
         sessionStorage.setItem('countryCode', ltVendorLogonData.countryCode);
@@ -48,64 +48,176 @@ export class LogonDataService {
         sessionStorage.setItem('ccDevice', ltVendorLogonData.ccDevice);
         sessionStorage.setItem('usdFastcash', ltVendorLogonData.usdFastcash);
         sessionStorage.setItem('frgnFastcash', ltVendorLogonData.frgnFastcash);
-        sessionStorage.setItem('uuidExists', ltVendorLogonData.uuidExists.toString());
-        sessionStorage.setItem('eagleCashOptn', ltVendorLogonData.eagleCashOptn.toString());
-        sessionStorage.setItem('useShipHndlng', ltVendorLogonData.useShipHndlng.toString());
+        sessionStorage.setItem('uuidExists', String(ltVendorLogonData.uuidExists != null ? ltVendorLogonData.uuidExists : false ))
+        sessionStorage.setItem('eagleCashOptn', String(ltVendorLogonData.eagleCashOptn != null ? ltVendorLogonData.eagleCashOptn : false));
+        sessionStorage.setItem('useShipHndlng', String(ltVendorLogonData.useShipHndlng != null ? ltVendorLogonData.useShipHndlng : false));
         sessionStorage.setItem('tokenString', ltVendorLogonData.tokenString);
     }
 
     public getLTVendorLogonData(): VendorLoginResultsModel {
         var ltVndrLgnData: VendorLoginResultsModel = new VendorLoginResultsModel();
-        ltVndrLgnData.associatePINCount = Number(sessionStorage.getItem("associatePINCount") ? "0" : sessionStorage.getItem("associatePINCount"));
-        //
-        ltVndrLgnData.associatePINCount = Number(sessionStorage.getItem('associatePINCount') ? '0' : sessionStorage.getItem('associatePINCount'));
-        ltVndrLgnData.resetPIN = Number(sessionStorage.getItem('resetPIN') ? '0' : sessionStorage.getItem('resetPIN'));
-        ltVndrLgnData.contractUID = Number(sessionStorage.getItem('contractUID') ? '0' : sessionStorage.getItem('contractUID'));
-        ltVndrLgnData.contractNumber = String(sessionStorage.getItem('contractNumber') ? "0" : sessionStorage.getItem('contractNumber'));
-        ltVndrLgnData.contractStart = String(sessionStorage.getItem('contractStart') ? '0' : sessionStorage.getItem('contractStart'));
-
-
-        ltVndrLgnData.asociateRole = String(sessionStorage.getItem('asociateRole') ? '0' : sessionStorage.getItem('asociateRole'));
-        ltVndrLgnData.associateRoleDesc = String(sessionStorage.getItem('associateRoleDesc') ? '0' : sessionStorage.getItem('associateRoleDesc'));
-        ltVndrLgnData.associateName = String(sessionStorage.getItem('associateName') ? '0' : sessionStorage.getItem('associateName'));
-        ltVndrLgnData.locationUID = String(sessionStorage.getItem('locationUID') ? '0' : sessionStorage.getItem('locationUID'));
-        ltVndrLgnData.eventId = Number(sessionStorage.getItem('eventId') ? '0' : sessionStorage.getItem('eventId'));
-        ltVndrLgnData.eventName = String(sessionStorage.getItem('eventName') ? '0' : sessionStorage.getItem('eventName'));
-        ltVndrLgnData.facilityNumber = String(sessionStorage.getItem('facilityNumber') ? '0' : sessionStorage.getItem('facilityNumber'));
-        ltVndrLgnData.facilityName = String(sessionStorage.getItem('facilityName') ? '0' : sessionStorage.getItem('facilityName'));
-        ltVndrLgnData.individualUID = String(sessionStorage.getItem('individualUID') ? '0' : sessionStorage.getItem('individualUID'));
-        ltVndrLgnData.isAuthorized = Boolean(sessionStorage.getItem('isAuthorized') ? '0' : sessionStorage.getItem('isAuthorized'));
-        ltVndrLgnData.showPrivTrngConfrm = Number(sessionStorage.getItem('showPrivTrngConfrm') ? '0' : sessionStorage.getItem('showPrivTrngConfrm'));
-        ltVndrLgnData.cliTimeVar = Number(sessionStorage.getItem('cliTimeVar') ? '0' : sessionStorage.getItem('cliTimeVar'));
-        ltVndrLgnData.pageID = Number(sessionStorage.getItem('pageID') ? '0' : sessionStorage.getItem('pageID'));
-        ltVndrLgnData.eventStart = new Date(String(sessionStorage.getItem('eventStart') ? '0' : sessionStorage.getItem('eventStart')));
-        ltVndrLgnData.eventEnd = new Date(String(sessionStorage.getItem('eventEnd') ? '0' : sessionStorage.getItem('eventEnd')));
-        ltVndrLgnData.busFuncCode = String(sessionStorage.getItem('busFuncCode') ? '0' : sessionStorage.getItem('busFuncCode'));
-        ltVndrLgnData.busModel = Number(sessionStorage.getItem('busModel') ? '0' : sessionStorage.getItem('busModel'));
-        ltVndrLgnData.eventEnded = Boolean(sessionStorage.getItem('eventEnded') ? '0' : sessionStorage.getItem('eventEnded'));
-        ltVndrLgnData.emailAddr = String(sessionStorage.getItem('emailAddr') ? '0' : sessionStorage.getItem('emailAddr'));
-        ltVndrLgnData.privActConfmComplete = Boolean(sessionStorage.getItem('privActConfmComplete') ? '0' : sessionStorage.getItem('privActConfmComplete'));
-        ltVndrLgnData.regionId = String(sessionStorage.getItem('regionId') ? '0' : sessionStorage.getItem('regionId'));
-        ltVndrLgnData.rgnCode = String(sessionStorage.getItem('rgnCode') ? '0' : sessionStorage.getItem('rgnCode'));
-        ltVndrLgnData.countryCode = String(sessionStorage.getItem('countryCode') ? '0' : sessionStorage.getItem('countryCode'));
-        ltVndrLgnData.currCode = String(sessionStorage.getItem('currCode') ? '0' : sessionStorage.getItem('currCode'));
-        ltVndrLgnData.ccDevice = String(sessionStorage.getItem('ccDevice') ? '0' : sessionStorage.getItem('ccDevice'));
-        ltVndrLgnData.usdFastcash = String(sessionStorage.getItem('usdFastcash') ? '0' : sessionStorage.getItem('usdFastcash'));
-        ltVndrLgnData.frgnFastcash = String(sessionStorage.getItem('frgnFastcash') ? '0' : sessionStorage.getItem('frgnFastcash'));
-        ltVndrLgnData.uuidExists = Boolean(sessionStorage.getItem('uuidExists') ? '0' : sessionStorage.getItem('uuidExists'));
-        ltVndrLgnData.eagleCashOptn = Boolean(sessionStorage.getItem('eagleCashOptn') ? '0' : sessionStorage.getItem('eagleCashOptn'));
-        ltVndrLgnData.useShipHndlng = Boolean(sessionStorage.getItem('useShipHndlng') ? '0' : sessionStorage.getItem('useShipHndlng'));
-        ltVndrLgnData.tokenString = String(sessionStorage.getItem('tokenString') ? '0' : sessionStorage.getItem('tokenString'));
+    
+        ltVndrLgnData.associatePINCount = Number(sessionStorage.getItem('associatePINCount') ? sessionStorage.getItem('associatePINCount') :  '0' )
+        ltVndrLgnData.resetPIN = Number(sessionStorage.getItem('resetPIN') ? sessionStorage.getItem('resetPIN') :  '0' )
+        ltVndrLgnData.contractUID = Number(sessionStorage.getItem('contractUID') ? sessionStorage.getItem('contractUID') :  '0' )
+        ltVndrLgnData.contractNumber = String(sessionStorage.getItem('contractNumber') ? sessionStorage.getItem('contractNumber') :  '0' )
+        ltVndrLgnData.contractStart = String(sessionStorage.getItem('contractStart') ? sessionStorage.getItem('contractStart') :  '0' )
+        //ltVndrLgnData.userIdentity = Number(sessionStorage.getItem('userIdentity') ? sessionStorage.getItem('userIdentity') :  '0' )
+        //ltVndrLgnData.userRoles = Number(sessionStorage.getItem('userRoles') ? sessionStorage.getItem('userRoles') :  '0' )
+        ltVndrLgnData.asociateRole = String(sessionStorage.getItem('asociateRole') ? sessionStorage.getItem('asociateRole') :  '0' )
+        ltVndrLgnData.associateRoleDesc = String(sessionStorage.getItem('associateRoleDesc') ? sessionStorage.getItem('associateRoleDesc') :  '0' )
+        ltVndrLgnData.associateName = String(sessionStorage.getItem('associateName') ? sessionStorage.getItem('associateName') :  '0' )
+        ltVndrLgnData.locationUID = String(sessionStorage.getItem('locationUID') ? sessionStorage.getItem('locationUID') :  '0' )
+        ltVndrLgnData.eventId = Number(sessionStorage.getItem('eventId') ? sessionStorage.getItem('eventId') :  '0' )
+        ltVndrLgnData.eventName = String(sessionStorage.getItem('eventName') ? sessionStorage.getItem('eventName') :  '0' )
+        ltVndrLgnData.facilityNumber = String(sessionStorage.getItem('facilityNumber') ? sessionStorage.getItem('facilityNumber') :  '0' )
+        ltVndrLgnData.facilityName = String(sessionStorage.getItem('facilityName') ? sessionStorage.getItem('facilityName') :  '0' )
+        ltVndrLgnData.individualUID = String(sessionStorage.getItem('individualUID') ? sessionStorage.getItem('individualUID') :  '0' )
+        ltVndrLgnData.isAuthorized = Boolean(sessionStorage.getItem('isAuthorized') ? sessionStorage.getItem('isAuthorized') :  '0' )
+        ltVndrLgnData.showPrivTrngConfrm = Number(sessionStorage.getItem('showPrivTrngConfrm') ? sessionStorage.getItem('showPrivTrngConfrm') :  '0' )
+        ltVndrLgnData.cliTimeVar = Number(sessionStorage.getItem('cliTimeVar') ? sessionStorage.getItem('cliTimeVar') :  '0' )
+        ltVndrLgnData.pageID = Number(sessionStorage.getItem('pageID') ? sessionStorage.getItem('pageID') :  '0' )
+        ltVndrLgnData.eventStart = new Date(String(sessionStorage.getItem('eventStart') ? sessionStorage.getItem('eventStart') :  '0' ))
+        ltVndrLgnData.eventEnd = new Date(String(sessionStorage.getItem('eventEnd') ? sessionStorage.getItem('eventEnd') :  '0' ))
+        ltVndrLgnData.busFuncCode = String(sessionStorage.getItem('busFuncCode') ? sessionStorage.getItem('busFuncCode') :  '0' )
+        ltVndrLgnData.busModel = Number(sessionStorage.getItem('busModel') ? sessionStorage.getItem('busModel') :  '0' )
+        ltVndrLgnData.eventEnded = Boolean(sessionStorage.getItem('eventEnded') ? sessionStorage.getItem('eventEnded') :  '0' )
+        ltVndrLgnData.emailAddr = String(sessionStorage.getItem('emailAddr') ? sessionStorage.getItem('emailAddr') :  '0' )
+        ltVndrLgnData.privActConfmComplete = Boolean(sessionStorage.getItem('privActConfmComplete') ? sessionStorage.getItem('privActConfmComplete') :  '0' )
+        ltVndrLgnData.regionId = String(sessionStorage.getItem('regionId') ? sessionStorage.getItem('regionId') :  '0' )
+        ltVndrLgnData.rgnCode = String(sessionStorage.getItem('rgnCode') ? sessionStorage.getItem('rgnCode') :  '0' )
+        ltVndrLgnData.countryCode = String(sessionStorage.getItem('countryCode') ? sessionStorage.getItem('countryCode') :  '0' )
+        ltVndrLgnData.currCode = String(sessionStorage.getItem('currCode') ? sessionStorage.getItem('currCode') :  '0' )
+        ltVndrLgnData.ccDevice = String(sessionStorage.getItem('ccDevice') ? sessionStorage.getItem('ccDevice') :  '0' )
+        ltVndrLgnData.usdFastcash = String(sessionStorage.getItem('usdFastcash') ? sessionStorage.getItem('usdFastcash') :  '0' )
+        ltVndrLgnData.frgnFastcash = String(sessionStorage.getItem('frgnFastcash') ? sessionStorage.getItem('frgnFastcash') :  '0' )
+        ltVndrLgnData.uuidExists = Boolean(sessionStorage.getItem('uuidExists') ? sessionStorage.getItem('uuidExists') :  '0' )
+        ltVndrLgnData.eagleCashOptn = Boolean(sessionStorage.getItem('eagleCashOptn') ? sessionStorage.getItem('eagleCashOptn') :  '0' )
+        ltVndrLgnData.useShipHndlng = Boolean(sessionStorage.getItem('useShipHndlng') ? sessionStorage.getItem('useShipHndlng') :  '0' )
+        ltVndrLgnData.tokenString = String(sessionStorage.getItem('tokenString') ? sessionStorage.getItem('tokenString') :  '0' )
         
-
         return ltVndrLgnData;
     }
 
     public setLocationConfig(locConfig: LocationConfigModel) {
+
+        if (locConfig == null || locConfig.configs == null || locConfig.configs.length == 0)
+            return;
+
+        sessionStorage.setItem('businessFunctionUID', locConfig.configs[0].businessFunctionUID.toString());
+        sessionStorage.setItem('businessModel', locConfig.configs[0].businessModel.toString());
+        sessionStorage.setItem('allowPartPay', (locConfig.configs[0].allowPartPay ? locConfig.configs[0].allowPartPay : false).toString());
+        sessionStorage.setItem('allowSaveTkt', (locConfig.configs[0].allowSaveTkt ? locConfig.configs[0].allowSaveTkt : false).toString());
+        sessionStorage.setItem('allowTips', (locConfig.configs[0].allowTips ? locConfig.configs[0].allowTips : false).toString());
+        sessionStorage.setItem('openCashDrawer', (locConfig.configs[0].openCashDrawer ? locConfig.configs[0].openCashDrawer : false).toString());
+        sessionStorage.setItem('exchCouponsAfterTax', (locConfig.configs[0].exchCouponsAfterTax ? locConfig.configs[0].exchCouponsAfterTax : false).toString());
+        sessionStorage.setItem('vendCouponsAfterTax', (locConfig.configs[0].vendCouponsAfterTax ? locConfig.configs[0].vendCouponsAfterTax : false).toString());
+        sessionStorage.setItem('facilityUID', locConfig.configs[0].facilityUID.toString());
+        sessionStorage.setItem('facilityNumber', locConfig.configs[0].facilityNumber)
+        sessionStorage.setItem('locationUID', locConfig.configs[0].locationUID.toString());
+        sessionStorage.setItem('locationName', locConfig.configs[0].locationName);
+        sessionStorage.setItem('storeName', locConfig.configs[0].storeName);
+        sessionStorage.setItem('pINReqdForSalesTran', (locConfig.configs[0].pINReqdForSalesTran ? locConfig.configs[0].pINReqdForSalesTran : false).toString());
+        sessionStorage.setItem('associateName', locConfig.configs[0].associateName);
+        sessionStorage.setItem('associateRole', locConfig.configs[0].associateRole);
+        sessionStorage.setItem('associateRoleDesc', locConfig.configs[0].associateRoleDesc);
+        sessionStorage.setItem('contractUID', locConfig.configs[0].contractUID.toString());
+        sessionStorage.setItem('contractNumber', locConfig.configs[0].contractNumber);
+        sessionStorage.setItem('vendorNumber', locConfig.configs[0].vendorNumber);
+        sessionStorage.setItem('vendorName', locConfig.configs[0].vendorName);
+        sessionStorage.setItem('facilityName', locConfig.configs[0].facilityName);
+        sessionStorage.setItem('individualUID', (locConfig.configs[0].individualUID != null ? locConfig.configs[0].individualUID : '0').toString());
+        sessionStorage.setItem('indLocUID', (locConfig.configs[0].indLocUID != null ? locConfig.configs[0].indLocUID : '0').toString());
+        sessionStorage.setItem('contractStart', locConfig.configs[0].contractStart.toString());
+        sessionStorage.setItem('contractEnd', String(locConfig.configs[0].contractEnd != null ? locConfig.configs[0].contractEnd : false));
+        sessionStorage.setItem('busFuncCode', locConfig.configs[0].busFuncCode);
+        sessionStorage.setItem('assocEmail', locConfig.configs[0].assocEmail);
+        sessionStorage.setItem('isVendorLogin', String(locConfig.configs[0].isVendorLogin != null ? locConfig.configs[0].isVendorLogin : false));
+        sessionStorage.setItem('sBMUserFirstName', locConfig.configs[0].sBMUserFirstName);
+        sessionStorage.setItem('sBMUserMiddleName', locConfig.configs[0].sBMUserMiddleName);
+        sessionStorage.setItem('sBMUserLastName', locConfig.configs[0].sBMUserLastName);
+        sessionStorage.setItem('sBMUserJobTitle', locConfig.configs[0].sBMUserJobTitle);
+        sessionStorage.setItem('sBMUserFullName', locConfig.configs[0].sBMUserFullName);
+        sessionStorage.setItem('sBMFaciltyNumber', locConfig.configs[0].sBMFaciltyNumber);
+        sessionStorage.setItem('sBMFacilityName', locConfig.configs[0].sBMFacilityName);
+        sessionStorage.setItem('rgnCode', locConfig.configs[0].rgnCode);
+        sessionStorage.setItem('countryCode', locConfig.configs[0].countryCode);
+        sessionStorage.setItem('currCode', locConfig.configs[0].currCode);
+        sessionStorage.setItem('cCDevice', locConfig.configs[0].cCDevice);
+        sessionStorage.setItem('regionId', locConfig.configs[0].regionId);
+        sessionStorage.setItem('defaultCurrency', locConfig.configs[0].defaultCurrency);
+        sessionStorage.setItem('uSDFastcash', locConfig.configs[0].uSDFastcash);
+        sessionStorage.setItem('frgnFastcash', locConfig.configs[0].frgnFastcash);
+        sessionStorage.setItem('countryDialCode', locConfig.configs[0].countryDialCode);
+        sessionStorage.setItem('addressLine1', locConfig.configs[0].addressLine1);
+        sessionStorage.setItem('addressLine2', locConfig.configs[0].addressLine2);
+        sessionStorage.setItem('city', locConfig.configs[0].city);
+        sessionStorage.setItem('stateProvice', locConfig.configs[0].stateProvice);
+        sessionStorage.setItem('phoneNumber', locConfig.configs[0].phoneNumber);
+        sessionStorage.setItem('postalCode', locConfig.configs[0].postalCode);
+        sessionStorage.setItem('eagleCashOptn', String(locConfig.configs[0].eagleCashOptn != null ? locConfig.configs[0].eagleCashOptn : false));
+        sessionStorage.setItem('useShipHndlng', String(locConfig.configs[0].useShipHndlng != null ? locConfig.configs[0].useShipHndlng : false));
+
         this._ltLocationConfig = locConfig;
     }
 
-    public getLocationConfig() {
-        return this._ltLocationConfig;
+    public getLocationConfig(): LocationConfig {
+        //return this._ltLocationConfig;
+        let locConfig: LocationConfig = new LocationConfig();
+        locConfig.businessFunctionUID = Number(sessionStorage.getItem('businessFunctionUID') ?  sessionStorage.getItem('businessFunctionUID') : '0');
+        locConfig.businessModel = Number(sessionStorage.getItem('businessModel') ? sessionStorage.getItem('businessModel') : '0');
+        locConfig.allowPartPay = Boolean(sessionStorage.getItem('allowPartPay') ? sessionStorage.getItem('allowPartPay') : '0');
+        locConfig.allowSaveTkt = Boolean(sessionStorage.getItem('allowSaveTkt') ? sessionStorage.getItem('allowSaveTkt') : '0');
+        locConfig.allowTips = Boolean(sessionStorage.getItem('allowTips') ? sessionStorage.getItem('allowTips') : '0');
+        locConfig.openCashDrawer = Boolean(sessionStorage.getItem('openCashDrawer') ? sessionStorage.getItem('openCashDrawer') : '0');
+        locConfig.exchCouponsAfterTax = Boolean(sessionStorage.getItem('exchCouponsAfterTax') ? sessionStorage.getItem('exchCouponsAfterTax') : '0');
+        locConfig.vendCouponsAfterTax = Boolean(sessionStorage.getItem('vendCouponsAfterTax') ? sessionStorage.getItem('vendCouponsAfterTax') : '0');
+        locConfig.facilityUID = Number(sessionStorage.getItem('facilityUID') ? sessionStorage.getItem('facilityUID') : '0');
+        locConfig.facilityNumber = String(sessionStorage.getItem('facilityNumber') ? sessionStorage.getItem('facilityNumber') : '0');
+        locConfig.locationUID = Number(sessionStorage.getItem('locationUID') ? sessionStorage.getItem('locationUID') : '0');
+        locConfig.locationName = String(sessionStorage.getItem('locationName') ? sessionStorage.getItem('locationName') : '0');
+        locConfig.storeName = String(sessionStorage.getItem('storeName') ? sessionStorage.getItem('storeName') : '0');
+        locConfig.pINReqdForSalesTran = Boolean(sessionStorage.getItem('pINReqdForSalesTran') ? sessionStorage.getItem('pINReqdForSalesTran') : '0');
+        locConfig.associateName = String(sessionStorage.getItem('associateName') ? sessionStorage.getItem('associateName') : '0');
+        locConfig.associateRole = String(sessionStorage.getItem('associateRole') ? sessionStorage.getItem('associateRole') : '0');
+        locConfig.associateRoleDesc = String(sessionStorage.getItem('associateRoleDesc') ? sessionStorage.getItem('associateRoleDesc') : '0');
+        locConfig.contractUID = Number(sessionStorage.getItem('contractUID') ? sessionStorage.getItem('contractUID') : '0');
+        locConfig.contractNumber = String(sessionStorage.getItem('contractNumber') ? sessionStorage.getItem('contractNumber') : '0');
+        locConfig.vendorNumber = String(sessionStorage.getItem('vendorNumber') ? sessionStorage.getItem('vendorNumber') : '0');
+        locConfig.vendorName = String(sessionStorage.getItem('vendorName') ? sessionStorage.getItem('vendorName') : '0');
+        locConfig.facilityName = String(sessionStorage.getItem('facilityName') ? sessionStorage.getItem('facilityName') : '0');
+        locConfig.individualUID = Number(sessionStorage.getItem('individualUID') ? sessionStorage.getItem('individualUID') : '0');
+        locConfig.indLocUID = Number(sessionStorage.getItem('indLocUID') ? sessionStorage.getItem('indLocUID') : '0');
+        locConfig.contractStart = new Date(String(sessionStorage.getItem('contractStart') ? sessionStorage.getItem('contractStart') : '1970-01-01:00:00:000'));
+        locConfig.contractEnd = new Date(String(sessionStorage.getItem('contractEnd') ? sessionStorage.getItem('contractEnd'): '1970-01-01:00:00:000'));
+        locConfig.busFuncCode = String(sessionStorage.getItem('busFuncCode') ? sessionStorage.getItem('busFuncCode') : '0');
+        locConfig.assocEmail = String(sessionStorage.getItem('assocEmail') ? sessionStorage.getItem('assocEmail') : '0');
+        locConfig.isVendorLogin = Boolean(sessionStorage.getItem('isVendorLogin') ? sessionStorage.getItem('isVendorLogin') : '0');
+        locConfig.sBMUserFirstName = String(sessionStorage.getItem('sBMUserFirstName') ? sessionStorage.getItem('sBMUserFirstName') : '0');
+        locConfig.sBMUserMiddleName = String(sessionStorage.getItem('sBMUserMiddleName') ? sessionStorage.getItem('sBMUserMiddleName') : '0');
+        locConfig.sBMUserLastName = String(sessionStorage.getItem('sBMUserLastName') ? sessionStorage.getItem('sBMUserLastName') : '0');
+        locConfig.sBMUserJobTitle = String(sessionStorage.getItem('sBMUserJobTitle') ? sessionStorage.getItem('sBMUserJobTitle') : '0');
+        locConfig.sBMUserFullName = String(sessionStorage.getItem('sBMUserFullName') ? sessionStorage.getItem('sBMUserFullName') : '0');
+        locConfig.sBMFaciltyNumber = String(sessionStorage.getItem('sBMFaciltyNumber') ? sessionStorage.getItem('sBMFaciltyNumber') : '0');
+        locConfig.sBMFacilityName = String(sessionStorage.getItem('sBMFacilityName') ? sessionStorage.getItem('sBMFacilityName') : '0');
+        locConfig.rgnCode = String(sessionStorage.getItem('rgnCode') ? sessionStorage.getItem('rgnCode') : '0');
+        locConfig.countryCode = String(sessionStorage.getItem('countryCode') ? sessionStorage.getItem('countryCode') : '0');
+        locConfig.currCode = String(sessionStorage.getItem('currCode') ? sessionStorage.getItem('currCode') : '0');
+        locConfig.cCDevice = String(sessionStorage.getItem('cCDevice') ? sessionStorage.getItem('cCDevice') : '0');
+        locConfig.regionId = String(sessionStorage.getItem('regionId') ? sessionStorage.getItem('regionId') : '0');
+        locConfig.defaultCurrency = String(sessionStorage.getItem('defaultCurrency') ? sessionStorage.getItem('defaultCurrency') : '0');
+        locConfig.uSDFastcash = String(sessionStorage.getItem('uSDFastcash') ? sessionStorage.getItem('uSDFastcash') : '0');
+        locConfig.frgnFastcash = String(sessionStorage.getItem('frgnFastcash') ? sessionStorage.getItem('frgnFastcash') : '0');
+        locConfig.countryDialCode = String(sessionStorage.getItem('countryDialCode') ? sessionStorage.getItem('countryDialCode') : '0');
+        locConfig.addressLine1 = String(sessionStorage.getItem('addressLine1') ? sessionStorage.getItem('addressLine1') : '0');
+        locConfig.addressLine2 = String(sessionStorage.getItem('addressLine2') ? sessionStorage.getItem('addressLine2') : '0');
+        locConfig.city = String(sessionStorage.getItem('city') ? sessionStorage.getItem('city') : '0');
+        locConfig.stateProvice = String(sessionStorage.getItem('stateProvice') ? sessionStorage.getItem('stateProvice') : '0');
+        locConfig.phoneNumber = String(sessionStorage.getItem('phoneNumber') ? sessionStorage.getItem('phoneNumber') : '0');
+        locConfig.postalCode = String(sessionStorage.getItem('postalCode') ? sessionStorage.getItem('postalCode') : '0');
+        locConfig.eagleCashOptn = Boolean(sessionStorage.getItem('eagleCashOptn') ? sessionStorage.getItem('eagleCashOptn') : '0');
+        locConfig.useShipHndlng = Boolean(sessionStorage.getItem('useShipHndlng') ? sessionStorage.getItem('useShipHndlng') : '0');
+
+        return locConfig;
     }
 }

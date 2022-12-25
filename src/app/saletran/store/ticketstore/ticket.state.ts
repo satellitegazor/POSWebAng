@@ -5,5 +5,5 @@ export interface tktObjInterface {
 }
 
 export const tktObjInitialState: tktObjInterface = {
-    tktObj: {} as TicketSplit
+    tktObj: new TicketSplit()
 }

@@ -12,8 +12,8 @@
                     </tr>
                 </thead>
                 <tr *ngFor="let itm of tktSaleItems; let i = index;">
-                    <td><h4><label class="label label-default">{{itm.salesItemDesc}}</label></h4></td>
-                    <td *ngIf="!allowTips">
+                    <td style="width:30%"><h4><label class="label label-default">{{itm.salesItemDesc}}</label></h4></td>
+                    <td style="width:30%" *ngIf="!allowTips">
                         <div class="row">
                             <button type="button" class="btn-primary btn" id="btnm{{i}}" (click)="btnMinusClicked($event, i);">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash-lg" viewBox="0 0 16 16">
@@ -29,7 +29,7 @@
                             </button></div>
                         </div>
                     </td>
-                    <td *ngIf="allowTips">
+                    <td style="width:30%" *ngIf="allowTips">
                         <div class="row">
 
                             <button type="button" style="width:10%;" class="btn-primary btn" id="btnm{{i}}" (click)="btnMinusClicked($event, i);">
@@ -44,10 +44,10 @@
                             </select>
                         </div>
                     </td>
-                    <td class="rightjustfy">
+                    <td style="width:20%;text-align: right;" class="rightjustfy">
                         <h4><label class="label label-default">{{itm.unitPrice | number:'1.2-2'}}</label></h4>
                     </td>
-                    <td class="rightjustfy">
+                    <td style="width:20%;text-align: right;" class="rightjustfy">
                         <h4><label class="label label-default">{{itm.unitPrice * itm.quantity | number:'1.2-2'}}</label></h4>
                     </td>
 

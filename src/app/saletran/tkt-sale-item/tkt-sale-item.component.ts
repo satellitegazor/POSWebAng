@@ -37,6 +37,8 @@ export class TktSaleItemComponent implements OnInit {
         //this._sharedSvc.SaleItem.subscribe(data => {
             if(data == undefined)
                 return;
+                
+            this.tktSaleItems = [];
             data.forEach((item) => {
                 let tktsi: TktSaleItem = new TktSaleItem();
                 tktsi.salesItemUID = item.salesItemUID;
@@ -49,10 +51,10 @@ export class TktSaleItemComponent implements OnInit {
         });
 
         const locConfig = this._logonDataSvc.getLocationConfig();
-        this.allowTips = locConfig.configs[0].allowTips;
+        this.allowTips = locConfig.allowTips;
         this.indivId = +this._logonDataSvc.getLTVendorLogonData().individualUID;        
 
-        this._saleTranSvc.getLocationAssociates(locConfig.configs[0].locationUID, +this._logonDataSvc.getLTVendorLogonData().individualUID).subscribe(data => {
+        this._saleTranSvc.getLocationAssociates(locConfig.locationUID, +this._logonDataSvc.getLTVendorLogonData().individualUID).subscribe(data => {
             this.SaleAssocList = data.associates
         })
     }

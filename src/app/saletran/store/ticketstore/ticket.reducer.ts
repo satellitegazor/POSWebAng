@@ -25,7 +25,7 @@ import { tktObjInitialState, tktObjInterface } from "./ticket.state";
         ...state,
          tktObj: {...state.tktObj, 
             tktList: [...state.tktObj?.tktList, 
-               ...state.tktObj.tktList.concat(dt)] }
+               action.saleItem] }
         }; 
      }),
      on(incSaleitemQty, (state, action) => {
@@ -54,6 +54,8 @@ import { tktObjInitialState, tktObjInterface } from "./ticket.state";
          }
       }
   }),
+
+  
 
  );
  

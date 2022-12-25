@@ -12,3 +12,7 @@ export const getTktObjSelector = createSelector(getTktObjState,
 });
 
 
+export const getCheckoutItemsSelector = createSelector(getTktObjState,
+  (state) => {
+    return state.tktObj ? state.tktObj.tktList : null;
+  })
