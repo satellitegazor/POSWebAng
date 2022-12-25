@@ -4,10 +4,12 @@ import { SalesTranModule } from './saletran.module';
 import { Routes, RouterModule } from '@angular/router';
 import { ModuleWithProviders } from '@angular/core';
 import { SalesCartComponent } from './sales-cart/sales-cart.component';
+import { CheckoutPageComponent } from './checkout/checkout-page/checkout-page.component';
  
 export const routes: Routes = [
     { path: '', component: SalesCartComponent},
     { path: 'salestran', component: SalesCartComponent },
+    { path: 'checkout', component: CheckoutPageComponent },
 ];
 
 /*export const routing: ModuleWithProviders = RouterModule.forChild(routes)*/

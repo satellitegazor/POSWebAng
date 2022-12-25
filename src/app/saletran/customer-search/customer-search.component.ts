@@ -35,8 +35,27 @@ export class CustomerSearchComponent implements OnInit {
       return;
     }
     this._saleSvc.getCustomerLookup(this.firstName, this.lastName, this.telephone, 10).subscribe(data => {
+
+      this._hideErrMsg();
+
+      if(data.customers.length == 0) {
+        this._showErrMsg('No Customer data found', 'No Customer found with the given data. Please try again!!');
+      }
+
       this.CustomerList = data.customers;
     });
+  }
+
+  private _hideErrMsg() {
+    this.showErrMsg = false;
+    this.strongErrMessage = '';
+    this.errMessage = '';  
+  }
+
+  private _showErrMsg(titleErrMsg: string, errMsg: string) {
+    this.showErrMsg = true;
+    this.strongErrMessage = titleErrMsg;
+    this.errMessage = errMsg;  
   }
 
   cancel() {

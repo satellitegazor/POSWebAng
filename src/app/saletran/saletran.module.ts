@@ -31,11 +31,13 @@ import { SaleTotalsComponent } from './checkout/sale-totals/sale-totals.componen
 import { getTktObjSelector, TKT_OBJ_STATE } from './store/ticketstore/ticket.selector';
 import { TktObjReducer } from './store/ticketstore/ticket.reducer';
 import { TicketObjectEffects } from './store/ticketstore/ticket.effects';
+import { CheckoutPageComponent } from './checkout/checkout-page/checkout-page.component';
+import { CheckoutItemsComponent } from './checkout/checkout-items/checkout-items.component';
 
 @NgModule({
     declarations: [DeptListComponent, SalesCartComponent, SalesCategoryComponent, SaleItemComponent,
         TktSaleItemComponent, CustomerNewComponent, CustomerSearchComponent,  
-        CouponsComponent, PartPayComponent, BalanceDueComponent, SaleTotalsComponent],
+        CouponsComponent, PartPayComponent, BalanceDueComponent, SaleTotalsComponent, CheckoutPageComponent, CheckoutItemsComponent],
     imports: [
         CommonModule,
         FormsModule,
