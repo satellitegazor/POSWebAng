@@ -1,9 +1,11 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { ModalRef } from '@independer/ng-modal';
+import { Store } from '@ngrx/store';
 import { first } from 'rxjs';
 import { LTC_Customer } from 'src/app/models/customer';
 import { SalesTranService } from '../services/sales-tran.service'; 
-import { TicketObjService } from '../ticket-obj.service';
+import { addCustomerId } from '../store/ticketstore/ticket.action';
+import { tktObjInterface } from '../store/ticketstore/ticket.state';
 
 @Component({
   selector: 'app-customer-search',
@@ -14,7 +16,7 @@ import { TicketObjService } from '../ticket-obj.service';
 export class CustomerSearchComponent implements OnInit {
 
   data: string = '';
-  constructor(private _tktObjSvc: TicketObjService, private modal: ModalRef, private _saleSvc: SalesTranService) { }
+  constructor(private modal: ModalRef, private _saleSvc: SalesTranService, private _store: Store<tktObjInterface>) { }
   CustomerList: LTC_Customer[] = [];
 
   firstName: string = '';
@@ -65,7 +67,8 @@ export class CustomerSearchComponent implements OnInit {
   newcust() {}
 
   customerSelected(custId: number) {
-    this._tktObjSvc.TktObj.customerId = custId;
+    
+    this._store.dispatch(addCustomerId({custId}));    
     this.cancel();
   }
 }

@@ -12,7 +12,6 @@ import { TktSaleItemComponent } from './tkt-sale-item/tkt-sale-item.component';
 import { CustomerSearchComponent } from './customer-search/customer-search.component';
 import { CustomerNewComponent } from './customer-new/customer-new.component';
 import { ModalModule } from '@independer/ng-modal';
-import { TicketObjService } from './ticket-obj.service';
 import { StoreModule } from '@ngrx/store';
 import { GET_SALE_ITEM_MENU, SHARED_SALE_ITEMS_MENU_STATE } from './store/saleitemstore/saleitem.selector';
 import { GetSaleItemMenuReducer } from './store/saleitemstore/saleitem.reducers';
@@ -33,11 +32,12 @@ import { TktObjReducer } from './store/ticketstore/ticket.reducer';
 import { TicketObjectEffects } from './store/ticketstore/ticket.effects';
 import { CheckoutPageComponent } from './checkout/checkout-page/checkout-page.component';
 import { CheckoutItemsComponent } from './checkout/checkout-items/checkout-items.component';
+import { TenderPageComponent } from './tender-page/tender-page.component';
 
 @NgModule({
     declarations: [DeptListComponent, SalesCartComponent, SalesCategoryComponent, SaleItemComponent,
         TktSaleItemComponent, CustomerNewComponent, CustomerSearchComponent,  
-        CouponsComponent, PartPayComponent, BalanceDueComponent, SaleTotalsComponent, CheckoutPageComponent, CheckoutItemsComponent],
+        CouponsComponent, PartPayComponent, BalanceDueComponent, SaleTotalsComponent, CheckoutPageComponent, CheckoutItemsComponent, TenderPageComponent],
     imports: [
         CommonModule,
         FormsModule,
@@ -53,7 +53,7 @@ import { CheckoutItemsComponent } from './checkout/checkout-items/checkout-items
         StoreModule.forFeature(TKT_OBJ_STATE, TktObjReducer),
         EffectsModule.forFeature([TicketObjectEffects])
     ],
-    providers: [authinterceptorProviders, TicketObjService]
+    providers: [authinterceptorProviders]
     //exports: [VendorLTComponent, VendorSTComponent, SbmComponent]
 })
 export class SalesTranModule { }

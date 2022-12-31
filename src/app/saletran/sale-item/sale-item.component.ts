@@ -23,9 +23,9 @@ export class SaleItemComponent implements OnInit {
     
     public salesItemClick(event: Event, itemId: number): void {
         
-        const saleItem = this.getSaleCheckOutItem(
+        const saleCheckoutItem = this.getSaleCheckOutItem(
           this.saleItemList.filter(itm => itm.salesItemID == itemId)[0]);
-        this._store.dispatch(addSaleItem({saleItem}));        
+        this._store.dispatch(addSaleItem({saleItem: saleCheckoutItem}));        
     }
 
     private getSaleCheckOutItem(si: SaleItem): SalesTransactionCheckoutItem {

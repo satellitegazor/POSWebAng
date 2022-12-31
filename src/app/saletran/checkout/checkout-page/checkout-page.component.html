@@ -1,58 +1,55 @@
-<div class="row">
+<div class="fluid">
     <app-checkout-items></app-checkout-items>
 </div>
-<div class="row">
-    <div style="width:50%;"></div>
-    <div style="width:50%;">
-        <app-sale-totals></app-sale-totals>
-    </div>
-</div>
+
+
 <div class="footer fixed-bottom cncsnFooter">
     <div class="row">
-        <div style="width:50%;"></div>
         <div style="width:50%;">
+            <app-part-pay></app-part-pay>
+        </div>
+        <div style="width:45%;text-align: right;">
             <app-balance-due></app-balance-due>
         </div>
+        <div style="width:5%;"></div>
     </div>
-</div>
-<div class="footer fixed-bottom cncsnFooter">
     <div class="row">
-        <button class="border border-white btn btn-info btn-lg ftrbtn" style="width:20%;" id="btnCustDetails" aria-label="Left Align" (click)="btnCustDetailsClick($event)">
+        <button class="border border-white btn btn-info btn-lg ftrbtn" id="btnCustDetails" aria-label="Left Align" (click)="btnCustDetailsClick($event)">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
                 <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
             </svg> Customer
         </button>
-        <button class="border border-white btn btn-info btn-lg ftrbtn" style="width:20%;" id="btnMilstar" aria-label="Left Align">
+        <button class="border border-white btn btn-info btn-lg ftrbtn" id="btnMilstar" aria-label="Left Align" (click)="btnTndrClick($event, 'MS')">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
                 <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
             </svg> Military Star
         </button>
-        <button class="border border-white btn btn-info btn-lg ftrbtn" style="width:20%;" id="btnExchGiftCard" aria-label="Left Align">
+        <button class="border border-white btn btn-info btn-lg ftrbtn" id="btnExchGiftCard" aria-label="Left Align" (click)="btnTndrClick($event, 'GC')">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
                 <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
             </svg> Exchange Gift Card
         </button>
-        <button class="border border-white btn btn-info btn-lg ftrbtn" style="width:20%;" id="btnExchCreditCard" aria-label="Left Align">
+        <button *ngIf="isOConus" class="border border-white btn btn-info btn-lg ftrbtn" id="btnExchCreditCard" aria-label="Left Align" (click)="btnTndrClick($event, 'XC')">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
                 <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
             </svg> Credit Card
         </button>
-        <button class="border border-white btn btn-info btn-lg ftrbtn" style="width:20%;" id="btnConcCreditCard" aria-label="Left Align">
+        <button class="border border-white btn btn-info btn-lg ftrbtn" id="btnConcCreditCard" aria-label="Left Align" (click)="btnTndrClick($event, 'CC')">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
                 <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
             </svg> Credit Card
         </button>
-        <button class="border border-white btn btn-info btn-lg ftrbtn" style="width:20%;" id="btnEagleCash" aria-label="Left Align">
+        <button *ngIf="locationConfig.eagleCashOptn" class="border border-white btn btn-info btn-lg ftrbtn" id="btnEagleCash" aria-label="Left Align" (click)="btnTndrClick($event, 'EG')">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
                 <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
             </svg> Eagle Cash
         </button>
-        <button class="border border-white btn btn-info btn-lg ftrbtn" style="width:20%;" id="btnCashCheck" aria-label="Left Align">
+        <button class="border border-white btn btn-info btn-lg ftrbtn" id="btnCashCheck" aria-label="Left Align" (click)="btnTndrClick($event, 'CA')">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
                 <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
             </svg> Cash/Check
         </button>
-        <button class="border border-white btn btn-info btn-lg ftrbtn" style="width:20%;" id="btnSplitPay" aria-label="Left Align">
+        <button class="border border-white btn btn-info btn-lg ftrbtn" id="btnSplitPay" aria-label="Left Align" (click)="btnTndrClick($event, 'SP')">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
                 <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
             </svg> Split Pay

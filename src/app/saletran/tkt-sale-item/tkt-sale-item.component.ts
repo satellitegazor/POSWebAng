@@ -14,6 +14,7 @@ import { addSaleItem } from '../store/ticketstore/ticket.action';
 import { SalesTransactionCheckoutItem } from '../models/salesTransactionCheckoutItem';
 import { ConditionalExpr } from '@angular/compiler';
 import { getCheckoutItemsSelector } from '../store/ticketstore/ticket.selector';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-tkt-sale-item',
@@ -22,9 +23,10 @@ import { getCheckoutItemsSelector } from '../store/ticketstore/ticket.selector';
 })
 export class TktSaleItemComponent implements OnInit {
 
-    constructor(private _sharedSvc: SharedSubjectService, private _saleTranSvc: SalesTranService,
+    constructor(private _saleTranSvc: SalesTranService,
         private _logonDataSvc: LogonDataService,
-        private _store: Store<tktObjInterface>) { }
+        private _store: Store<tktObjInterface>,
+        private _router: Router) { }
 
     tktSaleItems: TktSaleItem[] = [];
     public allowTips: boolean = false;
@@ -71,7 +73,7 @@ export class TktSaleItemComponent implements OnInit {
     }
 
     public btnCheckoutClicked() {
-        this._sharedSvc.TktSaleItems.next(this.tktSaleItems);
+        this._router.navigate(['/checkout'])
     }
 
     onAssociateChange(evt: Event, individualUID: number) {

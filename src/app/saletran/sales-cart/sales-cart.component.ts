@@ -10,7 +10,6 @@ import { SalesTranService } from '../services/sales-tran.service';
 import { TktSaleItemComponent } from '../tkt-sale-item/tkt-sale-item.component';
 import { ModalService, ModalCloseReason } from '@independer/ng-modal';
 import { CustomerSearchComponent } from '../customer-search/customer-search.component';
-import { TicketObjService } from '../ticket-obj.service';
 
 import { getSaleItemsStart, getSaleItemsActionSuccess, getSaleitemsFail } from '../store/saleitemstore/saleitem.action';
 import { props, Store } from '@ngrx/store';
@@ -29,7 +28,7 @@ import { LocationConfig, LocationIndividual } from '../models/location-config';
 })
 export class SalesCartComponent implements OnInit, OnDestroy {
 
-    constructor(private _tktObjSvc: TicketObjService, private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
+    constructor(private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
         private _sharedSubSvc: SharedSubjectService, private modalService: ModalService, private _store: Store   ) {
         console.log('SalesCart constructor')        
     }
@@ -138,16 +137,9 @@ export class SalesCartComponent implements OnInit, OnDestroy {
 
     private _buildTktObj() {
 
-        this._tktObjSvc.TktObj.locationUID = +this.vendorLoginResult.locationUID;
-        this._tktObjSvc.TktObj.individualUID = +this.vendorLoginResult.individualUID;
-        this._tktObjSvc.TktObj.cliTimeVar = GlobalConstants.GetClientTimeVariance();
-        //this.tktObj.tktList = tic
     }
 
     btnCheckoutClick(evt: Event) {
-        this._sharedSubSvc.TktSaleItems.subscribe(data => {
-            this._tktObjSvc.TktObj.tktList = data;
-        });
         this.tktSaleItemComponent.btnCheckoutClicked();
     }
 

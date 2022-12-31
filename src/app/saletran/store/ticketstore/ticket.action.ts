@@ -1,5 +1,7 @@
 import {createAction, props} from '@ngrx/store';
+import { LTC_Customer } from 'src/app/models/customer';
 import { SaveTicketResultsModel, TicketSplit } from 'src/app/models/ticket.split';
+import { TicketTender } from 'src/app/models/ticket.tender';
 import { LocationConfigModel } from '../../models/location-config';
 import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheckoutItem';
  
@@ -10,6 +12,10 @@ export const INIT_TKT_OBJ = 'initTktObj';
 export const SAVE_TICKET_SPLIT = '[SaveTicket] Start'
 export const SAVE_TICKET_SPLIT_SUCCESS = '[SaveTicket] Success'
 export const SAVE_TICKET_SPLIT_FAILED = '[SaveTicket] Failure'
+export const ADD_CUST_ID = 'add CustomerId to TktObj';
+export const ADD_NEW_CUST = 'add New Customer to TktObj';
+export const ADD_TENDER_OBJ = 'addTenderToTktObj';
+export const UPD_SALE_ITEM = 'updSaleItems';
 
 export const addSaleItem = createAction(ADD_SALE_ITEM,
     props<{saleItem: SalesTransactionCheckoutItem}>());
@@ -31,4 +37,15 @@ export const saveTicketSplitSuccess = createAction(SAVE_TICKET_SPLIT_SUCCESS,
 
 export const saveTicketSplitFailed = createAction(SAVE_TICKET_SPLIT_FAILED,
         props<{rslt: SaveTicketResultsModel}>());
-        
+
+export const addCustomerId = createAction(ADD_CUST_ID, 
+    props<{custId: number}>())
+
+export const addNewCustomer = createAction(ADD_CUST_ID, 
+    props<{custObj: LTC_Customer}>());
+
+export const addTender = createAction(ADD_TENDER_OBJ,
+    props<{tndrObj: TicketTender}>());
+
+export const updateSaleitems = createAction(UPD_SALE_ITEM,
+    props<{indx: number, saleItemId: number, lineItemDollarDisplayAmount: number, lineItemTaxAmount: number, lineItemDiscountAmount: number}>())

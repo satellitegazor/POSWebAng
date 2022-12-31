@@ -1,7 +1,7 @@
-<div class="panel" style="background-color:lightgrey;">
+<div class="panel" style="background-color:lightgrey;width:100%;">
     <div class="panel-body ms-2 me-2 mt-2 mb-2">
-        <div class="row">
-            <table class="table">
+        
+            <table class="table table-striped">
                 <thead>
                     <tr>
                         <td><h4>Item Description</h4></td>
@@ -15,41 +15,101 @@
                     </tr>
                 </thead>
                 <tr *ngFor="let itm of tktDtlItems; let i = index;">
-                    <td><h4><label class="label label-default">{{itm.salesItemDesc}}</label></h4></td>
-                    <td *ngIf="!allowTips">
-                        <h4><span class="label label-default">&nbsp; {{itm.quantity}} &nbsp;</span></h4>
+                    <td><label class="label label-default">{{itm.salesItemDesc}}</label></td>
+                    <td class="rightjustfy" *ngIf="!allowTips">
+                        <span class="label label-default">&nbsp; {{itm.quantity}} &nbsp;</span>
                     </td>
                     <td *ngIf="allowTips">
-                        <h4><span class="label label-default">&nbsp; {{itm.firstName + ' ' + itm.lastName}} &nbsp;</span></h4>
+                        <span class="label label-default">&nbsp; {{itm.srvdByAssociateText}} &nbsp;</span>
                     </td>
                     <td class="rightjustfy">
-                        <h4><label class="label label-default">{{itm.unitPrice }}</label></h4>
+                        <label class="label label-default">{{itm.unitPrice }}</label>
+                    </td>
+                    <td class="rightjustfy"> 
+                        <label class="label label-default">{{ (itm.unitPrice * itm.quantity) * itm.vendorCouponDiscountPct * 0.01  | number:'1.2-2' }}</label>
                     </td>
                     <td class="rightjustfy">
-                        <h4><label class="label label-default">{{itm.discount }}</label></h4>
+                        <label class="label label-default">{{(itm.unitPrice * itm.quantity) * itm.exchangeCouponDiscountPct * 0.01  | number:'1.2-2'}}</label>
                     </td>
                     <td class="rightjustfy">
-                        <h4><label class="label label-default">{{itm.exchCoupon }}</label></h4>
+                        <label class="label label-default">{{ (itm.unitPrice * itm.quantity) * itm.salesTaxPct  * 0.01  | number:'1.2-2'}}</label>
                     </td>
                     <td class="rightjustfy">
-                        <h4><label class="label label-default">{{itm.saleTax }}</label></h4>
-                    </td>
-                    <td class="rightjustfy">
-                        <h4><label class="label label-default">{{itm.unitPrice * itm.quantity }}</label></h4>
+                        <label class="label label-default">{{itm.unitPrice * itm.quantity  | number:'1.2-2' }}</label>
                     </td>
                 </tr>
             </table>
-        </div>
-        <div class="row">
-            <table class="table">
-                <td style="width:10%">
-                    <button id="btnCancel" class="btn btn-primary" (click)="btnCancelClicked();">Cancel</button>
-                </td>
-                <td style="width:80%"></td>
-                <td style="width:10%">
-                    <button id="btnAddRemove" class="btn btn-primary" (click)="btnAddRemove();">Cancel</button>
-                </td>
-            </table>
-        </div>
+        
+
     </div>
 </div>
+
+<table class="table">
+    <td style="width:10%">
+        <button id="btnCancel" class="btn btn-primary" (click)="btnCancelClicked();">Cancel</button>
+    </td>
+    <td style="width:80%"></td>
+    <td style="width:10%;text-align: right;">
+        <button id="btnAddRemove" class="btn btn-primary" (click)="btnAddRemove();">Add/Remove</button>
+    </td>
+</table>
+<table class="table">
+    <tr>
+        <td style="width:85%;">
+
+        </td>
+        <td style="width:15%;">
+            <table class="table">
+                <tr>
+                    <td style="width:66%" class="rightjustfy">
+                        <label>Item Subtotal</label>
+                    </td>
+                    <td style="width:33%" class="rightjustfy">
+                        {{subTotal | number:'1.2-2'}}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:66%" class="rightjustfy">
+                        <label>Exchange Coupon</label>
+                    </td>
+                    <td style="width:33%" class="rightjustfy">
+                        {{exchCpnTotal | number:'1.2-2'}}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:66%" class="rightjustfy">
+                        <label>Sales Tax</label>
+                    </td>
+                    <td style="width:33%" class="rightjustfy">
+                        {{saleTaxTotal | number:'1.2-2'}}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:66%" class="rightjustfy">
+                        <label>Tips</label>
+                    </td>
+                    <td style="width:33%" class="rightjustfy">
+                        {{tipsTotal | number:'1.2-2'}}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:66%" class="rightjustfy">
+                        <label>Grand Total</label>
+                    </td>
+                    <td style="width:33%" class="rightjustfy">
+                        {{grandTotal | number:'1.2-2'}}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:66%" class="rightjustfy">
+                        <label>Total Savings</label>
+                    </td>
+                    <td style="width:33%" class="rightjustfy">
+                        {{totalSavings | number:'1.2-2'}}
+                    </td>
+                </tr>
+            </table>
+            
+        </td>
+    </tr>
+</table>
