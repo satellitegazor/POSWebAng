@@ -35,7 +35,7 @@ export class CheckoutItemsComponent implements OnInit {
     this._store.select(getCheckoutItemsSelector).subscribe(saleItems => {
       this.tktDtlItems = saleItems == null ? [] : saleItems;
 
-      this.updateCheckoutTotals();
+      //this.updateCheckoutTotals();
     })
   }
 
@@ -47,7 +47,7 @@ export class CheckoutItemsComponent implements OnInit {
 
   }
 
-  updateCheckoutTotals() {
+  public updateCheckoutTotals() {
 
     this.subTotal = 0;
     this.exchCpnTotal = 0;
@@ -69,13 +69,14 @@ export class CheckoutItemsComponent implements OnInit {
       this.saleTaxTotal += saleTaxTotal;
       this.vndDiscountTotal += vndDiscountTotal;
 
-      this._store.dispatch(updateSaleitems({
-        indx: k,
-        saleItemId: this.tktDtlItems[k].salesItemUID,
-        lineItemDollarDisplayAmount: (subTotal - exchCpnTotal - vndDiscountTotal + saleTaxTotal),
-        lineItemTaxAmount: saleTaxTotal,
-        lineItemDiscountAmount: vndDiscountTotal
-      }));
+      var checkOutItem: SalesTransactionCheckoutItem = {...this.tktDtlItems[k]};
+      checkOutItem.lineItemDollarDisplayAmount = (subTotal - exchCpnTotal - vndDiscountTotal + saleTaxTotal);
+      checkOutItem.lineItemTaxAmount = saleTaxTotal;
+      checkOutItem.discountAmount = exchCpnTotal + vndDiscountTotal;
+
+      // this._store.dispatch(updateSaleitems({
+      //   item: checkOutItem
+      // }))
 
     }
     this.grandTotal = this.subTotal - this.exchCpnTotal + this.saleTaxTotal;

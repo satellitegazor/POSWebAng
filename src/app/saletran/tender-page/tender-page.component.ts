@@ -5,7 +5,7 @@ import { getTktObjSelector } from '../store/ticketstore/ticket.selector';
 import { tktObjInterface } from '../store/ticketstore/ticket.state';
 import {Router, ActivatedRoute, Params} from '@angular/router';
 import { TicketTender } from 'src/app/models/ticket.tender';
-import { addTender, saveTicketSplit } from '../store/ticketstore/ticket.action';
+import { addTender, saveTicketSplit, updateCheckoutTotals } from '../store/ticketstore/ticket.action';
 
 @Component({
   selector: 'app-tender-page',
@@ -32,13 +32,22 @@ export class TenderPageComponent implements OnInit {
     this.activatedRoute.queryParams.subscribe(params => {
       this._tenderObj.tenderTypeCode = params['tcode'];
     })
+
+    
   }
 
   btnApprove(evt: Event) {
 
+    let tndrObj: TicketTender = new TicketTender();
+    tndrObj.tenderTypeCode = this._tenderObj.tenderTypeCode;
+
+    this._store.dispatch(addTender({tndrObj}));
+
     this._tenderObj.tenderAmount = this._tktObj.tktList.reduce<number>((acc, obj) => {
       return acc + obj.lineItemDollarDisplayAmount;
     }, 0);
+
+    this._store.dispatch(updateCheckoutTotals());
   
     this._store.dispatch(addTender({tndrObj: this._tenderObj}));
     

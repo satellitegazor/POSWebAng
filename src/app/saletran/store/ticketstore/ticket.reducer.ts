@@ -2,7 +2,7 @@ import { act } from "@ngrx/effects";
 import { Action, createReducer, on } from "@ngrx/store";
 import { GlobalConstants } from "src/app/global/global.constants";
 import { SalesTransactionCheckoutItem } from "../../models/salesTransactionCheckoutItem";
-import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems } from "./ticket.action";
+import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals } from "./ticket.action";
 
 import { tktObjInitialState, tktObjInterface } from "./ticket.state";
 
@@ -13,20 +13,27 @@ export const _tktObjReducer = createReducer(
          ...state,
          tktObj: {
             ...state.tktObj,
-            locationUID: action.locConfig.configs[0].locationUID,
-            cliTimeVar: GlobalConstants.GetClientTimeVariance(),
-            individualUID: action.locConfig.configs[0].individualUID,
+            locationUID: action.locConfig.locationUID,
+            individualUID: action.individualUID,
+            cliTimeVar: GlobalConstants.GetClientTimeVariance()
          }
       }
    }),
    on(addSaleItem, (state, action) => {
       var dt = [action.saleItem];
+      var _tktObj = {...state.tktObj};
+      var _totalSaleAmt = 0;
+      _tktObj.tktList.forEach(k => {
+         _totalSaleAmt += k.lineItemDollarDisplayAmount;
+      })
+
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
             tktList: [...state.tktObj?.tktList,
-            action.saleItem]
+            action.saleItem],
+            totalSale: _totalSaleAmt
          }
       };
    }),
@@ -47,7 +54,7 @@ export const _tktObjReducer = createReducer(
    on(decSaleitemQty, (state, action) => {
       var saleItemObj = state.tktObj.tktList.filter(k => k.salesItemUID == action.saleItemId && k.ticketDetailId == action.tktDtlId)[0];
       --saleItemObj.quantity;
-      var updateSaleitems = state.tktObj.tktList.map(item => item.salesItemUID != action.saleItemId && item.ticketDetailId != action.tktDtlId ? saleItemObj : item);
+      let updateSaleitems: SalesTransactionCheckoutItem[] = state.tktObj.tktList.map(item => item.salesItemUID != action.saleItemId && item.ticketDetailId != action.tktDtlId ? saleItemObj : item);
       return {
          ...state,
          tktObj: {
@@ -76,6 +83,7 @@ export const _tktObjReducer = createReducer(
       }
    }),
    on(addTender, (state, action) => {
+
       return {
          ...state,
          tktObj: {
@@ -85,20 +93,59 @@ export const _tktObjReducer = createReducer(
          }
       }
    }),
-   on(updateSaleitems, (state, action) => {
+
+   on(updateCheckoutTotals, (state, action) => {
+
+      var updatedTktList: SalesTransactionCheckoutItem[] = JSON.parse(JSON.stringify([...state.tktObj.tktList]));
+      let totalSale: number = 0;
+      let totalSaleFC: number = 0;
+
+      for (let k = 0; k < updatedTktList.length; k++) {
+
+         let subTotal = (updatedTktList[k].unitPrice * updatedTktList[k].quantity);
+         let exchCpnTotal = (updatedTktList[k].unitPrice * updatedTktList[k].quantity) * updatedTktList[k].exchangeCouponDiscountPct * 0.01;
+         let saleTaxTotal = (updatedTktList[k].unitPrice * updatedTktList[k].quantity) * updatedTktList[k].salesTaxPct * 0.01;
+         let vndDiscountTotal = updatedTktList[k].discountAmount | 0;
+   
+         updatedTktList[k].lineItemDollarDisplayAmount = (subTotal - exchCpnTotal - vndDiscountTotal + saleTaxTotal);
+         updatedTktList[k].lineItemTaxAmount = saleTaxTotal;
+         updatedTktList[k].discountAmount = exchCpnTotal + vndDiscountTotal;   
+
+         totalSale += updatedTktList[k].lineItemDollarDisplayAmount;
+
+         let subTotalFC = (updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity);
+         let exchCpnTotalFC = (updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity) * updatedTktList[k].exchangeCouponDiscountPct * 0.01;
+         let saleTaxTotalFC = (updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity) * updatedTktList[k].salesTaxPct * 0.01;
+         let vndDiscountTotalFC = updatedTktList[k].dCDiscountAmount | 0;
+         
+         updatedTktList[k].dCLineItemDollarDisplayAmount = (subTotalFC - exchCpnTotalFC - vndDiscountTotalFC + saleTaxTotalFC);
+         updatedTktList[k].dCLineItemTaxAmount = saleTaxTotalFC;
+         updatedTktList[k].dCDiscountAmount = exchCpnTotalFC + vndDiscountTotalFC;
+
+         totalSaleFC += updatedTktList[k].dCLineItemDollarDisplayAmount;
+       }
+
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
-            tktList: [
-               ...state.tktObj.tktList.splice(0, action.indx),
-               {
-                  ...state.tktObj.tktList[action.indx],
-                  lineItemDollarDisplayAmount: action.lineItemDollarDisplayAmount,
-                  lineItemTaxAmount: action.lineItemTaxAmount
-               },
-               ...state.tktObj.tktList.splice(action.indx+1)
-            ]
+            tktList: updatedTktList,
+            totalSale: totalSale,
+            totalSaleFC: totalSaleFC
+         }
+      }
+      
+   }),
+
+   on(updateSaleitems, (state, action) => {
+
+      const updatedTktList = state.tktObj.tktList.map(stateItem => stateItem.salesItemUID == action.item.salesItemUID ? action.item : stateItem);
+
+      return {
+         ...state,
+         tktObj: {
+            ...state.tktObj,
+            tktList: updatedTktList
          }
       }
    }),   
@@ -109,12 +156,6 @@ export const _tktObjReducer = createReducer(
 
 export function TktObjReducer(state: tktObjInterface, action: Action) {
    return _tktObjReducer(state, action);
-   // switch(action.type) {
-   //    case 'addSaleItem':
-   //       return [...state,  tktObjInitialState.tktObj : {
-   //          ...state.tktObj, 
-   //       }]
-   //       break;
-   // }
+
 }
 

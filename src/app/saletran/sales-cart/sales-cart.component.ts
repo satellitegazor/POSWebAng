@@ -19,6 +19,8 @@ import { getLocationConfigSelector } from '../store/locationconfigstore/location
 import { getLocationConfigStart } from '../store/locationconfigstore/locationconfig.action';
 import { getAuthLoginSelector } from 'src/app/authstate/auth.selector';
 import { LocationConfig, LocationIndividual } from '../models/location-config';
+import { tktObjInterface } from '../store/ticketstore/ticket.state';
+import { initTktObj } from '../store/ticketstore/ticket.action';
 
 
 @Component({
@@ -29,7 +31,7 @@ import { LocationConfig, LocationIndividual } from '../models/location-config';
 export class SalesCartComponent implements OnInit, OnDestroy {
 
     constructor(private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
-        private _sharedSubSvc: SharedSubjectService, private modalService: ModalService, private _store: Store   ) {
+        private _sharedSubSvc: SharedSubjectService, private modalService: ModalService, private _store: Store<tktObjInterface>   ) {
         console.log('SalesCart constructor')        
     }
 
@@ -61,10 +63,17 @@ export class SalesCartComponent implements OnInit, OnDestroy {
             });
 
             this._saleTranSvc.getLocationConfig(+this.vendorLoginResult.locationUID, +this.vendorLoginResult.individualUID).subscribe(data => {
+                
                 this.locationConfig = data.configs[0];
                 this.locationIndividuals = data.individuals;
+                
+                let indivId = 0;
+                if(data.individuals.length > 0)
+                    indivId = data.individuals[0].individualUID;
 
                 this._logonDataSvc.setLocationConfig(data);
+
+                this._store.dispatch(initTktObj({locConfig: this.locationConfig, individualUID: indivId}));
             });
             
             // this._store.select(getSaleItemListSelector).subscribe(data => {
