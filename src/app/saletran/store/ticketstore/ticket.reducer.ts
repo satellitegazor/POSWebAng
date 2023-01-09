@@ -15,7 +15,8 @@ export const _tktObjReducer = createReducer(
             ...state.tktObj,
             locationUID: action.locConfig.locationUID,
             individualUID: action.individualUID,
-            cliTimeVar: GlobalConstants.GetClientTimeVariance()
+            cliTimeVar: GlobalConstants.GetClientTimeVariance(),
+            transactionDate: new Date(Date.now())
          }
       }
    }),

@@ -84,10 +84,10 @@ export class SalesTranService {
             { headers: this.headerObjs });
     }
 
-    public saveTicketSplit(tktObj: TicketSplit) {
+    public saveTicketSplit(model: TicketSplit) {
         return this.httpClient.put<SaveTicketResultsModel>(
-            GlobalConstants.CPOS_SVCS_URL + 'ltc/SaveSplitPayments?guid=' + GlobalConstants.PUT_GUID + '&uid=' + tktObj.individualUID + '&DBVal=0',
-            tktObj,
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveSplitPayments?guid=' + GlobalConstants.PUT_GUID + '&uid=' + model.individualUID + '&DBVal=0',
+            JSON.stringify(model),
             { headers: this.headerObjs });
     }
 

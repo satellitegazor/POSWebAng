@@ -14,7 +14,7 @@ export class TicketObjectEffects {
     saveTicketSplitEffect$ = createEffect(() => {
         return this.action$.pipe(
             ofType(saveTicketSplit),
-            exhaustMap((action) => {
+            mergeMap((action) => {
                 return this.saleTranSvc.saveTicketSplit(action.tktObj).pipe(
                     map(rslt => {
                         return saveTicketSplitSuccess({rslt});

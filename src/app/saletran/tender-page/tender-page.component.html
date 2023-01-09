@@ -1,14 +1,41 @@
+<div class="panel">
+    <div class="panel-body">
+        <table class="table">
+            <tr>
+                <td style="text-align: left;">
+                    Tender Amount:
+                </td>
+                <td style="text-align: right;">
+                    Tender Amount: 
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: left;">
+                {{tenderAmount}}
+                </td>
+                <td style="text-align: right;">
+                {{tenderAmountFC}}
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
 
 <div class="footer fixed-bottom cncsnFooter">
     <div class="row">
-        <button class="border border-white btn btn-info btn-lg ftrbtn" id="btnApprove" aria-label="Left Align" (click)="btnApprove($event)">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+        <button class="border border-white btn btn-info btn-lg ftrbtn" id="btnApprove" aria-label="Left Align"
+            (click)="btnApprove($event)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill"
+                viewBox="0 0 16 16">
                 <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
             </svg> Approve
         </button>
-        <button class="border border-white btn btn-info btn-lg ftrbtn" id="btnCancel" aria-label="Left Align" (click)="btnDecline($event)">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+        <button class="border border-white btn btn-info btn-lg ftrbtn" id="btnCancel" aria-label="Left Align"
+            (click)="btnDecline($event)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill"
+                viewBox="0 0 16 16">
                 <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
             </svg> Decline
         </button>
-    </div></div>
+    </div>
+</div>

@@ -52,7 +52,7 @@ export class SaleItemComponent implements OnInit {
       coItm.fCLineItmKatsaCpnAmt = 0;
 
       coItm.exchangeCouponDiscountPct = 0;
-      coItm.envrnmtlTaxPct = si.envTax;
+      coItm.envrnmtlTaxPct = si.envTax != null ? si.envTax : 0;
 
       coItm.lineItemDollarDisplayAmount = 0;
       coItm.lineItemEnvTaxAmount = 0;

@@ -8,7 +8,7 @@ import { SharedSubjectService } from 'src/app/shared-subject/shared-subject.serv
 import { CustomerSearchComponent } from '../../customer-search/customer-search.component';
 import { LocationConfig } from '../../models/location-config';
 import { SalesTranService } from '../../services/sales-tran.service';
-import { addTender } from '../../store/ticketstore/ticket.action';
+import { addTender, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
 import { getCheckoutItemsSelector } from '../../store/ticketstore/ticket.selector';
 import { tktObjInterface } from '../../store/ticketstore/ticket.state';
 
@@ -55,6 +55,8 @@ export class CheckoutPageComponent implements OnInit {
   }
 
   btnTndrClick(evt: Event, tndrCode: string) {
+
+    this._store.dispatch(updateCheckoutTotals());
 
     this.router.navigate(['tender'], {queryParams: {code: tndrCode}})
   }
