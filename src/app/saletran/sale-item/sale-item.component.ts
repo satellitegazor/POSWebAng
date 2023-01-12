@@ -1,10 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { SharedSubjectService } from '../../shared-subject/shared-subject.service';
 import { CheckoutItemsComponent } from '../checkout/checkout-items/checkout-items.component';
 import { SaleItem } from '../models/sale.item';
 import { SalesTransactionCheckoutItem } from '../models/salesTransactionCheckoutItem';
 import { addSaleItem } from '../store/ticketstore/ticket.action';
+import { getCheckoutItemsCount } from '../store/ticketstore/ticket.selector';
 import { tktObjInterface } from '../store/ticketstore/ticket.state';
 
  
@@ -15,7 +17,7 @@ import { tktObjInterface } from '../store/ticketstore/ticket.state';
 })
 export class SaleItemComponent implements OnInit {
 
-    constructor(private _store: Store<tktObjInterface>) { }
+    constructor(private _logonDataSvc: LogonDataService, private _store: Store<tktObjInterface>) { }
     @Input() saleItemList: SaleItem[] = [];
 
     ngOnInit(): void {
@@ -70,9 +72,9 @@ export class SaleItemComponent implements OnInit {
       coItm.salesTaxPct = si.salesTax;
 
       coItm.srvdByAssociateText = '';
-      coItm.srvdByAssociateVal = 0;
+      coItm.srvdByAssociateVal = +this._logonDataSvc.getLTVendorLogonData().individualUID;
       coItm.ticketDetailId = 0;
-      
+
       coItm.unitPrice = si.price;
       coItm.vendorCouponDiscountPct = 0;
       

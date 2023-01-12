@@ -23,10 +23,10 @@ export class TenderPageComponent implements OnInit {
   }
 
   private _tktObj: TicketSplit = {} as TicketSplit;
-  private _tenderObj: TicketTender = {} as TicketTender;
   public tenderAmount: number = 0;
   public tenderAmountFC: number = 0;
   private _defaultCurrency: string = '';
+  private _tenderTypeCode: string = '';
 
   ngOnInit(): void {
 
@@ -41,21 +41,22 @@ export class TenderPageComponent implements OnInit {
         this.tenderAmountFC = data;
       })      
 
-      this._defaultCurrency = this._logonDataSvc.getLocationConfig().defaultCurrency;
     })
 
     this.activatedRoute.queryParams.subscribe(params => {
-      this._tenderObj.tenderTypeCode = params['tcode'];
+      this._tenderTypeCode = params['code'];
     })
   }
 
   btnApprove(evt: Event) {
 
     let tndrObj: TicketTender = new TicketTender();
-    tndrObj.tenderTypeCode = this._tenderObj.tenderTypeCode;
+    tndrObj.tenderTypeCode = this._tenderTypeCode;
     tndrObj.tenderAmount = this.tenderAmount;
     tndrObj.fCTenderAmount = this.tenderAmountFC;
     tndrObj.tndMaintTimestamp = new Date(Date.now())
+    tndrObj.currCode = this._logonDataSvc.getLocationConfig().defaultCurrency;
+    tndrObj.fCCurrCode = this._logonDataSvc.getLocationConfig().currCode;
 
     this._store.dispatch(addTender({ tndrObj }));
 

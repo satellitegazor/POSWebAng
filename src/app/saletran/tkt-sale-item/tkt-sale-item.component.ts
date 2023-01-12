@@ -10,7 +10,7 @@ import { getLocationAssocSelector } from '../store/localtionassociates/locationa
 import { getLocCnfgIsAllowTipsSelector } from '../store/locationconfigstore/locationconfig.selector';
 import { SalesTranService } from '../services/sales-tran.service';
 import { tktObjInterface } from '../store/ticketstore/ticket.state';
-import { addSaleItem } from '../store/ticketstore/ticket.action';
+import { addSaleItem, addServedByAssociateToSaleItem } from '../store/ticketstore/ticket.action';
 import { SalesTransactionCheckoutItem } from '../models/salesTransactionCheckoutItem';
 import { ConditionalExpr } from '@angular/compiler';
 import { getCheckoutItemsSelector } from '../store/ticketstore/ticket.selector';
@@ -36,11 +36,12 @@ export class TktSaleItemComponent implements OnInit {
     ngOnInit(): void {
 
         this._store.select(getCheckoutItemsSelector).subscribe(data => {
-        //this._sharedSvc.SaleItem.subscribe(data => {
+        
             if(data == undefined)
                 return;
                 
             this.tktSaleItems = [];
+
             data.forEach((item) => {
                 let tktsi: TktSaleItem = new TktSaleItem();
                 tktsi.salesItemUID = item.salesItemUID;
@@ -76,7 +77,8 @@ export class TktSaleItemComponent implements OnInit {
         this._router.navigate(['/checkout'])
     }
 
-    onAssociateChange(evt: Event, individualUID: number) {
-
+    onAssociateChange(evt: Event, individualUID: number, saleItemID: number, indx: number) {
+        this._store.dispatch(addServedByAssociateToSaleItem({saleItemId: saleItemID, indx:indx, srvdById:individualUID}))
+        return true;
     }
 }

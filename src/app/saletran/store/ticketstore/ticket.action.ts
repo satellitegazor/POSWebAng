@@ -17,6 +17,8 @@ export const ADD_NEW_CUST = 'add New Customer to TktObj';
 export const ADD_TENDER_OBJ = 'addTenderToTktObj';
 export const UPD_SALE_ITEM = 'updSaleItems';
 export const UPD_CHK_OUT_TOTALS = 'updCheckoutTotals';
+export const ADD_SRVD_BY_ASSOC = 'addServedByAssociate';
+
 
 export const addSaleItem = createAction(ADD_SALE_ITEM,
     props<{saleItem: SalesTransactionCheckoutItem}>());
@@ -51,4 +53,8 @@ export const addTender = createAction(ADD_TENDER_OBJ,
 export const updateSaleitems = createAction(UPD_SALE_ITEM,
     props<{item: SalesTransactionCheckoutItem}>())
 
-export const updateCheckoutTotals = createAction(UPD_CHK_OUT_TOTALS)
+export const updateCheckoutTotals = createAction(UPD_CHK_OUT_TOTALS);
+
+export const addServedByAssociateToSaleItem = createAction(ADD_SRVD_BY_ASSOC, props<{saleItemId:number, indx:number, srvdById: number}>());
+
+

@@ -30,3 +30,7 @@ export const getBalanceDueFC = createSelector(getTktObjState,
     return state.tktObj.totalSaleFC - tenderTotalFC;
   });
 
+export const getCheckoutItemsCount = createSelector(getTktObjState,
+  (state) => {
+    return state.tktObj.tktList.length;
+  });

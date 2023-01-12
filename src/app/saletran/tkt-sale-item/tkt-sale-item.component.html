@@ -37,7 +37,8 @@
                                     <path fill-rule="evenodd" d="M2 8a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11A.5.5 0 0 1 2 8Z" />
                                 </svg>
                             </button><div style="width:1%"></div>                   
-                            <select #ddlAssociate id="ddlAssociate_{{itm.salesItemUID}}_{{i}}" style="width:89%;" class="form-control dropdown" (change)="onAssociateChange($event, +ddlAssociate.value)">
+                            <select #ddlAssociate id="ddlAssociate_{{itm.salesItemUID}}_{{i}}" style="width:89%;" class="form-control dropdown" 
+                                    (change)="onAssociateChange($event, +ddlAssociate.value, itm.salesItemUID, i)">
                                 <option *ngFor="let loc of itm.locAssociateList" value="{{loc.individualUID}}" [selected]="loc.individualUID == indivId">
                                 {{loc.firstName + ' ' + loc.lastName}}
                                 </option>

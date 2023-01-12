@@ -2,7 +2,7 @@ import { act } from "@ngrx/effects";
 import { Action, createReducer, on } from "@ngrx/store";
 import { GlobalConstants } from "src/app/global/global.constants";
 import { SalesTransactionCheckoutItem } from "../../models/salesTransactionCheckoutItem";
-import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals } from "./ticket.action";
+import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, addServedByAssociateToSaleItem } from "./ticket.action";
 
 import { tktObjInitialState, tktObjInterface } from "./ticket.state";
 
@@ -21,19 +21,22 @@ export const _tktObjReducer = createReducer(
       }
    }),
    on(addSaleItem, (state, action) => {
-      var dt = [action.saleItem];
+
+      var newCheckOutItem = JSON.parse(JSON.stringify(action.saleItem)) ;
       var _tktObj = {...state.tktObj};
       var _totalSaleAmt = 0;
       _tktObj.tktList.forEach(k => {
          _totalSaleAmt += k.lineItemDollarDisplayAmount;
       })
 
+      newCheckOutItem.ticketDetailId = _tktObj.tktList.length;
+
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
             tktList: [...state.tktObj?.tktList,
-            action.saleItem],
+            newCheckOutItem],
             totalSale: _totalSaleAmt
          }
       };
@@ -150,7 +153,28 @@ export const _tktObjReducer = createReducer(
          }
       }
    }),   
-   
+
+   on(addServedByAssociateToSaleItem, (state, action) => {
+
+      var tktListCopy: SalesTransactionCheckoutItem[] = JSON.parse(JSON.stringify(state.tktObj.tktList));
+      const tktItemAry = tktListCopy.filter(itm => (itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.indx));
+
+      // if(!tktItemAry || tktItemAry.length <= 0) {
+      //    return {
+      //       ...state
+      //    }
+      // }
+      
+      tktItemAry[0].srvdByAssociateVal = action.srvdById;
+      
+      return {
+         ...state,
+         tktObj: {
+            ...state.tktObj,
+            tktList: tktListCopy
+         }
+      }
+   })
 );
 
 

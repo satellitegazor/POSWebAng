@@ -24,5 +24,6 @@
     public rRN: string = '';
     public milstarPlanNum: string = '';
     public checkNumber: string = '';
+    public currCode: string = '';
  }
  
