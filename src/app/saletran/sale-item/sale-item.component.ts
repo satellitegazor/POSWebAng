@@ -72,7 +72,7 @@ export class SaleItemComponent implements OnInit {
       coItm.salesTaxPct = si.salesTax;
 
       coItm.srvdByAssociateText = '';
-      coItm.srvdByAssociateVal = +this._logonDataSvc.getLTVendorLogonData().individualUID;
+      coItm.srvdByAssociateVal = +this._logonDataSvc.getLocationConfig().indLocUID;
       coItm.ticketDetailId = 0;
 
       coItm.unitPrice = si.price;

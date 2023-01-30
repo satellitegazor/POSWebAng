@@ -1,3 +1,4 @@
+import { keyframes } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalService } from '@independer/ng-modal';
@@ -11,6 +12,7 @@ import { SalesTranService } from '../../services/sales-tran.service';
 import { addTender, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
 import { getCheckoutItemsSelector } from '../../store/ticketstore/ticket.selector';
 import { tktObjInterface } from '../../store/ticketstore/ticket.state';
+import { TipsModalDlgComponent } from '../tips-modal-dlg/tips-modal-dlg.component';
 
 @Component({
   selector: 'app-checkout-page',
@@ -57,8 +59,15 @@ export class CheckoutPageComponent implements OnInit {
   btnTndrClick(evt: Event, tndrCode: string) {
 
     this._store.dispatch(updateCheckoutTotals());
-
-    this.router.navigate(['tender'], {queryParams: {code: tndrCode}})
+    if(this._logonDataSvc.getBusinessModel() != 5) {
+      this.router.navigate(['tender'], {queryParams: {code: tndrCode}})
+    }
+    else {
+      this.displayCustSearchDlg = "display";
+      const modalRef = this.modalService.open(TipsModalDlgComponent, m => {
+        m.tndrCode = tndrCode;
+      });
+    }
   }
 
   closeCustSearchDlg() {

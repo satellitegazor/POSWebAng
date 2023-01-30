@@ -127,7 +127,7 @@ export class LogonDataService {
         sessionStorage.setItem('vendorName', locConfig.configs[0].vendorName);
         sessionStorage.setItem('facilityName', locConfig.configs[0].facilityName);
         sessionStorage.setItem('individualUID', (locConfig.configs[0].individualUID != null ? locConfig.configs[0].individualUID : '0').toString());
-        sessionStorage.setItem('indLocUID', (locConfig.configs[0].indLocUID != null ? locConfig.configs[0].indLocUID : '0').toString());
+        sessionStorage.setItem('indLocUID', (locConfig.individuals[0].indLocUID != null ? locConfig.individuals[0].indLocUID : '0').toString());
         sessionStorage.setItem('contractStart', locConfig.configs[0].contractStart.toString());
         sessionStorage.setItem('contractEnd', String(locConfig.configs[0].contractEnd != null ? locConfig.configs[0].contractEnd : false));
         sessionStorage.setItem('busFuncCode', locConfig.configs[0].busFuncCode);
@@ -159,6 +159,22 @@ export class LogonDataService {
         sessionStorage.setItem('useShipHndlng', String(locConfig.configs[0].useShipHndlng != null ? locConfig.configs[0].useShipHndlng : false));
 
         this._ltLocationConfig = locConfig;
+    }
+
+    public getBusinessModel(): number {
+        return Number(sessionStorage.getItem('businessModel') ? sessionStorage.getItem('businessModel') : '0');
+    }
+
+    public getAllowPartPay(): boolean {
+        return Boolean(sessionStorage.getItem('allowPartPay') ? sessionStorage.getItem('allowPartPay') : '0');
+    }
+    
+    public getAllowTips(): boolean {
+        return Boolean(sessionStorage.getItem('allowTips') ? sessionStorage.getItem('allowTips') : '0');
+    }
+
+    public getLocationId(): number {
+        return Number(sessionStorage.getItem('locationUID') ? sessionStorage.getItem('locationUID') : '0');
     }
 
     public getLocationConfig(): LocationConfig {

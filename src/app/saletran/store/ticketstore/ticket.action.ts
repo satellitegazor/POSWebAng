@@ -1,8 +1,10 @@
 import {createAction, props} from '@ngrx/store';
+import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
 import { LTC_Customer } from 'src/app/models/customer';
 import { SaveTicketResultsModel, TicketSplit } from 'src/app/models/ticket.split';
 import { TicketTender } from 'src/app/models/ticket.tender';
 import { LocationConfig } from '../../models/location-config';
+import { LTC_Associates } from '../../models/location.associates';
 import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheckoutItem';
  
 export const ADD_SALE_ITEM = 'addSaleItem';
@@ -18,7 +20,7 @@ export const ADD_TENDER_OBJ = 'addTenderToTktObj';
 export const UPD_SALE_ITEM = 'updSaleItems';
 export const UPD_CHK_OUT_TOTALS = 'updCheckoutTotals';
 export const ADD_SRVD_BY_ASSOC = 'addServedByAssociate';
-
+export const UPSERT_ASSOC_TIPS = 'upsertAssocTips';
 
 export const addSaleItem = createAction(ADD_SALE_ITEM,
     props<{saleItem: SalesTransactionCheckoutItem}>());
@@ -55,6 +57,8 @@ export const updateSaleitems = createAction(UPD_SALE_ITEM,
 
 export const updateCheckoutTotals = createAction(UPD_CHK_OUT_TOTALS);
 
-export const addServedByAssociateToSaleItem = createAction(ADD_SRVD_BY_ASSOC, props<{saleItemId:number, indx:number, srvdById: number}>());
+export const addServedByAssociate = createAction(ADD_SRVD_BY_ASSOC, props<{saleItemId:number, indx:number, srvdById: number}>());
+
+export const upsertAssocTips = createAction(UPSERT_ASSOC_TIPS, props<{assocTipsList: AssociateSaleTips[]}>());
 
 

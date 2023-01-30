@@ -10,7 +10,7 @@ import { getLocationAssocSelector } from '../store/localtionassociates/locationa
 import { getLocCnfgIsAllowTipsSelector } from '../store/locationconfigstore/locationconfig.selector';
 import { SalesTranService } from '../services/sales-tran.service';
 import { tktObjInterface } from '../store/ticketstore/ticket.state';
-import { addSaleItem, addServedByAssociateToSaleItem } from '../store/ticketstore/ticket.action';
+import { addSaleItem, addServedByAssociate } from '../store/ticketstore/ticket.action';
 import { SalesTransactionCheckoutItem } from '../models/salesTransactionCheckoutItem';
 import { ConditionalExpr } from '@angular/compiler';
 import { getCheckoutItemsSelector } from '../store/ticketstore/ticket.selector';
@@ -28,7 +28,7 @@ export class TktSaleItemComponent implements OnInit {
         private _store: Store<tktObjInterface>,
         private _router: Router) { }
 
-    tktSaleItems: TktSaleItem[] = [];
+    tktSaleItems: SalesTransactionCheckoutItem[] = [];
     public allowTips: boolean = false;
     public SaleAssocList: LTC_Associates[] = [];
     public indivId: number = 0;
@@ -40,17 +40,17 @@ export class TktSaleItemComponent implements OnInit {
             if(data == undefined)
                 return;
                 
-            this.tktSaleItems = [];
+            this.tktSaleItems = data;
 
-            data.forEach((item) => {
-                let tktsi: TktSaleItem = new TktSaleItem();
-                tktsi.salesItemUID = item.salesItemUID;
-                tktsi.salesItemDesc = item.salesItemDesc;
-                tktsi.unitPrice = item.unitPrice
-                tktsi.quantity = item.quantity;
-                tktsi.locAssociateList =  JSON.parse(JSON.stringify(this.SaleAssocList));
-                this.tktSaleItems.push(tktsi);                    
-            })           
+            // data.forEach((item) => {
+            //     let tktsi: TktSaleItem = new TktSaleItem();
+            //     tktsi.salesItemUID = item.salesItemUID;
+            //     tktsi.salesItemDesc = item.salesItemDesc;
+            //     tktsi.unitPrice = item.unitPrice
+            //     tktsi.quantity = item.quantity;
+            //     tktsi.locAssociateList =  JSON.parse(JSON.stringify(this.SaleAssocList));
+            //     this.tktSaleItems.push(tktsi);                    
+            // })           
         });
 
         const locConfig = this._logonDataSvc.getLocationConfig();
@@ -77,8 +77,13 @@ export class TktSaleItemComponent implements OnInit {
         this._router.navigate(['/checkout'])
     }
 
-    onAssociateChange(evt: Event, individualUID: number, saleItemID: number, indx: number) {
-        this._store.dispatch(addServedByAssociateToSaleItem({saleItemId: saleItemID, indx:indx, srvdById:individualUID}))
+    onAssociateChange(evt: Event, srvdById: number, saleItemId: number, indx: number) {
+
+        //this._store.dispatch(addServedByAssociate({saleItemId, indx, srvdById}))
+         setTimeout(function(obj: any) {
+             obj._store.dispatch(addServedByAssociate({saleItemId, indx, srvdById}))
+         }, 100, this, saleItemId, indx, srvdById) 
+
         return true;
     }
 }

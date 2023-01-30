@@ -39,8 +39,8 @@
                             </button><div style="width:1%"></div>                   
                             <select #ddlAssociate id="ddlAssociate_{{itm.salesItemUID}}_{{i}}" style="width:89%;" class="form-control dropdown" 
                                     (change)="onAssociateChange($event, +ddlAssociate.value, itm.salesItemUID, i)">
-                                <option *ngFor="let loc of itm.locAssociateList" value="{{loc.individualUID}}" [selected]="loc.individualUID == indivId">
-                                {{loc.firstName + ' ' + loc.lastName}}
+                                <option *ngFor="let indiv of SaleAssocList" value="{{indiv.individualLocationUID}}" [selected]="indiv.individualLocationUID == itm.srvdByAssociateVal">
+                                {{indiv.firstName + ' ' + indiv.lastName}}
                                 </option>
                             </select>
                         </div>

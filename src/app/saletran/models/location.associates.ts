@@ -29,5 +29,7 @@ export class LTC_Associates
     public individualActive: boolean = false;    
     public privActConfmComplete: boolean =false;
     public indCountryDialCode: string = '';
+    public dcTipAmount: number = 0;
+    public ndcTipAmount: number = 0;
 
 }
