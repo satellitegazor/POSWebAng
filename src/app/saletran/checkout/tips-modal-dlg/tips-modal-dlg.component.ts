@@ -35,7 +35,6 @@ export class TipsModalDlgComponent implements OnInit {
           this.saleAssocList.push( data.associates.filter(k => k.individualLocationUID == itm.srvdByAssociateVal)[0])
         })
       })
-      //this.saleAssocList = data.associates; 
       
       this.saleAssocList.forEach(element => {
         let a: AssociateSaleTips = new AssociateSaleTips();
