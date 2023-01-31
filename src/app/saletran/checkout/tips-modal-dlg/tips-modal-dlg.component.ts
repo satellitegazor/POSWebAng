@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { ModalRef } from '@independer/ng-modal';
 import { Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
 import { LTC_Associates } from '../../models/location.associates';
 import { SalesTranService } from '../../services/sales-tran.service';
 import { upsertAssocTips } from '../../store/ticketstore/ticket.action';
+import { getCheckoutItemsSelector } from '../../store/ticketstore/ticket.selector';
 import { tktObjInterface } from '../../store/ticketstore/ticket.state';
 
 @Component({
@@ -15,7 +17,7 @@ import { tktObjInterface } from '../../store/ticketstore/ticket.state';
 })
 export class TipsModalDlgComponent implements OnInit {
 
-  constructor(private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
+  constructor(private modal: ModalRef, private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
     private _store: Store<tktObjInterface>, private router: Router) { }
 
     public tndrCode: string = ''
@@ -28,9 +30,14 @@ export class TipsModalDlgComponent implements OnInit {
   ngOnInit(): void {
     var locCnfg = this._logonDataSvc.getLocationConfig();
     this._saleTranSvc.getLocationAssociates(locCnfg.locationUID, locCnfg.individualUID).subscribe(data => {
-      this.saleAssocList = data.associates; 
+      this._store.select(getCheckoutItemsSelector).subscribe(checkOutItems => {
+        checkOutItems?.forEach(itm => {
+          this.saleAssocList.push( data.associates.filter(k => k.individualLocationUID == itm.srvdByAssociateVal)[0])
+        })
+      })
+      //this.saleAssocList = data.associates; 
       
-      data.associates.forEach(element => {
+      this.saleAssocList.forEach(element => {
         let a: AssociateSaleTips = new AssociateSaleTips();
         a.tipAssociateId = element.individualUID;
         a.tipAmount = 0;
@@ -41,8 +48,12 @@ export class TipsModalDlgComponent implements OnInit {
     })
   }
 
-  onTipChanged() {
+  onTipChanged(event: any) {
+    this.dcTotal = 0;
     this.assocSaleTips.forEach(elem => {
+      if(elem.tipAssociateId == Number(event.target.id.substr(2))) {
+        elem.tipAmount = Number(event.target.value);
+      }
       this.dcTotal += elem.tipAmount;
     })
   }
@@ -54,9 +65,12 @@ export class TipsModalDlgComponent implements OnInit {
       asc.tipAssociateId = assoc.individualUID;
     })
 
+    this.modal.close();
     this._store.dispatch(upsertAssocTips({ assocTipsList: this.assocSaleTips }));
     this.router.navigate(['tender'], {queryParams: {code: this.tndrCode}})
 
   }
-  public Cancel() { }
+  public Cancel() {
+    this.modal.close('');
+  }
 }

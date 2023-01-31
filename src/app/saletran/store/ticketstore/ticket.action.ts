@@ -21,6 +21,7 @@ export const UPD_SALE_ITEM = 'updSaleItems';
 export const UPD_CHK_OUT_TOTALS = 'updCheckoutTotals';
 export const ADD_SRVD_BY_ASSOC = 'addServedByAssociate';
 export const UPSERT_ASSOC_TIPS = 'upsertAssocTips';
+export const DELETE_SALE_ITEM = 'delSaleitemZeroQty';
 
 export const addSaleItem = createAction(ADD_SALE_ITEM,
     props<{saleItem: SalesTransactionCheckoutItem}>());
@@ -30,6 +31,9 @@ export const incSaleitemQty = createAction(INC_SALE_ITEM_QTY,
  
 export const decSaleitemQty = createAction(DEC_SALE_ITEM_QTY,
     props<{saleItemId: number, tktDtlId: number}>());
+
+export const delSaleitemZeroQty = createAction(DELETE_SALE_ITEM,
+        props<{saleItemId: number, tktDtlId: number}>());    
 
 export const initTktObj = createAction(INIT_TKT_OBJ, 
     props<{locConfig: LocationConfig, individualUID: number}>());

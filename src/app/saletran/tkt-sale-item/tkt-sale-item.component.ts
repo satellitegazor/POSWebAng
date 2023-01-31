@@ -10,7 +10,7 @@ import { getLocationAssocSelector } from '../store/localtionassociates/locationa
 import { getLocCnfgIsAllowTipsSelector } from '../store/locationconfigstore/locationconfig.selector';
 import { SalesTranService } from '../services/sales-tran.service';
 import { tktObjInterface } from '../store/ticketstore/ticket.state';
-import { addSaleItem, addServedByAssociate } from '../store/ticketstore/ticket.action';
+import { addSaleItem, addServedByAssociate, decSaleitemQty, delSaleitemZeroQty, incSaleitemQty } from '../store/ticketstore/ticket.action';
 import { SalesTransactionCheckoutItem } from '../models/salesTransactionCheckoutItem';
 import { ConditionalExpr } from '@angular/compiler';
 import { getCheckoutItemsSelector } from '../store/ticketstore/ticket.selector';
@@ -63,14 +63,19 @@ export class TktSaleItemComponent implements OnInit {
     }
 
     btnMinusClicked(evt: Event, i: number) {
-        let qty = --this.tktSaleItems[i].quantity;
-        if (qty == 0) {
-            this.tktSaleItems.splice(i, 1);
+
+        if(this.tktSaleItems[i].quantity == 1) {
+            this._store.dispatch(delSaleitemZeroQty({saleItemId: this.tktSaleItems[i].salesItemUID, tktDtlId: this.tktSaleItems[i].ticketDetailId}));    
+        }
+        else {
+            this._store.dispatch(decSaleitemQty({saleItemId: this.tktSaleItems[i].salesItemUID, tktDtlId: this.tktSaleItems[i].ticketDetailId}));
         }
     }
 
     btnPlusClicked(evt: Event, i: number) {
-        this.tktSaleItems[i].quantity++;
+        this._store.dispatch(incSaleitemQty({saleItemId: this.tktSaleItems[i].salesItemUID, tktDtlId: this.tktSaleItems[i].ticketDetailId}));
+
+        //this.tktSaleItems[i].quantity++;
     }
 
     public btnCheckoutClicked() {

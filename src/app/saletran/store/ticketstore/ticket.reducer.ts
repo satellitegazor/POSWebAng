@@ -2,7 +2,7 @@ import { act } from "@ngrx/effects";
 import { Action, createReducer, on } from "@ngrx/store";
 import { GlobalConstants } from "src/app/global/global.constants";
 import { SalesTransactionCheckoutItem } from "../../models/salesTransactionCheckoutItem";
-import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, addServedByAssociate, upsertAssocTips } from "./ticket.action";
+import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, addServedByAssociate, upsertAssocTips, delSaleitemZeroQty } from "./ticket.action";
 
 import { tktObjInitialState, tktObjInterface } from "./ticket.state";
 
@@ -42,31 +42,56 @@ export const _tktObjReducer = createReducer(
       };
    }),
    on(incSaleitemQty, (state, action) => {
-      var saleItemObj = state.tktObj.tktList.filter(k => k.salesItemUID == action.saleItemId && k.ticketDetailId == action.tktDtlId)[0];
-      ++saleItemObj.quantity;
-      var updatedSaleitems = state.tktObj.tktList.map(item => item.salesItemUID != action.saleItemId && item.ticketDetailId != action.tktDtlId ? saleItemObj : item);
-
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
-            tktList: updatedSaleitems
+            tktList: state.tktObj.tktList.map(itm => {
+               if(itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.tktDtlId) {
+                  return {
+                     ...itm,
+                     quantity: itm.quantity + 1
+                  }
+               }
+               else {
+                  return itm;
+               }
+            })
          }
       }
    }),
 
    on(decSaleitemQty, (state, action) => {
-      var saleItemObj = state.tktObj.tktList.filter(k => k.salesItemUID == action.saleItemId && k.ticketDetailId == action.tktDtlId)[0];
-      --saleItemObj.quantity;
-      let updateSaleitems: SalesTransactionCheckoutItem[] = state.tktObj.tktList.map(item => item.salesItemUID != action.saleItemId && item.ticketDetailId != action.tktDtlId ? saleItemObj : item);
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
-            tktList: updateSaleitems
+            tktList: state.tktObj.tktList.map(itm => {
+               if(itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.tktDtlId && itm.quantity > 1) {
+                  return {
+                     ...itm,
+                     quantity: itm.quantity - 1
+                  }
+               }
+               else {
+                  return itm;
+               }
+            })
+         }
+      }
+
+   }),
+
+   on(delSaleitemZeroQty, (state, action) => {
+      return {
+         ...state,
+         tktObj: {
+            ...state.tktObj,
+            tktList: state.tktObj.tktList.filter(itm => (itm.salesItemUID != action.saleItemId && itm.ticketDetailId != action.tktDtlId))
          }
       }
    }),
+
    on(addCustomerId, (state, action) => {
       return {
          ...state,
