@@ -58,7 +58,7 @@ export class CheckoutPageComponent implements OnInit {
 
   btnTndrClick(evt: Event, tndrCode: string) {
 
-    this._store.dispatch(updateCheckoutTotals());
+    this._store.dispatch(updateCheckoutTotals({logonDataSvc: this._logonDataSvc}));
     if(this._logonDataSvc.getBusinessModel() != 5) {
       this.router.navigate(['tender'], {queryParams: {code: tndrCode}})
     }

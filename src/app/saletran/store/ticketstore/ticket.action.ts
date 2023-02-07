@@ -1,4 +1,5 @@
 import {createAction, props} from '@ngrx/store';
+import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
 import { LTC_Customer } from 'src/app/models/customer';
 import { SaveTicketResultsModel, TicketSplit } from 'src/app/models/ticket.split';
@@ -22,6 +23,12 @@ export const UPD_CHK_OUT_TOTALS = 'updCheckoutTotals';
 export const ADD_SRVD_BY_ASSOC = 'addServedByAssociate';
 export const UPSERT_ASSOC_TIPS = 'upsertAssocTips';
 export const DELETE_SALE_ITEM = 'delSaleitemZeroQty';
+export const UPDATE_TAX_EXEMPT = 'updateTaxExempt';
+
+export const UPSERT_SALE_ITEM_EXCH_CPN = 'upsertSaleItemExchCpn';
+export const UPSERT_SALE_ITEM_VND_CPN = 'upsertSaleItemVndCpn';
+export const UPSERT_TRAN_EXCH_CPN = 'upsertTranExchCpn';
+
 
 export const addSaleItem = createAction(ADD_SALE_ITEM,
     props<{saleItem: SalesTransactionCheckoutItem}>());
@@ -59,10 +66,14 @@ export const addTender = createAction(ADD_TENDER_OBJ,
 export const updateSaleitems = createAction(UPD_SALE_ITEM,
     props<{item: SalesTransactionCheckoutItem}>())
 
-export const updateCheckoutTotals = createAction(UPD_CHK_OUT_TOTALS);
+export const updateCheckoutTotals = createAction(UPD_CHK_OUT_TOTALS, props<{logonDataSvc: LogonDataService}>());
 
 export const addServedByAssociate = createAction(ADD_SRVD_BY_ASSOC, props<{saleItemId:number, indx:number, srvdById: number}>());
 
 export const upsertAssocTips = createAction(UPSERT_ASSOC_TIPS, props<{assocTipsList: AssociateSaleTips[]}>());
 
+export const updateTaxExempt = createAction(UPDATE_TAX_EXEMPT, props<{taxExempt: boolean}>());
 
+export const upsertSaleItemExchCpn = createAction(UPSERT_SALE_ITEM_EXCH_CPN, props<{logonDataSvc: LogonDataService, saleItemId: number, tktDtlId: number, cpnPct: number, cpnAmt: number}>());
+export const upsertSaleItemVndCpn = createAction(UPSERT_SALE_ITEM_VND_CPN, props<{logonDataSvc: LogonDataService, saleItemId: number, tktDtlId: number, cpnPct: number, cpnAmt: number}>());
+export const upsertTranExchCpn = createAction(UPSERT_TRAN_EXCH_CPN, props<{logonDataSvc: LogonDataService, cpnPct: number, cpnAmt: number}>());

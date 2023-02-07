@@ -7,13 +7,13 @@
             <tr><th>Serviced By</th><th>Tip</th></tr>
         <tr *ngFor="let assoc of saleAssocList; let i = index;" class="form-group">
             <td><label>{{assoc.firstName + ' ' + assoc.lastName}}</label></td>
-            <td><input type="number" class="dc saleassocid form-control" id="dc{{assoc.individualUID}}" [ngModel]="assocSaleTips[i].tipAmount | number: '0.2-2'" (change)="onTipChanged($event)" /></td>
+            <td><input type="text" myCurrencyInput class="dc saleassocid form-control" id="dc{{assoc.individualUID}}" [ngModel]="assocSaleTips[i].tipAmount" (change)="onTipChanged($event)" /></td>
             <!-- <td><input type="number" class="ndc saleassocid form-control" id="ndc{{assoc.individualUID}}" [ngModel]="assocSaleTips[i].tipAmtLocCurr | number: '0.2-2'" /></td> -->
         </tr>
         <tr>
             <td><label>Total:</label></td>
             <td>
-                <input type="number" class="dc saleassocid form-control" id="dcTotal" value="{{dcTotal}}" />
+                <input type="text" myCurrencyInput class="dc saleassocid form-control" id="dcTotal" value="{{dcTotal}}" />
             </td>
             <!-- <td>
                 <input type="number" class="ndc saleassocid form-control" id="ndcTotal" value="{{ndcTotal}}" />

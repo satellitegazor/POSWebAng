@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { DailyExchRate } from '../models/exchange.rate';
 import { VendorLoginResultsModel } from '../models/vendor.login.results.model';
 import { LocationConfig, LocationConfigModel } from '../saletran/models/location-config';
 
@@ -177,6 +178,13 @@ export class LogonDataService {
         return Number(sessionStorage.getItem('locationUID') ? sessionStorage.getItem('locationUID') : '0');
     }
 
+    public getExchCouponAfterTax(): boolean {
+        return Boolean(sessionStorage.getItem('exchCouponsAfterTax') ? sessionStorage.getItem('exchCouponsAfterTax') : '0');
+    }
+    public getVendorCouponAfterTax(): boolean {
+        return Boolean(sessionStorage.getItem('vendCouponsAfterTax') ? sessionStorage.getItem('vendCouponsAfterTax') : '0');
+    }
+
     public getLocationConfig(): LocationConfig {
         //return this._ltLocationConfig;
         let locConfig: LocationConfig = new LocationConfig();
@@ -236,4 +244,48 @@ export class LogonDataService {
 
         return locConfig;
     }
+
+    public setDailyExchRate(exchRate: DailyExchRate) {
+        sessionStorage.setItem('BusDate', exchRate.BusDate.toString());
+        sessionStorage.setItem('CliTimeVar', exchRate.CliTimeVar.toString());
+        sessionStorage.setItem('CurrCode', exchRate.CurrCode.toString());
+        sessionStorage.setItem('DailyExchRateId', exchRate.DailyExchRateId.toString());
+        sessionStorage.setItem('DfltCurrCode', exchRate.DfltCurrCode.toString());
+        sessionStorage.setItem('ExchangeRate', exchRate.ExchangeRate.toString());
+        sessionStorage.setItem('ForeignCurrCode', exchRate.ForeignCurrCode.toString());
+        sessionStorage.setItem('IsForeignCurr', exchRate.IsForeignCurr.toString());
+        sessionStorage.setItem('OneFCurrRate', exchRate.OneFCurrRate.toString());
+        sessionStorage.setItem('OneUSDRate', exchRate.OneUSDRate.toString());
+        sessionStorage.setItem('PrevDayExchRate', exchRate.PrevDayExchRate.toString());
+        sessionStorage.setItem('PrevDayIsOneUSD', exchRate.PrevDayIsOneUSD.toString());
+        sessionStorage.setItem('SaleTranCount', exchRate.SaleTranCount.toString());
+    }
+
+    public setLoadTicket(loadTicket: boolean) {
+        sessionStorage.setItem('LoadTicket', loadTicket.toString());
+    }
+
+    public getLoadTicket(): boolean {
+        return Boolean(sessionStorage.getItem('LoadTicket') ? sessionStorage.getItem('LoadTicket') : 'false').valueOf();
+    }
+
+    public getBusDate(): Date {
+        let dt = sessionStorage.getItem('BusDate');
+        return new Date(Date.parse( dt ? dt : "01/01/1970"));
+    }
+    public getExchangeRate(): number {
+        return Number(sessionStorage.getItem('ExchangeRate') ? sessionStorage.getItem('ExchangeRate') : '0').valueOf();
+    }
+    public getIsForeignCurr(): boolean {
+        return Boolean(sessionStorage.getItem('IsForeignCurr') ? sessionStorage.getItem('IsForeignCurr') : 'false').valueOf();
+    }
+
+    public getForeignCurrCode(): string {
+        return String(sessionStorage.getItem('ForeignCurrCode') ? sessionStorage.getItem('ForeignCurrCode') : '').valueOf();
+    }
+    public getDfltCurrCode(): string {
+        return String(sessionStorage.getItem('DfltCurrCode') ? sessionStorage.getItem('DfltCurrCode') : 'USD').valueOf();
+    }
+
+
 }

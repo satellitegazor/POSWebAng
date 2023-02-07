@@ -24,18 +24,18 @@ import { initTktObj } from '../store/ticketstore/ticket.action';
 
 
 @Component({
-  selector: 'app-sales-cart',
-  templateUrl: './sales-cart.component.html',
-  styleUrls: ['./sales-cart.component.css']
+    selector: 'app-sales-cart',
+    templateUrl: './sales-cart.component.html',
+    styleUrls: ['./sales-cart.component.css']
 })
 export class SalesCartComponent implements OnInit, OnDestroy {
 
     constructor(private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
-        private _sharedSubSvc: SharedSubjectService, private modalService: ModalService, private _store: Store<tktObjInterface>   ) {
-        console.log('SalesCart constructor')        
+        private _sharedSubSvc: SharedSubjectService, private modalService: ModalService, private _store: Store<tktObjInterface>) {
+        console.log('SalesCart constructor')
     }
 
-    
+
     deptList: Dept[] = [];
     saleItemList: SaleItem[] = [];
     saleCatList: SalesCat[] = [];
@@ -43,7 +43,7 @@ export class SalesCartComponent implements OnInit, OnDestroy {
     allItemButtonMenuList: SaleItem[] = [];
     salesItemRsltMdl!: Observable<SaleItemResultsModel>;
     strongErrMessage: string = "";
-    errMessage: string = ""; 
+    errMessage: string = "";
     displayCustSearchDlg: string = '';
     showErrMsg: boolean = false;
     locationConfig: LocationConfig = {} as LocationConfig;
@@ -55,40 +55,46 @@ export class SalesCartComponent implements OnInit, OnDestroy {
         console.log('SalesCart ngOnInit')
         this.vendorLoginResult = this._logonDataSvc.getLTVendorLogonData();
 
-            //this.vendorLoginResult = this._logonDataSvc.getLTVendorLogonData();
-            this._buildTktObj();
-            this._saleTranSvc.getSaleItemListFromDB(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID).subscribe(data => {
-                this.allItemButtonMenuList = data.itemButtonMenuResults;
-                this.getDeptList();
-            });
+        //this.vendorLoginResult = this._logonDataSvc.getLTVendorLogonData();
+        this._buildTktObj();
+        this._saleTranSvc.getSaleItemListFromDB(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID).subscribe(data => {
+            this.allItemButtonMenuList = data.itemButtonMenuResults;
+            this.getDeptList();
+        });
 
-            this._saleTranSvc.getLocationConfig(+this.vendorLoginResult.locationUID, +this.vendorLoginResult.individualUID).subscribe(data => {
-                
-                this.locationConfig = data.configs[0];
-                this.locationIndividuals = data.individuals;
-                
-                let indivId = 0;
-                if(data.individuals.length > 0)
-                    indivId = data.individuals[0].individualUID;
+        this._saleTranSvc.getLocationConfig(+this.vendorLoginResult.locationUID, +this.vendorLoginResult.individualUID).subscribe(data => {
 
-                this._logonDataSvc.setLocationConfig(data);
+            this.locationConfig = data.configs[0];
+            this.locationIndividuals = data.individuals;
 
-                this._store.dispatch(initTktObj({locConfig: this.locationConfig, individualUID: indivId}));
-            });
-            
-            // this._store.select(getSaleItemListSelector).subscribe(data => {
-            //     if(data != null) {
-            //         this.allItemButtonMenuList = data.itemButtonMenuResults;
-            //         this.getDeptList();
-            //     }
-            // });
-            //this._store.dispatch(getSaleItemsStart({locationId: +this.vendorLoginResult.locationUID, contractid: this.vendorLoginResult.contractUID}));
-            //this._store.dispatch(getLocationConfigStart({locationId: +this.vendorLoginResult.locationUID, individualUID: +this.vendorLoginResult.individualUID}))
+            let indivId = 0;
+            if (data.individuals.length > 0)
+                indivId = data.individuals[0].individualUID;
+
+            this._logonDataSvc.setLocationConfig(data);
+
+            this._store.dispatch(initTktObj({ locConfig: this.locationConfig, individualUID: indivId }));
+        });
+
+        let today = new Date();
+        today.toDateString()
+        this._saleTranSvc.GetDailyExchRate(+this.vendorLoginResult.locationUID, today.getMonth() + 1 + '-' + today.getDate() + '-' + today.getFullYear(), +this.vendorLoginResult.individualUID).subscribe(data => {
+            data.Data
+        })
+
+        // this._store.select(getSaleItemListSelector).subscribe(data => {
+        //     if(data != null) {
+        //         this.allItemButtonMenuList = data.itemButtonMenuResults;
+        //         this.getDeptList();
+        //     }
+        // });
+        //this._store.dispatch(getSaleItemsStart({locationId: +this.vendorLoginResult.locationUID, contractid: this.vendorLoginResult.contractUID}));
+        //this._store.dispatch(getLocationConfigStart({locationId: +this.vendorLoginResult.locationUID, individualUID: +this.vendorLoginResult.individualUID}))
 
     }
 
     ngOnDestroy(): void {
-        
+
     }
 
     public getDeptList(): void {
@@ -157,7 +163,7 @@ export class SalesCartComponent implements OnInit, OnDestroy {
         const modalRef = this.modalService.open(CustomerSearchComponent, m => {
             m.data = "search customer";
         });
-    }    
+    }
 
     closeCustSearchDlg() {
         this.displayCustSearchDlg = "none";

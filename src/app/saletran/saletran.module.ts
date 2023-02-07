@@ -23,7 +23,7 @@ import { LocationConfigEffects } from './store/locationconfigstore/locationconfi
 import { LOC_Assoc_STATE } from './store/localtionassociates/locationassociates.selector';
 import { LocationAssocEffects } from './store/localtionassociates/locationassociates.effects';
 import { GetLocationAssocReducer } from './store/localtionassociates/locationassociates.reducer';
-import { CouponsComponent } from './checkout/coupons/coupons.component';
+import { CouponsModalDlgComponent } from './checkout/coupons/coupons.component';
 import { PartPayComponent } from './checkout/part-pay/part-pay.component';
 import { BalanceDueComponent } from './checkout/balance-due/balance-due.component';
 import { SaleTotalsComponent } from './checkout/sale-totals/sale-totals.component';
@@ -38,7 +38,7 @@ import { TipsModalDlgComponent } from './checkout/tips-modal-dlg/tips-modal-dlg.
 @NgModule({
     declarations: [DeptListComponent, SalesCartComponent, SalesCategoryComponent, SaleItemComponent,
         TktSaleItemComponent, CustomerNewComponent, CustomerSearchComponent,  
-        CouponsComponent, PartPayComponent, BalanceDueComponent, SaleTotalsComponent, CheckoutPageComponent, CheckoutItemsComponent, TenderPageComponent, TipsModalDlgComponent],
+        CouponsModalDlgComponent, PartPayComponent, BalanceDueComponent, SaleTotalsComponent, CheckoutPageComponent, CheckoutItemsComponent, TenderPageComponent, TipsModalDlgComponent],
     imports: [
         CommonModule,
         FormsModule,

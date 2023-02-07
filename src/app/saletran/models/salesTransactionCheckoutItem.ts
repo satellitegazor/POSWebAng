@@ -49,5 +49,8 @@ export class SalesTransactionCheckoutItem
     public lineItmKatsaCpnAmt: number = 0;
     public fCLineItmKatsaCpnAmt: number = 0;
     public fCLineItemEnvTaxAmount: number = 0;
-
+    public exchCpnAmountDC: number = 0;
+    public vndCpnAmountDC: number = 0;
+    public exchCpnAmountNDC: number = 0;
+    public vndCpnAmountNDC: number = 0;
 }

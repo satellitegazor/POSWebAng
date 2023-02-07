@@ -26,10 +26,11 @@
                         <label class="label label-default">{{itm.unitPrice }}</label>
                     </td>
                     <td class="rightjustfy"> 
-                        <label class="label label-default">{{ (itm.unitPrice * itm.quantity) * itm.vendorCouponDiscountPct * 0.01  | number:'1.2-2' }}</label>
+                        <a class="hyplink" id="vndrDisc_{{itm.salesItemUID}}_{{itm.ticketDetailId}}" (click)="DisplayVendorDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc)" >{{ itm.vndCpnAmountDC  | number:'1.2-2' }}</a>
                     </td>
-                    <td class="rightjustfy">
-                        <label class="label label-default">{{(itm.unitPrice * itm.quantity) * itm.exchangeCouponDiscountPct * 0.01  | number:'1.2-2'}}</label>
+                    <td class="rightjustfy">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+                        <a class="hyplink" id="exchDisc_{{itm.salesItemUID}}_{{itm.ticketDetailId}}" (click)="DisplayExchDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc)" >{{ itm.exchCpnAmountDC  | number:'1.2-2' }}</a>
+                        <!-- <label class="label label-default">{{(itm.unitPrice * itm.quantity) * itm.exchangeCouponDiscountPct * 0.01  | number:'1.2-2'}}</label> -->
                     </td>
                     <td class="rightjustfy">
                         <label class="label label-default">{{ (itm.unitPrice * itm.quantity) * itm.salesTaxPct  * 0.01  | number:'1.2-2'}}</label>
@@ -55,8 +56,16 @@
 </table>
 <table class="table">
     <tr>
-        <td style="width:85%;">
-
+        <td style="width:70%;"></td>
+        <td style="width:15%;">
+            <table class="table">
+                <tr>
+                    <td style="width:66%" class="rightjustfy">
+                        <label>Tax Exempted</label>
+                        <input type="checkbox" id="cbTaxExempt" [(ngModel)]="taxExempt" name="cbTaxExempt" (change)="TaxExemptChanged()"/>
+                    </td>
+                </tr>
+            </table>
         </td>
         <td style="width:15%;">
             <table class="table">

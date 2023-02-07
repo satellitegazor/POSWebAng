@@ -11,6 +11,7 @@ import { LTC_CustomerLookupResultsModel } from '../../models/customer';
 import { LocationConfigModel } from '../models/location-config';
 import { LTC_LocationAssociatesResultsModel } from '../models/location.associates';
 import { SaveTicketResultsModel, TicketSplit } from 'src/app/models/ticket.split';
+import { DailyExchRateMdl } from 'src/app/models/exchange.rate';
 
 @Injectable({
   providedIn: 'root'
@@ -91,4 +92,10 @@ export class SalesTranService {
             { headers: this.headerObjs });
     }
 
+    public GetDailyExchRate(locationId: number, busdate: string, individualUID: number) {
+        return this.httpClient.get<DailyExchRateMdl>(
+            GlobalConstants.CPOS_SVCS_URL + 'ltc/GetDailyExchRate?guid=' + GlobalConstants.GET_GUID + '&LocationId=' + locationId + '&BusDate=' + busdate + '&uid=' + individualUID + '&DBVal=0',
+            {headers: this.headerObjs});
+    }
 }
+  

@@ -77,6 +77,11 @@ export class SaleItemComponent implements OnInit {
 
       coItm.unitPrice = si.price;
       coItm.vendorCouponDiscountPct = 0;
+
+      coItm.exchCpnAmountDC = 0;
+      coItm.exchCpnAmountNDC = 0;
+      coItm.vndCpnAmountDC = 0;
+      coItm.vndCpnAmountNDC = 0;
       
       return coItm;
   }

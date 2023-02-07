@@ -20,6 +20,7 @@ import { GetAuthLoginReducer } from './authstate/auth.reducer';
 import { LOGIN_AUTH_STATE } from './authstate/auth.selector';
 import { LogonDataService } from './global/logon-data-service.service';
 import { LogonSvc } from './logon/logonsvc.service';
+import { CurrencyInputDirective } from './directives/currency-input.directive';
  
 @NgModule({
   schemas: [
@@ -28,7 +29,8 @@ import { LogonSvc } from './logon/logonsvc.service';
   declarations: [
     AppComponent,
     NavMenuComponent,
-    HomeComponent
+    HomeComponent,
+    CurrencyInputDirective
   ],
   imports: [
     BrowserModule,

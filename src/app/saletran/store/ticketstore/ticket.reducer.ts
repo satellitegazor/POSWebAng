@@ -1,8 +1,9 @@
+import { compileDeclareNgModuleFromMetadata } from "@angular/compiler";
 import { act } from "@ngrx/effects";
 import { Action, createReducer, on } from "@ngrx/store";
 import { GlobalConstants } from "src/app/global/global.constants";
 import { SalesTransactionCheckoutItem } from "../../models/salesTransactionCheckoutItem";
-import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, addServedByAssociate, upsertAssocTips, delSaleitemZeroQty } from "./ticket.action";
+import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, addServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn } from "./ticket.action";
 
 import { tktObjInitialState, tktObjInterface } from "./ticket.state";
 
@@ -125,9 +126,14 @@ export const _tktObjReducer = createReducer(
 
    on(updateCheckoutTotals, (state, action) => {
 
+      let ExchCouponsAfterTax = action.logonDataSvc.getExchCouponAfterTax();
+      let VendCouponsAfterTax = action.logonDataSvc.getVendorCouponAfterTax();
+
       var updatedTktList: SalesTransactionCheckoutItem[] = JSON.parse(JSON.stringify([...state.tktObj.tktList]));
       let totalSale: number = 0;
       let totalSaleFC: number = 0;
+
+      const taxExepted = state.tktObj.taxExempted;
 
       for (let k = 0; k < updatedTktList.length; k++) {
 
@@ -205,6 +211,201 @@ export const _tktObjReducer = createReducer(
          tktObj: {
             ...state.tktObj,
             associateTips: action.assocTipsList
+         }
+      }
+   }),
+   on(updateTaxExempt, (state, action) => {
+      return {
+         ...state,
+         tktObj: {
+            ...state.tktObj,
+            taxExempted: action.taxExempt
+         }
+      }
+   }),
+   on(upsertSaleItemExchCpn, (state, action) => {
+
+      let exchRate = action.logonDataSvc.getExchangeRate();
+      let dfltCurr = action.logonDataSvc.getDfltCurrCode();
+      let IsForeignCurr = action.logonDataSvc.getIsForeignCurr();
+      let lineItemGrantTotal: number = 0, lineitemGrandTotalNDC: number = 0;
+      let cpnPct = 0, exchDiscAmtDC = 0, exchDiscAmtNDC = 0;
+      let tktItem: SalesTransactionCheckoutItem = state.tktObj.tktList.filter(item => item.salesItemUID == action.saleItemId && item.ticketDetailId == action.tktDtlId)[0];
+      let updateCpn: boolean = false;
+
+      let lineItemTaxAmount: number = 0;
+      let lineItemEnvTaxAmount: number = 0;
+      let lineItemDollarDisplayAmount: number = 0;
+
+      let dCLineItemTaxAmount: number = 0;
+      let fCLineItemEnvTaxAmount: number = 0;
+      let dCCouponLineItemDollarAmount: number = 0;
+
+      if(action.logonDataSvc.getLoadTicket() && state.amtPaidDC == 0) {
+         updateCpn = true;
+      }
+
+      lineItemGrantTotal = tktItem.unitPrice * tktItem.quantity;
+      lineitemGrandTotalNDC = tktItem.dCUnitPrice * tktItem.quantity;
+
+      if(action.cpnPct > 0) {
+         exchDiscAmtDC = lineItemGrantTotal * action.cpnPct / 100;
+         exchDiscAmtNDC = lineitemGrandTotalNDC * action.cpnPct / 100;
+      }
+
+      if(state.tktObj.taxExempted) {
+         lineItemTaxAmount = 0;
+         lineItemEnvTaxAmount = 0;
+
+         dCLineItemTaxAmount = 0;
+         fCLineItemEnvTaxAmount = 0;
+      }
+
+      if(action.logonDataSvc.getExchCouponAfterTax()) {
+         if(state.tktObj.taxExempted == false) {
+            lineItemTaxAmount = (lineItemGrantTotal) * tktItem.salesTaxPct / 100;
+            lineItemEnvTaxAmount = (lineItemGrantTotal) * tktItem.envrnmtlTaxPct / 100;
+            lineItemDollarDisplayAmount = (lineItemGrantTotal + lineItemTaxAmount + lineItemEnvTaxAmount) - exchDiscAmtDC;
+
+            dCLineItemTaxAmount = (lineitemGrandTotalNDC) * tktItem.salesTaxPct / 100;
+            fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC) * tktItem.envrnmtlTaxPct / 100;
+            dCCouponLineItemDollarAmount = (lineitemGrandTotalNDC + dCLineItemTaxAmount + fCLineItemEnvTaxAmount) - exchDiscAmtDC;
+         }
+      }
+
+      if(action.logonDataSvc.getExchCouponAfterTax() == false) {
+         if(state.tktObj.taxExempted == false) {
+            lineItemTaxAmount = (lineItemGrantTotal - exchDiscAmtDC - tktItem.vndCpnAmountDC) * tktItem.salesTaxPct / 100;
+            lineItemEnvTaxAmount = (lineItemGrantTotal - exchDiscAmtDC - tktItem.vndCpnAmountDC) * tktItem.envrnmtlTaxPct / 100;
+            lineItemDollarDisplayAmount = (lineItemGrantTotal + lineItemTaxAmount + lineItemEnvTaxAmount);            
+
+            dCLineItemTaxAmount = (lineitemGrandTotalNDC - (exchDiscAmtNDC + tktItem.vndCpnAmountNDC)) * tktItem.salesTaxPct / 100;
+            fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC - (exchDiscAmtNDC + tktItem.vndCpnAmountNDC)) * tktItem.envrnmtlTaxPct / 100;
+            dCCouponLineItemDollarAmount = (lineitemGrandTotalNDC + dCLineItemTaxAmount + fCLineItemEnvTaxAmount);            
+         }
+      }
+
+      return {
+         ...state,
+         tktObj: {
+            ...state.tktObj,
+            updateCoupons: updateCpn,
+            tktList: state.tktObj.tktList.map(itm => {
+               if(itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.tktDtlId) {
+                  return {
+                     ...itm,
+                     exchangeCouponDiscountPct: itm.exchangeCouponDiscountPct > 0 ? action.cpnPct : itm.exchangeCouponDiscountPct,
+                     lineItemDollarDisplayAmount: lineItemDollarDisplayAmount,
+                     lineItemTaxAmount: lineItemTaxAmount,
+                     lineItemEnvTaxAmount: lineItemEnvTaxAmount,
+
+                     dCLineItemTaxAmount: dCLineItemTaxAmount,
+                     fCLineItemEnvTaxAmount: fCLineItemEnvTaxAmount,
+                     dCCouponLineItemDollarAmount: dCCouponLineItemDollarAmount,
+                     
+                     exchCpnAmountDC: exchDiscAmtDC,
+                     exchCpnAmountNDC: exchDiscAmtNDC,
+                  }
+               }
+               else {
+                  return {
+                     ...itm
+                  }
+               }
+            })
+         }
+      }
+   }),
+   on(upsertSaleItemVndCpn, (state, action) => {
+
+      let exchRate = action.logonDataSvc.getExchangeRate();
+      let dfltCurr = action.logonDataSvc.getDfltCurrCode();
+      let IsForeignCurr = action.logonDataSvc.getIsForeignCurr();
+      let lineItemGrantTotal: number = 0, lineitemGrandTotalNDC: number = 0;
+      let cpnPct = 0, vndDiscAmtDC = 0, vndDiscAmtNDC = 0;
+      let tktItem: SalesTransactionCheckoutItem = state.tktObj.tktList.filter(item => item.salesItemUID == action.saleItemId && item.ticketDetailId == action.tktDtlId)[0];
+      let updateCpn: boolean = false;
+
+      let lineItemTaxAmount: number = 0;
+      let lineItemEnvTaxAmount: number = 0;
+      let lineItemDollarDisplayAmount: number = 0;
+
+      let dCLineItemTaxAmount: number = 0;
+      let fCLineItemEnvTaxAmount: number = 0;
+      let dCCouponLineItemDollarAmount: number = 0;
+
+      if(action.logonDataSvc.getLoadTicket() && state.amtPaidDC == 0) {
+         updateCpn = true;
+      }
+
+      lineItemGrantTotal = tktItem.unitPrice * tktItem.quantity;
+      lineitemGrandTotalNDC = tktItem.dCUnitPrice * tktItem.quantity;
+
+      if(action.cpnPct > 0) {
+         vndDiscAmtDC = lineItemGrantTotal * action.cpnPct / 100;
+         vndDiscAmtNDC = lineitemGrandTotalNDC * action.cpnPct / 100;
+      }
+
+      if(state.tktObj.taxExempted) {
+         lineItemTaxAmount = 0;
+         lineItemEnvTaxAmount = 0;
+
+         dCLineItemTaxAmount = 0;
+         fCLineItemEnvTaxAmount = 0;
+      }
+
+      if(action.logonDataSvc.getVendorCouponAfterTax()) {
+         if(state.tktObj.taxExempted == false) {
+            lineItemTaxAmount = (lineItemGrantTotal) * tktItem.salesTaxPct / 100;
+            lineItemEnvTaxAmount = (lineItemGrantTotal) * tktItem.envrnmtlTaxPct / 100;
+            lineItemDollarDisplayAmount = (lineItemGrantTotal + lineItemTaxAmount + lineItemEnvTaxAmount) - vndDiscAmtDC;
+
+            dCLineItemTaxAmount = (lineitemGrandTotalNDC) * tktItem.salesTaxPct / 100;
+            fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC) * tktItem.envrnmtlTaxPct / 100;
+            dCCouponLineItemDollarAmount = (lineitemGrandTotalNDC + dCLineItemTaxAmount + fCLineItemEnvTaxAmount) - vndDiscAmtDC;            
+         }
+      }
+
+      if(action.logonDataSvc.getVendorCouponAfterTax() == false) {
+         if(state.tktObj.taxExempted == false) {
+            lineItemTaxAmount = (lineItemGrantTotal - (vndDiscAmtDC + tktItem.exchCpnAmountDC)) * tktItem.salesTaxPct / 100;
+            lineItemEnvTaxAmount = (lineItemGrantTotal - (vndDiscAmtDC + tktItem.exchCpnAmountDC)) * tktItem.envrnmtlTaxPct / 100;
+            lineItemDollarDisplayAmount = (lineItemGrantTotal + lineItemTaxAmount + lineItemEnvTaxAmount);            
+
+            dCLineItemTaxAmount = (lineitemGrandTotalNDC - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC)) * tktItem.salesTaxPct / 100;
+            fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC )) * tktItem.envrnmtlTaxPct / 100;
+            dCCouponLineItemDollarAmount = (lineitemGrandTotalNDC + dCLineItemTaxAmount + fCLineItemEnvTaxAmount);            
+         }
+      }
+
+      return {
+         ...state,
+         tktObj: {
+            ...state.tktObj,
+            updateCoupons: updateCpn,
+            tktList: state.tktObj.tktList.map(itm => {
+               if(itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.tktDtlId) {
+                  return {
+                     ...itm,
+                     exchangeCouponDiscountPct: itm.exchangeCouponDiscountPct > 0 ? action.cpnPct : itm.exchangeCouponDiscountPct,
+                     lineItemDollarDisplayAmount: lineItemDollarDisplayAmount,
+                     lineItemTaxAmount: lineItemTaxAmount,
+                     lineItemEnvTaxAmount: lineItemEnvTaxAmount,
+
+                     dCLineItemTaxAmount: dCLineItemTaxAmount,
+                     fCLineItemEnvTaxAmount: fCLineItemEnvTaxAmount,
+                     dCCouponLineItemDollarAmount: dCCouponLineItemDollarAmount,
+
+                     vndCpnAmountDC: vndDiscAmtDC,
+                     vndCpnAmountNDC: vndDiscAmtNDC,
+                  }
+               }
+               else {
+                  return {
+                     ...itm
+                  }
+               }
+            })
          }
       }
    })

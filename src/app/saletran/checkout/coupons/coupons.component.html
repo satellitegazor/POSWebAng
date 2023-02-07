@@ -1,1 +1,33 @@
-<p>coupons works!</p>
+<modal [showCloseButton]="false" [closeOnEscape]="false" [closeOnOutsideClick]="false">
+    <modal-header>
+        <h4>{{Title}}</h4>
+    </modal-header>
+    <modal-content>
+        <div class="panel">
+            <div class="panel-title">{{DiscountName}}</div>
+            <div class="panel-body">
+
+            </div>
+        </div>
+        <table class="table table-striped">
+            <tr>
+                <td>{{ItemName}}</td>
+                <td class="ra">%</td>
+                <td><input class="form-control" type="number" name="percentage" id="percentage" (change)="percentChanged()" [(ngModel)]="DiscountPct"/></td>
+                <td class="ra">$</td>
+                <td><input class="form-control" type="number" name="amount" id="amount" (change)="amountChanged()" [(ngModel)]="DiscountAmt"/></td>
+            </tr>
+            <tr>
+            </tr>
+            <tr>
+            </tr>
+        </table>
+    </modal-content>
+    <modal-footer>
+        <div class="row">
+            <button class="btn btn-info" (click)="Apply()">Apply</button>&nbsp;
+            <button class="btn btn-info" (click)="Cancel()">Cancel</button>&nbsp;
+        </div>
+    </modal-footer>
+
+</modal>

@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { ModalService } from '@independer/ng-modal';
 import { Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { LocationConfig } from '../../models/location-config';
 import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheckoutItem';
-import { updateSaleitems } from '../../store/ticketstore/ticket.action';
+import { updateSaleitems, updateTaxExempt } from '../../store/ticketstore/ticket.action';
 import { getCheckoutItemsSelector } from '../../store/ticketstore/ticket.selector';
 import { tktObjInterface } from '../../store/ticketstore/ticket.state';
+import { CouponsModalDlgComponent } from '../coupons/coupons.component';
 
 @Component({
   selector: 'app-checkout-items',
@@ -14,7 +16,9 @@ import { tktObjInterface } from '../../store/ticketstore/ticket.state';
 })
 export class CheckoutItemsComponent implements OnInit {
 
-  constructor(private _store: Store<tktObjInterface>, private _logonDataSvc: LogonDataService) { }
+  constructor(private _store: Store<tktObjInterface>, 
+    private _logonDataSvc: LogonDataService,
+    private _modalService: ModalService) { }
 
   allowTips: boolean = false;
   tktDtlItems: SalesTransactionCheckoutItem[] = [];
@@ -27,6 +31,7 @@ export class CheckoutItemsComponent implements OnInit {
   grandTotal: number = 0;
   totalSavings: number = 0;
   vndDiscountTotal: number = 0;
+  taxExempt: boolean = false;
 
   ngOnInit(): void {
 
@@ -35,8 +40,12 @@ export class CheckoutItemsComponent implements OnInit {
     this._store.select(getCheckoutItemsSelector).subscribe(saleItems => {
       this.tktDtlItems = saleItems == null ? [] : saleItems;
 
-      //this.updateCheckoutTotals();
+      this.updateCheckoutTotals();
     })
+  }
+
+  TaxExemptChanged() {
+    this._store.dispatch(updateTaxExempt({taxExempt: this.taxExempt}));
   }
 
   btnAddRemove() {
@@ -58,7 +67,7 @@ export class CheckoutItemsComponent implements OnInit {
 
 
     for (let k = 0; k < this.tktDtlItems.length; k++) {
-
+      
       let subTotal = (this.tktDtlItems[k].unitPrice * this.tktDtlItems[k].quantity);
       let exchCpnTotal = (this.tktDtlItems[k].unitPrice * this.tktDtlItems[k].quantity) * this.tktDtlItems[k].exchangeCouponDiscountPct * 0.01;
       let saleTaxTotal = (this.tktDtlItems[k].unitPrice * this.tktDtlItems[k].quantity) * this.tktDtlItems[k].salesTaxPct * 0.01;
@@ -83,4 +92,25 @@ export class CheckoutItemsComponent implements OnInit {
     this.totalSavings = this.exchCpnTotal + this.vndDiscountTotal;
   }
 
+  public DisplayVendorDiscPopUp(saleItemId: number, tktDetailId: number, itemName: string) {
+    const modalRef = this._modalService.open(CouponsModalDlgComponent, m => {
+      m.SaleItemId = saleItemId;
+      m.TktDtlId = tktDetailId;
+      m.ItemName = itemName;
+      m.DiscountName = "Vendor Discount";
+      m.Title = "Vendor Coupon";
+      m.IsItemExchCoupon = false;
+    });
+  }
+
+  public DisplayExchDiscPopUp(saleItemId: number, tktDetailId: number, itemName: string) {
+    const modalRef = this._modalService.open(CouponsModalDlgComponent, m => {
+      m.SaleItemId = saleItemId;
+      m.TktDtlId = tktDetailId;
+      m.ItemName = itemName;
+      m.DiscountName = "Exchange Discount";
+      m.Title = "Exchange Coupon";
+      m.IsItemExchCoupon = true;
+    });
+  }
 }

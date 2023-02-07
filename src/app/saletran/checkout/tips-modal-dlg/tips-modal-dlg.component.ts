@@ -32,10 +32,12 @@ export class TipsModalDlgComponent implements OnInit {
     this._saleTranSvc.getLocationAssociates(locCnfg.locationUID, locCnfg.individualUID).subscribe(data => {
       this._store.select(getCheckoutItemsSelector).subscribe(checkOutItems => {
         checkOutItems?.forEach(itm => {
-          this.saleAssocList.push( data.associates.filter(k => k.individualLocationUID == itm.srvdByAssociateVal)[0])
+          if(this.saleAssocList.filter(a => a.individualLocationUID == itm.srvdByAssociateVal).length == 0) {
+            this.saleAssocList.push( data.associates.filter(k => k.individualLocationUID == itm.srvdByAssociateVal)[0]);
+          }
         })
       })
-      
+
       this.saleAssocList.forEach(element => {
         let a: AssociateSaleTips = new AssociateSaleTips();
         a.tipAssociateId = element.individualUID;
