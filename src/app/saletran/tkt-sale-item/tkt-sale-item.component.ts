@@ -40,17 +40,7 @@ export class TktSaleItemComponent implements OnInit {
             if(data == undefined)
                 return;
                 
-            this.tktSaleItems = data;
-
-            // data.forEach((item) => {
-            //     let tktsi: TktSaleItem = new TktSaleItem();
-            //     tktsi.salesItemUID = item.salesItemUID;
-            //     tktsi.salesItemDesc = item.salesItemDesc;
-            //     tktsi.unitPrice = item.unitPrice
-            //     tktsi.quantity = item.quantity;
-            //     tktsi.locAssociateList =  JSON.parse(JSON.stringify(this.SaleAssocList));
-            //     this.tktSaleItems.push(tktsi);                    
-            // })           
+            this.tktSaleItems = data;          
         });
 
         const locConfig = this._logonDataSvc.getLocationConfig();

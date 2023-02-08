@@ -94,7 +94,7 @@ export class SalesTranService {
 
     public GetDailyExchRate(locationId: number, busdate: string, individualUID: number) {
         return this.httpClient.get<DailyExchRateMdl>(
-            GlobalConstants.CPOS_SVCS_URL + 'ltc/GetDailyExchRate?guid=' + GlobalConstants.GET_GUID + '&LocationId=' + locationId + '&BusDate=' + busdate + '&uid=' + individualUID + '&DBVal=0',
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/GetDailyExchRate?guid=' + GlobalConstants.GET_GUID + '&LocationId=' + locationId + '&BusDate=' + busdate + '&uid=' + individualUID + '&DBVal=0',
             {headers: this.headerObjs});
     }
 }

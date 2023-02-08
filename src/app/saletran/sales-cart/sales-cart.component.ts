@@ -81,16 +81,6 @@ export class SalesCartComponent implements OnInit, OnDestroy {
         this._saleTranSvc.GetDailyExchRate(+this.vendorLoginResult.locationUID, today.getMonth() + 1 + '-' + today.getDate() + '-' + today.getFullYear(), +this.vendorLoginResult.individualUID).subscribe(data => {
             data.Data
         })
-
-        // this._store.select(getSaleItemListSelector).subscribe(data => {
-        //     if(data != null) {
-        //         this.allItemButtonMenuList = data.itemButtonMenuResults;
-        //         this.getDeptList();
-        //     }
-        // });
-        //this._store.dispatch(getSaleItemsStart({locationId: +this.vendorLoginResult.locationUID, contractid: this.vendorLoginResult.contractUID}));
-        //this._store.dispatch(getLocationConfigStart({locationId: +this.vendorLoginResult.locationUID, individualUID: +this.vendorLoginResult.individualUID}))
-
     }
 
     ngOnDestroy(): void {

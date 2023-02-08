@@ -3,6 +3,7 @@
 }
 
 .hyplink {
-    color: navy;
+    color: blue !important;
     font-weight: bold;
+  
 }

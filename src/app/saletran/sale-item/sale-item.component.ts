@@ -82,6 +82,8 @@ export class SaleItemComponent implements OnInit {
       coItm.exchCpnAmountNDC = 0;
       coItm.vndCpnAmountDC = 0;
       coItm.vndCpnAmountNDC = 0;
+
+      //coItm.saleItemTotal = 0;
       
       return coItm;
   }

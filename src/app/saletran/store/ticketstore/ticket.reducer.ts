@@ -23,7 +23,7 @@ export const _tktObjReducer = createReducer(
    }),
    on(addSaleItem, (state, action) => {
 
-      var newCheckOutItem = JSON.parse(JSON.stringify(action.saleItem));
+      var newCheckOutItem: SalesTransactionCheckoutItem = JSON.parse(JSON.stringify(action.saleItem));
       var _tktObj = { ...state.tktObj };
       var _totalSaleAmt = 0;
       _tktObj.tktList.forEach(k => {
@@ -31,6 +31,8 @@ export const _tktObjReducer = createReducer(
       })
 
       newCheckOutItem.ticketDetailId = _tktObj.tktList.length;
+      newCheckOutItem.lineItemTaxAmount = state.tktObj.taxExempted ? 0 : newCheckOutItem.unitPrice * newCheckOutItem.quantity * newCheckOutItem.salesTaxPct * 0.01;
+      newCheckOutItem.lineItemDollarDisplayAmount = (newCheckOutItem.unitPrice * newCheckOutItem.quantity) + newCheckOutItem.lineItemTaxAmount;
 
       return {
          ...state,
@@ -48,7 +50,7 @@ export const _tktObjReducer = createReducer(
          tktObj: {
             ...state.tktObj,
             tktList: state.tktObj.tktList.map(itm => {
-               if(itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.tktDtlId) {
+               if (itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.tktDtlId) {
                   return {
                      ...itm,
                      quantity: itm.quantity + 1
@@ -68,7 +70,7 @@ export const _tktObjReducer = createReducer(
          tktObj: {
             ...state.tktObj,
             tktList: state.tktObj.tktList.map(itm => {
-               if(itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.tktDtlId && itm.quantity > 1) {
+               if (itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.tktDtlId && itm.quantity > 1) {
                   return {
                      ...itm,
                      quantity: itm.quantity - 1
@@ -241,19 +243,19 @@ export const _tktObjReducer = createReducer(
       let fCLineItemEnvTaxAmount: number = 0;
       let dCCouponLineItemDollarAmount: number = 0;
 
-      if(action.logonDataSvc.getLoadTicket() && state.amtPaidDC == 0) {
+      if (action.logonDataSvc.getLoadTicket() && state.amtPaidDC == 0) {
          updateCpn = true;
       }
 
       lineItemGrantTotal = tktItem.unitPrice * tktItem.quantity;
       lineitemGrandTotalNDC = tktItem.dCUnitPrice * tktItem.quantity;
 
-      if(action.cpnPct > 0) {
+      if (action.cpnPct > 0) {
          exchDiscAmtDC = lineItemGrantTotal * action.cpnPct / 100;
          exchDiscAmtNDC = lineitemGrandTotalNDC * action.cpnPct / 100;
       }
 
-      if(state.tktObj.taxExempted) {
+      if (state.tktObj.taxExempted) {
          lineItemTaxAmount = 0;
          lineItemEnvTaxAmount = 0;
 
@@ -261,8 +263,17 @@ export const _tktObjReducer = createReducer(
          fCLineItemEnvTaxAmount = 0;
       }
 
-      if(action.logonDataSvc.getExchCouponAfterTax()) {
-         if(state.tktObj.taxExempted == false) {
+      if (state.tktObj.taxExempted) {
+         lineItemTaxAmount = 0;
+         lineItemEnvTaxAmount = 0;
+         lineItemDollarDisplayAmount = (lineItemGrantTotal) - exchDiscAmtDC;
+
+         dCLineItemTaxAmount = 0;
+         fCLineItemEnvTaxAmount = 0;
+         dCCouponLineItemDollarAmount = (lineitemGrandTotalNDC) - exchDiscAmtDC;
+      }
+      else {
+         if (action.logonDataSvc.getExchCouponAfterTax()) {
             lineItemTaxAmount = (lineItemGrantTotal) * tktItem.salesTaxPct / 100;
             lineItemEnvTaxAmount = (lineItemGrantTotal) * tktItem.envrnmtlTaxPct / 100;
             lineItemDollarDisplayAmount = (lineItemGrantTotal + lineItemTaxAmount + lineItemEnvTaxAmount) - exchDiscAmtDC;
@@ -271,27 +282,23 @@ export const _tktObjReducer = createReducer(
             fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC) * tktItem.envrnmtlTaxPct / 100;
             dCCouponLineItemDollarAmount = (lineitemGrandTotalNDC + dCLineItemTaxAmount + fCLineItemEnvTaxAmount) - exchDiscAmtDC;
          }
-      }
-
-      if(action.logonDataSvc.getExchCouponAfterTax() == false) {
-         if(state.tktObj.taxExempted == false) {
+         else {
             lineItemTaxAmount = (lineItemGrantTotal - exchDiscAmtDC - tktItem.vndCpnAmountDC) * tktItem.salesTaxPct / 100;
             lineItemEnvTaxAmount = (lineItemGrantTotal - exchDiscAmtDC - tktItem.vndCpnAmountDC) * tktItem.envrnmtlTaxPct / 100;
-            lineItemDollarDisplayAmount = (lineItemGrantTotal + lineItemTaxAmount + lineItemEnvTaxAmount);            
+            lineItemDollarDisplayAmount = (lineItemGrantTotal + lineItemTaxAmount + lineItemEnvTaxAmount);
 
             dCLineItemTaxAmount = (lineitemGrandTotalNDC - (exchDiscAmtNDC + tktItem.vndCpnAmountNDC)) * tktItem.salesTaxPct / 100;
             fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC - (exchDiscAmtNDC + tktItem.vndCpnAmountNDC)) * tktItem.envrnmtlTaxPct / 100;
-            dCCouponLineItemDollarAmount = (lineitemGrandTotalNDC + dCLineItemTaxAmount + fCLineItemEnvTaxAmount);            
+            dCCouponLineItemDollarAmount = (lineitemGrandTotalNDC + dCLineItemTaxAmount + fCLineItemEnvTaxAmount);
          }
       }
-
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
             updateCoupons: updateCpn,
             tktList: state.tktObj.tktList.map(itm => {
-               if(itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.tktDtlId) {
+               if (itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.tktDtlId) {
                   return {
                      ...itm,
                      exchangeCouponDiscountPct: itm.exchangeCouponDiscountPct > 0 ? action.cpnPct : itm.exchangeCouponDiscountPct,
@@ -302,7 +309,7 @@ export const _tktObjReducer = createReducer(
                      dCLineItemTaxAmount: dCLineItemTaxAmount,
                      fCLineItemEnvTaxAmount: fCLineItemEnvTaxAmount,
                      dCCouponLineItemDollarAmount: dCCouponLineItemDollarAmount,
-                     
+
                      exchCpnAmountDC: exchDiscAmtDC,
                      exchCpnAmountNDC: exchDiscAmtNDC,
                   }
@@ -334,19 +341,23 @@ export const _tktObjReducer = createReducer(
       let fCLineItemEnvTaxAmount: number = 0;
       let dCCouponLineItemDollarAmount: number = 0;
 
-      if(action.logonDataSvc.getLoadTicket() && state.amtPaidDC == 0) {
+      if (action.logonDataSvc.getLoadTicket() && state.amtPaidDC == 0) {
          updateCpn = true;
       }
 
       lineItemGrantTotal = tktItem.unitPrice * tktItem.quantity;
       lineitemGrandTotalNDC = tktItem.dCUnitPrice * tktItem.quantity;
 
-      if(action.cpnPct > 0) {
+      if (action.cpnPct > 0) {
          vndDiscAmtDC = lineItemGrantTotal * action.cpnPct / 100;
          vndDiscAmtNDC = lineitemGrandTotalNDC * action.cpnPct / 100;
       }
+      else if (action.cpnAmt > 0) {
+         vndDiscAmtDC = action.cpnAmt;
+         vndDiscAmtNDC = action.cpnAmt * action.logonDataSvc.getExchangeRate();
+      }
 
-      if(state.tktObj.taxExempted) {
+      if (state.tktObj.taxExempted) {
          lineItemTaxAmount = 0;
          lineItemEnvTaxAmount = 0;
 
@@ -354,37 +365,44 @@ export const _tktObjReducer = createReducer(
          fCLineItemEnvTaxAmount = 0;
       }
 
-      if(action.logonDataSvc.getVendorCouponAfterTax()) {
-         if(state.tktObj.taxExempted == false) {
+      if (state.tktObj.taxExempted) {
+         lineItemTaxAmount = 0;
+         lineItemEnvTaxAmount = 0;
+         lineItemDollarDisplayAmount = lineItemGrantTotal - (vndDiscAmtDC + tktItem.exchCpnAmountDC);
+
+         dCLineItemTaxAmount = 0;
+         fCLineItemEnvTaxAmount = 0;
+         dCCouponLineItemDollarAmount = lineitemGrandTotalNDC - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC);
+      }
+      else {
+
+         if (action.logonDataSvc.getVendorCouponAfterTax()) {
             lineItemTaxAmount = (lineItemGrantTotal) * tktItem.salesTaxPct / 100;
             lineItemEnvTaxAmount = (lineItemGrantTotal) * tktItem.envrnmtlTaxPct / 100;
-            lineItemDollarDisplayAmount = (lineItemGrantTotal + lineItemTaxAmount + lineItemEnvTaxAmount) - vndDiscAmtDC;
+            lineItemDollarDisplayAmount = (lineItemGrantTotal + lineItemTaxAmount + lineItemEnvTaxAmount) - (vndDiscAmtDC + tktItem.exchCpnAmountDC);
 
             dCLineItemTaxAmount = (lineitemGrandTotalNDC) * tktItem.salesTaxPct / 100;
             fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC) * tktItem.envrnmtlTaxPct / 100;
-            dCCouponLineItemDollarAmount = (lineitemGrandTotalNDC + dCLineItemTaxAmount + fCLineItemEnvTaxAmount) - vndDiscAmtDC;            
-         }
-      }
+            dCCouponLineItemDollarAmount = (lineitemGrandTotalNDC + dCLineItemTaxAmount + fCLineItemEnvTaxAmount) - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC);
 
-      if(action.logonDataSvc.getVendorCouponAfterTax() == false) {
-         if(state.tktObj.taxExempted == false) {
+         } else {
+
             lineItemTaxAmount = (lineItemGrantTotal - (vndDiscAmtDC + tktItem.exchCpnAmountDC)) * tktItem.salesTaxPct / 100;
             lineItemEnvTaxAmount = (lineItemGrantTotal - (vndDiscAmtDC + tktItem.exchCpnAmountDC)) * tktItem.envrnmtlTaxPct / 100;
-            lineItemDollarDisplayAmount = (lineItemGrantTotal + lineItemTaxAmount + lineItemEnvTaxAmount);            
+            lineItemDollarDisplayAmount = (lineItemGrantTotal + lineItemTaxAmount + lineItemEnvTaxAmount);
 
             dCLineItemTaxAmount = (lineitemGrandTotalNDC - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC)) * tktItem.salesTaxPct / 100;
-            fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC )) * tktItem.envrnmtlTaxPct / 100;
-            dCCouponLineItemDollarAmount = (lineitemGrandTotalNDC + dCLineItemTaxAmount + fCLineItemEnvTaxAmount);            
+            fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC)) * tktItem.envrnmtlTaxPct / 100;
+            dCCouponLineItemDollarAmount = (lineitemGrandTotalNDC + dCLineItemTaxAmount + fCLineItemEnvTaxAmount);
          }
       }
-
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
             updateCoupons: updateCpn,
             tktList: state.tktObj.tktList.map(itm => {
-               if(itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.tktDtlId) {
+               if (itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.tktDtlId) {
                   return {
                      ...itm,
                      exchangeCouponDiscountPct: itm.exchangeCouponDiscountPct > 0 ? action.cpnPct : itm.exchangeCouponDiscountPct,
