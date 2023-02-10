@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalService } from '@independer/ng-modal';
 import { Store } from '@ngrx/store';
+import { CouponType } from 'src/app/global/global.constants';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { LocationConfig } from '../../models/location-config';
 import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheckoutItem';
@@ -100,7 +101,7 @@ export class CheckoutItemsComponent implements OnInit {
       m.ItemName = itemName;
       m.DiscountName = "Vendor Discount";
       m.Title = "Vendor Coupon";
-      m.IsItemExchCoupon = false;
+      m.CpnType = CouponType.vndCpnItem;
     });
   }
 
@@ -111,7 +112,14 @@ export class CheckoutItemsComponent implements OnInit {
       m.ItemName = itemName;
       m.DiscountName = "Exchange Discount";
       m.Title = "Exchange Coupon";
-      m.IsItemExchCoupon = true;
+      m.CpnType = CouponType.exchCpnItem;
+    });
+  }
+  public DisplayExchTranDiscPopUp() {
+    const modalRef = this._modalService.open(CouponsModalDlgComponent, m => {
+      m.DiscountName = "Exchange Discount";
+      m.Title = "Exchange Coupon";
+      m.CpnType = CouponType.exchCpnTran;
     });
   }
 }

@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalRef } from '@independer/ng-modal';
 import { Store } from '@ngrx/store';
+import { CouponType } from 'src/app/global/global.constants';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { upsertSaleItemExchCpn, upsertSaleItemVndCpn } from '../../store/ticketstore/ticket.action';
+import { upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn } from '../../store/ticketstore/ticket.action';
 import { tktObjInterface } from '../../store/ticketstore/ticket.state';
 
 @Component({
@@ -12,6 +13,7 @@ import { tktObjInterface } from '../../store/ticketstore/ticket.state';
 })
 export class CouponsModalDlgComponent implements OnInit {
 
+  public CpnType: CouponType = CouponType.exchCpnItem;
   public Title: string = "";
   public ItemName: string = "";
   public SaleItemId: number = 0;
@@ -19,7 +21,6 @@ export class CouponsModalDlgComponent implements OnInit {
   public DiscountName: string = "";
   public DiscountPct: number = 0;
   public DiscountAmt: number = 0;
-  public IsItemExchCoupon: boolean = false;
 
   constructor(private modal: ModalRef, private logonDataSvc: LogonDataService, private _store: Store<tktObjInterface>) { }
 
@@ -29,12 +30,21 @@ export class CouponsModalDlgComponent implements OnInit {
 
 
   public Apply() {
-    if(this.IsItemExchCoupon) {
+    switch(this.CpnType) {
+    case(CouponType.exchCpnItem): {
+
       this._store.dispatch(upsertSaleItemExchCpn({logonDataSvc: this.logonDataSvc, saleItemId: this.SaleItemId, tktDtlId: this.TktDtlId, cpnPct: this.DiscountPct, cpnAmt: this.DiscountAmt}));
     }
-    else {
+    break;
+    case(CouponType.vndCpnItem):{
       this._store.dispatch(upsertSaleItemVndCpn({logonDataSvc: this.logonDataSvc, saleItemId: this.SaleItemId, tktDtlId: this.TktDtlId, cpnPct: this.DiscountPct, cpnAmt: this.DiscountAmt}));
     }
+    break;
+    case(CouponType.exchCpnTran): {
+      this._store.dispatch(upsertTranExchCpn({logonDataSvc: this.logonDataSvc, cpnPct: this.DiscountPct, cpnAmt: this.DiscountAmt}));
+    }
+    break;
+  }
     this.modal.close('');
   }
 

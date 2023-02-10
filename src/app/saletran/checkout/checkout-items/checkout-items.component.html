@@ -82,7 +82,8 @@
                         <label>Exchange Coupon</label>
                     </td>
                     <td style="width:33%" class="rightjustfy">
-                        {{exchCpnTotal | number:'1.2-2'}}
+                        
+                        <a class="hyplink" id="exchTranCoupon" (click)="DisplayExchTranDiscPopUp()" >{{exchCpnTotal | number:'1.2-2'}}</a>
                     </td>
                 </tr>
                 <tr>
