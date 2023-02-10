@@ -16,3 +16,9 @@
         return minutes;
     }
 }
+
+export enum CouponType {
+    exchCpnItem,
+    vndCpnItem,
+    exchCpnTran
+}
