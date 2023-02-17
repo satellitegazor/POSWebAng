@@ -6,8 +6,8 @@ import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { LocationConfig } from '../../models/location-config';
 import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheckoutItem';
 import { updateSaleitems, updateTaxExempt } from '../../store/ticketstore/ticket.action';
-import { getCheckoutItemsSelector } from '../../store/ticketstore/ticket.selector';
-import { tktObjInterface } from '../../store/ticketstore/ticket.state';
+import { getCheckoutItemsSelector, getTicketTotals, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
+import { tktObjInitialState, tktObjInterface } from '../../store/ticketstore/ticket.state';
 import { CouponsModalDlgComponent } from '../coupons/coupons.component';
 
 @Component({
@@ -43,6 +43,16 @@ export class CheckoutItemsComponent implements OnInit {
 
       this.updateCheckoutTotals();
     })
+
+    this._store.select(getTicketTotals).subscribe(tktTotals => {
+      this.subTotal = tktTotals.subTotalDC;
+      this.exchCpnTotal = tktTotals.totalExchCpnAmtDC;
+      this.grandTotal = tktTotals.grandTotalDC;
+      this.totalSavings = tktTotals.totalSavingsDC;
+      this.saleTaxTotal = tktTotals.totalTaxDC;
+    })
+
+
   }
 
   TaxExemptChanged() {

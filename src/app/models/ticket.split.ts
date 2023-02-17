@@ -60,3 +60,18 @@ export class TicketSplit {
         public refundCount: number = 0;
 
     }
+
+    export class TicketTotals {
+        public amtPaidDC: number = 0;
+        public amtPaidNDC: number = 0;
+        public subTotalDC: number = 0;
+        public subTotalNDC: number = 0;
+        public grandTotalDC: number = 0;
+        public grandTotalNDC: number = 0;
+        public totalExchCpnAmtDC: number = 0;
+        public totalExchCpnAmtNDC: number = 0;
+        public totalSavingsDC: number = 0;
+        public totalSavingsNDC: number = 0;
+        public totalTaxDC: number = 0;
+        public totalTaxNDC: number = 0;
+    }

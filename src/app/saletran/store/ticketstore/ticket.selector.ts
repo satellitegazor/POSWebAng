@@ -34,3 +34,8 @@ export const getCheckoutItemsCount = createSelector(getTktObjState,
   (state) => {
     return state.tktObj.tktList.length;
   });
+
+export const getTicketTotals = createSelector(getTktObjState,
+  (state) => {
+    return state.tktTotals;
+  })
