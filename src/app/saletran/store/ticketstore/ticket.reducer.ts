@@ -299,8 +299,6 @@ export const _tktObjReducer = createReducer(
             fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC) * tktItem.envrnmtlTaxPct / 100;
             fCLineItemDollarDisplayAmount = lineitemGrandTotalNDC + fCLineItemTaxAmount + fCLineItemEnvTaxAmount - exchDiscAmtNDC;
 
-            dCCouponLineItemDollarAmount = (lineItemGrantTotal + dCLineItemTaxAmount + lineItemEnvTaxAmount) - exchDiscAmtDC;
-            fCCouponLineItemDollarAmount = (lineitemGrandTotalNDC + fCLineItemTaxAmount + fCLineItemEnvTaxAmount) - exchDiscAmtNDC;
          }
          else {
             dCLineItemTaxAmount = (lineItemGrantTotal - exchDiscAmtDC - tktItem.vndCpnAmountDC) * tktItem.salesTaxPct / 100;
@@ -310,10 +308,10 @@ export const _tktObjReducer = createReducer(
             dCLineItemTaxAmount = (lineitemGrandTotalNDC - (exchDiscAmtNDC + tktItem.vndCpnAmountNDC)) * tktItem.salesTaxPct / 100;
             fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC - (exchDiscAmtNDC + tktItem.vndCpnAmountNDC)) * tktItem.envrnmtlTaxPct / 100;
             fCLineItemDollarDisplayAmount = lineitemGrandTotalNDC - (exchDiscAmtNDC + tktItem.vndCpnAmountNDC) + fCLineItemTaxAmount + fCLineItemEnvTaxAmount;
-
-            dCCouponLineItemDollarAmount = (lineItemGrantTotal + dCLineItemTaxAmount + lineItemEnvTaxAmount);
-            fCCouponLineItemDollarAmount = (lineitemGrandTotalNDC + dCLineItemTaxAmount + fCLineItemEnvTaxAmount);
          }
+
+         dCCouponLineItemDollarAmount =  exchDiscAmtDC;
+         fCCouponLineItemDollarAmount =  exchDiscAmtNDC;
 
          totalSavingsDC = dCCouponLineItemDollarAmount;
          totalSavingsNDC = fCCouponLineItemDollarAmount;
@@ -427,53 +425,45 @@ export const _tktObjReducer = createReducer(
       }
 
       if (state.tktObj.taxExempted) {
-         dcLineItemEnvTaxAmount = 0;
-         dcLineItemEnvTaxAmount = 0;
-
          dCLineItemTaxAmount = 0;
-         fCLineItemEnvTaxAmount = 0;
-      }
-
-      if (state.tktObj.taxExempted) {
-         dCLineItemTaxAmount = 0;
-         dcLineItemEnvTaxAmount = 0;
-         dCLineItemDollarDisplayAmount = lineItemGrantTotal - (vndDiscAmtDC + tktItem.exchCpnAmountDC);
-
          fCLineItemTaxAmount = 0;
+
+         dcLineItemEnvTaxAmount = 0;
          fCLineItemEnvTaxAmount = 0;
+
+         dCLineItemDollarDisplayAmount = lineItemGrantTotal - (vndDiscAmtDC + tktItem.exchCpnAmountDC);
          fCLineItemDollarDisplayAmount = lineitemGrandTotalNDC - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC);
 
-         dCCouponLineItemDollarAmount = lineItemGrantTotal - (vndDiscAmtDC + tktItem.exchCpnAmountDC);
-         fCCouponLineItemDollarAmount = lineitemGrandTotalNDC - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC);
+         dCCouponLineItemDollarAmount = (vndDiscAmtDC + tktItem.exchCpnAmountDC);
+         fCCouponLineItemDollarAmount = (vndDiscAmtNDC + tktItem.exchCpnAmountNDC);
       }
       else {
 
          if (action.logonDataSvc.getVendorCouponAfterTax()) {
             dCLineItemTaxAmount = (lineItemGrantTotal) * tktItem.salesTaxPct / 100;
-            dcLineItemEnvTaxAmount = (lineItemGrantTotal) * tktItem.envrnmtlTaxPct / 100;
-            dCLineItemDollarDisplayAmount = (lineItemGrantTotal + dCLineItemTaxAmount + dcLineItemEnvTaxAmount) - (vndDiscAmtDC + tktItem.exchCpnAmountDC);
-
             fCLineItemTaxAmount = (lineitemGrandTotalNDC) * tktItem.salesTaxPct / 100;
-            fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC) * tktItem.envrnmtlTaxPct / 100;
-            fCLineItemDollarDisplayAmount = (lineitemGrandTotalNDC + fCLineItemTaxAmount + fCLineItemEnvTaxAmount) - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC);
 
-            dCCouponLineItemDollarAmount = (lineItemGrantTotal + dCLineItemTaxAmount + dcLineItemEnvTaxAmount) - (vndDiscAmtDC + tktItem.exchCpnAmountDC);
-            fCCouponLineItemDollarAmount = (lineitemGrandTotalNDC + dCLineItemTaxAmount + fCLineItemEnvTaxAmount) - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC);
+            dcLineItemEnvTaxAmount = (lineItemGrantTotal) * tktItem.envrnmtlTaxPct / 100;
+            fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC) * tktItem.envrnmtlTaxPct / 100;
+
+            dCLineItemDollarDisplayAmount = (lineItemGrantTotal + dCLineItemTaxAmount + dcLineItemEnvTaxAmount) - (vndDiscAmtDC + tktItem.exchCpnAmountDC);
+            fCLineItemDollarDisplayAmount = (lineitemGrandTotalNDC + fCLineItemTaxAmount + fCLineItemEnvTaxAmount) - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC);
 
          } else {
 
             dCLineItemTaxAmount = (lineItemGrantTotal - (vndDiscAmtDC + tktItem.exchCpnAmountDC)) * tktItem.salesTaxPct / 100;
-            dcLineItemEnvTaxAmount = (lineItemGrantTotal - (vndDiscAmtDC + tktItem.exchCpnAmountDC)) * tktItem.envrnmtlTaxPct / 100;
-            dCLineItemDollarDisplayAmount = (lineItemGrantTotal + dCLineItemTaxAmount + dcLineItemEnvTaxAmount);
-
             fCLineItemTaxAmount = (lineitemGrandTotalNDC - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC)) * tktItem.salesTaxPct / 100;
-            fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC)) * tktItem.envrnmtlTaxPct / 100;
-            fCLineItemDollarDisplayAmount = (lineitemGrandTotalNDC + fCLineItemEnvTaxAmount + fCLineItemEnvTaxAmount);
 
-            dCCouponLineItemDollarAmount = (lineItemGrantTotal + dCLineItemTaxAmount + dcLineItemEnvTaxAmount);
-            fCCouponLineItemDollarAmount = (lineitemGrandTotalNDC + dCLineItemTaxAmount + fCLineItemEnvTaxAmount);
+            dcLineItemEnvTaxAmount = (lineItemGrantTotal - (vndDiscAmtDC + tktItem.exchCpnAmountDC)) * tktItem.envrnmtlTaxPct / 100;
+            fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC)) * tktItem.envrnmtlTaxPct / 100;
+
+            dCLineItemDollarDisplayAmount = (lineItemGrantTotal + dCLineItemTaxAmount + dcLineItemEnvTaxAmount);
+            fCLineItemDollarDisplayAmount = (lineitemGrandTotalNDC + fCLineItemEnvTaxAmount + fCLineItemEnvTaxAmount);
          }
 
+         dCCouponLineItemDollarAmount = (vndDiscAmtDC + tktItem.exchCpnAmountDC);
+         fCCouponLineItemDollarAmount = (vndDiscAmtNDC + tktItem.exchCpnAmountNDC);
+   
          totalSavingsDC = dCCouponLineItemDollarAmount;
          totalSavingsNDC = fCCouponLineItemDollarAmount;
 
@@ -531,17 +521,17 @@ export const _tktObjReducer = createReducer(
          },
          tktTotals: {
             ...state.tktTotals,
-            grandTotalDC: lineItemGrantTotal,
-            grandTotalNDC: lineitemGrandTotalNDC,
-
-            totalSavingsDC: totalSavingsDC,
-            totalExchCpnAmtNDC: totalSavingsNDC,
-
             subTotalDC: subTotalDC,
             subTotalNDC: subTotalNDC,
 
             totalTaxDC: totalTaxDC,
-            totalTaxNDC: totalTaxNDC
+            totalTaxNDC: totalTaxNDC,
+
+            grandTotalDC: lineItemGrantTotal,
+            grandTotalNDC: lineitemGrandTotalNDC,
+
+            totalSavingsDC: totalSavingsDC,
+            totalSavingsNDC: totalSavingsNDC,
          }
       }
    }),
@@ -600,22 +590,27 @@ export const _tktObjReducer = createReducer(
          else {
             if (action.logonDataSvc.getExchCouponAfterTax()) {
                item.lineItemTaxAmount = (lineItemGrantTotal) * item.salesTaxPct / 100;
-               item.lineItemEnvTaxAmount = (lineItemGrantTotal) * item.envrnmtlTaxPct / 100;
-               item.lineItemDollarDisplayAmount = (lineItemGrantTotal + item.lineItemTaxAmount + item.lineItemEnvTaxAmount) - exchDiscAmtDC;
-
                item.dCLineItemTaxAmount = (lineitemGrandTotalNDC) * item.salesTaxPct / 100;
+
                item.fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC) * item.envrnmtlTaxPct / 100;
-               item.dCCouponLineItemDollarAmount = (lineitemGrandTotalNDC + item.dCLineItemTaxAmount + item.fCLineItemEnvTaxAmount) - exchDiscAmtDC;
+               item.lineItemEnvTaxAmount = (lineItemGrantTotal) * item.envrnmtlTaxPct / 100;
+
+               item.lineItemDollarDisplayAmount = (lineItemGrantTotal + item.lineItemTaxAmount + item.lineItemEnvTaxAmount) - exchDiscAmtDC;
+               item.dCLineItemDollarDisplayAmount = lineitemGrandTotalNDC + item.dCLineItemTaxAmount + item.fCLineItemEnvTaxAmount - exchDiscAmtNDC;
             }
             else {
                item.lineItemTaxAmount = (lineItemGrantTotal - exchDiscAmtDC - item.vndCpnAmountDC) * item.salesTaxPct / 100;
-               item.lineItemEnvTaxAmount = (lineItemGrantTotal - exchDiscAmtDC - item.vndCpnAmountDC) * item.envrnmtlTaxPct / 100;
-               item.lineItemDollarDisplayAmount = (lineItemGrantTotal + item.lineItemTaxAmount + item.lineItemEnvTaxAmount);
-
                item.dCLineItemTaxAmount = (lineitemGrandTotalNDC - (exchDiscAmtNDC + item.vndCpnAmountNDC)) * item.salesTaxPct / 100;
+
                item.fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC - (exchDiscAmtNDC + item.vndCpnAmountNDC)) * item.envrnmtlTaxPct / 100;
-               item.dCCouponLineItemDollarAmount = (lineitemGrandTotalNDC + item.dCLineItemTaxAmount + item.fCLineItemEnvTaxAmount);
+               item.lineItemEnvTaxAmount = (lineItemGrantTotal - exchDiscAmtDC - item.vndCpnAmountDC) * item.envrnmtlTaxPct / 100;
+
+               item.lineItemDollarDisplayAmount = (lineItemGrantTotal + item.lineItemTaxAmount + item.lineItemEnvTaxAmount);
+               item.dCLineItemDollarDisplayAmount = lineitemGrandTotalNDC + item.dCLineItemTaxAmount + item.fCLineItemEnvTaxAmount;
             }
+
+            item.dCCouponLineItemDollarAmount = (exchDiscAmtNDC + item.vndCpnAmountNDC)
+            item.couponLineItemDollarAmount = (exchDiscAmtDC + item.vndCpnAmountDC)
 
             totalTaxDC += item.lineItemTaxAmount;
             totalTaxNDC += item.dCLineItemTaxAmount;
