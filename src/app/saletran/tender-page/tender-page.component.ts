@@ -18,6 +18,7 @@ export class TenderPageComponent implements OnInit {
 
   constructor(private _store: Store<tktObjInterface>,
     private activatedRoute: ActivatedRoute,
+    private route: Router,
     private _logonDataSvc: LogonDataService) {
 
   }
@@ -39,7 +40,9 @@ export class TenderPageComponent implements OnInit {
       })      
       this._store.select(getBalanceDueFC).subscribe(data => {
         this.tenderAmountFC = data;
-      })      
+      })
+
+
 
     })
 
@@ -61,12 +64,15 @@ export class TenderPageComponent implements OnInit {
     this._store.dispatch(addTender({ tndrObj }));
 
     this._store.select(getTktObjSelector).subscribe(data => {
-      if(data != null)
-        this._store.dispatch(saveTicketSplit({ tktObj: data }));  
+      if(data != null) {
+        
+        this.route.navigate(['/savetktsuccess']);
+        this._store.dispatch(saveTicketSplit({ tktObj: data }));
+      }
     })    
   }
 
   btnDecline(evt: Event) {
-
+    this.route.navigate(['/checkout']);
   }
 }

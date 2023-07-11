@@ -39,3 +39,8 @@ export const getTicketTotals = createSelector(getTktObjState,
   (state) => {
     return state.tktTotals;
   })
+
+export const getSavedTicketResult = createSelector(getTktObjState,
+  (state) => {
+    return state.saveTktRsltMdl;
+  })

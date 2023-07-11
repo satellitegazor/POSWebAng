@@ -21,6 +21,9 @@ import { LOGIN_AUTH_STATE } from './authstate/auth.selector';
 import { LogonDataService } from './global/logon-data-service.service';
 import { LogonSvc } from './logon/logonsvc.service';
 import { CurrencyInputDirective } from './directives/currency-input.directive';
+import { SummaryComponent } from './reports/salestran/summary/summary.component';
+import { DetailComponent } from './reports/salestran/detail/detail.component';
+import { SalestranComponent } from './reports/salestran/salestran/salestran.component';
  
 @NgModule({
   schemas: [
@@ -30,7 +33,10 @@ import { CurrencyInputDirective } from './directives/currency-input.directive';
     AppComponent,
     NavMenuComponent,
     HomeComponent,
-    CurrencyInputDirective
+    CurrencyInputDirective,
+    SummaryComponent,
+    DetailComponent,
+    SalestranComponent
   ],
   imports: [
     BrowserModule,
