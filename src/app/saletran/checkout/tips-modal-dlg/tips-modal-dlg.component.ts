@@ -23,7 +23,7 @@ export class TipsModalDlgComponent implements OnInit {
     public tndrCode: string = ''
     saleAssocList: LTC_Associates[] = [];
     assocSaleTips: AssociateSaleTips[] = [];
-
+ 
   dcTotal: number = 0;
   ndcTotal: number = 0;
 

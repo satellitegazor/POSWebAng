@@ -3,7 +3,7 @@ import { tktObjInterface } from '../store/ticketstore/ticket.state';
 import { Store } from '@ngrx/store';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { saveTicketSplitSuccess } from '../store/ticketstore/ticket.action';
+import { resetTktObj, saveTicketSplitSuccess } from '../store/ticketstore/ticket.action';
 import { SaveTicketResultsModel } from 'src/app/models/ticket.split';
 import { getSavedTicketResult } from '../store/ticketstore/ticket.selector';
 
@@ -30,6 +30,11 @@ export class SaveTicketSuccessComponent implements OnInit {
       this.saveTktRsltMdl = data;
       this.tktSaveResultMessage = this.saveTktRsltMdl.ticketNumber > 0 ? 'Ticket save Successful' : 'Ticket Save Failed'
     })
+  }
+
+  ReceiptOption(optn: string) {
+    this._store.dispatch(resetTktObj({dummyNumber: 0}));
+    this.route.navigate(['/salestran'])
   }
 
 }

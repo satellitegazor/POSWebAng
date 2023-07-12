@@ -2,8 +2,11 @@ import { compileDeclareNgModuleFromMetadata } from "@angular/compiler";
 import { act } from "@ngrx/effects";
 import { Action, createReducer, on } from "@ngrx/store";
 import { GlobalConstants } from "src/app/global/global.constants";
+import { AssociateSaleTips } from "src/app/models/associate.sale.tips";
+import { LTC_Customer } from "src/app/models/customer";
+import { TicketTender } from "src/app/models/ticket.tender";
 import { SalesTransactionCheckoutItem } from "../../models/salesTransactionCheckoutItem";
-import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, addServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketSplitSuccess } from "./ticket.action";
+import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, addServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketSplitSuccess, resetTktObj } from "./ticket.action";
 
 import { tktObjInitialState, tktObjInterface } from "./ticket.state";
 
@@ -21,18 +24,93 @@ export const _tktObjReducer = createReducer(
          }
       }
    }),
+
+   on(resetTktObj, (state, action) => {
+
+      let k: number = action.dummyNumber;
+      return {
+         ...state,
+         tktObj: {
+            ...state.tktObj,
+            tktList: [] as SalesTransactionCheckoutItem[],
+            ticketTenderList: [] as TicketTender[],
+            associateTips: [] as AssociateSaleTips[],
+            balanceDue: 0,
+            cancelTransactionID: 0,
+            customer: {} as LTC_Customer,
+            customerId: 0,
+            eventId: 0,
+            instructions: '',
+            isPartialPay: false,
+            isRefund: false,
+            orderFormNum: '',
+            partialAmount: 0,
+            partialAmountFC: 0,
+            refundCode: '',
+            refundReason: '',
+            shipHandling: 0,
+            shipHandlingFC: 0,
+            shipHandlingTaxAmt: 0,
+            shipHandlingTaxAmtFC: 0,
+            taxExempted: false,
+            tCouponAmt: 0,
+            tCouponPerc: 0,
+            tDCouponAmt: 0,
+            totalSale: 0,
+            totalSaleFC : 0,
+            transactionID: 0,
+            updateCoupons: false,
+            updateCustomer: false
+         }
+      }
+   }),
    on(addSaleItem, (state, action) => {
 
       var newCheckOutItem: SalesTransactionCheckoutItem = JSON.parse(JSON.stringify(action.saleItem));
       var _tktObj = { ...state.tktObj };
       var _totalSaleAmt = 0;
+      let amtPaidDC: number = 0;
+      let amtPaidNDC: number = 0;
+      let lsubTotalDC: number = 0;
+      let lsubTotalNDC: number = 0;
+      let lgrandTotalDC: number = 0;
+      let lgrandTotalNDC: number = 0;
+      let ltotalExchCpnAmtDC: number = 0;
+      let ltotalExchCpnAmtNDC: number = 0;
+      let ltotalSavingsDC: number = 0;
+      let ltotalSavingsNDC: number = 0;
+      let ltotalTaxDC: number = 0;
+      let ltotalTaxNDC: number = 0;
+
       _tktObj.tktList.forEach(k => {
          _totalSaleAmt += k.lineItemDollarDisplayAmount;
+         lgrandTotalDC += k.lineItemDollarDisplayAmount;
+         lgrandTotalNDC += k.dCLineItemDollarDisplayAmount;
+         ltotalExchCpnAmtDC += k.exchCpnAmountDC;
+         ltotalExchCpnAmtNDC += k.exchCpnAmountNDC;
+         ltotalSavingsDC += k.exchCpnAmountDC + k.dCDiscountAmount + k.lineItmKatsaCpnAmt;
+         ltotalSavingsNDC += k.exchCpnAmountNDC + k.discountAmount + k.fCLineItmKatsaCpnAmt;
+         ltotalTaxDC += k.lineItemTaxAmount + k.lineItemEnvTaxAmount;
+         ltotalTaxNDC += k.dCLineItemTaxAmount + k.fCLineItemEnvTaxAmount;
       })
+
 
       newCheckOutItem.ticketDetailId = _tktObj.tktList.length;
       newCheckOutItem.lineItemTaxAmount = state.tktObj.taxExempted ? 0 : newCheckOutItem.unitPrice * newCheckOutItem.quantity * newCheckOutItem.salesTaxPct * 0.01;
       newCheckOutItem.lineItemDollarDisplayAmount = (newCheckOutItem.unitPrice * newCheckOutItem.quantity) + newCheckOutItem.lineItemTaxAmount;
+
+      lgrandTotalDC += newCheckOutItem.lineItemDollarDisplayAmount;
+      lgrandTotalNDC += newCheckOutItem.dCLineItemDollarDisplayAmount;
+      ltotalExchCpnAmtDC += newCheckOutItem.exchCpnAmountDC;
+      ltotalExchCpnAmtNDC += newCheckOutItem.exchCpnAmountNDC;
+      ltotalSavingsDC += newCheckOutItem.exchCpnAmountDC + newCheckOutItem.discountAmount + newCheckOutItem.lineItmKatsaCpnAmt;
+      ltotalSavingsNDC += newCheckOutItem.exchCpnAmountNDC + newCheckOutItem.dCDiscountAmount + newCheckOutItem.fCLineItmKatsaCpnAmt;
+      ltotalTaxDC += newCheckOutItem.lineItemTaxAmount + newCheckOutItem.lineItemEnvTaxAmount;
+      ltotalTaxNDC += newCheckOutItem.dCLineItemTaxAmount + newCheckOutItem.fCLineItemEnvTaxAmount;
+
+      lsubTotalDC = lgrandTotalDC - ltotalTaxDC;
+      lsubTotalNDC = lgrandTotalNDC - ltotalTaxNDC;
+            
 
       return {
          ...state,
@@ -41,6 +119,19 @@ export const _tktObjReducer = createReducer(
             tktList: [...state.tktObj?.tktList,
                newCheckOutItem],
             totalSale: _totalSaleAmt
+         },
+         tktTotals: {
+            ...state.tktTotals,
+            subTotalDC: lsubTotalDC,
+            subTotalNDC: lsubTotalNDC,
+            grandTotalDC: lgrandTotalDC,
+            totalExchCpnAmtDC: ltotalExchCpnAmtDC,
+            totalExchCpnAmtNDC: ltotalExchCpnAmtNDC,
+            totalSavingsDC: ltotalSavingsDC,
+            totalSavingsNDC: ltotalSavingsNDC,
+            totalTaxDC: ltotalTaxDC,
+            totalTaxNDC: ltotalTaxNDC,
+            grandTotalNDC: lgrandTotalDC
          }
       };
    }),
@@ -177,17 +268,30 @@ export const _tktObjReducer = createReducer(
    on(updateSaleitems, (state, action) => {
 
       const updatedTktList = state.tktObj.tktList.map(stateItem => stateItem.salesItemUID == action.item.salesItemUID ? action.item : stateItem);
+      let assocTips: AssociateSaleTips = new AssociateSaleTips();
+      assocTips.tipAssociateId = action.item.srvdByAssociateVal;
+      
+      const updatedAssocSaleTips = state.tktObj.associateTips.map(stateTips => stateTips.tipAssociateId == action.item.srvdByAssociateVal ? stateTips : assocTips);
 
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
-            tktList: updatedTktList
+            tktList: updatedTktList,
+            associateTips: updatedAssocSaleTips
          }
       }
    }),
 
    on(addServedByAssociate, (state, action) => {
+
+      const assocTips: AssociateSaleTips = new AssociateSaleTips();
+      assocTips.tipAssociateId = action.srvdById;
+      let assocTipsAry: AssociateSaleTips[] = [];
+
+      if(state.tktObj.associateTips.length == 0 || state.tktObj.associateTips.filter(a => a.tipAssociateId == action.srvdById).length == 0)  {
+         assocTipsAry.push(assocTips);
+      }
 
       return {
          ...state,
@@ -203,7 +307,8 @@ export const _tktObjReducer = createReducer(
                else {
                   return itm;
                }
-            })
+            }),
+            associateTips: assocTipsAry //state.tktObj.associateTips.map(assoc => assoc.tipAssociateId == action.srvdById ? assoc : assocTips)
          }
       }
    }),

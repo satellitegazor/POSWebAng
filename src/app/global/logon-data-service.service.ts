@@ -159,7 +159,9 @@ export class LogonDataService {
         sessionStorage.setItem('eagleCashOptn', String(locConfig.configs[0].eagleCashOptn != null ? locConfig.configs[0].eagleCashOptn : false));
         sessionStorage.setItem('useShipHndlng', String(locConfig.configs[0].useShipHndlng != null ? locConfig.configs[0].useShipHndlng : false));
 
-        this._ltLocationConfig = locConfig;
+        if( typeof (this._ltLocationConfig.configs) == 'undefined' || this._ltLocationConfig.configs.length == 0) {
+            this._ltLocationConfig = locConfig;
+        }
     }
 
     public getBusinessModel(): number {

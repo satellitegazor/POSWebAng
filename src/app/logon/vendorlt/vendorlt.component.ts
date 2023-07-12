@@ -72,13 +72,14 @@ export class VendorLTComponent implements OnInit {
         //this._store.select(getAuthLoginSelector).subscribe(data => {
             
         this.logonSvc.logonUser(locModel).subscribe(data => {
-            if(data == null || data.locationUID == null) {
+            if(data == null) {
                 return;
             }
 
             if (!data.results.success) {
                 this.errorMsgDisplay = 'block';
                 this.successMsgDisplay = 'none';
+                return;
             }
             else {
                 this.errorMsgDisplay = 'none';

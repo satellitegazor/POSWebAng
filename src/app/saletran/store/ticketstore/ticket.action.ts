@@ -12,6 +12,7 @@ export const ADD_SALE_ITEM = 'addSaleItem';
 export const INC_SALE_ITEM_QTY = 'incSaleItemQty';
 export const DEC_SALE_ITEM_QTY = 'decSaleItemQty';
 export const INIT_TKT_OBJ = 'initTktObj';
+export const RESET_TKT_OBJ = 'resetTktObj';
 export const SAVE_TICKET_SPLIT = '[SaveTicket] Start'
 export const SAVE_TICKET_SPLIT_SUCCESS = '[SaveTicket] Success'
 export const SAVE_TICKET_SPLIT_FAILED = '[SaveTicket] Failure'
@@ -45,6 +46,9 @@ export const delSaleitemZeroQty = createAction(DELETE_SALE_ITEM,
 export const initTktObj = createAction(INIT_TKT_OBJ, 
     props<{locConfig: LocationConfig, individualUID: number}>());
 
+export const resetTktObj = createAction(RESET_TKT_OBJ, 
+    props<{dummyNumber: number}>());
+    
 export const saveTicketSplit = createAction(SAVE_TICKET_SPLIT,
     props<{tktObj: TicketSplit}>());
 

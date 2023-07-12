@@ -1,3 +1,4 @@
+<div class="row">
 <div class="col-md-4"></div>
 <div class="col-md-4">
     <div class="panel">
@@ -10,15 +11,15 @@
                     <td colspan="2">Ticket: {{saveTktRsltMdl.ticketNumber}}</td>
                 </tr>
                 <tr>
-                    <td><button class="printbtns">Print</button></td>
-                    <td><button class="printbtns">Email</button></td>
+                    <td><button class="printbtns" (click)="ReceiptOption('p');">Print</button></td>
+                    <td><button class="printbtns" (click)="ReceiptOption('e');">Email</button></td>
                 </tr>
                 <tr>
-                    <td><button class="printbtns">Both</button></td>
-                    <td><button class="printbtns">None</button></td>
+                    <td><button class="printbtns" (click)="ReceiptOption('b');">Both</button></td>
+                    <td><button class="printbtns" (click)="ReceiptOption('n');">None</button></td>
                 </tr>
             </table>
         </div>
     </div>
 </div>
-<div class="col-md-4"></div>
+<div class="col-md-4"></div></div>
