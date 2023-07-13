@@ -313,11 +313,14 @@ export const _tktObjReducer = createReducer(
       }
    }),
    on(upsertAssocTips, (state, action) => {
+
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
-            associateTips: action.assocTipsList
+            associateTips: action.assocTipsList,
+            totalSale: state.tktObj.totalSale + action.totalTipAmtDC,
+            totalSaleFC: state.tktObj.totalSaleFC + action.totalTipAmtNDC
          }
       }
    }),

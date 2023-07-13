@@ -1,4 +1,4 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA  } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA, Directive  } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -24,6 +24,7 @@ import { CurrencyInputDirective } from './directives/currency-input.directive';
 import { SummaryComponent } from './reports/salestran/summary/summary.component';
 import { DetailComponent } from './reports/salestran/detail/detail.component';
 import { SalestranComponent } from './reports/salestran/salestran/salestran.component';
+import { TwoDigitDecimalDirectiveDirective } from './directives/two-digit-decimal-directive.directive';
  
 @NgModule({
   schemas: [
@@ -36,7 +37,8 @@ import { SalestranComponent } from './reports/salestran/salestran/salestran.comp
     CurrencyInputDirective,
     SummaryComponent,
     DetailComponent,
-    SalestranComponent
+    SalestranComponent,
+    TwoDigitDecimalDirectiveDirective
   ],
   imports: [
     BrowserModule,

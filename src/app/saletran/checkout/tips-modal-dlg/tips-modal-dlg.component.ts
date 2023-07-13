@@ -7,7 +7,8 @@ import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
 import { LTC_Associates } from '../../models/location.associates';
 import { SalesTranService } from '../../services/sales-tran.service';
 import { upsertAssocTips } from '../../store/ticketstore/ticket.action';
-import { getCheckoutItemsSelector } from '../../store/ticketstore/ticket.selector';
+import { getCheckoutItemsSelector, getTicketTotals } from '../../store/ticketstore/ticket.selector';
+
 import { tktObjInterface } from '../../store/ticketstore/ticket.state';
 
 @Component({
@@ -23,6 +24,9 @@ export class TipsModalDlgComponent implements OnInit {
     public tndrCode: string = ''
     saleAssocList: LTC_Associates[] = [];
     assocSaleTips: AssociateSaleTips[] = [];
+
+    ticketTotalDC: number = 0;
+    ticketTotalNDC: number = 0;
  
   dcTotal: number = 0;
   ndcTotal: number = 0;
@@ -38,6 +42,13 @@ export class TipsModalDlgComponent implements OnInit {
         })
       })
 
+      this._store.select(getTicketTotals).subscribe(dt => {
+        this.dcTotal = dt.grandTotalDC;
+        this.ndcTotal = dt.grandTotalNDC;
+        this.ticketTotalDC = dt.grandTotalDC;
+        this.ticketTotalNDC = dt.grandTotalNDC;
+      })
+
       this.saleAssocList.forEach(element => {
         let a: AssociateSaleTips = new AssociateSaleTips();
         a.tipAssociateId = element.individualUID;
@@ -50,7 +61,7 @@ export class TipsModalDlgComponent implements OnInit {
   }
 
   onTipChanged(event: any) {
-    this.dcTotal = 0;
+    
     this.assocSaleTips.forEach(elem => {
       if(elem.tipAssociateId == Number(event.target.id.substr(2))) {
         elem.tipAmount = Number(event.target.value);
@@ -59,15 +70,43 @@ export class TipsModalDlgComponent implements OnInit {
     })
   }
 
+  onTotalAmountChanged(event: any) {
+
+    let totalTipAmt = Number(event.target.value);
+    if(totalTipAmt < this.ticketTotalDC) {
+      return;
+    }
+
+
+    let diffAmt = totalTipAmt - this.ticketTotalDC;
+    let indivTipAmt = Math.round(((diffAmt / this.assocSaleTips.length) + Number.EPSILON) * 100) / 100;;
+    let indx = 0;
+
+    let cumulativeTipTotal = 0;
+    for(let i = 0; i < this.assocSaleTips.length; i++) {
+      
+      cumulativeTipTotal += indivTipAmt;
+      
+      if(i == this.assocSaleTips.length -1) {
+        this.assocSaleTips[i].tipAmount = (indivTipAmt + (Math.round((diffAmt - cumulativeTipTotal) * 100) / 100));
+      }
+      else {
+        this.assocSaleTips[i].tipAmount = indivTipAmt;
+      }
+    }
+    this.ticketTotalDC = totalTipAmt;
+    this.ticketTotalNDC = totalTipAmt;
+  }
+
   public Save() {
 
     this.saleAssocList.forEach(assoc => {
       let asc = new AssociateSaleTips();
       asc.tipAssociateId = assoc.individualUID;
     })
-
+    
     this.modal.close();
-    this._store.dispatch(upsertAssocTips({ assocTipsList: this.assocSaleTips }));
+    this._store.dispatch(upsertAssocTips({ assocTipsList: this.assocSaleTips, totalTipAmtDC:this.ticketTotalDC, totalTipAmtNDC: this.ticketTotalNDC }));
     this.router.navigate(['tender'], {queryParams: {code: this.tndrCode}})
 
   }
