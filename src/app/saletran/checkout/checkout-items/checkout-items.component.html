@@ -99,7 +99,8 @@
                         <label>Tips</label>
                     </td>
                     <td style="width:33%" class="rightjustfy">
-                        {{tipsTotal | number:'1.2-2'}}
+                        <a class="hyplink" id="tipsTotal" (click)="DisplayTipsPopUp()" >{{tipsTotal | number:'1.2-2'}}</a>
+
                     </td>
                 </tr>
                 <tr>

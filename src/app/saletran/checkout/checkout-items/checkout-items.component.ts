@@ -9,6 +9,7 @@ import { updateSaleitems, updateTaxExempt } from '../../store/ticketstore/ticket
 import { getCheckoutItemsSelector, getTicketTotals, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { tktObjInitialState, tktObjInterface } from '../../store/ticketstore/ticket.state';
 import { CouponsModalDlgComponent } from '../coupons/coupons.component';
+import { TipsModalDlgComponent } from '../tips-modal-dlg/tips-modal-dlg.component';
 
 @Component({
   selector: 'app-checkout-items',
@@ -50,6 +51,7 @@ export class CheckoutItemsComponent implements OnInit {
       this.grandTotal = tktTotals.grandTotalDC;
       this.totalSavings = tktTotals.totalSavingsDC;
       this.saleTaxTotal = tktTotals.totalTaxDC;
+      this.tipsTotal = tktTotals.tipTotalDC;
     })
 
 
@@ -130,6 +132,12 @@ export class CheckoutItemsComponent implements OnInit {
       m.DiscountName = "Exchange Discount";
       m.Title = "Exchange Coupon";
       m.CpnType = CouponType.exchCpnTran;
+    });
+  }
+
+  public DisplayTipsPopUp() {
+    const modalRef = this._modalService.open(TipsModalDlgComponent, m => {
+      m.tndrCode = "";
     });
   }
 }

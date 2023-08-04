@@ -1,3 +1,4 @@
+import { state } from "@angular/animations";
 import { compileDeclareNgModuleFromMetadata } from "@angular/compiler";
 import { act } from "@ngrx/effects";
 import { Action, createReducer, on } from "@ngrx/store";
@@ -82,6 +83,7 @@ export const _tktObjReducer = createReducer(
       let ltotalTaxDC: number = 0;
       let ltotalTaxNDC: number = 0;
 
+      var saleAssocAry: AssociateSaleTips[] = [];
       _tktObj.tktList.forEach(k => {
          _totalSaleAmt += k.lineItemDollarDisplayAmount;
          lgrandTotalDC += k.lineItemDollarDisplayAmount;
@@ -92,12 +94,21 @@ export const _tktObjReducer = createReducer(
          ltotalSavingsNDC += k.exchCpnAmountNDC + k.discountAmount + k.fCLineItmKatsaCpnAmt;
          ltotalTaxDC += k.lineItemTaxAmount + k.lineItemEnvTaxAmount;
          ltotalTaxNDC += k.dCLineItemTaxAmount + k.fCLineItemEnvTaxAmount;
+
+         let saleAssoc: AssociateSaleTips = new AssociateSaleTips();
+         saleAssoc.indivLocId = k.srvdByAssociateVal;
+         saleAssocAry.push(saleAssoc);
+   
       })
 
 
       newCheckOutItem.ticketDetailId = _tktObj.tktList.length;
       newCheckOutItem.lineItemTaxAmount = state.tktObj.taxExempted ? 0 : newCheckOutItem.unitPrice * newCheckOutItem.quantity * newCheckOutItem.salesTaxPct * 0.01;
       newCheckOutItem.lineItemDollarDisplayAmount = (newCheckOutItem.unitPrice * newCheckOutItem.quantity) + newCheckOutItem.lineItemTaxAmount;
+
+      let saleAssoc: AssociateSaleTips = new AssociateSaleTips();
+      saleAssoc.indivLocId = newCheckOutItem.srvdByAssociateVal;
+      saleAssocAry.push(saleAssoc);
 
       lgrandTotalDC += newCheckOutItem.lineItemDollarDisplayAmount;
       lgrandTotalNDC += newCheckOutItem.dCLineItemDollarDisplayAmount;
@@ -110,7 +121,6 @@ export const _tktObjReducer = createReducer(
 
       lsubTotalDC = lgrandTotalDC - ltotalTaxDC;
       lsubTotalNDC = lgrandTotalNDC - ltotalTaxNDC;
-            
 
       return {
          ...state,
@@ -118,7 +128,8 @@ export const _tktObjReducer = createReducer(
             ...state.tktObj,
             tktList: [...state.tktObj?.tktList,
                newCheckOutItem],
-            totalSale: _totalSaleAmt
+            totalSale: _totalSaleAmt,
+            associateTips: saleAssocAry
          },
          tktTotals: {
             ...state.tktTotals,
@@ -286,7 +297,7 @@ export const _tktObjReducer = createReducer(
    on(addServedByAssociate, (state, action) => {
 
       const assocTips: AssociateSaleTips = new AssociateSaleTips();
-      assocTips.tipAssociateId = action.srvdById;
+      assocTips.indivLocId = action.srvdById;
       let assocTipsAry: AssociateSaleTips[] = [];
 
       if(state.tktObj.associateTips.length == 0 || state.tktObj.associateTips.filter(a => a.tipAssociateId == action.srvdById).length == 0)  {
@@ -307,7 +318,8 @@ export const _tktObjReducer = createReducer(
                else {
                   return itm;
                }
-            }),
+            })
+            ,
             associateTips: assocTipsAry //state.tktObj.associateTips.map(assoc => assoc.tipAssociateId == action.srvdById ? assoc : assocTips)
          }
       }
@@ -320,7 +332,17 @@ export const _tktObjReducer = createReducer(
             ...state.tktObj,
             associateTips: action.assocTipsList,
             totalSale: state.tktObj.totalSale + action.totalTipAmtDC,
-            totalSaleFC: state.tktObj.totalSaleFC + action.totalTipAmtNDC
+            totalSaleFC: state.tktObj.totalSaleFC + action.totalTipAmtNDC,
+            tipAmountDC: action.totalTipAmtDC,
+            tipAmountNDC: action.totalTipAmtNDC
+
+         },
+         tktTotals: {
+            ...state.tktTotals,
+            tipTotalDC: action.totalTipAmtDC,
+            tipTotalNDC: action.totalTipAmtNDC,
+            grandTotalDC: state.tktObj.totalSale + action.totalTipAmtDC,
+            grandTotalNDC: state.tktObj.totalSaleFC + action.totalTipAmtNDC
          }
       }
    }),

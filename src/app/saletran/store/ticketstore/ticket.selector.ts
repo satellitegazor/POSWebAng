@@ -44,3 +44,8 @@ export const getSavedTicketResult = createSelector(getTktObjState,
   (state) => {
     return state.saveTktRsltMdl;
   })
+
+export const getAssocTipList = createSelector(getTktObjState, 
+  (state) => {
+    return state.tktObj.associateTips;
+  })

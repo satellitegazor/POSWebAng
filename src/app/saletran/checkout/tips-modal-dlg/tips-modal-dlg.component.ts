@@ -7,7 +7,7 @@ import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
 import { LTC_Associates } from '../../models/location.associates';
 import { SalesTranService } from '../../services/sales-tran.service';
 import { upsertAssocTips } from '../../store/ticketstore/ticket.action';
-import { getCheckoutItemsSelector, getTicketTotals } from '../../store/ticketstore/ticket.selector';
+import { getCheckoutItemsSelector, getTicketTotals, getAssocTipList } from '../../store/ticketstore/ticket.selector';
 
 import { tktObjInterface } from '../../store/ticketstore/ticket.state';
 
@@ -27,17 +27,34 @@ export class TipsModalDlgComponent implements OnInit {
 
     ticketTotalDC: number = 0;
     ticketTotalNDC: number = 0;
+
+    tipTotalDC: number = 0;
+    tipTotalNDC: number = 0;
  
   dcTotal: number = 0;
   ndcTotal: number = 0;
 
   ngOnInit(): void {
     var locCnfg = this._logonDataSvc.getLocationConfig();
+
+    this._store.select(getAssocTipList).subscribe(tl => {
+      if(tl.length > 0) {
+        this.assocSaleTips = tl;
+      }
+    });
+
     this._saleTranSvc.getLocationAssociates(locCnfg.locationUID, locCnfg.individualUID).subscribe(data => {
       this._store.select(getCheckoutItemsSelector).subscribe(checkOutItems => {
+
         checkOutItems?.forEach(itm => {
-          if(this.saleAssocList.filter(a => a.individualLocationUID == itm.srvdByAssociateVal).length == 0) {
-            this.saleAssocList.push( data.associates.filter(k => k.individualLocationUID == itm.srvdByAssociateVal)[0]);
+          if(this.assocSaleTips.filter(a => a.indivLocId == itm.srvdByAssociateVal).length == 0) {
+            let assocTips = new AssociateSaleTips();
+            assocTips.indivLocId = itm.srvdByAssociateVal;
+            let assoc: LTC_Associates = data.associates.filter(k => k.individualLocationUID == itm.srvdByAssociateVal)[0];
+            assocTips.firstName = assoc.firstName;
+            assocTips.lastName = assoc.lastName;
+            assocTips.tipAssociateId = assoc.individualUID;
+            this.assocSaleTips.push(assocTips);
           }
         })
       })
@@ -47,15 +64,33 @@ export class TipsModalDlgComponent implements OnInit {
         this.ndcTotal = dt.grandTotalNDC;
         this.ticketTotalDC = dt.grandTotalDC;
         this.ticketTotalNDC = dt.grandTotalNDC;
+        
       })
 
-      this.saleAssocList.forEach(element => {
-        let a: AssociateSaleTips = new AssociateSaleTips();
-        a.tipAssociateId = element.individualUID;
-        a.tipAmount = 0;
-        a.tipAmtLocCurr = 0;
-        this.assocSaleTips.push(a);
-      });
+      // this.saleAssocList.forEach(element => {
+      //   let a: AssociateSaleTips = new AssociateSaleTips();
+      //   a.tipAssociateId = element.individualUID;
+      //   a.tipAmount = 0;
+      //   a.tipAmtLocCurr = 0;
+      //   this.assocSaleTips.push(a);
+      // });
+
+      // this._store.select(getAssocTipList).subscribe(tl => {
+      //   this.assocSaleTips = tl;
+
+      //   for(let a = 0; a < this.assocSaleTips.length; a++) {
+
+      //     for(let b = 0; b < this.saleAssocList.length; b++) {
+
+      //       if(this.assocSaleTips[a].tipAssociateId == this.saleAssocList[b].individualUID) {
+
+      //         this.saleAssocList[b].tip
+      //       }
+
+
+      //     }
+      //   }
+      // })
       
     })
   }
@@ -96,6 +131,9 @@ export class TipsModalDlgComponent implements OnInit {
     }
     this.ticketTotalDC = totalTipAmt;
     this.ticketTotalNDC = totalTipAmt;
+
+    this.tipTotalDC = diffAmt;
+    this.tipTotalNDC = diffAmt;
   }
 
   public Save() {
@@ -106,8 +144,11 @@ export class TipsModalDlgComponent implements OnInit {
     })
     
     this.modal.close();
-    this._store.dispatch(upsertAssocTips({ assocTipsList: this.assocSaleTips, totalTipAmtDC:this.ticketTotalDC, totalTipAmtNDC: this.ticketTotalNDC }));
-    this.router.navigate(['tender'], {queryParams: {code: this.tndrCode}})
+    this._store.dispatch(upsertAssocTips({ assocTipsList: this.assocSaleTips, totalTipAmtDC:this.tipTotalDC, totalTipAmtNDC: this.tipTotalNDC }));
+    
+    if(this.tndrCode != "") {
+      this.router.navigate(['tender'], {queryParams: {code: this.tndrCode}})
+    }
 
   }
   public Cancel() {

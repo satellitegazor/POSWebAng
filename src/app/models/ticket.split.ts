@@ -9,7 +9,7 @@ export class TicketSplit {
 
     public individualUID: number = 0;
     public eventId: number = 0;
-    public associateTips: AssociateSaleTips[] = [] ;
+    public associateTips: AssociateSaleTips[] = [] as AssociateSaleTips[] ;
     public balanceDue: number = 0;
     public cancelTransactionID: number = 0;
     public cliTimeVar: number = 0;
@@ -42,6 +42,8 @@ export class TicketSplit {
     public shipHandlingTaxAmtFC: number = 0;
     public ticketRRN: string = '';
     public vMTndr: ExchCardTndr = new ExchCardTndr();
+    public tipAmountDC: number = 0;
+    public tipAmountNDC: number = 0;
     }
 
     export class SaveTicketResultsModel {
@@ -74,4 +76,6 @@ export class TicketSplit {
         public totalSavingsNDC: number = 0;
         public totalTaxDC: number = 0;
         public totalTaxNDC: number = 0;
+        public tipTotalDC: number = 0;
+        public tipTotalNDC: number = 0;
     }
