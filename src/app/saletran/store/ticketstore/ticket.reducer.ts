@@ -95,10 +95,15 @@ export const _tktObjReducer = createReducer(
          ltotalTaxDC += k.lineItemTaxAmount + k.lineItemEnvTaxAmount;
          ltotalTaxNDC += k.dCLineItemTaxAmount + k.fCLineItemEnvTaxAmount;
 
-         let saleAssoc: AssociateSaleTips = new AssociateSaleTips();
-         saleAssoc.indivLocId = k.srvdByAssociateVal;
-         saleAssocAry.push(saleAssoc);
-   
+         if(saleAssocAry.filter(assoc => assoc.indivLocId == k.srvdByAssociateVal).length > 0) {
+            saleAssocAry.filter(assoc => assoc.indivLocId == k.srvdByAssociateVal).at(0)?.tipSaleItemId.push(k.salesItemUID);
+         }
+         else {
+            let saleAssoc: AssociateSaleTips = new AssociateSaleTips();
+            saleAssoc.indivLocId = k.srvdByAssociateVal;
+            saleAssoc.tipSaleItemId.push(k.salesItemUID);
+            saleAssocAry.push(saleAssoc);
+         }
       })
 
 
@@ -106,9 +111,15 @@ export const _tktObjReducer = createReducer(
       newCheckOutItem.lineItemTaxAmount = state.tktObj.taxExempted ? 0 : newCheckOutItem.unitPrice * newCheckOutItem.quantity * newCheckOutItem.salesTaxPct * 0.01;
       newCheckOutItem.lineItemDollarDisplayAmount = (newCheckOutItem.unitPrice * newCheckOutItem.quantity) + newCheckOutItem.lineItemTaxAmount;
 
-      let saleAssoc: AssociateSaleTips = new AssociateSaleTips();
-      saleAssoc.indivLocId = newCheckOutItem.srvdByAssociateVal;
-      saleAssocAry.push(saleAssoc);
+      if(saleAssocAry.filter(assoc => assoc.indivLocId == newCheckOutItem.srvdByAssociateVal).length > 0) {
+         saleAssocAry.filter(assoc => assoc.indivLocId == newCheckOutItem.srvdByAssociateVal).at(0)?.tipSaleItemId.push(newCheckOutItem.salesItemUID);
+      }
+      else {
+         let saleAssoc: AssociateSaleTips = new AssociateSaleTips();
+         saleAssoc.indivLocId = newCheckOutItem.srvdByAssociateVal;
+         saleAssoc.tipSaleItemId.push(newCheckOutItem.salesItemUID);
+         saleAssocAry.push(saleAssoc);
+      }
 
       lgrandTotalDC += newCheckOutItem.lineItemDollarDisplayAmount;
       lgrandTotalNDC += newCheckOutItem.dCLineItemDollarDisplayAmount;
@@ -145,6 +156,54 @@ export const _tktObjReducer = createReducer(
             grandTotalNDC: lgrandTotalDC
          }
       };
+   }),
+   
+   on(addServedByAssociate, (state, action) => {
+
+      // const assocTips: AssociateSaleTips = new AssociateSaleTips();
+      // assocTips.indivLocId = action.indLocId;
+      // assocTips.tipSaleItemId.push(action.saleItemId);
+      // let assocTipsAry: AssociateSaleTips[] = [];
+
+      // if(state.tktObj.associateTips.length == 0 || state.tktObj.associateTips.filter(a => a.indivLocId == action.indLocId).length == 0)  {
+      //    assocTipsAry.push(assocTips);
+      // }
+
+      var assocTipsAry: AssociateSaleTips[] = [];
+
+      state.tktObj.tktList.every(function(val: SalesTransactionCheckoutItem, indx: number) {
+         var assocTips: AssociateSaleTips;
+         let aTips = assocTipsAry.filter(obj => obj.indivLocId == val.srvdByAssociateVal).at(0);
+         if(aTips) {
+            assocTips = aTips;
+            assocTips.tipSaleItemId.push(val.salesItemUID);
+         }
+         else {
+            assocTips = new AssociateSaleTips();
+            assocTips.indivLocId = val.srvdByAssociateVal;
+            assocTips.tipSaleItemId.push(val.salesItemUID);
+         }
+         assocTipsAry.push(assocTips)
+      })
+
+      return {
+         ...state,
+         tktObj: {
+            ...state.tktObj,
+            tktList: state.tktObj.tktList.map(itm => {
+               if (itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.indx) {
+                  return {
+                     ...itm,
+                     srvdByAssociateVal: action.indLocId
+                  }
+               }
+               else {
+                  return itm;
+               }
+            }),
+            associateTips: assocTipsAry //state.tktObj.associateTips.map(assoc => assoc.indivLocId == action.indLocId ? assocTips : assoc)
+         }
+      }
    }),
    on(incSaleitemQty, (state, action) => {
       return {
@@ -294,36 +353,6 @@ export const _tktObjReducer = createReducer(
       }
    }),
 
-   on(addServedByAssociate, (state, action) => {
-
-      const assocTips: AssociateSaleTips = new AssociateSaleTips();
-      assocTips.indivLocId = action.srvdById;
-      let assocTipsAry: AssociateSaleTips[] = [];
-
-      if(state.tktObj.associateTips.length == 0 || state.tktObj.associateTips.filter(a => a.tipAssociateId == action.srvdById).length == 0)  {
-         assocTipsAry.push(assocTips);
-      }
-
-      return {
-         ...state,
-         tktObj: {
-            ...state.tktObj,
-            tktList: state.tktObj.tktList.map(itm => {
-               if (itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.indx) {
-                  return {
-                     ...itm,
-                     srvdByAssociateVal: action.srvdById
-                  }
-               }
-               else {
-                  return itm;
-               }
-            })
-            ,
-            associateTips: assocTipsAry //state.tktObj.associateTips.map(assoc => assoc.tipAssociateId == action.srvdById ? assoc : assocTips)
-         }
-      }
-   }),
    on(upsertAssocTips, (state, action) => {
 
       return {

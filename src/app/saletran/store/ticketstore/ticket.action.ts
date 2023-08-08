@@ -72,7 +72,7 @@ export const updateSaleitems = createAction(UPD_SALE_ITEM,
 
 export const updateCheckoutTotals = createAction(UPD_CHK_OUT_TOTALS, props<{logonDataSvc: LogonDataService}>());
 
-export const addServedByAssociate = createAction(ADD_SRVD_BY_ASSOC, props<{saleItemId:number, indx:number, srvdById: number}>());
+export const addServedByAssociate = createAction(ADD_SRVD_BY_ASSOC, props<{saleItemId:number, indx:number, indLocId: number}>());
 
 export const upsertAssocTips = createAction(UPSERT_ASSOC_TIPS, props<{assocTipsList: AssociateSaleTips[], totalTipAmtDC: number, totalTipAmtNDC: number}>());
 

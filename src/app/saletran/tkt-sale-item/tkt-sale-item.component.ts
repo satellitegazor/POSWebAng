@@ -69,15 +69,15 @@ export class TktSaleItemComponent implements OnInit {
     }
 
     public btnCheckoutClicked() {
+
         this._router.navigate(['/checkout'])
     }
 
-    onAssociateChange(evt: Event, srvdById: number, saleItemId: number, indx: number) {
+    onAssociateChange(evt: Event, indivLocId: number, saleItemId: number, indx: number) {
 
-        //this._store.dispatch(addServedByAssociate({saleItemId, indx, srvdById}))
          setTimeout(function(obj: any) {
-             obj._store.dispatch(addServedByAssociate({saleItemId, indx, srvdById}))
-         }, 100, this, saleItemId, indx, srvdById) 
+             obj._store.dispatch(addServedByAssociate({saleItemId, indx, indLocId: indivLocId}))
+         }, 100, this, saleItemId, indx, indivLocId) 
 
         return true;
     }
