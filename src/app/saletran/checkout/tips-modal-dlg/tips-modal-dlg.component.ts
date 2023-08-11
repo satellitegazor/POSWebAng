@@ -39,25 +39,23 @@ export class TipsModalDlgComponent implements OnInit {
 
     this._store.select(getAssocTipList).subscribe(tl => {
       if(tl.length > 0) {
-        this.assocSaleTips = tl;
+        this.assocSaleTips = JSON.parse(JSON.stringify(tl));
       }
     });
 
     this._saleTranSvc.getLocationAssociates(locCnfg.locationUID, locCnfg.individualUID).subscribe(data => {
-      this._store.select(getCheckoutItemsSelector).subscribe(checkOutItems => {
+      
 
-        checkOutItems?.forEach(itm => {
-          if(this.assocSaleTips.filter(a => a.indivLocId == itm.srvdByAssociateVal).length == 0) {
-            let assocTips = new AssociateSaleTips();
-            assocTips.indivLocId = itm.srvdByAssociateVal;
-            let assoc: LTC_Associates = data.associates.filter(k => k.individualLocationUID == itm.srvdByAssociateVal)[0];
-            assocTips.firstName = assoc.firstName;
-            assocTips.lastName = assoc.lastName;
-            assocTips.tipAssociateId = assoc.individualUID;
-            this.assocSaleTips.push(assocTips);
+        data.associates.forEach(assoc => {         
+
+          if(this.assocSaleTips.filter(a => a.indivLocId == assoc.individualLocationUID).length > 0) {
+            let associate: AssociateSaleTips = this.assocSaleTips.filter(a => a.indivLocId == assoc.individualLocationUID)[0];
+            associate.firstName = assoc.firstName;
+            associate.lastName = assoc.lastName;
+            associate.tipAssociateId = assoc.individualUID;
           }
-        })
-      })
+        }) 
+      
 
       this._store.select(getTicketTotals).subscribe(dt => {
         this.dcTotal = dt.grandTotalDC;

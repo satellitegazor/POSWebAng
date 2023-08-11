@@ -10,7 +10,7 @@ import { getLocationAssocSelector } from '../store/localtionassociates/locationa
 import { getLocCnfgIsAllowTipsSelector } from '../store/locationconfigstore/locationconfig.selector';
 import { SalesTranService } from '../services/sales-tran.service';
 import { tktObjInterface } from '../store/ticketstore/ticket.state';
-import { addSaleItem, addServedByAssociate, decSaleitemQty, delSaleitemZeroQty, incSaleitemQty } from '../store/ticketstore/ticket.action';
+import { addSaleItem, updateServedByAssociate, decSaleitemQty, delSaleitemZeroQty, incSaleitemQty, updateAssocInAssocTips } from '../store/ticketstore/ticket.action';
 import { SalesTransactionCheckoutItem } from '../models/salesTransactionCheckoutItem';
 import { ConditionalExpr } from '@angular/compiler';
 import { getCheckoutItemsSelector } from '../store/ticketstore/ticket.selector';
@@ -76,7 +76,8 @@ export class TktSaleItemComponent implements OnInit {
     onAssociateChange(evt: Event, indivLocId: number, saleItemId: number, indx: number) {
 
          setTimeout(function(obj: any) {
-             obj._store.dispatch(addServedByAssociate({saleItemId, indx, indLocId: indivLocId}))
+             obj._store.dispatch(updateServedByAssociate({saleItemId, indx, indLocId: indivLocId}))
+             obj._store.dispatch(updateAssocInAssocTips({saleItemId: saleItemId, indLocId: indivLocId}));
          }, 100, this, saleItemId, indx, indivLocId) 
 
         return true;

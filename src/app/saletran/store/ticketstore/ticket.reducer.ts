@@ -7,7 +7,7 @@ import { AssociateSaleTips } from "src/app/models/associate.sale.tips";
 import { LTC_Customer } from "src/app/models/customer";
 import { TicketTender } from "src/app/models/ticket.tender";
 import { SalesTransactionCheckoutItem } from "../../models/salesTransactionCheckoutItem";
-import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, addServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketSplitSuccess, resetTktObj } from "./ticket.action";
+import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketSplitSuccess, resetTktObj, updateAssocInAssocTips } from "./ticket.action";
 
 import { tktObjInitialState, tktObjInterface } from "./ticket.state";
 
@@ -158,33 +158,7 @@ export const _tktObjReducer = createReducer(
       };
    }),
    
-   on(addServedByAssociate, (state, action) => {
-
-      // const assocTips: AssociateSaleTips = new AssociateSaleTips();
-      // assocTips.indivLocId = action.indLocId;
-      // assocTips.tipSaleItemId.push(action.saleItemId);
-      // let assocTipsAry: AssociateSaleTips[] = [];
-
-      // if(state.tktObj.associateTips.length == 0 || state.tktObj.associateTips.filter(a => a.indivLocId == action.indLocId).length == 0)  {
-      //    assocTipsAry.push(assocTips);
-      // }
-
-      var assocTipsAry: AssociateSaleTips[] = [];
-
-      state.tktObj.tktList.every(function(val: SalesTransactionCheckoutItem, indx: number) {
-         var assocTips: AssociateSaleTips;
-         let aTips = assocTipsAry.filter(obj => obj.indivLocId == val.srvdByAssociateVal).at(0);
-         if(aTips) {
-            assocTips = aTips;
-            assocTips.tipSaleItemId.push(val.salesItemUID);
-         }
-         else {
-            assocTips = new AssociateSaleTips();
-            assocTips.indivLocId = val.srvdByAssociateVal;
-            assocTips.tipSaleItemId.push(val.salesItemUID);
-         }
-         assocTipsAry.push(assocTips)
-      })
+   on(updateServedByAssociate, (state, action) => {
 
       return {
          ...state,
@@ -200,11 +174,41 @@ export const _tktObjReducer = createReducer(
                else {
                   return itm;
                }
-            }),
-            associateTips: assocTipsAry //state.tktObj.associateTips.map(assoc => assoc.indivLocId == action.indLocId ? assocTips : assoc)
+            })
          }
       }
    }),
+
+   on(updateAssocInAssocTips, (state, action) => {
+      
+      var assocTipsAry: AssociateSaleTips[] = [];
+
+      state.tktObj.tktList.forEach(function(val: SalesTransactionCheckoutItem, indx: number) {
+         
+         let assocTips: AssociateSaleTips = new AssociateSaleTips();
+         let aTips = assocTipsAry.filter(obj => obj.indivLocId == val.srvdByAssociateVal).at(0);         
+
+         if(aTips) {
+            assocTips = aTips;
+            assocTips.tipSaleItemId.push(val.salesItemUID);
+         }
+         else {
+            assocTips = new AssociateSaleTips();
+            assocTips.indivLocId = val.srvdByAssociateVal;
+            assocTips.tipSaleItemId.push(val.salesItemUID);
+            assocTipsAry.push(assocTips)
+         }         
+      });
+
+      return {
+         ...state,
+         tktObj: {
+            ...state.tktObj,
+            associateTips: assocTipsAry
+         }
+      }
+   }),
+
    on(incSaleitemQty, (state, action) => {
       return {
          ...state,

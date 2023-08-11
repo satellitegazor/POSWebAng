@@ -21,10 +21,11 @@ export const ADD_NEW_CUST = 'add New Customer to TktObj';
 export const ADD_TENDER_OBJ = 'addTenderToTktObj';
 export const UPD_SALE_ITEM = 'updSaleItems';
 export const UPD_CHK_OUT_TOTALS = 'updCheckoutTotals';
-export const ADD_SRVD_BY_ASSOC = 'addServedByAssociate';
+export const UPD_SRVD_BY_ASSOC = 'updateServedByAssociate';
 export const UPSERT_ASSOC_TIPS = 'upsertAssocTips';
 export const DELETE_SALE_ITEM = 'delSaleitemZeroQty';
 export const UPDATE_TAX_EXEMPT = 'updateTaxExempt';
+export const UPDATE_ASSOC_IN_ASSOCTIPS = 'updateAssocInAssocTips';
 
 export const UPSERT_SALE_ITEM_EXCH_CPN = 'upsertSaleItemExchCpn';
 export const UPSERT_SALE_ITEM_VND_CPN = 'upsertSaleItemVndCpn';
@@ -72,7 +73,9 @@ export const updateSaleitems = createAction(UPD_SALE_ITEM,
 
 export const updateCheckoutTotals = createAction(UPD_CHK_OUT_TOTALS, props<{logonDataSvc: LogonDataService}>());
 
-export const addServedByAssociate = createAction(ADD_SRVD_BY_ASSOC, props<{saleItemId:number, indx:number, indLocId: number}>());
+export const updateServedByAssociate = createAction(UPD_SRVD_BY_ASSOC, props<{saleItemId:number, indx:number, indLocId: number}>());
+
+export const updateAssocInAssocTips = createAction(UPDATE_ASSOC_IN_ASSOCTIPS, props<{saleItemId: number, indLocId: number}>());
 
 export const upsertAssocTips = createAction(UPSERT_ASSOC_TIPS, props<{assocTipsList: AssociateSaleTips[], totalTipAmtDC: number, totalTipAmtNDC: number}>());
 
