@@ -78,4 +78,6 @@ export class TicketSplit {
         public totalTaxNDC: number = 0;
         public tipTotalDC: number = 0;
         public tipTotalNDC: number = 0;
+        public partPayDC: number = 0;
+        public partPayNDC: number = 0;
     }

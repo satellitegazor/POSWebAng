@@ -359,13 +359,21 @@ export const _tktObjReducer = createReducer(
 
    on(upsertAssocTips, (state, action) => {
 
+      let lineItemTotalDC = 0;
+      let lineItemTotalNDC = 0;
+
+      state.tktObj.tktList.forEach(function(val: SalesTransactionCheckoutItem) {
+         lineItemTotalDC += val.lineItemDollarDisplayAmount;
+         lineItemTotalNDC += val.dCLineItemDollarDisplayAmount;
+      })
+
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
             associateTips: action.assocTipsList,
-            totalSale: state.tktObj.totalSale + action.totalTipAmtDC,
-            totalSaleFC: state.tktObj.totalSaleFC + action.totalTipAmtNDC,
+            totalSale: lineItemTotalDC + action.totalTipAmtDC,
+            totalSaleFC: lineItemTotalNDC + action.totalTipAmtNDC,
             tipAmountDC: action.totalTipAmtDC,
             tipAmountNDC: action.totalTipAmtNDC
 
@@ -374,8 +382,8 @@ export const _tktObjReducer = createReducer(
             ...state.tktTotals,
             tipTotalDC: action.totalTipAmtDC,
             tipTotalNDC: action.totalTipAmtNDC,
-            grandTotalDC: state.tktObj.totalSale + action.totalTipAmtDC,
-            grandTotalNDC: state.tktObj.totalSaleFC + action.totalTipAmtNDC
+            grandTotalDC: lineItemTotalDC + action.totalTipAmtDC,
+            grandTotalNDC: lineItemTotalNDC + action.totalTipAmtNDC
          }
       }
    }),

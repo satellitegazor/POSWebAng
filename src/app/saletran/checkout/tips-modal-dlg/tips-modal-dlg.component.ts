@@ -25,8 +25,8 @@ export class TipsModalDlgComponent implements OnInit {
     saleAssocList: LTC_Associates[] = [];
     assocSaleTips: AssociateSaleTips[] = [];
 
-    ticketTotalDC: number = 0;
-    ticketTotalNDC: number = 0;
+    lineItemTotalDC: number = 0;
+    lineItemTotalNDC: number = 0;
 
     tipTotalDC: number = 0;
     tipTotalNDC: number = 0;
@@ -60,36 +60,9 @@ export class TipsModalDlgComponent implements OnInit {
       this._store.select(getTicketTotals).subscribe(dt => {
         this.dcTotal = dt.grandTotalDC;
         this.ndcTotal = dt.grandTotalNDC;
-        this.ticketTotalDC = dt.grandTotalDC;
-        this.ticketTotalNDC = dt.grandTotalNDC;
-        
+        this.lineItemTotalDC = Number.parseFloat((dt.grandTotalDC - dt.tipTotalDC).toFixed(2));
+        this.lineItemTotalNDC = Number.parseFloat((dt.grandTotalNDC - dt.tipTotalNDC).toFixed(2));        
       })
-
-      // this.saleAssocList.forEach(element => {
-      //   let a: AssociateSaleTips = new AssociateSaleTips();
-      //   a.tipAssociateId = element.individualUID;
-      //   a.tipAmount = 0;
-      //   a.tipAmtLocCurr = 0;
-      //   this.assocSaleTips.push(a);
-      // });
-
-      // this._store.select(getAssocTipList).subscribe(tl => {
-      //   this.assocSaleTips = tl;
-
-      //   for(let a = 0; a < this.assocSaleTips.length; a++) {
-
-      //     for(let b = 0; b < this.saleAssocList.length; b++) {
-
-      //       if(this.assocSaleTips[a].tipAssociateId == this.saleAssocList[b].individualUID) {
-
-      //         this.saleAssocList[b].tip
-      //       }
-
-
-      //     }
-      //   }
-      // })
-      
     })
   }
 
@@ -105,13 +78,15 @@ export class TipsModalDlgComponent implements OnInit {
 
   onTotalAmountChanged(event: any) {
 
+  
+
     let totalTipAmt = Number(event.target.value);
-    if(totalTipAmt < this.ticketTotalDC) {
+    if(totalTipAmt < this.lineItemTotalDC) {
       return;
     }
 
 
-    let diffAmt = totalTipAmt - this.ticketTotalDC;
+    let diffAmt = totalTipAmt - this.lineItemTotalDC;
     let indivTipAmt = Math.round(((diffAmt / this.assocSaleTips.length) + Number.EPSILON) * 100) / 100;;
     let indx = 0;
 
@@ -127,8 +102,8 @@ export class TipsModalDlgComponent implements OnInit {
         this.assocSaleTips[i].tipAmount = indivTipAmt;
       }
     }
-    this.ticketTotalDC = totalTipAmt;
-    this.ticketTotalNDC = totalTipAmt;
+    this.lineItemTotalDC = totalTipAmt;
+    this.lineItemTotalNDC = totalTipAmt;
 
     this.tipTotalDC = diffAmt;
     this.tipTotalNDC = diffAmt;
@@ -136,10 +111,14 @@ export class TipsModalDlgComponent implements OnInit {
 
   public Save() {
 
-    this.saleAssocList.forEach(assoc => {
-      let asc = new AssociateSaleTips();
-      asc.tipAssociateId = assoc.individualUID;
+    let totalTipAmt = 0;
+    
+    this.assocSaleTips.forEach(function(obj: AssociateSaleTips, indx: number) {
+      totalTipAmt += obj.tipAmount;
+      
     })
+    this.tipTotalDC = totalTipAmt;
+    this.tipTotalNDC = totalTipAmt;
     
     this.modal.close();
     this._store.dispatch(upsertAssocTips({ assocTipsList: this.assocSaleTips, totalTipAmtDC:this.tipTotalDC, totalTipAmtNDC: this.tipTotalNDC }));

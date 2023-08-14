@@ -1,1 +1,7 @@
-<p>part-pay works!</p>
+<table>
+    <tr>
+        <td><label class="form-control">Pay Amount:</label></td>
+        <td><input type="text" id="dcPartPayAmt" [maxLength]="8" TwoDigitDecimalDirectiveDirective class="dc partpay form-control" [ngModel]="dcPartPayAmt" (change)="onDcPartPayAmt($event)"/></td>
+        <td><input type="text" id="ndcPartPayAmt" [maxlength]="8" TwoDigitDecimalDirectiveDirective class="ndc partpay form-control" [ngModel]="ndcPartPayAmt" (change)="onNdcPartPayAmt($event)"/></td>
+    </tr>    
+</table> 
