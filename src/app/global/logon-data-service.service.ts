@@ -169,11 +169,11 @@ export class LogonDataService {
     }
 
     public getAllowPartPay(): boolean {
-        return Boolean(sessionStorage.getItem('allowPartPay') ? sessionStorage.getItem('allowPartPay') : '0');
+        return (sessionStorage.getItem('allowPartPay') ? sessionStorage.getItem('allowPartPay')?.toLowerCase() : 'false') == 'true';
     }
     
     public getAllowTips(): boolean {
-        return Boolean(sessionStorage.getItem('allowTips') ? sessionStorage.getItem('allowTips') : '0');
+        return (sessionStorage.getItem('allowTips') ? sessionStorage.getItem('allowTips')?.toLowerCase() : 'false') == 'true';
     }
 
     public getLocationId(): number {
@@ -181,10 +181,10 @@ export class LogonDataService {
     }
 
     public getExchCouponAfterTax(): boolean {
-        return Boolean(sessionStorage.getItem('exchCouponsAfterTax') ? sessionStorage.getItem('exchCouponsAfterTax') : '0');
+        return (sessionStorage.getItem('exchCouponsAfterTax') ? sessionStorage.getItem('exchCouponsAfterTax')?.toLowerCase() : 'false') == 'true';
     }
     public getVendorCouponAfterTax(): boolean {
-        return Boolean(sessionStorage.getItem('vendCouponsAfterTax') ? sessionStorage.getItem('vendCouponsAfterTax') : '0');
+        return (sessionStorage.getItem('vendCouponsAfterTax') ? sessionStorage.getItem('vendCouponsAfterTax')?.toLowerCase() : 'false') == 'true';
     }
 
     public getLocationConfig(): LocationConfig {
@@ -192,18 +192,18 @@ export class LogonDataService {
         let locConfig: LocationConfig = new LocationConfig();
         locConfig.businessFunctionUID = Number(sessionStorage.getItem('businessFunctionUID') ?  sessionStorage.getItem('businessFunctionUID') : '0');
         locConfig.businessModel = Number(sessionStorage.getItem('businessModel') ? sessionStorage.getItem('businessModel') : '0');
-        locConfig.allowPartPay = Boolean(sessionStorage.getItem('allowPartPay') ? sessionStorage.getItem('allowPartPay') : '0');
-        locConfig.allowSaveTkt = Boolean(sessionStorage.getItem('allowSaveTkt') ? sessionStorage.getItem('allowSaveTkt') : '0');
-        locConfig.allowTips = Boolean(sessionStorage.getItem('allowTips') ? sessionStorage.getItem('allowTips') : '0');
-        locConfig.openCashDrawer = Boolean(sessionStorage.getItem('openCashDrawer') ? sessionStorage.getItem('openCashDrawer') : '0');
-        locConfig.exchCouponsAfterTax = Boolean(sessionStorage.getItem('exchCouponsAfterTax') ? sessionStorage.getItem('exchCouponsAfterTax') : '0');
-        locConfig.vendCouponsAfterTax = Boolean(sessionStorage.getItem('vendCouponsAfterTax') ? sessionStorage.getItem('vendCouponsAfterTax') : '0');
+        locConfig.allowPartPay = (sessionStorage.getItem('allowPartPay') ? sessionStorage.getItem('allowPartPay')?.toLowerCase() : 'false') == 'true';
+        locConfig.allowSaveTkt = (sessionStorage.getItem('allowSaveTkt') ? sessionStorage.getItem('allowSaveTkt')?.toLowerCase() : 'false') == 'true';
+        locConfig.allowTips = (sessionStorage.getItem('allowTips') ? sessionStorage.getItem('allowTips') : 'false') == 'true';
+        locConfig.openCashDrawer = (sessionStorage.getItem('openCashDrawer') ? sessionStorage.getItem('openCashDrawer') : 'false') == 'true';
+        locConfig.exchCouponsAfterTax = (sessionStorage.getItem('exchCouponsAfterTax') ? sessionStorage.getItem('exchCouponsAfterTax') : 'false') == 'true';
+        locConfig.vendCouponsAfterTax = (sessionStorage.getItem('vendCouponsAfterTax') ? sessionStorage.getItem('vendCouponsAfterTax') : 'false') == 'true';
         locConfig.facilityUID = Number(sessionStorage.getItem('facilityUID') ? sessionStorage.getItem('facilityUID') : '0');
         locConfig.facilityNumber = String(sessionStorage.getItem('facilityNumber') ? sessionStorage.getItem('facilityNumber') : '0');
         locConfig.locationUID = Number(sessionStorage.getItem('locationUID') ? sessionStorage.getItem('locationUID') : '0');
         locConfig.locationName = String(sessionStorage.getItem('locationName') ? sessionStorage.getItem('locationName') : '0');
         locConfig.storeName = String(sessionStorage.getItem('storeName') ? sessionStorage.getItem('storeName') : '0');
-        locConfig.pINReqdForSalesTran = Boolean(sessionStorage.getItem('pINReqdForSalesTran') ? sessionStorage.getItem('pINReqdForSalesTran') : '0');
+        locConfig.pINReqdForSalesTran = (sessionStorage.getItem('pINReqdForSalesTran') ? sessionStorage.getItem('pINReqdForSalesTran') : 'false') == 'true';
         locConfig.associateName = String(sessionStorage.getItem('associateName') ? sessionStorage.getItem('associateName') : '0');
         locConfig.associateRole = String(sessionStorage.getItem('associateRole') ? sessionStorage.getItem('associateRole') : '0');
         locConfig.associateRoleDesc = String(sessionStorage.getItem('associateRoleDesc') ? sessionStorage.getItem('associateRoleDesc') : '0');
@@ -218,7 +218,7 @@ export class LogonDataService {
         locConfig.contractEnd = new Date(String(sessionStorage.getItem('contractEnd') ? sessionStorage.getItem('contractEnd'): '1970-01-01:00:00:000'));
         locConfig.busFuncCode = String(sessionStorage.getItem('busFuncCode') ? sessionStorage.getItem('busFuncCode') : '0');
         locConfig.assocEmail = String(sessionStorage.getItem('assocEmail') ? sessionStorage.getItem('assocEmail') : '0');
-        locConfig.isVendorLogin = Boolean(sessionStorage.getItem('isVendorLogin') ? sessionStorage.getItem('isVendorLogin') : '0');
+        locConfig.isVendorLogin = (sessionStorage.getItem('isVendorLogin') ? sessionStorage.getItem('isVendorLogin') : 'false') == 'true';
         locConfig.sBMUserFirstName = String(sessionStorage.getItem('sBMUserFirstName') ? sessionStorage.getItem('sBMUserFirstName') : '0');
         locConfig.sBMUserMiddleName = String(sessionStorage.getItem('sBMUserMiddleName') ? sessionStorage.getItem('sBMUserMiddleName') : '0');
         locConfig.sBMUserLastName = String(sessionStorage.getItem('sBMUserLastName') ? sessionStorage.getItem('sBMUserLastName') : '0');
@@ -241,8 +241,8 @@ export class LogonDataService {
         locConfig.stateProvice = String(sessionStorage.getItem('stateProvice') ? sessionStorage.getItem('stateProvice') : '0');
         locConfig.phoneNumber = String(sessionStorage.getItem('phoneNumber') ? sessionStorage.getItem('phoneNumber') : '0');
         locConfig.postalCode = String(sessionStorage.getItem('postalCode') ? sessionStorage.getItem('postalCode') : '0');
-        locConfig.eagleCashOptn = Boolean(sessionStorage.getItem('eagleCashOptn') ? sessionStorage.getItem('eagleCashOptn') : '0');
-        locConfig.useShipHndlng = Boolean(sessionStorage.getItem('useShipHndlng') ? sessionStorage.getItem('useShipHndlng') : '0');
+        locConfig.eagleCashOptn = (sessionStorage.getItem('eagleCashOptn') ? sessionStorage.getItem('eagleCashOptn') : 'false') == 'true';
+        locConfig.useShipHndlng = (sessionStorage.getItem('useShipHndlng') ? sessionStorage.getItem('useShipHndlng') : 'false') == 'true';
 
         return locConfig;
     }
