@@ -7,7 +7,7 @@ import { AssociateSaleTips } from "src/app/models/associate.sale.tips";
 import { LTC_Customer } from "src/app/models/customer";
 import { TicketTender } from "src/app/models/ticket.tender";
 import { SalesTransactionCheckoutItem } from "../../models/salesTransactionCheckoutItem";
-import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketSplitSuccess, resetTktObj, updateAssocInAssocTips } from "./ticket.action";
+import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketSplitSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData } from "./ticket.action";
 
 import { tktObjInitialState, tktObjInterface } from "./ticket.state";
 
@@ -96,12 +96,12 @@ export const _tktObjReducer = createReducer(
          ltotalTaxNDC += k.dCLineItemTaxAmount + k.fCLineItemEnvTaxAmount;
 
          if(saleAssocAry.filter(assoc => assoc.indivLocId == k.srvdByAssociateVal).length > 0) {
-            saleAssocAry.filter(assoc => assoc.indivLocId == k.srvdByAssociateVal).at(0)?.tipSaleItemId.push(k.salesItemUID);
+            saleAssocAry.filter(assoc => assoc.indivLocId == k.srvdByAssociateVal).at(0)?.tipSaleItemIdList.push(k.salesItemUID);
          }
          else {
             let saleAssoc: AssociateSaleTips = new AssociateSaleTips();
             saleAssoc.indivLocId = k.srvdByAssociateVal;
-            saleAssoc.tipSaleItemId.push(k.salesItemUID);
+            saleAssoc.tipSaleItemIdList.push(k.salesItemUID);
             saleAssocAry.push(saleAssoc);
          }
       })
@@ -112,12 +112,12 @@ export const _tktObjReducer = createReducer(
       newCheckOutItem.lineItemDollarDisplayAmount = (newCheckOutItem.unitPrice * newCheckOutItem.quantity) + newCheckOutItem.lineItemTaxAmount;
 
       if(saleAssocAry.filter(assoc => assoc.indivLocId == newCheckOutItem.srvdByAssociateVal).length > 0) {
-         saleAssocAry.filter(assoc => assoc.indivLocId == newCheckOutItem.srvdByAssociateVal).at(0)?.tipSaleItemId.push(newCheckOutItem.salesItemUID);
+         saleAssocAry.filter(assoc => assoc.indivLocId == newCheckOutItem.srvdByAssociateVal).at(0)?.tipSaleItemIdList.push(newCheckOutItem.salesItemUID);
       }
       else {
          let saleAssoc: AssociateSaleTips = new AssociateSaleTips();
          saleAssoc.indivLocId = newCheckOutItem.srvdByAssociateVal;
-         saleAssoc.tipSaleItemId.push(newCheckOutItem.salesItemUID);
+         saleAssoc.tipSaleItemIdList.push(newCheckOutItem.salesItemUID);
          saleAssocAry.push(saleAssoc);
       }
 
@@ -190,12 +190,12 @@ export const _tktObjReducer = createReducer(
 
          if(aTips) {
             assocTips = aTips;
-            assocTips.tipSaleItemId.push(val.salesItemUID);
+            assocTips.tipSaleItemIdList.push(val.salesItemUID);
          }
          else {
             assocTips = new AssociateSaleTips();
             assocTips.indivLocId = val.srvdByAssociateVal;
-            assocTips.tipSaleItemId.push(val.salesItemUID);
+            assocTips.tipSaleItemIdList.push(val.salesItemUID);
             assocTipsAry.push(assocTips)
          }         
       });
@@ -819,6 +819,17 @@ export const _tktObjReducer = createReducer(
       return {
          ...state,
          saveTktRsltMdl: action.rslt
+      }
+   }),
+   on(updatePartPayData, (state, action) => {
+      return {
+         ...state,
+         tktObj: {
+            ...state.tktObj,
+            isPartialPay: action.partPayFlag,
+            partialAmount: action.partPayAmountDC,
+            partialAmountFC: action.partPayAmountNDC
+         }
       }
    })
 );

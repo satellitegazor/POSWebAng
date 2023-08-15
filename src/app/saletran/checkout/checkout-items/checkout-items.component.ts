@@ -38,6 +38,7 @@ export class CheckoutItemsComponent implements OnInit {
   ngOnInit(): void {
 
     this.locationConfig = this._logonDataSvc.getLocationConfig();
+    this.allowTips = this._logonDataSvc.getAllowTips();
 
     this._store.select(getCheckoutItemsSelector).subscribe(saleItems => {
       this.tktDtlItems = saleItems == null ? [] : saleItems;

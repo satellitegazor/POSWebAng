@@ -2,7 +2,7 @@
     public tipAmount: number = 0;
     public tipAssociateId: number = 0;
     public indivLocId: number = 0;
-    public tipSaleItemId: number[] = [];
+    public tipSaleItemIdList: number[] = [];
     public tipAmtLocCurr: number = 0;
     public cashTipUSD: number = 0;
     public nonCashTipUSD: number = 0;

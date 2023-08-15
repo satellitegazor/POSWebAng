@@ -96,7 +96,7 @@ export class TipsModalDlgComponent implements OnInit {
       cumulativeTipTotal += indivTipAmt;
       
       if(i == this.assocSaleTips.length -1) {
-        this.assocSaleTips[i].tipAmount = (indivTipAmt + (Math.round((diffAmt - cumulativeTipTotal) * 100) / 100));
+        this.assocSaleTips[i].tipAmount = Number((indivTipAmt + (Math.round((diffAmt - cumulativeTipTotal) * 100) / 100)).toFixed(2));
       }
       else {
         this.assocSaleTips[i].tipAmount = indivTipAmt;
@@ -131,4 +131,22 @@ export class TipsModalDlgComponent implements OnInit {
   public Cancel() {
     this.modal.close('');
   }
+
+  keyValidate(event: any) { 
+    var t = event.target.value;
+    var result = t.indexOf('.') >= 0 ? t.substr(0, t.indexOf('.')) + t.substr(t.indexOf('.'), 2) : t;
+    if(event.keyCode === 8) {
+      return true;
+    }
+    else if (event.keyCode !== 190 && (event.keyCode < 48 || event.keyCode > 57))
+      return false;
+    else {
+      if(result !== event.target.value)
+        return false;
+      else
+        return true;
+    }
+  }
+
+
 }

@@ -94,7 +94,7 @@
                         {{saleTaxTotal | number:'1.2-2'}}
                     </td>
                 </tr>
-                <tr>
+                <tr *ngIf="allowTips">
                     <td style="width:66%" class="rightjustfy">
                         <label>Tips</label>
                     </td>

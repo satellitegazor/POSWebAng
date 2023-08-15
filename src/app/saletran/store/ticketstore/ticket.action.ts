@@ -31,6 +31,8 @@ export const UPSERT_SALE_ITEM_EXCH_CPN = 'upsertSaleItemExchCpn';
 export const UPSERT_SALE_ITEM_VND_CPN = 'upsertSaleItemVndCpn';
 export const UPSERT_TRAN_EXCH_CPN = 'upsertTranExchCpn';
 
+export const UPDATE_PARTPAY_DATA = 'updatePartpayData'
+
 
 export const addSaleItem = createAction(ADD_SALE_ITEM,
     props<{saleItem: SalesTransactionCheckoutItem}>());
@@ -84,3 +86,6 @@ export const updateTaxExempt = createAction(UPDATE_TAX_EXEMPT, props<{taxExempt:
 export const upsertSaleItemExchCpn = createAction(UPSERT_SALE_ITEM_EXCH_CPN, props<{logonDataSvc: LogonDataService, saleItemId: number, tktDtlId: number, cpnPct: number, cpnAmt: number}>());
 export const upsertSaleItemVndCpn = createAction(UPSERT_SALE_ITEM_VND_CPN, props<{logonDataSvc: LogonDataService, saleItemId: number, tktDtlId: number, cpnPct: number, cpnAmt: number}>());
 export const upsertTranExchCpn = createAction(UPSERT_TRAN_EXCH_CPN, props<{logonDataSvc: LogonDataService, cpnPct: number, cpnAmt: number}>());
+
+export const updatePartPayData = createAction(UPDATE_PARTPAY_DATA, props<{partPayFlag: boolean, partPayAmountDC: number, partPayAmountNDC: number}>());
+
