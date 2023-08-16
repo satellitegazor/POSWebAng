@@ -1,18 +1,20 @@
-<div style="margin-left: 0.5in;">
+<div style="margin-left: 0.2in;">
 <table *ngIf="showPartPay">
     <tr>
-        
+        <td>Part Pay&nbsp;</td>
+        <td></td>
+        <td>%</td>
         <td>
-            <div class="form-floating">
-            <input type="text" id="partPayPercent" [disabled]="disablePartPay"  [maxLength]="8" TwoDigitDecimalDirectiveDirective class="dc partpay form-control" [ngModel]="partPayPercent" (change)="onPartPayPercent($event)" (keydown)="keyValidate($event)" />
-            <label for="partPayPercent">Part Pay Percent %</label>
-            </div>
+            
+            <input type="text" id="partPayPercent" [disabled]="disablePartPay" placeholder="Part Pay Percent %" class="dc partpay form-control" [ngModel]="partPayPercent" (change)="onPartPayPercent($event)" (keydown)="keyValidate($event)" />
+            
         </td>
+        <td></td>
+        <td>{{defaultCurr}}</td>
         <td>
-            <div class="form-floating">
-            <input type="text" id="partPayAmount" [disabled]="disablePartPay" [maxlength]="8" TwoDigitDecimalDirectiveDirective class="ndc partpay form-control" [ngModel]="partPayAmount" (change)="onPartPayAmount($event)" (keydown)="keyValidate($event)" />
-            <label for="partPayAmount">Part Pay Amount</label>
-            </div>
+            
+            <input type="text" id="partPayAmount" [disabled]="disablePartPay" placeholder="Part Pay Amount"  class="ndc partpay form-control" [ngModel]="partPayAmount" (change)="onPartPayAmount($event)" (keydown)="keyValidate($event)" />
+            
         </td>
     </tr>    
 </table> 

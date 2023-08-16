@@ -24,6 +24,7 @@ export class PartPayComponent implements OnInit {
   grandTotalNDC: number = 0;
   amtPaidDC: number = 0;
   amtPaidNDC: number = 0;
+  defaultCurr: string = '$';
 
   ngOnInit(): void {
 
@@ -48,6 +49,8 @@ export class PartPayComponent implements OnInit {
     this._store.select(getIsCustomerAddedToTicket).subscribe(val => {
       this.disablePartPay = !val;
     })
+
+    this.defaultCurr = this.logonSvc.getLocationConfig().currCode;
   }
 
   onPartPayPercent(event: any) {
