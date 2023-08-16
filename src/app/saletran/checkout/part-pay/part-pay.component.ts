@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { TicketTotals } from 'src/app/models/ticket.split';
+import { Round2DecimalService } from 'src/app/services/round2-decimal.service';
 import { updatePartPayData } from '../../store/ticketstore/ticket.action';
-import { getTicketTotals } from '../../store/ticketstore/ticket.selector';
+import { getIsCustomerAddedToTicket, getTicketTotals } from '../../store/ticketstore/ticket.selector';
 import { tktObjInterface } from '../../store/ticketstore/ticket.state';
 
 @Component({
@@ -18,6 +19,7 @@ export class PartPayComponent implements OnInit {
   partPayAmount: number = 0;
   partPayPercent: number = 0;
   showPartPay: boolean = false;
+  disablePartPay: boolean = true;
   grandTotalDC: number = 0;
   grandTotalNDC: number = 0;
   amtPaidDC: number = 0;
@@ -42,12 +44,19 @@ export class PartPayComponent implements OnInit {
         this.partPayPercent = Number(((tktTotals.partPayNDC / tktTotals.grandTotalDC) * 100).toFixed(2));
       }
     })
+
+    this._store.select(getIsCustomerAddedToTicket).subscribe(val => {
+      this.disablePartPay = !val;
+    })
   }
 
   onPartPayPercent(event: any) {
+
+    this.partPayPercent = Round2DecimalService.round(event.target.value);
+
 if(this.partPayPercent > 0) {
     this.partPayAmount = Number(((this.grandTotalDC - this.amtPaidDC) * this.partPayPercent / 100).toFixed(2));
-    this._store.dispatch(updatePartPayData({partPayFlag: true, partPayAmountDC: this.partPayPercent, partPayAmountNDC: this.partPayAmount}));
+    this._store.dispatch(updatePartPayData({partPayFlag: true, partPayAmountDC: this.partPayAmount, partPayAmountNDC: this.partPayAmount}));
 }
 else {
   this._store.dispatch(updatePartPayData({partPayFlag: false, partPayAmountDC: 0, partPayAmountNDC: 0}));
@@ -56,10 +65,10 @@ else {
   }
   
   onPartPayAmount(event: any) {
-
+    this.partPayAmount = Round2DecimalService.round(event.target.value);
     if(this.partPayAmount > 0) {
       this.partPayPercent = Number((this.partPayAmount / (this.grandTotalDC - this.amtPaidDC) * 100 ).toFixed(2));
-      this._store.dispatch(updatePartPayData({partPayFlag: true, partPayAmountDC: this.partPayPercent, partPayAmountNDC: this.partPayAmount}));
+      this._store.dispatch(updatePartPayData({partPayFlag: true, partPayAmountDC: this.partPayAmount, partPayAmountNDC: this.partPayAmount}));
     }
     else {
       this._store.dispatch(updatePartPayData({partPayFlag: false, partPayAmountDC: 0, partPayAmountNDC: 0}));
@@ -73,7 +82,7 @@ else {
     if(event.keyCode === 8) {
       return true;
     }
-    else if (event.keyCode !== 190 && (event.keyCode < 48 || event.keyCode > 57))
+    else if (event.keyCode !== 190 && (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105))
       return false;
     else {
       if(result !== event.target.value)

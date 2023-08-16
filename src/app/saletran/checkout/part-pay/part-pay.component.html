@@ -4,13 +4,13 @@
         
         <td>
             <div class="form-floating">
-            <input type="text" id="partPayPercent" [maxLength]="8" TwoDigitDecimalDirectiveDirective class="dc partpay form-control" [ngModel]="partPayPercent" (change)="onPartPayPercent($event)" (keydown)="keyValidate($event)" />
+            <input type="text" id="partPayPercent" [disabled]="disablePartPay"  [maxLength]="8" TwoDigitDecimalDirectiveDirective class="dc partpay form-control" [ngModel]="partPayPercent" (change)="onPartPayPercent($event)" (keydown)="keyValidate($event)" />
             <label for="partPayPercent">Part Pay Percent %</label>
             </div>
         </td>
         <td>
             <div class="form-floating">
-            <input type="text" id="partPayAmount" [maxlength]="8" TwoDigitDecimalDirectiveDirective class="ndc partpay form-control" [ngModel]="partPayAmount" (change)="onPartPayAmount($event)" (keydown)="keyValidate($event)" />
+            <input type="text" id="partPayAmount" [disabled]="disablePartPay" [maxlength]="8" TwoDigitDecimalDirectiveDirective class="ndc partpay form-control" [ngModel]="partPayAmount" (change)="onPartPayAmount($event)" (keydown)="keyValidate($event)" />
             <label for="partPayAmount">Part Pay Amount</label>
             </div>
         </td>
