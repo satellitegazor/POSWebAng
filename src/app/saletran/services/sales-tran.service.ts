@@ -12,6 +12,8 @@ import { LocationConfigModel } from '../models/location-config';
 import { LTC_LocationAssociatesResultsModel } from '../models/location.associates';
 import { SaveTicketResultsModel, TicketSplit } from 'src/app/models/ticket.split';
 import { DailyExchRateMdl } from 'src/app/models/exchange.rate';
+import { TenderTypeModel } from '../models/tender.type';
+
 
 @Injectable({
   providedIn: 'root'
@@ -96,6 +98,13 @@ export class SalesTranService {
         return this.httpClient.get<DailyExchRateMdl>(
             GlobalConstants.CPOS_SVCS_URL + '/ltc/GetDailyExchRate?guid=' + GlobalConstants.GET_GUID + '&LocationId=' + locationId + '&BusDate=' + busdate + '&uid=' + individualUID + '&DBVal=0',
             {headers: this.headerObjs});
+    }
+
+    public getTenderTypes(appType: number, individualUID: number) {
+
+        return this.httpClient.get<TenderTypeModel>(GlobalConstants.CPOS_SVCS_URL + '/common/GetTenderTypes?guid=' + GlobalConstants.GET_GUID +
+            '&uid=' + individualUID.toString() + '&AppType=' + appType.toString(),
+            { headers: this.headerObjs });
     }
 }
   

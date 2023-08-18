@@ -8,6 +8,7 @@ import { TicketTender } from 'src/app/models/ticket.tender';
 import { SharedSubjectService } from 'src/app/shared-subject/shared-subject.service';
 import { CustomerSearchComponent } from '../../customer-search/customer-search.component';
 import { LocationConfig } from '../../models/location-config';
+import { TenderType, TenderTypeModel } from '../../models/tender.type';
 import { SalesTranService } from '../../services/sales-tran.service';
 import { addTender, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
 import { getCheckoutItemsSelector } from '../../store/ticketstore/ticket.selector';
@@ -23,7 +24,8 @@ export class CheckoutPageComponent implements OnInit {
 
   constructor(private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
     private _sharedSubSvc: SharedSubjectService, private modalService: ModalService, private _store: Store<tktObjInterface>,
-    private router: Router) { }
+    private router: Router) 
+    { }
 
   displayCustSearchDlg: string = '';
   showErrMsg: boolean = false;
@@ -34,10 +36,21 @@ export class CheckoutPageComponent implements OnInit {
   isOConus: boolean = false;
   tenderAmount: number = 0;
 
+  _tenderTypesModel: TenderTypeModel = {} as TenderTypeModel;
+  _displayTenders: TenderType[] = [];
+  tenderButtonWidthPercent: number = 0;
+    isRefund: boolean = false;
+
   ngOnInit(): void {
+
+
     console.log('CheckoutPage component ngOnInit called');
     this.locationConfig = this._logonDataSvc.getLocationConfig();
     this.isOConus = this.locationConfig.rgnCode != "CON";
+
+    this._tenderTypesModel = this._logonDataSvc.getTenderTypes();
+    this.isRefund = this._logonDataSvc.getTranMode();
+    this.tenderButtonUIDisplay();
 
     this._store.select(getCheckoutItemsSelector).subscribe(items => {
       if(items == null)
@@ -68,6 +81,22 @@ export class CheckoutPageComponent implements OnInit {
         m.tndrCode = tndrCode;
       });
     }
+  }
+
+  private tenderButtonUIDisplay(): void {
+    // this._tenderTypesModel.types.forEach(tndr => {
+    //   if(this.isRefund && tndr.isRefundType) {
+    //     tndr.displayThisTender = true;
+    //   }
+    //   if(!this.isRefund && !tndr.isRefundType) {
+    //     tndr.displayThisTender = true;
+    //   }
+    // })
+
+    
+    this._displayTenders = this._tenderTypesModel.types.filter((tndr) => tndr.isRefundType == this.isRefund);
+
+    this.tenderButtonWidthPercent = 99 / (this._displayTenders.length + 1);
   }
 
   closeCustSearchDlg() {

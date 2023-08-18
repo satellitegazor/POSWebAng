@@ -79,7 +79,7 @@ export class VendorLTComponent implements OnInit {
             if (!data.results.success) {
                 this.errorMsgDisplay = 'block';
                 this.successMsgDisplay = 'none';
-                return;
+                return; 
             }
             else {
                 this.errorMsgDisplay = 'none';
@@ -103,9 +103,15 @@ export class VendorLTComponent implements OnInit {
             console.log('vendorlt sending data to subject');
             this._sharedSvc.setLTVendorLogonData(data);
 
+
+
             this._saleTranSvc.getLocationConfig(+data.locationUID, +data.individualUID).subscribe(data => {
 
                 this._sharedSvc.setLocationConfig(data);
+
+                this._saleTranSvc.getTenderTypes(1, 100).subscribe(data => {
+                    this._sharedSvc.setTenderTypes(data);
+                });               
                 console.log('vendorlt navigating to SalesCart');
                 this.router.navigate(['/salestran']);    
             });

@@ -8,6 +8,7 @@ import { TicketTender } from 'src/app/models/ticket.tender';
 import { addTender, saveTicketSplit, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
 import { LocalStorageService } from 'src/app/global/local-storage.service';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
+import { TenderTypeModel } from '../../models/tender.type';
 
 @Component({
   selector: 'app-tender-page',

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { DailyExchRate } from '../models/exchange.rate';
 import { VendorLoginResultsModel } from '../models/vendor.login.results.model';
 import { LocationConfig, LocationConfigModel } from '../saletran/models/location-config';
+import { TenderTypeModel } from '../saletran/models/tender.type';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +11,9 @@ export class LogonDataService {
 
     private _ltvendorLogonData: VendorLoginResultsModel = {} as VendorLoginResultsModel;
     private _ltLocationConfig: LocationConfigModel = {} as LocationConfigModel;
+    private _ltTenderTypeMdl: TenderTypeModel = {} as TenderTypeModel;
+
+    private _locationTenderTypeList: String[] = [];
 
     constructor() { }
 
@@ -53,6 +57,43 @@ export class LogonDataService {
         sessionStorage.setItem('eagleCashOptn', String(ltVendorLogonData.eagleCashOptn != null ? ltVendorLogonData.eagleCashOptn : false));
         sessionStorage.setItem('useShipHndlng', String(ltVendorLogonData.useShipHndlng != null ? ltVendorLogonData.useShipHndlng : false));
         sessionStorage.setItem('tokenString', ltVendorLogonData.tokenString);
+
+    }
+
+    public getTenderTypes() {
+        return this._ltTenderTypeMdl;
+    }
+
+    public setTenderTypes(tndrMdl: TenderTypeModel) {
+
+        this._ltTenderTypeMdl = tndrMdl;
+
+        let locConfig = this.getLocationConfig();
+        if(locConfig.eagleCashOptn == false) {
+
+            let egTndrs = this._ltTenderTypeMdl.types.filter(tndr => tndr.tenderTypeCode == 'EG');
+            if(egTndrs && egTndrs.length > 0) {
+                let eg = egTndrs.at(0);
+                if(eg)
+                    eg.displayThisTender = false;
+
+            }
+        }
+
+        if(locConfig.rgnCode == 'OCONE' || locConfig.rgnCode == 'OCONP' && locConfig.cCDevice) {
+
+            if(locConfig.cCDevice == 'E') {
+                this._ltTenderTypeMdl.types = this._ltTenderTypeMdl.types.filter((tndr) => tndr.tenderTypeCode != 'CC' && tndr.tenderTypeCode != 'CR');
+            }
+
+            if(locConfig.cCDevice == 'C') {
+                this._ltTenderTypeMdl.types = this._ltTenderTypeMdl.types.filter((tndr) => tndr.tenderTypeCode != 'XC' && tndr.tenderTypeCode != 'XR');
+            }
+        }
+
+        if(locConfig.rgnCode == 'CON') {
+            this._ltTenderTypeMdl.types = this._ltTenderTypeMdl.types.filter((tndr) => tndr.tenderTypeCode != 'XC' && tndr.tenderTypeCode != 'XR');
+        }
     }
 
     public getLTVendorLogonData(): VendorLoginResultsModel {
@@ -162,6 +203,14 @@ export class LogonDataService {
         if( typeof (this._ltLocationConfig.configs) == 'undefined' || this._ltLocationConfig.configs.length == 0) {
             this._ltLocationConfig = locConfig;
         }
+    }
+
+    public setTranMode(IsRefund: boolean) {
+        sessionStorage.setItem('tranmode', IsRefund.toString());
+    }
+
+    public getTranMode() {
+        return Boolean(sessionStorage.getItem('tranmode'));
     }
 
     public getBusinessModel(): number {

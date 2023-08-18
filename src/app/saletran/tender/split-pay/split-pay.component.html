@@ -1,1 +1,28 @@
-<p>split-pay works!</p>
+<div class="panel">
+    <div class="panel-body">
+        <table class="table">
+            <tr>
+                <td style="text-align: left;">
+                    Tender Type:
+                </td>
+                <td style="text-align: right;">
+                    Tender Amount: 
+                </td>
+            </tr>
+            <tr *ngFor="let tndr of tndrs">
+                <td style="text-align: left;">
+                {{tndr.tenderTypeDesc}}
+                </td>
+                <td style="text-align: right;">
+                {{tndr.tenderAmount}}
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="footer fixed-bottom cncsnFooter">
+    <div class="row">
+        
+
+    </div>
+</div>   
