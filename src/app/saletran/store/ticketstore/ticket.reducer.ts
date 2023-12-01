@@ -514,17 +514,17 @@ export const _tktObjReducer = createReducer(
                if (itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.tktDtlId) {
                   return {
                      ...itm,
-                     exchangeCouponDiscountPct: itm.exchangeCouponDiscountPct > 0 ? action.cpnPct : itm.exchangeCouponDiscountPct,
-                     lineItemDollarDisplayAmount: lineItemDollarDisplayAmount,
-                     lineItemTaxAmount: dCLineItemTaxAmount,
-                     lineItemEnvTaxAmount: lineItemEnvTaxAmount,
+                     exchangeCouponDiscountPct: Math.round((itm.exchangeCouponDiscountPct > 0 ? action.cpnPct : itm.exchangeCouponDiscountPct) * 100)/100,
+                     lineItemDollarDisplayAmount: Math.round((lineItemDollarDisplayAmount + Number.EPSILON) * 100)/100,
+                     lineItemTaxAmount: Math.round((dCLineItemTaxAmount + Number.EPSILON) * 100)/100,
+                     lineItemEnvTaxAmount: Math.round((lineItemEnvTaxAmount + Number.EPSILON) * 100)/100,
 
-                     dCLineItemTaxAmount: dCLineItemTaxAmount,
-                     fCLineItemEnvTaxAmount: fCLineItemEnvTaxAmount,
-                     dCCouponLineItemDollarAmount: dCCouponLineItemDollarAmount,
+                     dCLineItemTaxAmount: Math.round((dCLineItemTaxAmount + Number.EPSILON) * 100)/100,
+                     fCLineItemEnvTaxAmount: Math.round((fCLineItemEnvTaxAmount + Number.EPSILON) * 100)/100,
+                     dCCouponLineItemDollarAmount: Math.round((dCCouponLineItemDollarAmount + Number.EPSILON) * 100)/100,
 
-                     exchCpnAmountDC: exchDiscAmtDC,
-                     exchCpnAmountNDC: exchDiscAmtNDC,
+                     exchCpnAmountDC: Math.round((exchDiscAmtDC + Number.EPSILON) * 100)/100,
+                     exchCpnAmountNDC: Math.round((exchDiscAmtNDC + Number.EPSILON) * 100)/100,
                   }
                }
                else {
@@ -536,17 +536,17 @@ export const _tktObjReducer = createReducer(
          },
          tktTotals: {
             ...state.tktTotals,
-            grandTotalDC: lineItemGrantTotal,
-            grandTotalNDC: lineitemGrandTotalNDC,
+            grandTotalDC: Math.round((lineItemGrantTotal + Number.EPSILON) * 100)/100,
+            grandTotalNDC: Math.round((lineitemGrandTotalNDC + Number.EPSILON) * 100)/100,
 
-            totalSavingsDC: totalSavingsDC,
-            totalExchCpnAmtNDC: totalSavingsNDC,
+            totalSavingsDC: Math.round((totalSavingsDC + Number.EPSILON) * 100)/100,
+            totalExchCpnAmtNDC: Math.round((totalSavingsNDC + Number.EPSILON) * 100)/100,
 
-            subTotalDC: subTotalDC,
-            subTotalNDC: subTotalNDC,
+            subTotalDC: Math.round((subTotalDC + Number.EPSILON) * 100)/100,
+            subTotalNDC: Math.round((subTotalNDC + Number.EPSILON) * 100)/100,
 
-            totalTaxDC: totalTaxDC,
-            totalTaxNDC: totalTaxNDC
+            totalTaxDC: Math.round((totalTaxDC + Number.EPSILON) * 100)/100,
+            totalTaxNDC: Math.round((totalTaxNDC + Number.EPSILON) * 100)/100
 
          }
       }

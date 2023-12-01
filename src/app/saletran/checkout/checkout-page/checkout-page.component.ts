@@ -69,9 +69,11 @@ export class CheckoutPageComponent implements OnInit {
     });
   }
 
-  btnTndrClick(evt: Event, tndrCode: string) {
+  btnTndrClick(evt: Event) {
 
     this._store.dispatch(updateCheckoutTotals({logonDataSvc: this._logonDataSvc}));
+    
+    let tndrCode = (evt.target as Element).id
     if(this._logonDataSvc.getBusinessModel() != 5) {
       this.router.navigate(['tender'], {queryParams: {code: tndrCode}})
     }
@@ -84,18 +86,8 @@ export class CheckoutPageComponent implements OnInit {
   }
 
   private tenderButtonUIDisplay(): void {
-    // this._tenderTypesModel.types.forEach(tndr => {
-    //   if(this.isRefund && tndr.isRefundType) {
-    //     tndr.displayThisTender = true;
-    //   }
-    //   if(!this.isRefund && !tndr.isRefundType) {
-    //     tndr.displayThisTender = true;
-    //   }
-    // })
-
     
     this._displayTenders = this._tenderTypesModel.types.filter((tndr) => tndr.isRefundType == this.isRefund);
-
     this.tenderButtonWidthPercent = 99 / (this._displayTenders.length + 1);
   }
 

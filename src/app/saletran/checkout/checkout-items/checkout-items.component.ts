@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ModalService } from '@independer/ng-modal';
 import { Store } from '@ngrx/store';
 import { CouponType } from 'src/app/global/global.constants';
@@ -20,7 +21,8 @@ export class CheckoutItemsComponent implements OnInit {
 
   constructor(private _store: Store<tktObjInterface>, 
     private _logonDataSvc: LogonDataService,
-    private _modalService: ModalService) { }
+    private _modalService: ModalService,
+    private _router: Router) { }
 
   allowTips: boolean = false;
   tktDtlItems: SalesTransactionCheckoutItem[] = [];
@@ -63,7 +65,7 @@ export class CheckoutItemsComponent implements OnInit {
   }
 
   btnAddRemove() {
-
+    this._router.navigateByUrl('/salestran');
   }
 
   btnCancelClicked() {
