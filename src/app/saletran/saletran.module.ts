@@ -36,11 +36,12 @@ import { TenderPageComponent } from './tender/tender-page/tender-page.component'
 import { TipsModalDlgComponent } from './checkout/tips-modal-dlg/tips-modal-dlg.component';
 import { SaveTicketSuccessComponent } from './save-ticket-success/save-ticket-success.component';
 import { SplitPayComponent } from './tender/split-pay/split-pay.component';
+import { TicketLookupComponent } from './ticket-lookup/ticket-lookup.component';
 
 @NgModule({
     declarations: [DeptListComponent, SalesCartComponent, SalesCategoryComponent, SaleItemComponent,
         TktSaleItemComponent, CustomerNewComponent, CustomerSearchComponent,  
-        CouponsModalDlgComponent, PartPayComponent, BalanceDueComponent, SaleTotalsComponent, CheckoutPageComponent, CheckoutItemsComponent, TenderPageComponent, TipsModalDlgComponent, SaveTicketSuccessComponent, SplitPayComponent],
+        CouponsModalDlgComponent, PartPayComponent, BalanceDueComponent, SaleTotalsComponent, CheckoutPageComponent, CheckoutItemsComponent, TenderPageComponent, TipsModalDlgComponent, SaveTicketSuccessComponent, SplitPayComponent, TicketLookupComponent],
     imports: [
         CommonModule,
         FormsModule,

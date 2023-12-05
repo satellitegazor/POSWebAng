@@ -1,0 +1,45 @@
+<modal [showCloseButton]="false" [closeOnEscape]="false" [closeOnOutsideClick]="false">
+    <modal-header>
+        <h4>Customer Lookup</h4>
+    </modal-header>
+    <modal-content>
+        <div class="form-group">
+            <label for="telephone">Location</label>
+            <input type="text" class="form-control" [(ngModel)]="locationName"  name="LocationName" />
+        </div>
+        <div class="form-group">
+            <label for="telephone">Ticket#</label>
+            <input type="text" class="form-control" [(ngModel)]="ticketNum"  name="TicketNum" />
+        </div>
+        <div class="form-group">
+            <label for="telephone">Customer Phone#</label>
+            <input type="text" class="form-control" [(ngModel)]="telephone"  name="telephone" />
+        </div>
+        <div class="form-group"> 
+            <label for="firstName">First Name</label>
+            <input type="text" class="form-control" [(ngModel)]="firstName"  name="firstName" />
+        </div>
+        <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input type="text" class="form-control" [(ngModel)]="lastName"  name="lastName" />
+        </div>
+        <div class="customer-list-scrollbar">
+            <div class="btn-group-vertical form-control">
+                <button type="button" *ngFor="let tkt of ticketList" class="btn btn-info form-control border"
+                     (click)="ticketSelected(tkt.transactionId)" >{{tkt.ticketNum}}</button>
+            </div>
+        </div>
+
+    </modal-content>
+    <modal-footer>
+        <div class="row">
+            <button class="btn btn-info" (click)="search()">Search</button>&nbsp;
+            <button class="btn btn-info" (click)="cancel()">Cancel</button>&nbsp;
+            <button class="btn btn-info" (click)="newcust()">New Customer</button>&nbsp;
+        </div>
+    </modal-footer>
+    <div *ngIf="showErrMsg">
+        <div class="strongmsg">{{strongErrMessage}}</div><div class="errmsg">{{errMessage}}</div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</modal>

@@ -158,4 +158,8 @@ export class SalesCartComponent implements OnInit, OnDestroy {
     closeCustSearchDlg() {
         this.displayCustSearchDlg = "none";
     }
+
+    btnTicketLkup(evt: Event) {
+        
+    }
 }

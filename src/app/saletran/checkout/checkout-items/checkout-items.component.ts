@@ -69,7 +69,7 @@ export class CheckoutItemsComponent implements OnInit {
   }
 
   btnCancelClicked() {
-
+    this._router.navigateByUrl('/salestran');
   }
 
   public updateCheckoutTotals() {

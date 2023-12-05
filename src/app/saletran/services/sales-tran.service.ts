@@ -106,5 +106,13 @@ export class SalesTranService {
             '&uid=' + individualUID.toString() + '&AppType=' + appType.toString(),
             { headers: this.headerObjs });
     }
+
+    public getTicketLookup(individualUID: number, locationid: number, phone: string, firstname: string, lastname: string) {
+
+        return this.httpClient.get<TenderTypeModel>(GlobalConstants.CPOS_SVCS_URL + '/common/GetTenderTypes?guid=' + GlobalConstants.GET_GUID +
+            '&uid=' + individualUID.toString() + '&phone=' + phone + '&firstName=' + firstname + '&lastName=' + lastname ,
+            { headers: this.headerObjs });
+    }
+
 }
   

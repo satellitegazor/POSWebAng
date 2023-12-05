@@ -61,14 +61,16 @@
             <table class="table">
                 <tr>
                     <td style="width:66%" class="rightjustfy">
-                        <label>Tax Exempted</label>
-                        <input type="checkbox" id="cbTaxExempt" [(ngModel)]="taxExempt" name="cbTaxExempt" (change)="TaxExemptChanged()"/>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" role="switch" type="checkbox" value="no" unchecked id="cbTaxExempt" [(ngModel)]="taxExempt" name="cbTaxExempt1" (change)="TaxExemptChanged()"/>
+                            <label class="form-check-label" for="cbTaxExempt1">Tax Exempted</label>
+                          </div>                          
                     </td>
                 </tr>
             </table>
         </td>
         <td style="width:15%;">
-            <table class="table">
+            <table>
                 <tr>
                     <td style="width:66%" class="rightjustfy">
                         <label>Item Subtotal</label>
