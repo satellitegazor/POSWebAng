@@ -4,11 +4,13 @@
     </modal-header>
     <modal-content>
         <div class="form-group">
-            <label for="telephone">Location</label>
-            <input type="text" class="form-control" [(ngModel)]="locationName"  name="LocationName" />
+            <label for="locationname">Location</label>
+            <input type="text" class="form-control" boename="locationname" readonly value="{{locationName}}"/>
+            <!-- <label name="locationname">{{locationName}}</label> -->
+            <!-- <input type="text" readonly class="form-control" [(ngModel)]="locationName"  name="LocationName" /> -->
         </div>
         <div class="form-group">
-            <label for="telephone">Ticket#</label>
+            <label for="TicketNum">Ticket#</label>
             <input type="text" class="form-control" [(ngModel)]="ticketNum"  name="TicketNum" />
         </div>
         <div class="form-group">
@@ -26,7 +28,7 @@
         <div class="customer-list-scrollbar">
             <div class="btn-group-vertical form-control">
                 <button type="button" *ngFor="let tkt of ticketList" class="btn btn-info form-control border"
-                     (click)="ticketSelected(tkt.transactionId)" >{{tkt.ticketNum}}</button>
+                     (click)="ticketSelected(tkt.transactionID)" >{{tkt.ticketNumber}}</button>
             </div>
         </div>
 
@@ -35,7 +37,6 @@
         <div class="row">
             <button class="btn btn-info" (click)="search()">Search</button>&nbsp;
             <button class="btn btn-info" (click)="cancel()">Cancel</button>&nbsp;
-            <button class="btn btn-info" (click)="newcust()">New Customer</button>&nbsp;
         </div>
     </modal-footer>
     <div *ngIf="showErrMsg">

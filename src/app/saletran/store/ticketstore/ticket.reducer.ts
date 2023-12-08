@@ -141,7 +141,7 @@ export const _tktObjReducer = createReducer(
                newCheckOutItem],
             totalSale: _totalSaleAmt,
             associateTips: saleAssocAry,
-            balanceDue: lsubTotalDC
+            //balanceDue: lsubTotalDC
          },
          tktTotals: {
             ...state.tktTotals,
@@ -335,7 +335,7 @@ export const _tktObjReducer = createReducer(
             tktList: updatedTktList,
             totalSale: totalSale,
             totalSaleFC: totalSaleFC,
-            balanceDue: totalSale,
+            //balanceDue: totalSale,
          }
       }
 

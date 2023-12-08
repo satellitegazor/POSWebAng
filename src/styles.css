@@ -6,3 +6,44 @@
     overflow: auto;
 } 
 
+.table {
+      
+    th, td {
+      padding: 1px;
+      border-top: 0px;
+    }
+  
+    thead th {
+      vertical-align: bottom;
+      border-bottom: 0px;
+    }
+  
+    tbody + tbody {
+      border-top: 0px;
+    }
+
+
+}
+
+.row {
+    margin-left: 0px;
+    margin-right: 0px;    
+}
+
+.bkgray {
+    background-color: lightgrey;
+}
+
+.tktSaleItemHdr {
+    background-color: #17a2b8;
+    color: white;
+    font-size: large;
+}
+
+.tktSaleItemsClass {
+    font-size: large;
+}
+
+.rightjustfy {
+    text-align: right;
+}

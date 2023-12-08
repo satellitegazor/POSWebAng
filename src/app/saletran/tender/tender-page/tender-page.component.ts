@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import { TicketSplit } from 'src/app/models/ticket.split';
 import { getBalanceDue, getBalanceDueFC, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { tktObjInterface } from '../../store/ticketstore/ticket.state';
@@ -12,7 +12,7 @@ import { TenderTypeModel } from '../../models/tender.type';
 import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheckoutItem';
 import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
 import { getLocCnfgIsAllowTipsSelector } from '../../store/locationconfigstore/locationconfig.selector';
-import { Observable, Subscription } from 'rxjs';
+import { firstValueFrom, Observable, Subscription, take } from 'rxjs';
 
 @Component({
   selector: 'app-tender-page',
@@ -59,7 +59,7 @@ export class TenderPageComponent implements OnInit {
     })
   }
 
-  btnApprove(evt: Event) {
+  async btnApprove(evt: Event) {
 
     let tndrObj: TicketTender = new TicketTender();
     tndrObj.tenderTypeCode = this._tenderTypeCode;
@@ -70,14 +70,13 @@ export class TenderPageComponent implements OnInit {
     tndrObj.fCCurrCode = this._logonDataSvc.getLocationConfig().currCode;
 
     this._store.dispatch(addTender({ tndrObj }));
-    
-    this.subscription = this._store.select(getTktObjSelector).subscribe(data => {
-      if (data != null && this.IsTicketComplete(data)) {
 
-        this.route.navigate(['/savetktsuccess']);
-        this._store.dispatch(saveTicketSplit({ tktObj:  data}));
-       }
-     });
+    var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    
+    if(tktObjData != null) {
+      this._store.dispatch(saveTicketSplit({ tktObj:  tktObjData}));
+    }
+    this.route.navigate(['/savetktsuccess']);
     
   }
 

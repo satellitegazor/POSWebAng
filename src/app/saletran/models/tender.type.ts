@@ -13,3 +13,5 @@ export class TenderTypeModel {
     public results: MobileBase = {} as MobileBase;
     public types: TenderType[] = [];
 }
+
+

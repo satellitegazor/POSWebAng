@@ -1,10 +1,10 @@
 
-    <div class="panel" style="background-color:lightgrey;">
+    <div class="panel" style="">
         <div class="panel-body ms-2 me-2 mt-2 mb-2">
-            <div class="row">
+            <div class="row bkgray">
                 <div class="col-md-6"  *ngFor="let itm of saleItemList">
                     <button type="button" class="btn btn-info btn-block"
-                            style="margin-left: 5px;margin-right: 5px;margin-top: 10px;margin-bottom: 10px;"
+                            style="margin-top: 10px;margin-bottom: 10px;"
                             id="{{itm.salesItemID}}"
                             (click)="salesItemClick($event, itm.salesItemID)">
                         {{itm.salesItemDescription}}

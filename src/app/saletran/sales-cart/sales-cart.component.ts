@@ -21,6 +21,7 @@ import { getAuthLoginSelector } from 'src/app/authstate/auth.selector';
 import { LocationConfig, LocationIndividual } from '../models/location-config';
 import { tktObjInterface } from '../store/ticketstore/ticket.state';
 import { initTktObj } from '../store/ticketstore/ticket.action';
+import { TicketLookupComponent } from '../ticket-lookup/ticket-lookup.component';
 
 
 @Component({
@@ -45,6 +46,7 @@ export class SalesCartComponent implements OnInit, OnDestroy {
     strongErrMessage: string = "";
     errMessage: string = "";
     displayCustSearchDlg: string = '';
+    displayTicketLookupDlg: string = '';
     showErrMsg: boolean = false;
     locationConfig: LocationConfig = {} as LocationConfig;
     locationIndividuals: LocationIndividual[] = [];
@@ -160,6 +162,14 @@ export class SalesCartComponent implements OnInit, OnDestroy {
     }
 
     btnTicketLkup(evt: Event) {
-        
+        this.displayTicketLookupDlg = "display";
+        const modalRef = this.modalService.open(TicketLookupComponent, m => {
+            m.displayMsg = "search ticket";
+          });
+      
+    }
+
+    closeTicketLookupDlg() {
+        this.displayTicketLookupDlg = "none";
     }
 }

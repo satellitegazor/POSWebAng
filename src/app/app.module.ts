@@ -25,6 +25,7 @@ import { SummaryComponent } from './reports/salestran/summary/summary.component'
 import { DetailComponent } from './reports/salestran/detail/detail.component';
 import { SalestranComponent } from './reports/salestran/salestran/salestran.component';
 import { TwoDigitDecimalDirectiveDirective } from './directives/two-digit-decimal-directive.directive';
+import { LtcTicketReceiptComponent } from './receipts/ltc-ticket-receipt/ltc-ticket-receipt.component';
  
 @NgModule({
   schemas: [
@@ -38,7 +39,8 @@ import { TwoDigitDecimalDirectiveDirective } from './directives/two-digit-decima
     SummaryComponent,
     DetailComponent,
     SalestranComponent,
-    TwoDigitDecimalDirectiveDirective
+    TwoDigitDecimalDirectiveDirective,
+    LtcTicketReceiptComponent
   ],
   imports: [
     BrowserModule,

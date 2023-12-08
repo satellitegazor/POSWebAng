@@ -28,7 +28,7 @@ export class SaveTicketSuccessComponent implements OnInit {
   ngOnInit(): void {
     this._store.select(getSavedTicketResult).subscribe(data => {
       this.saveTktRsltMdl = data;
-      this.tktSaveResultMessage = this.saveTktRsltMdl.ticketNumber > 0 ? 'Ticket save Successful' : 'Ticket Save Failed'
+      this.tktSaveResultMessage = this.saveTktRsltMdl.ticketNumber > 0 ? 'Ticket save Successful' : 'Ticket saving...'
     })
   }
 

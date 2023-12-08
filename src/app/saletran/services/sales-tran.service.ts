@@ -13,6 +13,7 @@ import { LTC_LocationAssociatesResultsModel } from '../models/location.associate
 import { SaveTicketResultsModel, TicketSplit } from 'src/app/models/ticket.split';
 import { DailyExchRateMdl } from 'src/app/models/exchange.rate';
 import { TenderTypeModel } from '../models/tender.type';
+import { TicketLookupResult } from '../models/ticket.list';
 
 
 @Injectable({
@@ -107,10 +108,10 @@ export class SalesTranService {
             { headers: this.headerObjs });
     }
 
-    public getTicketLookup(individualUID: number, locationid: number, phone: string, firstname: string, lastname: string) {
+    public getTicketLookup(individualUID: number, locationid: number, ticketNum: number, phone: string, firstname: string, lastname: string) {
 
-        return this.httpClient.get<TenderTypeModel>(GlobalConstants.CPOS_SVCS_URL + '/common/GetTenderTypes?guid=' + GlobalConstants.GET_GUID +
-            '&uid=' + individualUID.toString() + '&phone=' + phone + '&firstName=' + firstname + '&lastName=' + lastname ,
+        return this.httpClient.get<TicketLookupResult>(GlobalConstants.CPOS_SVCS_URL + '/ltc/GetTicketLookup?guid=' + GlobalConstants.GET_GUID +
+            '&uid=' + individualUID.toString() + '&lid=' + locationid.toString() + '&ticketnum=' + ticketNum.toString() + '&phone=' + phone + '&fname=' + firstname + '&lname=' + lastname ,
             { headers: this.headerObjs });
     }
 

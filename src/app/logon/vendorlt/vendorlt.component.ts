@@ -95,7 +95,7 @@ export class VendorLTComponent implements OnInit {
             this._localStorageSvc.setItemData('location_ddlContract_Type', true.toString());
             this._localStorageSvc.setItemData('location_facility_name', location.facilityName);
  
-           let cstart: Date = new Date(Date.parse(data.contractStart));
+            let cstart: Date = new Date(Date.parse(data.contractStart));
             let today: Date = new Date();
             this._localStorageSvc.setItemData('isFutureContract', (cstart > today ? true: false).toString());
             this._localStorageSvc.setItemData('jwtToken', data.tokenString);
