@@ -13,7 +13,7 @@ import { LTC_LocationAssociatesResultsModel } from '../models/location.associate
 import { SaveTicketResultsModel, TicketSplit } from 'src/app/models/ticket.split';
 import { DailyExchRateMdl } from 'src/app/models/exchange.rate';
 import { TenderTypeModel } from '../models/tender.type';
-import { TicketLookupResult } from '../models/ticket.list';
+import { LTC_SingleTransactionResultsModel, LTC_Ticket, LTC_TransactionDetailsModel, SingleTransactionId, TicketLookupResult } from '../models/ticket.list';
 
 
 @Injectable({
@@ -113,6 +113,34 @@ export class SalesTranService {
         return this.httpClient.get<TicketLookupResult>(GlobalConstants.CPOS_SVCS_URL + '/ltc/GetTicketLookup?guid=' + GlobalConstants.GET_GUID +
             '&uid=' + individualUID.toString() + '&lid=' + locationid.toString() + '&ticketnum=' + ticketNum.toString() + '&phone=' + phone + '&fname=' + firstname + '&lname=' + lastname ,
             { headers: this.headerObjs });
+    }
+
+    public getTranIdForTicketNum(pLocationUID: number, pTicketNum: number, pIndividualId: number) {
+
+        return this.httpClient.get<SingleTransactionId>(GlobalConstants.CPOS_SVCS_URL + '/ltc/GetTranId?guid=' + GlobalConstants.GET_GUID + 
+            '&uid=' + pIndividualId.toString() + '&TicketNum=' + pTicketNum.toString() + '&LocationId=' + pLocationUID, 
+            {headers: this.headerObjs});
+    }
+
+    public getSingleTransaction(uid: number, pTransactionID: number, pIsCancelled: boolean, pCancelTypeId: number, 
+            pCancelOtherRsn: string, CliTimeVar: number, pPartPayID: number) {
+
+        return this.httpClient.get<LTC_SingleTransactionResultsModel>(GlobalConstants.CPOS_SVCS_URL + '/ltc/GetSingleTransaction?guid=' + GlobalConstants.GET_GUID + 
+            '&uid=' + uid.toString() + '&pTransactionID=' + pTransactionID.toString() + '&pIsCancelled=' + pIsCancelled + 
+            '&pCancelTypeId=' + pCancelTypeId.toString() + '&pCancelOtherRsn=' + pCancelOtherRsn +
+            '&CliTimeVar=' + CliTimeVar.toString() + '&pPartPayID=' + pPartPayID.toString());
+    }
+
+    public getTransactionDetails(uid: string = '', pTransactionID: number = 0, pCustomerFirstName: string = '',
+        pCustomerLastName: string = '', pCustomerPhone: string = '', pContractUID: number = 0, pLocationUID: number = 0, 
+        pFacilityUID: number = 0, pDepartmentUID: number = 0, pSource: string = '', pCustomerUID: number = 0) {
+
+        return this.httpClient.get<LTC_TransactionDetailsModel>(GlobalConstants.CPOS_SVCS_URL + '/ltc/GetTransactionDetails?guid=' + GlobalConstants.GET_GUID 
+            + '&uid=' + uid.toString() + '&pTransactionID=' + pTransactionID.toString() + '&pCustomerFirstName=' + pCustomerFirstName
+            + '&pCustomerLastName=' + pCustomerLastName + '&pCustomerPhone=' + pCustomerPhone + '&pContractUID=' + pContractUID
+            + '&pLocationUID=' + pLocationUID + '&pFacilityUID=' + pFacilityUID + '&pDepartmentUID=' + pDepartmentUID
+            + '&pSource=' + pSource + '&pCustomerUID=' + pCustomerUID)
+
     }
 
 }

@@ -5,16 +5,17 @@ import { TicketTotals } from 'src/app/models/ticket.split';
 import { Round2DecimalService } from 'src/app/services/round2-decimal.service';
 import { updatePartPayData } from '../../store/ticketstore/ticket.action';
 import { getIsCustomerAddedToTicket, getTicketTotals } from '../../store/ticketstore/ticket.selector';
-import { tktObjInterface } from '../../store/ticketstore/ticket.state';
+import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 
 @Component({
-  selector: 'app-part-pay',
-  templateUrl: './part-pay.component.html',
-  styleUrls: ['./part-pay.component.css']
+    selector: 'app-part-pay',
+    templateUrl: './part-pay.component.html',
+    styleUrls: ['./part-pay.component.css'],
+    standalone: false
 })
 export class PartPayComponent implements OnInit {
 
-  constructor(private _store: Store<tktObjInterface>, private logonSvc: LogonDataService) { }
+  constructor(private _store: Store<saleTranDataInterface>, private logonSvc: LogonDataService) { }
 
   partPayAmount: number = 0;
   partPayPercent: number = 0;

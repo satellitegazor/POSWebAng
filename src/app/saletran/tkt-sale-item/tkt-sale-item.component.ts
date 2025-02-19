@@ -9,7 +9,7 @@ import { TktSaleItem } from '../../models/ticket.detail';
 import { getLocationAssocSelector } from '../store/localtionassociates/locationassociates.selector';
 import { getLocCnfgIsAllowTipsSelector } from '../store/locationconfigstore/locationconfig.selector';
 import { SalesTranService } from '../services/sales-tran.service';
-import { tktObjInterface } from '../store/ticketstore/ticket.state';
+import { saleTranDataInterface } from '../store/ticketstore/ticket.state';
 import { addSaleItem, updateServedByAssociate, decSaleitemQty, delSaleitemZeroQty, incSaleitemQty, updateAssocInAssocTips } from '../store/ticketstore/ticket.action';
 import { SalesTransactionCheckoutItem } from '../models/salesTransactionCheckoutItem';
 import { ConditionalExpr } from '@angular/compiler';
@@ -19,13 +19,14 @@ import { Router } from '@angular/router';
 @Component({
     selector: 'app-tkt-sale-item',
     templateUrl: './tkt-sale-item.component.html',
-    styleUrls: ['./tkt-sale-item.component.css']
+    styleUrls: ['./tkt-sale-item.component.css'],
+    standalone: false
 })
 export class TktSaleItemComponent implements OnInit {
 
     constructor(private _saleTranSvc: SalesTranService,
         private _logonDataSvc: LogonDataService,
-        private _store: Store<tktObjInterface>,
+        private _store: Store<saleTranDataInterface>,
         private _router: Router) { }
 
     tktSaleItems: SalesTransactionCheckoutItem[] = [];

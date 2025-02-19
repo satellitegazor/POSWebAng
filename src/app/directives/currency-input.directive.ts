@@ -3,14 +3,15 @@ import { Directive, ElementRef, EventEmitter, forwardRef, HostListener, Input, O
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Directive({
-  selector: 'input[myCurrencyInput]',
-   providers: [
-     {
-       provide: NG_VALUE_ACCESSOR,
-       useExisting: forwardRef(() => CurrencyInputDirective),
-       multi:true
-     }
-   ]
+    selector: 'input[myCurrencyInput]',
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => CurrencyInputDirective),
+            multi: true
+        }
+    ],
+    standalone: false
 })
 export class CurrencyInputDirective implements ControlValueAccessor {
 

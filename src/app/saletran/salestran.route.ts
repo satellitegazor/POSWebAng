@@ -7,13 +7,15 @@ import { SalesCartComponent } from './sales-cart/sales-cart.component';
 import { CheckoutPageComponent } from './checkout/checkout-page/checkout-page.component';
 import { TenderPageComponent } from './tender/tender-page/tender-page.component';
 import { SaveTicketSuccessComponent } from './save-ticket-success/save-ticket-success.component';
- 
-export const routes: Routes = [
-    { path: '', component: SalesCartComponent},
+import { MiscModule } from '../misc-module/misc.module';
+
+const routes: Routes = [
     { path: 'salestran', component: SalesCartComponent },
     { path: 'checkout', component: CheckoutPageComponent },
     { path: 'tender', component: TenderPageComponent },
     { path: 'savetktsuccess', component: SaveTicketSuccessComponent },
+    //{ path: '', component: SalesCartComponent},
+    //{ path: 'rlogon', loadChildren? : './misc-module/mic.module##MiscModuleRoutingModule' }
 ];
 
 /*export const routing: ModuleWithProviders = RouterModule.forChild(routes)*/
@@ -25,9 +27,10 @@ export const routes: Routes = [
 //    { path: 'rlogon', loadChildren: './logon/logon.module#LogonModule' },
 //];
 
-//@NgModule({
-//    imports: [RouterModule.forRoot(routes)],
-//    exports: [RouterModule]
-//})
+@NgModule({
+    imports: [RouterModule.forRoot(routes)],
+    exports: [RouterModule]
+})
 
-export const SalesTranRoutingModule: ModuleWithProviders<SalesTranModule> = RouterModule.forChild(routes);
+//export const SalesTranRoutingModule: ModuleWithProviders<SalesTranModule> = RouterModule.forChild(routes);
+export class SalesTranRoutingModule {}

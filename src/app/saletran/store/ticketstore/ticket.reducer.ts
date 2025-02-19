@@ -9,7 +9,7 @@ import { TicketTender } from "src/app/models/ticket.tender";
 import { SalesTransactionCheckoutItem } from "../../models/salesTransactionCheckoutItem";
 import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketSplitSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData } from "./ticket.action";
 
-import { tktObjInitialState, tktObjInterface } from "./ticket.state";
+import { tktObjInitialState, saleTranDataInterface } from "./ticket.state";
 
 export const _tktObjReducer = createReducer(
    tktObjInitialState,
@@ -305,27 +305,27 @@ export const _tktObjReducer = createReducer(
 
       for (let k = 0; k < updatedTktList.length; k++) {
 
-         let subTotal = (updatedTktList[k].unitPrice * updatedTktList[k].quantity);
-         let exchCpnTotal = (updatedTktList[k].unitPrice * updatedTktList[k].quantity) * updatedTktList[k].exchangeCouponDiscountPct * 0.01;
-         let saleTaxTotal = (updatedTktList[k].unitPrice * updatedTktList[k].quantity) * updatedTktList[k].salesTaxPct * 0.01;
-         let vndDiscountTotal = updatedTktList[k].discountAmount | 0;
+         let subTotal = ((updatedTktList[k].unitPrice * updatedTktList[k].quantity) * 100) / 100;
+         let exchCpnTotal = ((updatedTktList[k].unitPrice * updatedTktList[k].quantity) * updatedTktList[k].exchangeCouponDiscountPct * 0.01 * 100) / 100;
+         let saleTaxTotal = ((updatedTktList[k].unitPrice * updatedTktList[k].quantity) * updatedTktList[k].salesTaxPct * 0.01 * 100) / 100;
+         let vndDiscountTotal = (updatedTktList[k].discountAmount | 0 * 100) / 100;
 
-         updatedTktList[k].lineItemDollarDisplayAmount = (subTotal - exchCpnTotal - vndDiscountTotal + saleTaxTotal);
+         updatedTktList[k].lineItemDollarDisplayAmount = ((subTotal - exchCpnTotal - vndDiscountTotal + saleTaxTotal) * 100) / 100;
          updatedTktList[k].lineItemTaxAmount = saleTaxTotal;
          updatedTktList[k].discountAmount = exchCpnTotal + vndDiscountTotal;
 
          totalSale += updatedTktList[k].lineItemDollarDisplayAmount;
 
-         let subTotalFC = (updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity);
-         let exchCpnTotalFC = (updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity) * updatedTktList[k].exchangeCouponDiscountPct * 0.01;
-         let saleTaxTotalFC = (updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity) * updatedTktList[k].salesTaxPct * 0.01;
-         let vndDiscountTotalFC = updatedTktList[k].dCDiscountAmount | 0;
+         let subTotalFC = ((updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity) * 100) / 100;
+         let exchCpnTotalFC = ((updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity) * updatedTktList[k].exchangeCouponDiscountPct * 0.01 * 100) / 100;
+         let saleTaxTotalFC = ((updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity) * updatedTktList[k].salesTaxPct * 0.01 * 100) / 100;
+         let vndDiscountTotalFC = (updatedTktList[k].dCDiscountAmount | 0 * 100) / 100;
 
-         updatedTktList[k].dCLineItemDollarDisplayAmount = (subTotalFC - exchCpnTotalFC - vndDiscountTotalFC + saleTaxTotalFC);
-         updatedTktList[k].dCLineItemTaxAmount = saleTaxTotalFC;
-         updatedTktList[k].dCDiscountAmount = exchCpnTotalFC + vndDiscountTotalFC;
+         updatedTktList[k].dCLineItemDollarDisplayAmount = ((subTotalFC - exchCpnTotalFC - vndDiscountTotalFC + saleTaxTotalFC) * 100) / 100;
+         updatedTktList[k].dCLineItemTaxAmount = (saleTaxTotalFC * 100) / 100;
+         updatedTktList[k].dCDiscountAmount = (exchCpnTotalFC + vndDiscountTotalFC * 100) / 100;
 
-         totalSaleFC += updatedTktList[k].dCLineItemDollarDisplayAmount;
+         totalSaleFC += (updatedTktList[k].dCLineItemDollarDisplayAmount * 100) / 100;
       }
 
       return {
@@ -466,21 +466,21 @@ export const _tktObjReducer = createReducer(
          if (action.logonDataSvc.getExchCouponAfterTax()) {
             dCLineItemTaxAmount = (lineItemGrantTotal) * tktItem.salesTaxPct / 100;
             lineItemEnvTaxAmount = (lineItemGrantTotal) * tktItem.envrnmtlTaxPct / 100;
-            lineItemDollarDisplayAmount = (lineItemGrantTotal + dCLineItemTaxAmount + lineItemEnvTaxAmount) - exchDiscAmtDC;
+            lineItemDollarDisplayAmount = (((lineItemGrantTotal + dCLineItemTaxAmount + lineItemEnvTaxAmount) - exchDiscAmtDC) * 100) / 100;
 
             fCLineItemTaxAmount = (lineitemGrandTotalNDC) * tktItem.salesTaxPct / 100;
             fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC) * tktItem.envrnmtlTaxPct / 100;
-            fCLineItemDollarDisplayAmount = lineitemGrandTotalNDC + fCLineItemTaxAmount + fCLineItemEnvTaxAmount - exchDiscAmtNDC;
+            fCLineItemDollarDisplayAmount = ((lineitemGrandTotalNDC + fCLineItemTaxAmount + fCLineItemEnvTaxAmount - exchDiscAmtNDC) * 100) / 100;
 
          }
          else {
             dCLineItemTaxAmount = (lineItemGrantTotal - exchDiscAmtDC - tktItem.vndCpnAmountDC) * tktItem.salesTaxPct / 100;
             lineItemEnvTaxAmount = (lineItemGrantTotal - exchDiscAmtDC - tktItem.vndCpnAmountDC) * tktItem.envrnmtlTaxPct / 100;
-            lineItemDollarDisplayAmount = (lineItemGrantTotal + dCLineItemTaxAmount + lineItemEnvTaxAmount);
+            lineItemDollarDisplayAmount = (((lineItemGrantTotal + dCLineItemTaxAmount + lineItemEnvTaxAmount)) * 100) / 100;
 
             dCLineItemTaxAmount = (lineitemGrandTotalNDC - (exchDiscAmtNDC + tktItem.vndCpnAmountNDC)) * tktItem.salesTaxPct / 100;
             fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC - (exchDiscAmtNDC + tktItem.vndCpnAmountNDC)) * tktItem.envrnmtlTaxPct / 100;
-            fCLineItemDollarDisplayAmount = lineitemGrandTotalNDC - (exchDiscAmtNDC + tktItem.vndCpnAmountNDC) + fCLineItemTaxAmount + fCLineItemEnvTaxAmount;
+            fCLineItemDollarDisplayAmount = ((lineitemGrandTotalNDC - (exchDiscAmtNDC + tktItem.vndCpnAmountNDC) + fCLineItemTaxAmount + fCLineItemEnvTaxAmount) * 100) / 100;
          }
 
          dCCouponLineItemDollarAmount =  exchDiscAmtDC;
@@ -838,7 +838,7 @@ export const _tktObjReducer = createReducer(
 
 
 
-export function TktObjReducer(state: tktObjInterface, action: Action) {
+export function TktObjReducer(state: saleTranDataInterface, action: Action) {
    return _tktObjReducer(state, action);
 
 }

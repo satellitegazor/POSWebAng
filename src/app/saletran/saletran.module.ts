@@ -11,7 +11,7 @@ import { SaleItemComponent } from './sale-item/sale-item.component';
 import { TktSaleItemComponent } from './tkt-sale-item/tkt-sale-item.component';
 import { CustomerSearchComponent } from './customer-search/customer-search.component';
 import { CustomerNewComponent } from './customer-new/customer-new.component';
-import { ModalModule } from '@independer/ng-modal';
+import { NgbModal, NgbModalRef, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { StoreModule } from '@ngrx/store';
 import { GET_SALE_ITEM_MENU, SHARED_SALE_ITEMS_MENU_STATE } from './store/saleitemstore/saleitem.selector';
 import { GetSaleItemMenuReducer } from './store/saleitemstore/saleitem.reducers';
@@ -47,7 +47,7 @@ import { TicketLookupComponent } from './ticket-lookup/ticket-lookup.component';
         FormsModule,
         SalesTranRoutingModule,
         SharedSubjectModule,
-        ModalModule,
+        NgbModule,
         StoreModule.forFeature(TKT_OBJ_STATE, TktObjReducer),
         EffectsModule.forFeature([SaleItemEffects]),
         StoreModule.forFeature(LOC_CONFIG_STATE, GetLocationConfigReducer),

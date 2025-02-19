@@ -5,12 +5,12 @@ import { of } from "rxjs";
 import { catchError, concatMap, exhaustMap, map, mergeMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { SalesTranService } from "../../services/sales-tran.service";
 import { saveTicketSplit, saveTicketSplitSuccess, saveTicketSplitFailed } from "./ticket.action";
-import { tktObjInterface } from "./ticket.state";
+import { saleTranDataInterface } from "./ticket.state";
 import { getTktObjSelector } from './ticket.selector';
 
 @Injectable()
 export class TicketObjectEffects {
-    constructor(private action$: Actions, private saleTranSvc: SalesTranService, private store: Store<tktObjInterface>) {    }
+    constructor(private action$: Actions, private saleTranSvc: SalesTranService, private store: Store<saleTranDataInterface>) {    }
 
     saveTicketSplitEffect$ = createEffect(() => {
         return this.action$.pipe(

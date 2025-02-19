@@ -1,7 +1,8 @@
 import { keyframes } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ModalService } from '@independer/ng-modal';
+
+import {  NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { TicketTender } from 'src/app/models/ticket.tender';
@@ -12,18 +13,19 @@ import { TenderType, TenderTypeModel } from '../../models/tender.type';
 import { SalesTranService } from '../../services/sales-tran.service';
 import { addTender, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
 import { getCheckoutItemsSelector } from '../../store/ticketstore/ticket.selector';
-import { tktObjInterface } from '../../store/ticketstore/ticket.state';
+import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { TipsModalDlgComponent } from '../tips-modal-dlg/tips-modal-dlg.component';
 
 @Component({
-  selector: 'app-checkout-page',
-  templateUrl: './checkout-page.component.html',
-  styleUrls: ['./checkout-page.component.css']
+    selector: 'app-checkout-page',
+    templateUrl: './checkout-page.component.html',
+    styleUrls: ['./checkout-page.component.css'],
+    standalone: false
 })
 export class CheckoutPageComponent implements OnInit {
 
   constructor(private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
-    private _sharedSubSvc: SharedSubjectService, private modalService: ModalService, private _store: Store<tktObjInterface>,
+    private _sharedSubSvc: SharedSubjectService, private modalService: NgbModal, private _store: Store<saleTranDataInterface>,
     private router: Router) 
     { }
 
@@ -64,8 +66,8 @@ export class CheckoutPageComponent implements OnInit {
 
   btnCustDetailsClick(evt: Event) {
     this.displayCustSearchDlg = "display";
-    const modalRef = this.modalService.open(CustomerSearchComponent, m => {
-      m.data = "search customer";
+    const modalRef = this.modalService.open(CustomerSearchComponent, {
+      centered:true
     });
   }
 
@@ -79,8 +81,9 @@ export class CheckoutPageComponent implements OnInit {
     }
     else {
       this.displayCustSearchDlg = "display";
-      const modalRef = this.modalService.open(TipsModalDlgComponent, m => {
-        m.tndrCode = tndrCode;
+      const modalRef = this.modalService.open(TipsModalDlgComponent, {
+
+        
       });
     }
   }

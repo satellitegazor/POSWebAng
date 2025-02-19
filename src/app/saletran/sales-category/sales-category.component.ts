@@ -4,9 +4,10 @@ import { SalesCat } from '../models/sale.item';
 import { SalesTranService } from '../services/sales-tran.service';
  
 @Component({
-  selector: 'app-sales-category',
-  templateUrl: './sales-category.component.html',
-  styleUrls: ['./sales-category.component.css']
+    selector: 'app-sales-category',
+    templateUrl: './sales-category.component.html',
+    styleUrls: ['./sales-category.component.css'],
+    standalone: false
 })
 export class SalesCategoryComponent implements OnInit {
 

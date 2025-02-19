@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ModalService } from '@independer/ng-modal';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { CouponType } from 'src/app/global/global.constants';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
@@ -8,20 +8,21 @@ import { LocationConfig } from '../../models/location-config';
 import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheckoutItem';
 import { updateSaleitems, updateTaxExempt } from '../../store/ticketstore/ticket.action';
 import { getCheckoutItemsSelector, getTicketTotals, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
-import { tktObjInitialState, tktObjInterface } from '../../store/ticketstore/ticket.state';
+import { tktObjInitialState, saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { CouponsModalDlgComponent } from '../coupons/coupons.component';
 import { TipsModalDlgComponent } from '../tips-modal-dlg/tips-modal-dlg.component';
 
 @Component({
-  selector: 'app-checkout-items',
-  templateUrl: './checkout-items.component.html',
-  styleUrls: ['./checkout-items.component.css']
+    selector: 'app-checkout-items',
+    templateUrl: './checkout-items.component.html',
+    styleUrls: ['./checkout-items.component.css'],
+    standalone: false
 })
 export class CheckoutItemsComponent implements OnInit {
 
-  constructor(private _store: Store<tktObjInterface>, 
+  constructor(private _store: Store<saleTranDataInterface>, 
     private _logonDataSvc: LogonDataService,
-    private _modalService: ModalService,
+    private _modalService: NgbModal,
     private _router: Router) { }
 
   allowTips: boolean = false;
@@ -100,47 +101,45 @@ export class CheckoutItemsComponent implements OnInit {
       checkOutItem.lineItemTaxAmount = saleTaxTotal;
       checkOutItem.discountAmount = exchCpnTotal + vndDiscountTotal;
 
-      // this._store.dispatch(updateSaleitems({
-      //   item: checkOutItem
-      // }))
-
     }
-    this.grandTotal = this.subTotal - this.exchCpnTotal + this.saleTaxTotal;
-    this.totalSavings = this.exchCpnTotal + this.vndDiscountTotal;
+    this.grandTotal = (this.subTotal - this.exchCpnTotal + this.saleTaxTotal) * 100 / 100;
+    this.totalSavings = (this.exchCpnTotal + this.vndDiscountTotal) * 100 / 100;
+
   }
 
   public DisplayVendorDiscPopUp(saleItemId: number, tktDetailId: number, itemName: string) {
-    const modalRef = this._modalService.open(CouponsModalDlgComponent, m => {
-      m.SaleItemId = saleItemId;
-      m.TktDtlId = tktDetailId;
-      m.ItemName = itemName;
-      m.DiscountName = "Vendor Discount";
-      m.Title = "Vendor Coupon";
-      m.CpnType = CouponType.vndCpnItem;
-    });
+    const modalRef = this._modalService.open(CouponsModalDlgComponent);
+    
+      modalRef.componentInstance.SaleItemId = saleItemId;
+      modalRef.componentInstance.TktDtlId = tktDetailId;
+      modalRef.componentInstance.ItemName = itemName;
+      modalRef.componentInstance.DiscountName = "Vendor Discount";
+      modalRef.componentInstance.Title = "Vendor Coupon";
+      modalRef.componentInstance.CpnType = CouponType.vndCpnItem;
+    
   }
 
   public DisplayExchDiscPopUp(saleItemId: number, tktDetailId: number, itemName: string) {
-    const modalRef = this._modalService.open(CouponsModalDlgComponent, m => {
-      m.SaleItemId = saleItemId;
-      m.TktDtlId = tktDetailId;
-      m.ItemName = itemName;
-      m.DiscountName = "Exchange Discount";
-      m.Title = "Exchange Coupon";
-      m.CpnType = CouponType.exchCpnItem;
-    });
+    const modalRef = this._modalService.open(CouponsModalDlgComponent);
+    
+    modalRef.componentInstance.SaleItemId = saleItemId;
+    modalRef.componentInstance.TktDtlId = tktDetailId;
+    modalRef.componentInstance.ItemName = itemName;
+    modalRef.componentInstance.DiscountName = "Exchange Discount";
+    modalRef.componentInstance.Title = "Exchange Coupon";
+    modalRef.componentInstance.CpnType = CouponType.exchCpnItem;
+    
   }
   public DisplayExchTranDiscPopUp() {
-    const modalRef = this._modalService.open(CouponsModalDlgComponent, m => {
-      m.DiscountName = "Exchange Discount";
-      m.Title = "Exchange Coupon";
-      m.CpnType = CouponType.exchCpnTran;
-    });
+    const modalRef = this._modalService.open(CouponsModalDlgComponent);
+      modalRef.componentInstance.DiscountName = "Exchange Discount";
+      modalRef.componentInstance.Title = "Exchange Coupon";
+      modalRef.componentInstance.CpnType = CouponType.exchCpnTran;
+   
   }
 
   public DisplayTipsPopUp() {
-    const modalRef = this._modalService.open(TipsModalDlgComponent, m => {
-      m.tndrCode = "";
-    });
+    const modalRef = this._modalService.open(TipsModalDlgComponent)
+    modalRef.componentInstance.tndrCode = "";    
   }
 }

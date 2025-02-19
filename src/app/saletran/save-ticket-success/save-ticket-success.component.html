@@ -2,21 +2,23 @@
 <div class="col-md-4"></div>
 <div class="col-md-4">
     <div class="panel">
-        <div class="panel-title">
+        <div class="panel-title" class="tktResultMessage">
             {{tktSaveResultMessage}}
         </div>
         <div class="panel-body">
-            <table>
+            <table class="table" style="height:300px;">
                 <tr>
-                    <td colspan="2">Ticket: {{saveTktRsltMdl.ticketNumber}}</td>
+                    <td colspan="3" class="tktResultMessage">Ticket: {{saveTktRsltMdl.ticketNumber}}</td>
                 </tr>
-                <tr>
-                    <td><button class="printbtns" (click)="ReceiptOption('p');">Print</button></td>
-                    <td><button class="printbtns" (click)="ReceiptOption('e');">Email</button></td>
+                <tr style="height:40%">
+                    <td ><button class="btn btn-info printbtns" (click)="ReceiptOption('p');">Print</button></td>
+                    <td></td>
+                    <td ><button class="btn btn-info printbtns" (click)="ReceiptOption('e');">Email</button></td>
                 </tr>
-                <tr>
-                    <td><button class="printbtns" (click)="ReceiptOption('b');">Both</button></td>
-                    <td><button class="printbtns" (click)="ReceiptOption('n');">None</button></td>
+                <tr style="height:40%">
+                    <td ><button class="btn btn-info printbtns" (click)="ReceiptOption('b');">Both</button></td>
+                    <td></td>
+                    <td ><button class="btn btn-info printbtns" (click)="ReceiptOption('n');">None</button></td>
                 </tr>
             </table>
         </div>

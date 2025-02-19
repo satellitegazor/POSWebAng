@@ -1,8 +1,13 @@
-.printbtn {
-    background-color: black;
-    color: white;
+
+.printbtns {
     font-weight: bolder;
     font-size: larger;
-    width: 300%;
-    height: 300%;
+    width: 100%;
+    height: 100%;
+}
+
+.tktResultMessage {
+    font-weight: bolder;
+    font-size: larger;
+    text-align: center;
 }

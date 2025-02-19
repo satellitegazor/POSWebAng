@@ -1,0 +1,27 @@
+
+<table class="table table-hover table-striped table-bordered">
+    <thead class="thead-light">
+        <td>Ticket Number</td>
+        <td>Customer Name</td>
+        <td>Customer Phone</td>
+        <td>Ticket Status</td>
+        <td>Total Amount</td>
+        <td>Merchandise Sale</td>
+        <td>Associate</td>
+        <td>Tran Date</td>
+        <td>Tender Type</td>
+    </thead>
+    <tr *ngFor="let tran of tranDtls"  (click)="tranSelected(tran.transactionID)">
+        
+        <td class="calign">{{tran.ticketNumber}}</td>
+        <td class="lalign">{{tran.customerName}}</td>
+        <td class="lalign">{{tran.customerPhone}}</td>
+        <td class="lalign">{{tran.ticketStatusDesc}}</td>
+        <td class="ralign">{{tran.tranTotalAmount}}</td>
+        <td class="rralign">{{tran.merchandiseSale}}</td>
+        <td class="lalign">{{tran.associate}}</td>
+        <td class="calign">{{tran.dropOffDate}}</td>
+        <td class="lalign">{{tran.tenderType}}</td>
+
+    </tr>
+</table>

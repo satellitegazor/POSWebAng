@@ -83,16 +83,16 @@ export class LogonDataService {
         if(locConfig.rgnCode == 'OCONE' || locConfig.rgnCode == 'OCONP' && locConfig.cCDevice) {
 
             if(locConfig.cCDevice == 'E') {
-                this._ltTenderTypeMdl.types = this._ltTenderTypeMdl.types.filter((tndr) => tndr.tenderTypeCode != 'CC' && tndr.tenderTypeCode != 'CR');
+                this._ltTenderTypeMdl.types = JSON.parse(JSON.stringify(this._ltTenderTypeMdl.types.filter((tndr) => tndr.tenderTypeCode != 'CC' && tndr.tenderTypeCode != 'CR')));
             }
 
             if(locConfig.cCDevice == 'C') {
-                this._ltTenderTypeMdl.types = this._ltTenderTypeMdl.types.filter((tndr) => tndr.tenderTypeCode != 'XC' && tndr.tenderTypeCode != 'XR');
+                this._ltTenderTypeMdl.types = JSON.parse(JSON.stringify(this._ltTenderTypeMdl.types.filter((tndr) => tndr.tenderTypeCode != 'XC' && tndr.tenderTypeCode != 'XR')));
             }
         }
 
         if(locConfig.rgnCode == 'CON') {
-            this._ltTenderTypeMdl.types = this._ltTenderTypeMdl.types.filter((tndr) => tndr.tenderTypeCode != 'XC' && tndr.tenderTypeCode != 'XR');
+            this._ltTenderTypeMdl.types = JSON.parse(JSON.stringify(this._ltTenderTypeMdl.types.filter((tndr) => tndr.tenderTypeCode != 'XC' && tndr.tenderTypeCode != 'XR')));
         }
     }
 

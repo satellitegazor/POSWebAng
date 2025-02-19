@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ModalRef } from '@independer/ng-modal';
+import { NgbModalRef }  from '@ng-bootstrap/ng-bootstrap'
 import { Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
@@ -9,17 +9,18 @@ import { SalesTranService } from '../../services/sales-tran.service';
 import { upsertAssocTips } from '../../store/ticketstore/ticket.action';
 import { getCheckoutItemsSelector, getTicketTotals, getAssocTipList } from '../../store/ticketstore/ticket.selector';
 
-import { tktObjInterface } from '../../store/ticketstore/ticket.state';
+import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 
 @Component({
-  selector: 'app-tips-modal-dlg',
-  templateUrl: './tips-modal-dlg.component.html',
-  styleUrls: ['./tips-modal-dlg.component.css']
+    selector: 'app-tips-modal-dlg',
+    templateUrl: './tips-modal-dlg.component.html',
+    styleUrls: ['./tips-modal-dlg.component.css'],
+    standalone: false
 })
 export class TipsModalDlgComponent implements OnInit {
 
-  constructor(private modal: ModalRef, private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
-    private _store: Store<tktObjInterface>, private router: Router) { }
+  constructor(private modal: NgbModalRef, private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
+    private _store: Store<saleTranDataInterface>, private router: Router) { }
 
     public tndrCode: string = ''
     saleAssocList: LTC_Associates[] = [];
@@ -58,10 +59,10 @@ export class TipsModalDlgComponent implements OnInit {
       
 
       this._store.select(getTicketTotals).subscribe(dt => {
-        this.dcTotal = dt.grandTotalDC;
-        this.ndcTotal = dt.grandTotalNDC;
-        this.lineItemTotalDC = Number.parseFloat((dt.grandTotalDC - dt.tipTotalDC).toFixed(2));
-        this.lineItemTotalNDC = Number.parseFloat((dt.grandTotalNDC - dt.tipTotalNDC).toFixed(2));        
+        this.dcTotal = (dt.grandTotalDC * 100) / 100;
+        this.ndcTotal = (dt.grandTotalNDC * 100) / 100;
+        this.lineItemTotalDC = (Number.parseFloat((dt.grandTotalDC - dt.tipTotalDC).toFixed(2)) * 100) / 100;
+        this.lineItemTotalNDC = (Number.parseFloat((dt.grandTotalNDC - dt.tipTotalNDC).toFixed(2)) * 100) / 100;
       })
     })
   }

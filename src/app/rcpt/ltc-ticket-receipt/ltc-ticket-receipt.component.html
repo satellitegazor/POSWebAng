@@ -1,0 +1,73 @@
+<div class="fluid">
+    <div class="col-md-4">
+        <div class="row">
+            <h2>{{ticket.ticketNumber}}</h2>
+        </div> 
+        <div class="row">
+            <table>
+                <thead><td class="alignLeft">Item</td><td></td><td class="alignRight">Quantity</td><td></td><td class="alignRight">Unit Price</td></thead>
+                <tr *ngFor="let si of ticket.items">
+                    <td class="alignLeft">{{si.salesItemDesc}}</td><td></td>
+                    <td class="alignRight">{{si.quantity}}</td><td></td>
+                    <td class="alignRight">{{ticket.dfltCurrSymbol}}{{si.unitPrice.toFixed(2)}}</td>
+                </tr>
+                <tr></tr>
+                <tr>
+                    <td></td>
+                    <td>Total:</td>
+                    <td class="alignRight">{{ticket.dfltCurrSymbol}}{{ticketTotal.toFixed(2)}}</td>
+                </tr>
+            </table>
+        </div> 
+        <div class="row">
+            <table>     
+                <!-- <thead><td>Item</td><td>Quantity</td><td>Unit Price</td></thead> -->
+                <tr *ngFor="let si of ticket.tenders">
+                    <td class="alignLeft">{{si.tenderTypeDesc}}</td>
+                    <td>{{si.cardEndingNbr}} {{si.cardEntryMode}}</td>
+                    <td class="alignRight">{{ticket.dfltCurrSymbol}}{{si.tenderAmount.toFixed(2)}}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="row  alignCenter">
+            {{ticket.maintTimestamp}}
+        </div>
+        <div class="row  alignCenter">
+            {{ticket.maintUserId}}
+        </div>
+    </div>
+    <div class="col-md-4"></div>
+    <div class="col-md-4"></div>
+</div>
+
+
+<div class="footer fixed-bottom cncsnFooter">
+    <div class="row">
+        <button class="border border-white btn btn-info btn-lg ftrbtn" [ngStyle]="{width: '20%'}" id="btnPrintReceipt" aria-label="Left Align" (click)="btnPrintReceipt($event)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
+                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+            </svg> Print Receipt
+        </button>
+        <button class="border border-white btn btn-info btn-lg ftrbtn" [ngStyle]="{width: '20%'}" id="btnEReceipt" aria-label="Left Align" (click)="btnEReceipt($event)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-receipt" viewBox="0 0 16 16">
+                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+            </svg> E-Receipt
+        </button>
+        <button class="border border-white btn btn-info btn-lg ftrbtn" [ngStyle]="{width: '20%'}" id="btnTranDetails" aria-label="Left Align" (click)="btnTranDetails($event)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ticket-detailed" viewBox="0 0 16 16">
+                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+            </svg> Transaction Details
+        </button>
+        <button class="border border-white btn btn-info btn-lg ftrbtn" [ngStyle]="{width: '20%'}" id="btnTktLookup" aria-label="Left Align" (click)="btnTktLookup($event)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+            </svg> Ticket Look-Up
+        </button>
+        <button class="border border-white btn btn-info btn-lg ftrbtn" [ngStyle]="{width: '20%'}" id="btnSalesTran" aria-label="Left Align" (click)="btnSalesTran($event)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ticket" viewBox="0 0 16 16">
+                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+            </svg> Sales Transaction
+        </button>
+
+    </div> 
+</div>

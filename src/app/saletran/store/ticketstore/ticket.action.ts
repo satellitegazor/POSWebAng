@@ -31,7 +31,9 @@ export const UPSERT_SALE_ITEM_EXCH_CPN = 'upsertSaleItemExchCpn';
 export const UPSERT_SALE_ITEM_VND_CPN = 'upsertSaleItemVndCpn';
 export const UPSERT_TRAN_EXCH_CPN = 'upsertTranExchCpn';
 
-export const UPDATE_PARTPAY_DATA = 'updatePartpayData'
+export const UPDATE_PARTPAY_DATA = 'updatePartpayData';
+
+export const UPDATE_LOCATION_CONFIG = 'updateLocationConfig';
 
 
 export const addSaleItem = createAction(ADD_SALE_ITEM,
@@ -89,3 +91,4 @@ export const upsertTranExchCpn = createAction(UPSERT_TRAN_EXCH_CPN, props<{logon
 
 export const updatePartPayData = createAction(UPDATE_PARTPAY_DATA, props<{partPayFlag: boolean, partPayAmountDC: number, partPayAmountNDC: number}>());
 
+//export const updateLocationConfig = createAction(UPDATE_LOCATION_CONFIG, props<{}>)

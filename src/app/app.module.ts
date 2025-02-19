@@ -10,7 +10,7 @@ import { HomeComponent } from './home/home.component';
 import { AuthInterceptor } from './auth/auth.interceptor';
 import { SalesTranModule } from './saletran/saletran.module';
 import { SharedSubjectModule } from './shared-subject/shared-subject.module';
-import { ModalModule } from '@independer/ng-modal';
+import { NgbModalModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from 'src/environments/environment';
@@ -25,7 +25,11 @@ import { SummaryComponent } from './reports/salestran/summary/summary.component'
 import { DetailComponent } from './reports/salestran/detail/detail.component';
 import { SalestranComponent } from './reports/salestran/salestran/salestran.component';
 import { TwoDigitDecimalDirectiveDirective } from './directives/two-digit-decimal-directive.directive';
-import { LtcTicketReceiptComponent } from './receipts/ltc-ticket-receipt/ltc-ticket-receipt.component';
+import { LtcTicketReceiptComponent } from './rcpt/ltc-ticket-receipt/ltc-ticket-receipt.component';
+import { AlertMessageModule } from './alertmsg/alert-message/alert-message.module';
+import { RcptModule } from './rcpt/rcpt.module';
+import { InactiveLogoutInterceptor } from './auth/inactive-logout.interceptor';
+
  
 @NgModule({
   schemas: [
@@ -40,16 +44,19 @@ import { LtcTicketReceiptComponent } from './receipts/ltc-ticket-receipt/ltc-tic
     DetailComponent,
     SalestranComponent,
     TwoDigitDecimalDirectiveDirective,
-    LtcTicketReceiptComponent
+    
+    
   ],
   imports: [
     BrowserModule,
     ModuleRouting,
-    FormsModule,
+    FormsModule, 
+    AlertMessageModule,
     LogonModule,
-    SalesTranModule,
+    SalesTranModule,  
     SharedSubjectModule,  
-    ModalModule,
+
+    NgbModalModule,
     HttpClientModule,
     EffectsModule.forRoot([]),
     StoreModule.forRoot({}),
@@ -57,11 +64,17 @@ import { LtcTicketReceiptComponent } from './receipts/ltc-ticket-receipt/ltc-tic
       maxAge: 25,
       logOnly: environment.production,
       autoPause: true
-    }),
+    , connectInZone: true}),
+    RcptModule,
   ],
   providers: [{provide: LogonDataService}, {
         provide: HTTP_INTERCEPTORS,
         useClass: AuthInterceptor,
+        multi: true
+      },
+      {
+        provide: HTTP_INTERCEPTORS,
+        useClass: InactiveLogoutInterceptor,
         multi: true
       }],
   bootstrap: [AppComponent]

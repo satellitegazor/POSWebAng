@@ -1,15 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalRef } from '@independer/ng-modal';
+
+import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { CouponType } from 'src/app/global/global.constants';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn } from '../../store/ticketstore/ticket.action';
-import { tktObjInterface } from '../../store/ticketstore/ticket.state';
+import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 
 @Component({
-  selector: 'app-coupons',
-  templateUrl: './coupons.component.html',
-  styleUrls: ['./coupons.component.css']
+    selector: 'app-coupons',
+    templateUrl: './coupons.component.html',
+    styleUrls: ['./coupons.component.css'],
+    standalone: false
 })
 export class CouponsModalDlgComponent implements OnInit {
 
@@ -22,7 +24,7 @@ export class CouponsModalDlgComponent implements OnInit {
   public DiscountPct: number = 0;
   public DiscountAmt: number = 0;
 
-  constructor(private modal: ModalRef, private logonDataSvc: LogonDataService, private _store: Store<tktObjInterface>) { }
+  constructor(private modal: NgbModalRef, private logonDataSvc: LogonDataService, private _store: Store<saleTranDataInterface>) { }
 
   ngOnInit(): void {
 

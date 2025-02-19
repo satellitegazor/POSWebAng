@@ -1,21 +1,25 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalRef } from '@independer/ng-modal';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { TicketList, TicketLookupModel } from '../models/ticket.list';
 import { SalesTranService } from '../services/sales-tran.service';
-import { tktObjInterface } from '../store/ticketstore/ticket.state';
+import { saleTranDataInterface } from '../store/ticketstore/ticket.state';
+import { LTC_Customer } from 'src/app/models/customer';
+import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-ticket-lookup',
-  templateUrl: './ticket-lookup.component.html',
-  styleUrls: ['./ticket-lookup.component.css']
+    selector: 'app-ticket-lookup',
+    templateUrl: './ticket-lookup.component.html',
+    styleUrls: ['./ticket-lookup.component.css'],
+    standalone: false
 })
 export class TicketLookupComponent implements OnInit {
 
-  constructor(private modal: ModalRef, private _saleSvc: SalesTranService, 
+  constructor(private modal: NgbModal, 
+    private _saleSvc: SalesTranService, 
     private _logonDataSvc: LogonDataService,
-    private _store: Store<tktObjInterface>) { }
+    private _store: Store<saleTranDataInterface>,
+    private _route: Router) { }
 
     displayMsg: string = '';
 
@@ -25,7 +29,7 @@ export class TicketLookupComponent implements OnInit {
   lastName: string = '';
   telephone: string = '';
 
-  ticketList: TicketLookupModel[] = [];
+  customerList: LTC_Customer[] = [];
 
   public strongErrMessage: string = '';
   public errMessage: string = '';
@@ -35,11 +39,23 @@ export class TicketLookupComponent implements OnInit {
     this.locationName = this._logonDataSvc.getLocationConfig().locationName;
   }
 
-  ticketSelected(transactionId: number) {
+  customerSelected(customerId: number) {
+    this.modal.dismissAll();
+    this._route.navigateByUrl('/misc/trandtls?custid=' + customerId);
   }
 
   search() {
 
+    if(this.ticketNum > 0) {
+      
+      this.modal.dismissAll();
+
+      this._saleSvc.getTranIdForTicketNum(this._logonDataSvc.getLocationId(), this.ticketNum, this._logonDataSvc.getLocationConfig().individualUID).subscribe(data => {
+        if(data.results.success) {
+          this._route.navigateByUrl('/lrcpt?tranid=' + data.transactionID);
+        }
+      })      
+    }
     
 
     if(this.firstName == '' && this.lastName == '' && this.telephone == '') {
@@ -49,16 +65,15 @@ export class TicketLookupComponent implements OnInit {
       return;
     }
     
-    this._saleSvc.getTicketLookup(this._logonDataSvc.getLocationConfig().individualUID, this._logonDataSvc.getLocationId(), 
-        this.ticketNum, this.telephone, this.firstName, this.lastName).subscribe(data => {
+    this._saleSvc.getCustomerLookup(this.firstName, this.lastName, this.telephone, this._logonDataSvc.getLocationConfig().individualUID).subscribe(data => {
 
       this._hideErrMsg();
 
-      if(data.tickets.length == 0) {
+      if(data.customers.length == 0) {
         this._showErrMsg('No Tickets  found', 'No Tickets found with the given data. Please try again!!');
       }
 
-      this.ticketList = data.tickets;
+      this.customerList = data.customers;
     });
   }
 
@@ -75,6 +90,6 @@ export class TicketLookupComponent implements OnInit {
   }
 
   cancel() {
-    this.modal.close('');
+    this.modal.dismissAll('');
   }
 }

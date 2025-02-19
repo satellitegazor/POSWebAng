@@ -3,9 +3,10 @@ import { Dept } from '../models/sale.item';
 import { SalesTranService } from '../services/sales-tran.service';
  
 @Component({
-  selector: 'app-deptlist',
-  templateUrl: './deptlist.component.html',
-  styleUrls: ['./deptlist.component.css']
+    selector: 'app-deptlist',
+    templateUrl: './deptlist.component.html',
+    styleUrls: ['./deptlist.component.css'],
+    standalone: false
 })
 export class DeptListComponent implements OnInit {
 

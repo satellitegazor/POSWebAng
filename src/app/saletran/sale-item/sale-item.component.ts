@@ -7,17 +7,18 @@ import { SaleItem } from '../models/sale.item';
 import { SalesTransactionCheckoutItem } from '../models/salesTransactionCheckoutItem';
 import { addSaleItem } from '../store/ticketstore/ticket.action';
 import { getCheckoutItemsCount } from '../store/ticketstore/ticket.selector';
-import { tktObjInterface } from '../store/ticketstore/ticket.state';
+import { saleTranDataInterface } from '../store/ticketstore/ticket.state';
 
  
 @Component({
-  selector: 'app-sale-item',
-  templateUrl: './sale-item.component.html',
-  styleUrls: ['./sale-item.component.css']
+    selector: 'app-sale-item',
+    templateUrl: './sale-item.component.html',
+    styleUrls: ['./sale-item.component.css'],
+    standalone: false
 })
 export class SaleItemComponent implements OnInit {
 
-    constructor(private _logonDataSvc: LogonDataService, private _store: Store<tktObjInterface>) { }
+    constructor(private _logonDataSvc: LogonDataService, private _store: Store<saleTranDataInterface>) { }
     @Input() saleItemList: SaleItem[] = [];
 
     ngOnInit(): void {

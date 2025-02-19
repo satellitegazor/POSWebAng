@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { TicketSplit } from 'src/app/models/ticket.split';
-import { getBalanceDue, getBalanceDueFC, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
-import { tktObjInterface } from '../../store/ticketstore/ticket.state';
+import { getRemainingBalance, getRemainingBalanceFC, getBalanceDue, getBalanceDueFC, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
+import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TicketTender } from 'src/app/models/ticket.tender';
 import { addTender, saveTicketSplit, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
@@ -15,13 +15,14 @@ import { getLocCnfgIsAllowTipsSelector } from '../../store/locationconfigstore/l
 import { firstValueFrom, Observable, Subscription, take } from 'rxjs';
 
 @Component({
-  selector: 'app-tender-page',
-  templateUrl: './tender-page.component.html',
-  styleUrls: ['./tender-page.component.css']
+    selector: 'app-tender-page',
+    templateUrl: './tender-page.component.html',
+    styleUrls: ['./tender-page.component.css'],
+    standalone: false
 })
 export class TenderPageComponent implements OnInit {
 
-  constructor(private _store: Store<tktObjInterface>,
+  constructor(private _store: Store<saleTranDataInterface>,
     private activatedRoute: ActivatedRoute,
     private route: Router,
     private _logonDataSvc: LogonDataService) {
@@ -41,17 +42,12 @@ export class TenderPageComponent implements OnInit {
       if (data == null)
         return;
 
-      this._store.select(getBalanceDue).subscribe(data => {
+      this._store.select(getRemainingBalance).subscribe(data => {
         this.tenderAmount = data;
       })      
-      this._store.select(getBalanceDueFC).subscribe(data => {
+      this._store.select(getRemainingBalanceFC).subscribe(data => {
         this.tenderAmountFC = data;
       })
-
-      
-
-
-
     })
 
     this.activatedRoute.queryParams.subscribe(params => {

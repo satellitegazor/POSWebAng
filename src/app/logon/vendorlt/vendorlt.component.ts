@@ -1,22 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { AuthService } from '../../auth/auth.service';
 import { GlobalConstants } from '../../global/global.constants';
 import { LogonSvc } from '../logonsvc.service';
 import { AbbrLocationsModel, VLogonModel } from '../models/vlogon.model';
 import { Router } from "@angular/router";
-import { SharedSubjectService } from '../../shared-subject/shared-subject.service';
 import { LogonDataService } from '../../global/logon-data-service.service';
 import { LocalStorageService } from '../../global/local-storage.service';
-import { Store } from '@ngrx/store';
-import { getAuthLoginSelector } from 'src/app/authstate/auth.selector';
-import { getLoginStart } from 'src/app/authstate/auth.action';
 import { SalesTranService } from 'src/app/saletran/services/sales-tran.service';
+import { AlertService } from 'src/app/alertmsg/alert-message/alert-message.service';
+import { AlertOptions } from 'src/app/alertmsg/alert-message/alert-message.model';
  
 @Component({
     selector: 'app-logon-vendorlt',
     templateUrl: './vendorlt.component.html',
-    styleUrls: ['./vendorlt.component.css']
+    styleUrls: ['./vendorlt.component.css'],
+    standalone: false
 })
 export class VendorLTComponent implements OnInit {
 
@@ -28,14 +25,14 @@ export class VendorLTComponent implements OnInit {
     LocationList: AbbrLocationsModel[] = [];
     successMsgDisplay: string = 'none';
     errorMsgDisplay: string = 'none';
+    
 
     constructor(private logonSvc: LogonSvc, 
-        private authSvc: AuthService, 
         private router: Router,
         private _sharedSvc: LogonDataService, 
         private _localStorageSvc: LocalStorageService, 
         private _saleTranSvc: SalesTranService,
-        private _store: Store) { }
+        private _alertSvc: AlertService ) { }
     cookieVal = '';
     ngOnInit() {
 
@@ -69,8 +66,6 @@ export class VendorLTComponent implements OnInit {
         locModel.showPrivTrngConfrm = 0;
         locModel.regionId = "conus";
 
-        //this._store.select(getAuthLoginSelector).subscribe(data => {
-            
         this.logonSvc.logonUser(locModel).subscribe(data => {
             if(data == null) {
                 return;
@@ -79,11 +74,15 @@ export class VendorLTComponent implements OnInit {
             if (!data.results.success) {
                 this.errorMsgDisplay = 'block';
                 this.successMsgDisplay = 'none';
+                let option: AlertOptions = new AlertOptions("", false, false);
+                this._alertSvc.error('Vendor Logon unsuccessful', option);
                 return; 
             }
             else {
                 this.errorMsgDisplay = 'none';
                 this.successMsgDisplay = 'block';
+                let option: AlertOptions = new AlertOptions("", false, false);
+                this._alertSvc.success('Vendor Logon successful, moving on to Sale Transaction...', option);
             }
 
             let selectedLocId: number = this.selectedLocationId;
@@ -99,6 +98,10 @@ export class VendorLTComponent implements OnInit {
             let today: Date = new Date();
             this._localStorageSvc.setItemData('isFutureContract', (cstart > today ? true: false).toString());
             this._localStorageSvc.setItemData('jwtToken', data.tokenString);
+
+            this._localStorageSvc.setItemData('apptype', 'longterm')
+
+            
 
             console.log('vendorlt sending data to subject');
             this._sharedSvc.setLTVendorLogonData(data);
@@ -117,8 +120,6 @@ export class VendorLTComponent implements OnInit {
             });
 
         });
-
-        //this._store.dispatch(getLoginStart({logonMdl: locModel}));        
     }
 
     OnChangeExchangeNum(event: any) {

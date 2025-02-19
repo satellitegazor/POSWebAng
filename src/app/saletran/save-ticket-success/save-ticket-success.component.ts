@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { tktObjInterface } from '../store/ticketstore/ticket.state';
+import { saleTranDataInterface } from '../store/ticketstore/ticket.state';
 import { Store } from '@ngrx/store';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
@@ -8,13 +8,14 @@ import { SaveTicketResultsModel } from 'src/app/models/ticket.split';
 import { getSavedTicketResult } from '../store/ticketstore/ticket.selector';
 
 @Component({
-  selector: 'app-save-ticket-success',
-  templateUrl: './save-ticket-success.component.html',
-  styleUrls: ['./save-ticket-success.component.css']
+    selector: 'app-save-ticket-success',
+    templateUrl: './save-ticket-success.component.html',
+    styleUrls: ['./save-ticket-success.component.css'],
+    standalone: false
 })
 export class SaveTicketSuccessComponent implements OnInit {
 
-  constructor(private _store: Store<tktObjInterface>,
+  constructor(private _store: Store<saleTranDataInterface>,
     private activatedRoute: ActivatedRoute,
     private route: Router,
     private _logonDataSvc: LogonDataService) {

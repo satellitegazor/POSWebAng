@@ -27,8 +27,8 @@
         </div>
         <div class="customer-list-scrollbar">
             <div class="btn-group-vertical form-control">
-                <button type="button" *ngFor="let tkt of ticketList" class="btn btn-info form-control border"
-                     (click)="ticketSelected(tkt.transactionID)" >{{tkt.ticketNumber}}</button>
+                <button type="button" *ngFor="let cust of customerList" class="btn btn-info form-control border"
+                     (click)="customerSelected(cust.customerUID)" >{{cust.cFirstName + ' ' + cust.cLastName + ' ' + cust.cPhoneNumber}}</button>
             </div>
         </div>
 

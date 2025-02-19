@@ -8,7 +8,7 @@ import { Dept, SaleItem, SalesCat } from '../models/sale.item';
 import { SaleItemResultsModel } from '../models/sale.item.results.model';
 import { SalesTranService } from '../services/sales-tran.service';
 import { TktSaleItemComponent } from '../tkt-sale-item/tkt-sale-item.component';
-import { ModalService, ModalCloseReason } from '@independer/ng-modal';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CustomerSearchComponent } from '../customer-search/customer-search.component';
 
 import { getSaleItemsStart, getSaleItemsActionSuccess, getSaleitemsFail } from '../store/saleitemstore/saleitem.action';
@@ -19,20 +19,22 @@ import { getLocationConfigSelector } from '../store/locationconfigstore/location
 import { getLocationConfigStart } from '../store/locationconfigstore/locationconfig.action';
 import { getAuthLoginSelector } from 'src/app/authstate/auth.selector';
 import { LocationConfig, LocationIndividual } from '../models/location-config';
-import { tktObjInterface } from '../store/ticketstore/ticket.state';
+import { saleTranDataInterface } from '../store/ticketstore/ticket.state';
 import { initTktObj } from '../store/ticketstore/ticket.action';
 import { TicketLookupComponent } from '../ticket-lookup/ticket-lookup.component';
+import { getCheckoutItemsCount } from '../store/ticketstore/ticket.selector';
 
 
 @Component({
     selector: 'app-sales-cart',
     templateUrl: './sales-cart.component.html',
-    styleUrls: ['./sales-cart.component.css']
+    styleUrls: ['./sales-cart.component.css'],
+    standalone: false
 })
 export class SalesCartComponent implements OnInit, OnDestroy {
 
     constructor(private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
-        private _sharedSubSvc: SharedSubjectService, private modalService: ModalService, private _store: Store<tktObjInterface>) {
+        private _sharedSubSvc: SharedSubjectService, private modalService: NgbModal, private _store: Store<saleTranDataInterface>) {
         console.log('SalesCart constructor')
     }
 
@@ -50,14 +52,17 @@ export class SalesCartComponent implements OnInit, OnDestroy {
     showErrMsg: boolean = false;
     locationConfig: LocationConfig = {} as LocationConfig;
     locationIndividuals: LocationIndividual[] = [];
+
+    disableCheckoutBtn: boolean = true;
+
     @ViewChild('tktSaleItemComponent')
     private tktSaleItemComponent: TktSaleItemComponent = {} as TktSaleItemComponent;
 
     ngOnInit(): void {
+
         console.log('SalesCart ngOnInit')
         this.vendorLoginResult = this._logonDataSvc.getLTVendorLogonData();
 
-        //this.vendorLoginResult = this._logonDataSvc.getLTVendorLogonData();
         this._buildTktObj();
         this._saleTranSvc.getSaleItemListFromDB(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID).subscribe(data => {
             this.allItemButtonMenuList = data.itemButtonMenuResults;
@@ -82,6 +87,10 @@ export class SalesCartComponent implements OnInit, OnDestroy {
         today.toDateString()
         this._saleTranSvc.GetDailyExchRate(+this.vendorLoginResult.locationUID, today.getMonth() + 1 + '-' + today.getDate() + '-' + today.getFullYear(), +this.vendorLoginResult.individualUID).subscribe(data => {
             data.Data
+        })
+
+        this._store.select(getCheckoutItemsCount).subscribe(itemCount => {
+            this.disableCheckoutBtn = (itemCount == 0);
         })
     }
 
@@ -152,9 +161,9 @@ export class SalesCartComponent implements OnInit, OnDestroy {
 
     btnCustDetailsClick(evt: Event) {
         this.displayCustSearchDlg = "display";
-        const modalRef = this.modalService.open(CustomerSearchComponent, m => {
-            m.data = "search customer";
-        });
+        const modalRef = this.modalService.open(CustomerSearchComponent);
+        modalRef.componentInstance.data = "search customer";
+        
     }
 
     closeCustSearchDlg() {
@@ -163,10 +172,8 @@ export class SalesCartComponent implements OnInit, OnDestroy {
 
     btnTicketLkup(evt: Event) {
         this.displayTicketLookupDlg = "display";
-        const modalRef = this.modalService.open(TicketLookupComponent, m => {
-            m.displayMsg = "search ticket";
-          });
-      
+        const modalRef = this.modalService.open(TicketLookupComponent)
+        modalRef.componentInstance.displayMsg = "search ticket";    
     }
 
     closeTicketLookupDlg() {
