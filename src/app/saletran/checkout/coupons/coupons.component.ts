@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { CouponType } from 'src/app/global/global.constants';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
@@ -24,7 +24,7 @@ export class CouponsModalDlgComponent implements OnInit {
   public DiscountPct: number = 0;
   public DiscountAmt: number = 0;
 
-  constructor(private modal: NgbModalRef, private logonDataSvc: LogonDataService, private _store: Store<saleTranDataInterface>) { }
+  constructor(private modal: NgbModal, private logonDataSvc: LogonDataService, private _store: Store<saleTranDataInterface>) { }
 
   ngOnInit(): void {
 
@@ -47,11 +47,11 @@ export class CouponsModalDlgComponent implements OnInit {
     }
     break;
   }
-    this.modal.close('');
+    this.modal.dismissAll('');
   }
 
   public Cancel() {
-    this.modal.close('');
+    this.modal.dismissAll('');
   }
 
   public percentChanged() {

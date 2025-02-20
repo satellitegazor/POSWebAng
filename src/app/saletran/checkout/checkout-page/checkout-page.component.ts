@@ -43,7 +43,7 @@ export class CheckoutPageComponent implements OnInit {
   tenderButtonWidthPercent: number = 0;
     isRefund: boolean = false;
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
 
 
     console.log('CheckoutPage component ngOnInit called');
@@ -88,10 +88,10 @@ export class CheckoutPageComponent implements OnInit {
     }
   }
 
-  private tenderButtonUIDisplay(): void {
+  public tenderButtonUIDisplay(): void {
     
-    this._displayTenders = this._tenderTypesModel.types.filter((tndr) => tndr.isRefundType == this.isRefund);
-    this.tenderButtonWidthPercent = 99 / (this._displayTenders.length + 1);
+    this._displayTenders = this._tenderTypesModel.types?.filter((tndr) => tndr.isRefundType == this.isRefund);
+    this.tenderButtonWidthPercent = 99 / (this._displayTenders?.length + 1);
   }
 
   closeCustSearchDlg() {

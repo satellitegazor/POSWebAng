@@ -2,8 +2,8 @@
 <div class="panel" style=""> 
     <div class="panel-body ms-2 me-2 mt-2 mb-2">
         <div class="row bkgray">
-            <div class="col-md-2" *ngFor="let catg of saleCatList">
-                <button type="button" class="btn btn-info btn-block" 
+            <div class="col-md-2" *ngFor="let catg of saleCatList; let index = index">
+                <button type="button" [attr.class]="index == 0 ? 'dpt btn btn-block btn-primary' : 'dpt btn btn-block btn-secondary'"
                         style="margin-top: 10px;margin-bottom: 10px;" 
                         id="{{catg.salesCategoryID}}"
                         (click)="salesCatgClick($event, catg.salesCategoryID);">{{catg.salesCategoryDescription}}</button>
