@@ -34,7 +34,7 @@ export const UPSERT_TRAN_EXCH_CPN = 'upsertTranExchCpn';
 export const UPDATE_PARTPAY_DATA = 'updatePartpayData';
 
 export const UPDATE_LOCATION_CONFIG = 'updateLocationConfig';
-
+export const REMOVE_TNDR_SAVE_CODE = "removeTenderWithSaveCode";
 
 export const addSaleItem = createAction(ADD_SALE_ITEM,
     props<{saleItem: SalesTransactionCheckoutItem}>());
@@ -73,11 +73,15 @@ export const addTender = createAction(ADD_TENDER_OBJ,
     props<{tndrObj: TicketTender}>());
 
 export const updateSaleitems = createAction(UPD_SALE_ITEM,
-    props<{item: SalesTransactionCheckoutItem}>())
+    props<{item: SalesTransactionCheckoutItem}>());
+
+export const removeTndrWithSaveCode = createAction(REMOVE_TNDR_SAVE_CODE,
+    props<{tndrCode: string}>());
+    
 
 export const updateCheckoutTotals = createAction(UPD_CHK_OUT_TOTALS, props<{logonDataSvc: LogonDataService}>());
 
-export const updateServedByAssociate = createAction(UPD_SRVD_BY_ASSOC, props<{saleItemId:number, indx:number, indLocId: number}>());
+export const updateServedByAssociate = createAction(UPD_SRVD_BY_ASSOC, props<{saleItemId:number, indx:number, indLocId: number, srvdByAssociateName: string}>());
 
 export const updateAssocInAssocTips = createAction(UPDATE_ASSOC_IN_ASSOCTIPS, props<{saleItemId: number, indLocId: number}>());
 

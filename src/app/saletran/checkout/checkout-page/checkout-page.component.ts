@@ -3,18 +3,20 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import {  NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { TicketTender } from 'src/app/models/ticket.tender';
 import { SharedSubjectService } from 'src/app/shared-subject/shared-subject.service';
-import { CustomerSearchComponent } from '../../customer-search/customer-search.component';
+import { CustomerSearchComponent } from '../../../shared/customer-search/customer-search.component';
 import { LocationConfig } from '../../models/location-config';
 import { TenderType, TenderTypeModel } from '../../models/tender.type';
 import { SalesTranService } from '../../services/sales-tran.service';
-import { addTender, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
-import { getCheckoutItemsSelector } from '../../store/ticketstore/ticket.selector';
+import { addTender, removeTndrWithSaveCode, saveTicketSplit, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
+import { getCheckoutItemsSelector, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { TipsModalDlgComponent } from '../tips-modal-dlg/tips-modal-dlg.component';
+import { firstValueFrom, Observable, Subscription, take } from 'rxjs';
+import { TicketSplit } from 'src/app/models/ticket.split';
 
 @Component({
     selector: 'app-checkout-page',
@@ -71,7 +73,7 @@ export class CheckoutPageComponent implements OnInit {
     });
   }
 
-  btnTndrClick(evt: Event) {
+  async btnTndrClick(evt: Event) {
 
     this._store.dispatch(updateCheckoutTotals({logonDataSvc: this._logonDataSvc}));
     
@@ -81,10 +83,24 @@ export class CheckoutPageComponent implements OnInit {
     }
     else {
       this.displayCustSearchDlg = "display";
-      const modalRef = this.modalService.open(TipsModalDlgComponent, {
+      
+      let tndrObj: TicketTender = new TicketTender();
+      tndrObj.tenderTypeCode = "SV";
+      tndrObj.tenderAmount = this.tenderAmount;
+      tndrObj.tndMaintTimestamp = new Date(Date.now())
+      tndrObj.currCode = this._logonDataSvc.getLocationConfig().defaultCurrency;
+      tndrObj.fCCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+      this._store.dispatch(addTender({ tndrObj }));
 
-        
+      var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+      if (tktObjData) {
+        this._store.dispatch(saveTicketSplit({ tktObj: tktObjData }));
+      }
+      const modalRef = this.modalService.open(TipsModalDlgComponent, {
+                
       });
+
+      modalRef.componentInstance.tndrCode = tndrCode;
     }
   }
 

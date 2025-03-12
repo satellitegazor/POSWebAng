@@ -1,11 +1,11 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { first } from 'rxjs';
 import { LTC_Customer } from 'src/app/models/customer';
-import { SalesTranService } from '../services/sales-tran.service'; 
-import { addCustomerId } from '../store/ticketstore/ticket.action';
-import { saleTranDataInterface } from '../store/ticketstore/ticket.state';
+import { SalesTranService } from '../../saletran/services/sales-tran.service'; 
+import { addCustomerId } from '../../saletran/store/ticketstore/ticket.action';
+import { saleTranDataInterface } from '../../saletran/store/ticketstore/ticket.state';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 
 @Component({
@@ -18,7 +18,7 @@ import { LogonDataService } from 'src/app/global/logon-data-service.service';
 export class CustomerSearchComponent implements OnInit {
 
   data: string = '';
-  constructor(private modal: NgbModalRef, private _saleSvc: SalesTranService, 
+  constructor(private modal: NgbModal, private _saleSvc: SalesTranService, 
     private _store: Store<saleTranDataInterface>,
     private _logonSvc: LogonDataService) { }
   CustomerList: LTC_Customer[] = [];
@@ -66,7 +66,7 @@ export class CustomerSearchComponent implements OnInit {
   }
 
   cancel() {
-    this.modal.close('');
+    this.modal.dismissAll('');
   }
 
   newcust() {}

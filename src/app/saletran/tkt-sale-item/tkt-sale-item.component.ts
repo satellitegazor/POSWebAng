@@ -51,6 +51,8 @@ export class TktSaleItemComponent implements OnInit {
         this._saleTranSvc.getLocationAssociates(locConfig.locationUID, +this._logonDataSvc.getLTVendorLogonData().individualUID).subscribe(data => {
             this.SaleAssocList = data.associates
         })
+
+        
     }
 
     btnMinusClicked(evt: Event, i: number) {
@@ -74,12 +76,15 @@ export class TktSaleItemComponent implements OnInit {
         this._router.navigate(['/checkout'])
     }
 
-    onAssociateChange(evt: Event, indivLocId: number, saleItemId: number, indx: number) {
+    onAssociateChange(evt: any, indivLocId: number, saleItemId: number, indx: number, srvdByAssociateName: string) {
 
-         setTimeout(function(obj: any) {
-             obj._store.dispatch(updateServedByAssociate({saleItemId, indx, indLocId: indivLocId}))
+        console.log(evt.target)
+
+         setTimeout(function(obj: any, saleItemId: number, indx: number, indivLocId: number, srvdByAssociateName: string) {
+             obj._store.dispatch(updateServedByAssociate({saleItemId, indx, indLocId: indivLocId, srvdByAssociateName}))
              obj._store.dispatch(updateAssocInAssocTips({saleItemId: saleItemId, indLocId: indivLocId}));
-         }, 100, this, saleItemId, indx, indivLocId) 
+         }, 100, this, saleItemId, indx, indivLocId, evt.target['options'][+evt.target.selectedIndex].innerText
+        ) 
 
         return true;
     }

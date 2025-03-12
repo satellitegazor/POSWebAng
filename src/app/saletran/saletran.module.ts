@@ -1,4 +1,4 @@
-﻿import { NgModule } from '@angular/core';
+﻿import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { authinterceptorProviders } from '../auth/auth.interceptor';
@@ -9,9 +9,9 @@ import { SalesCategoryComponent } from './sales-category/sales-category.componen
 import { SharedSubjectModule } from '../shared-subject/shared-subject.module';
 import { SaleItemComponent } from './sale-item/sale-item.component';
 import { TktSaleItemComponent } from './tkt-sale-item/tkt-sale-item.component';
-import { CustomerSearchComponent } from './customer-search/customer-search.component';
-import { CustomerNewComponent } from './customer-new/customer-new.component';
-import { NgbModal, NgbModalRef, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { CustomerSearchComponent } from '../shared/customer-search/customer-search.component';
+import { CustomerNewComponent } from '../shared/customer-new/customer-new.component';
+import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { StoreModule } from '@ngrx/store';
 import { GET_SALE_ITEM_MENU, SHARED_SALE_ITEMS_MENU_STATE } from './store/saleitemstore/saleitem.selector';
 import { GetSaleItemMenuReducer } from './store/saleitemstore/saleitem.reducers';
@@ -36,12 +36,15 @@ import { TenderPageComponent } from './tender/tender-page/tender-page.component'
 import { TipsModalDlgComponent } from './checkout/tips-modal-dlg/tips-modal-dlg.component';
 import { SaveTicketSuccessComponent } from './save-ticket-success/save-ticket-success.component';
 import { SplitPayComponent } from './tender/split-pay/split-pay.component';
-import { TicketLookupComponent } from './ticket-lookup/ticket-lookup.component';
+import { TicketLookupComponent } from '../shared/ticket-lookup/ticket-lookup.component';
+import { SharedModule } from '../shared/shared.module';
+
+
 
 @NgModule({
     declarations: [DeptListComponent, SalesCartComponent, SalesCategoryComponent, SaleItemComponent,
-        TktSaleItemComponent, CustomerNewComponent, CustomerSearchComponent,  
-        CouponsModalDlgComponent, PartPayComponent, BalanceDueComponent, SaleTotalsComponent, CheckoutPageComponent, CheckoutItemsComponent, TenderPageComponent, TipsModalDlgComponent, SaveTicketSuccessComponent, SplitPayComponent, TicketLookupComponent],
+        TktSaleItemComponent,  
+        CouponsModalDlgComponent, PartPayComponent, BalanceDueComponent, SaleTotalsComponent, CheckoutPageComponent, CheckoutItemsComponent, TenderPageComponent, TipsModalDlgComponent, SaveTicketSuccessComponent, SplitPayComponent],
     imports: [
         CommonModule,
         FormsModule,
@@ -55,9 +58,12 @@ import { TicketLookupComponent } from './ticket-lookup/ticket-lookup.component';
         StoreModule.forFeature(LOC_Assoc_STATE, GetLocationAssocReducer),
         EffectsModule.forFeature([LocationAssocEffects]),
         StoreModule.forFeature(TKT_OBJ_STATE, TktObjReducer),
-        EffectsModule.forFeature([TicketObjectEffects])
+        EffectsModule.forFeature([TicketObjectEffects]),
+        SharedModule
     ],
-    providers: [authinterceptorProviders]
+    providers: [authinterceptorProviders],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+
     //exports: [VendorLTComponent, VendorSTComponent, SbmComponent]
 })
 export class SalesTranModule { }

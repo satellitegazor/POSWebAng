@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { SalesTranService } from '../services/sales-tran.service';
-import { saleTranDataInterface } from '../store/ticketstore/ticket.state';
+import { SalesTranService } from '../../saletran/services/sales-tran.service';
+import { saleTranDataInterface } from '../../saletran/store/ticketstore/ticket.state';
 import { LTC_Customer } from 'src/app/models/customer';
 import { Router } from '@angular/router';
 
@@ -54,7 +54,7 @@ export class TicketLookupComponent implements OnInit {
         if(data.results.success) {
           this._route.navigateByUrl('/lrcpt?tranid=' + data.transactionID);
         }
-      })      
+      })    
     }
     
 

@@ -11,16 +11,16 @@
         <td>Tran Date</td>
         <td>Tender Type</td>
     </thead>
-    <tr *ngFor="let tran of tranDtls"  (click)="tranSelected(tran.transactionID)">
+    <tr *ngFor="let tran of tranDtls"  >
         
-        <td class="calign">{{tran.ticketNumber}}</td>
+        <td class="calign bold" (click)="tranSelected(tran.transactionID)">{{tran.ticketNumber}}</td>
         <td class="lalign">{{tran.customerName}}</td>
         <td class="lalign">{{tran.customerPhone}}</td>
         <td class="lalign">{{tran.ticketStatusDesc}}</td>
         <td class="ralign">{{tran.tranTotalAmount}}</td>
-        <td class="rralign">{{tran.merchandiseSale}}</td>
+        <td class="ralign">{{tran.merchandiseSale}}</td>
         <td class="lalign">{{tran.associate}}</td>
-        <td class="calign">{{tran.dropOffDate}}</td>
+        <td class="lalign">{{tran.dropOffDate}}</td>
         <td class="lalign">{{tran.tenderType}}</td>
 
     </tr>

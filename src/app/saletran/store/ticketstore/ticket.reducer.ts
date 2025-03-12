@@ -7,7 +7,7 @@ import { AssociateSaleTips } from "src/app/models/associate.sale.tips";
 import { LTC_Customer } from "src/app/models/customer";
 import { TicketTender } from "src/app/models/ticket.tender";
 import { SalesTransactionCheckoutItem } from "../../models/salesTransactionCheckoutItem";
-import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketSplitSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData } from "./ticket.action";
+import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketSplitSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData, removeTndrWithSaveCode } from "./ticket.action";
 
 import { tktObjInitialState, saleTranDataInterface } from "./ticket.state";
 
@@ -24,6 +24,18 @@ export const _tktObjReducer = createReducer(
             transactionDate: new Date(Date.now())
          }
       }
+   }),
+
+   on(removeTndrWithSaveCode, (state, action) => {
+      let tndrCode: string = action.tndrCode;
+      return {
+         ...state,
+         tktObj: {
+            ...state.tktObj,
+            ticketTenderList: state.tktObj.ticketTenderList.filter(tndr => tndr.tenderTypeCode != tndrCode)
+         }
+      }
+
    }),
 
    on(resetTktObj, (state, action) => {
@@ -101,6 +113,7 @@ export const _tktObjReducer = createReducer(
          else {
             let saleAssoc: AssociateSaleTips = new AssociateSaleTips();
             saleAssoc.indivLocId = k.srvdByAssociateVal;
+            saleAssoc.firstName = k.srvdByAssociateText;
             saleAssoc.tipSaleItemIdList.push(k.salesItemUID);
             saleAssocAry.push(saleAssoc);
          }
@@ -169,7 +182,8 @@ export const _tktObjReducer = createReducer(
                if (itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.indx) {
                   return {
                      ...itm,
-                     srvdByAssociateVal: action.indLocId
+                     srvdByAssociateVal: action.indLocId,
+                     srvdByAssociateText: action.srvdByAssociateName
                   }
                }
                else {
@@ -287,7 +301,8 @@ export const _tktObjReducer = createReducer(
          tktObj: {
             ...state.tktObj,
             ticketTenderList: [...state.tktObj.ticketTenderList,
-            action.tndrObj]
+            action.tndrObj],
+            transactionDate: new Date(Date.now())
          }
       }
    }),
@@ -345,9 +360,9 @@ export const _tktObjReducer = createReducer(
 
       const updatedTktList = state.tktObj.tktList.map(stateItem => stateItem.salesItemUID == action.item.salesItemUID ? action.item : stateItem);
       let assocTips: AssociateSaleTips = new AssociateSaleTips();
-      assocTips.tipAssociateId = action.item.srvdByAssociateVal;
+      assocTips.indivLocId = action.item.srvdByAssociateVal;
       
-      const updatedAssocSaleTips = state.tktObj.associateTips.map(stateTips => stateTips.tipAssociateId == action.item.srvdByAssociateVal ? stateTips : assocTips);
+      const updatedAssocSaleTips = state.tktObj.associateTips.map(stateTips => stateTips.indivLocId == action.item.srvdByAssociateVal ? stateTips : assocTips);
 
       return {
          ...state,
@@ -368,6 +383,8 @@ export const _tktObjReducer = createReducer(
          lineItemTotalDC += val.lineItemDollarDisplayAmount;
          lineItemTotalNDC += val.dCLineItemDollarDisplayAmount;
       })
+
+      
 
       return {
          ...state,
@@ -820,6 +837,11 @@ export const _tktObjReducer = createReducer(
    on(saveTicketSplitSuccess, (state, action) => {
       return {
          ...state,
+         tktObj: {
+            ...state.tktObj,
+            transactionID: action.rslt.transactionId,
+            ticketNumber: action.rslt.ticketNumber,
+         },
          saveTktRsltMdl: action.rslt
       }
    }),

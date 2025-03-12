@@ -1,8 +1,8 @@
-<modal [showCloseButton]="false" [closeOnEscape]="false" [closeOnOutsideClick]="false">
-    <modal-header>
-        <h4>Customer Lookup</h4>
-    </modal-header>
-    <modal-content>
+
+    <div class="modal-header">
+        <h4>Ticket Lookup</h4>
+    </div>
+    <div class="modal-content">
         <div class="form-group">
             <label for="locationname">Location</label>
             <input type="text" class="form-control" boename="locationname" readonly value="{{locationName}}"/>
@@ -32,15 +32,14 @@
             </div>
         </div>
 
-    </modal-content>
-    <modal-footer>
+    </div>
+    <div class="modal-footer">
         <div class="row">
             <button class="btn btn-info" (click)="search()">Search</button>&nbsp;
             <button class="btn btn-info" (click)="cancel()">Cancel</button>&nbsp;
         </div>
-    </modal-footer>
+    </div>
     <div *ngIf="showErrMsg">
         <div class="strongmsg">{{strongErrMessage}}</div><div class="errmsg">{{errMessage}}</div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-</modal>

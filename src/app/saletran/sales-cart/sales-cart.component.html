@@ -13,6 +13,8 @@
         <app-tkt-sale-item #tktSaleItemComponent></app-tkt-sale-item>
     </div>
 </div>
+<app-child [salesCategoryListRefreshEvent]="salesCategoryListRefresh.asObservable()"></app-child>
+<app-child [salesItemListRefreshEvent]="salesItemListRefresh.asObservable()"></app-child>
 <div class="footer fixed-bottom cncsnFooter">
     <div id="stButtonBottomBar" class="row">
         <button class="border border-white btn btn-info btn-lg ftrbtn goToST" style="width:20%;" id="btnCustDetails" aria-label="Left Align" (click)="btnCustDetailsClick($event)">

@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgbModalRef }  from '@ng-bootstrap/ng-bootstrap'
+import { NgbModal }  from '@ng-bootstrap/ng-bootstrap'
 import { Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
 import { LTC_Associates } from '../../models/location.associates';
 import { SalesTranService } from '../../services/sales-tran.service';
-import { upsertAssocTips } from '../../store/ticketstore/ticket.action';
+import { removeTndrWithSaveCode, upsertAssocTips } from '../../store/ticketstore/ticket.action';
 import { getCheckoutItemsSelector, getTicketTotals, getAssocTipList } from '../../store/ticketstore/ticket.selector';
 
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
@@ -19,7 +19,7 @@ import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 })
 export class TipsModalDlgComponent implements OnInit {
 
-  constructor(private modal: NgbModalRef, private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
+  constructor(private modal: NgbModal, private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
     private _store: Store<saleTranDataInterface>, private router: Router) { }
 
     public tndrCode: string = ''
@@ -39,6 +39,7 @@ export class TipsModalDlgComponent implements OnInit {
     var locCnfg = this._logonDataSvc.getLocationConfig();
 
     this._store.select(getAssocTipList).subscribe(tl => {
+      //debugger;
       if(tl.length > 0) {
         this.assocSaleTips = JSON.parse(JSON.stringify(tl));
       }
@@ -53,14 +54,15 @@ export class TipsModalDlgComponent implements OnInit {
             let associate: AssociateSaleTips = this.assocSaleTips.filter(a => a.indivLocId == assoc.individualLocationUID)[0];
             associate.firstName = assoc.firstName;
             associate.lastName = assoc.lastName;
-            associate.tipAssociateId = assoc.individualUID;
+            associate.tipAssociateId = assoc.individualLocationUID;
           }
         }) 
       
 
       this._store.select(getTicketTotals).subscribe(dt => {
-        this.dcTotal = (dt.grandTotalDC * 100) / 100;
-        this.ndcTotal = (dt.grandTotalNDC * 100) / 100;
+        this.dcTotal = Number.parseFloat(((dt.grandTotalDC * 100) / 100).toFixed(2));
+        this.ndcTotal = Number.parseFloat(((dt.grandTotalNDC * 100) / 100).toFixed(2));
+
         this.lineItemTotalDC = (Number.parseFloat((dt.grandTotalDC - dt.tipTotalDC).toFixed(2)) * 100) / 100;
         this.lineItemTotalNDC = (Number.parseFloat((dt.grandTotalNDC - dt.tipTotalNDC).toFixed(2)) * 100) / 100;
       })
@@ -68,9 +70,8 @@ export class TipsModalDlgComponent implements OnInit {
   }
 
   onTipChanged(event: any) {
-    
     this.assocSaleTips.forEach(elem => {
-      if(elem.tipAssociateId == Number(event.target.id.substr(2))) {
+      if(elem.indivLocId == Number(event.target.id.substr(2))) {
         elem.tipAmount = Number(event.target.value);
       }
       this.dcTotal += elem.tipAmount;
@@ -79,13 +80,10 @@ export class TipsModalDlgComponent implements OnInit {
 
   onTotalAmountChanged(event: any) {
 
-  
-
     let totalTipAmt = Number(event.target.value);
     if(totalTipAmt < this.lineItemTotalDC) {
       return;
     }
-
 
     let diffAmt = totalTipAmt - this.lineItemTotalDC;
     let indivTipAmt = Math.round(((diffAmt / this.assocSaleTips.length) + Number.EPSILON) * 100) / 100;;
@@ -112,25 +110,34 @@ export class TipsModalDlgComponent implements OnInit {
 
   public Save() {
 
+    
+
+    this._store.dispatch(removeTndrWithSaveCode({ tndrCode: "SV" }))
+
+
     let totalTipAmt = 0;
     
     this.assocSaleTips.forEach(function(obj: AssociateSaleTips, indx: number) {
+      console.log('in Save Tip: ' + obj.tipAmount);
       totalTipAmt += obj.tipAmount;
       
     })
     this.tipTotalDC = totalTipAmt;
     this.tipTotalNDC = totalTipAmt;
+    this.dcTotal += totalTipAmt;
+
+    this.modal.dismissAll();
     
-    this.modal.close();
     this._store.dispatch(upsertAssocTips({ assocTipsList: this.assocSaleTips, totalTipAmtDC:this.tipTotalDC, totalTipAmtNDC: this.tipTotalNDC }));
     
+    console.log('in Save Tip TenderCode: ' + this.tndrCode);
     if(this.tndrCode != "") {
       this.router.navigate(['tender'], {queryParams: {code: this.tndrCode}})
     }
 
   }
   public Cancel() {
-    this.modal.close('');
+    this.modal.dismissAll('');
   }
 
   keyValidate(event: any) { 

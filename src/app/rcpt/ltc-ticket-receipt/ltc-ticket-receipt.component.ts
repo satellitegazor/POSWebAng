@@ -4,7 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { LTC_Ticket } from 'src/app/saletran/models/ticket.list';
 import { SalesTranService } from 'src/app/saletran/services/sales-tran.service';
-import { TicketLookupComponent } from 'src/app/saletran/ticket-lookup/ticket-lookup.component';
+import { TicketLookupComponent } from 'src/app/shared/ticket-lookup/ticket-lookup.component';
 
 @Component({
     selector: 'app-ltc-ticket-receipt',

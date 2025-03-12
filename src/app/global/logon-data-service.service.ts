@@ -160,7 +160,7 @@ export class LogonDataService {
         sessionStorage.setItem('locationName', locConfig.configs[0].locationName);
         sessionStorage.setItem('storeName', locConfig.configs[0].storeName);
         sessionStorage.setItem('pINReqdForSalesTran', (locConfig.configs[0].pINReqdForSalesTran ? locConfig.configs[0].pINReqdForSalesTran : false).toString());
-        sessionStorage.setItem('associateName', locConfig.configs[0].associateName);
+        sessionStorage.setItem('associateName', locConfig.individuals[0].associateName);
         sessionStorage.setItem('associateRole', locConfig.configs[0].associateRole);
         sessionStorage.setItem('associateRoleDesc', locConfig.configs[0].associateRoleDesc);
         sessionStorage.setItem('contractUID', locConfig.configs[0].contractUID.toString());
@@ -168,12 +168,12 @@ export class LogonDataService {
         sessionStorage.setItem('vendorNumber', locConfig.configs[0].vendorNumber);
         sessionStorage.setItem('vendorName', locConfig.configs[0].vendorName);
         sessionStorage.setItem('facilityName', locConfig.configs[0].facilityName);
-        sessionStorage.setItem('individualUID', (locConfig.configs[0].individualUID != null ? locConfig.configs[0].individualUID : '0').toString());
+        sessionStorage.setItem('individualUID', (locConfig.individuals[0].individualUID != null ? locConfig.individuals[0].individualUID : '0').toString());
         sessionStorage.setItem('indLocUID', (locConfig.individuals[0].indLocUID != null ? locConfig.individuals[0].indLocUID : '0').toString());
         sessionStorage.setItem('contractStart', locConfig.configs[0].contractStart.toString());
         sessionStorage.setItem('contractEnd', String(locConfig.configs[0].contractEnd != null ? locConfig.configs[0].contractEnd : false));
         sessionStorage.setItem('busFuncCode', locConfig.configs[0].busFuncCode);
-        sessionStorage.setItem('assocEmail', locConfig.configs[0].assocEmail);
+        sessionStorage.setItem('assocEmail', locConfig.individuals[0].emailAddress);
         sessionStorage.setItem('isVendorLogin', String(locConfig.configs[0].isVendorLogin != null ? locConfig.configs[0].isVendorLogin : false));
         sessionStorage.setItem('sBMUserFirstName', locConfig.configs[0].sBMUserFirstName);
         sessionStorage.setItem('sBMUserMiddleName', locConfig.configs[0].sBMUserMiddleName);

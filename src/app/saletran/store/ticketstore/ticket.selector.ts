@@ -74,3 +74,4 @@ export const getIsCustomerAddedToTicket = createSelector(getTktObjState,
     return state.tktObj.customerId > 0 || state.tktObj.updateCustomer || (state.tktObj.customer.cLastName != undefined) ;
 
 })
+

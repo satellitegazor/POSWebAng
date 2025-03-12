@@ -5,9 +5,10 @@ import { SharedSubjectService } from '../../shared-subject/shared-subject.servic
 import { CheckoutItemsComponent } from '../checkout/checkout-items/checkout-items.component';
 import { SaleItem } from '../models/sale.item';
 import { SalesTransactionCheckoutItem } from '../models/salesTransactionCheckoutItem';
-import { addSaleItem } from '../store/ticketstore/ticket.action';
+import { addSaleItem, updateServedByAssociate } from '../store/ticketstore/ticket.action';
 import { getCheckoutItemsCount } from '../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../store/ticketstore/ticket.state';
+import { Observable, Subject } from 'rxjs';
 
  
 @Component({
@@ -20,15 +21,33 @@ export class SaleItemComponent implements OnInit {
 
     constructor(private _logonDataSvc: LogonDataService, private _store: Store<saleTranDataInterface>) { }
     @Input() saleItemList: SaleItem[] = [];
-
+    @Input() salesItemListRefreshEvent: Observable<boolean> = new Observable<boolean>();
+    activeId: number = 0;
     ngOnInit(): void {
+      if(this.saleItemList.length > 0) {
+        this.activeId = this.saleItemList[0].salesItemID;
+      }
+
+      this.salesItemListRefreshEvent.subscribe(data => {
+        console.log('subscription called salesitmListRefresh: ' + data);
+        if(data) {
+          this.activeId = this.saleItemList[0].salesItemID;
+        }
+      });
     }
     
     public salesItemClick(event: Event, itemId: number): void {
         
         const saleCheckoutItem = this.getSaleCheckOutItem(
           this.saleItemList.filter(itm => itm.salesItemID == itemId)[0]);
-        this._store.dispatch(addSaleItem({saleItem: saleCheckoutItem}));        
+
+        saleCheckoutItem.srvdByAssociateText = this._logonDataSvc.getLTVendorLogonData().associateName;
+        this._store.dispatch(addSaleItem({saleItem: saleCheckoutItem}));       
+        if(this._logonDataSvc.getAllowTips()) {
+          
+          this._store.dispatch(updateServedByAssociate({ saleItemId: saleCheckoutItem.salesItemUID, indx: 0, 
+            indLocId: saleCheckoutItem.srvdByAssociateVal, srvdByAssociateName: saleCheckoutItem.srvdByAssociateText}))
+        }
     }
 
     private getSaleCheckOutItem(si: SaleItem): SalesTransactionCheckoutItem {
@@ -72,7 +91,7 @@ export class SaleItemComponent implements OnInit {
       coItm.salesItemUID = si.salesItemID;
       coItm.salesTaxPct = si.salesTax;
 
-      coItm.srvdByAssociateText = '';
+      coItm.srvdByAssociateText = this._logonDataSvc.getLTVendorLogonData().associateName;
       coItm.srvdByAssociateVal = +this._logonDataSvc.getLocationConfig().indLocUID;
       coItm.ticketDetailId = 0;
 
@@ -88,4 +107,6 @@ export class SaleItemComponent implements OnInit {
       
       return coItm;
   }
+
+
 }

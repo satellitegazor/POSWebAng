@@ -9,21 +9,21 @@ import { SaleItemResultsModel } from '../models/sale.item.results.model';
 import { SalesTranService } from '../services/sales-tran.service';
 import { TktSaleItemComponent } from '../tkt-sale-item/tkt-sale-item.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { CustomerSearchComponent } from '../customer-search/customer-search.component';
+import { CustomerSearchComponent } from '../../shared/customer-search/customer-search.component';
 
 import { getSaleItemsStart, getSaleItemsActionSuccess, getSaleitemsFail } from '../store/saleitemstore/saleitem.action';
 import { props, Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { getSaleItemListSelector } from '../store/saleitemstore/saleitem.selector';
 import { getLocationConfigSelector } from '../store/locationconfigstore/locationconfig.selector';
-import { getLocationConfigStart } from '../store/locationconfigstore/locationconfig.action';
+import { getLocationConfigStart, setLocationConfig } from '../store/locationconfigstore/locationconfig.action';
 import { getAuthLoginSelector } from 'src/app/authstate/auth.selector';
 import { LocationConfig, LocationIndividual } from '../models/location-config';
 import { saleTranDataInterface } from '../store/ticketstore/ticket.state';
 import { initTktObj } from '../store/ticketstore/ticket.action';
-import { TicketLookupComponent } from '../ticket-lookup/ticket-lookup.component';
+import { TicketLookupComponent } from '../../shared/ticket-lookup/ticket-lookup.component';
 import { getCheckoutItemsCount } from '../store/ticketstore/ticket.selector';
-
+import {initialLocationConfigState, LocationConfigState} from '../store/locationconfigstore/locationconfig.state';
 
 @Component({
     selector: 'app-sales-cart',
@@ -34,7 +34,8 @@ import { getCheckoutItemsCount } from '../store/ticketstore/ticket.selector';
 export class SalesCartComponent implements OnInit, OnDestroy {
 
     constructor(private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
-        private _sharedSubSvc: SharedSubjectService, private modalService: NgbModal, private _store: Store<saleTranDataInterface>) {
+        private _sharedSubSvc: SharedSubjectService, private modalService: NgbModal, private _store: Store<saleTranDataInterface>,
+    private _locConfigStore: Store<LocationConfigState>) {
         console.log('SalesCart constructor')
     }
 
@@ -55,6 +56,9 @@ export class SalesCartComponent implements OnInit, OnDestroy {
 
     disableCheckoutBtn: boolean = true;
 
+    public salesCategoryListRefresh: Subject<boolean> = new Subject<boolean>();
+    public salesItemListRefresh: Subject<boolean> = new Subject<boolean>();
+
     @ViewChild('tktSaleItemComponent')
     private tktSaleItemComponent: TktSaleItemComponent = {} as TktSaleItemComponent;
 
@@ -74,13 +78,7 @@ export class SalesCartComponent implements OnInit, OnDestroy {
             this.locationConfig = data.configs[0];
             this.locationIndividuals = data.individuals;
 
-            let indivId = 0;
-            if (data.individuals.length > 0)
-                indivId = data.individuals[0].individualUID;
-
-            this._logonDataSvc.setLocationConfig(data);
-
-            this._store.dispatch(initTktObj({ locConfig: this.locationConfig, individualUID: indivId }));
+            this._store.dispatch(initTktObj({ locConfig: this.locationConfig, individualUID: +this.vendorLoginResult.individualUID }));
         });
 
         let today = new Date();
@@ -99,7 +97,7 @@ export class SalesCartComponent implements OnInit, OnDestroy {
     }
 
     public getDeptList(): void {
-        console.log('SalesTranSvc getDeptList called')
+        
         this.allItemButtonMenuList.forEach(item => {
             let dptCount = this.deptList.filter(d => d.departmentUID == item.departmentUID).length;
             if (dptCount == 0) {
@@ -115,7 +113,8 @@ export class SalesCartComponent implements OnInit, OnDestroy {
 
     public getSalesCategoryList(deptId: number): void {
 
-        console.log('SalesCart getSalesCategoryList called');
+        
+        
         this.saleCatList = [];
         let allDeptList = this.allItemButtonMenuList.filter(item => item.departmentUID == deptId);
         allDeptList.forEach(itm => {
@@ -124,11 +123,14 @@ export class SalesCartComponent implements OnInit, OnDestroy {
                 this.saleCatList.push(itm);
             }
         });
+        console.log('setting salesCategoryListRefresh to true');
+        this.salesCategoryListRefresh.next(true);
+
         this.getSaleItemList(this.saleCatList[0].salesCategoryID);
     }
 
     public getSaleItemList(categoryId: number): void {
-        console.log('SalesTranSvc getSaleItemList called');
+        
         this.saleItemList = [];
         let allCatList = this.allItemButtonMenuList.filter(item => item.salesCategoryID == categoryId);
         allCatList.forEach(itm => {
@@ -137,6 +139,8 @@ export class SalesCartComponent implements OnInit, OnDestroy {
                 this.saleItemList.push(itm);
             }
         });
+        console.log('setting salesItemListRefresh to true');
+        this.salesItemListRefresh.next(true)
     }
 
     deptClicked(id: any) {

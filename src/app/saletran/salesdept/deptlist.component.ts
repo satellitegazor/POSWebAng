@@ -16,7 +16,9 @@ export class DeptListComponent implements OnInit {
     activeId: number | null = null;
     public ngOnInit() {
         console.log('DeptList ngOnInit');
-        this.activeId = this.deptList[0].departmentUID;
+        if (this.deptList.length > 0) {
+            this.activeId = this.deptList[0].departmentUID;
+        }
     }
 
     public deptClick(event: Event, deptId: number) {

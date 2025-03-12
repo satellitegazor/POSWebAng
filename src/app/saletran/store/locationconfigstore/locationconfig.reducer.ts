@@ -1,5 +1,5 @@
 import { Action, createReducer, on } from "@ngrx/store";
-import { getLocationConfigSuccess } from "./locationconfig.action";
+import { getLocationConfigSuccess, setLocationConfig } from "./locationconfig.action";
 import { initialLocationConfigState, LocationConfigState } from "./locationconfig.state";
 
 
@@ -10,6 +10,12 @@ import { initialLocationConfigState, LocationConfigState } from "./locationconfi
        ...state,
        locationCnfg: action.locationCnfg
        }; 
+    }),
+    on(setLocationConfig, (state, action) => {
+        return {
+            ...state,
+            locationCnfg: action.locationConfig
+        }
     })
 );
  

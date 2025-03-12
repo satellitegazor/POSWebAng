@@ -8,7 +8,10 @@ import { LocalStorageService } from '../../global/local-storage.service';
 import { SalesTranService } from 'src/app/saletran/services/sales-tran.service';
 import { AlertService } from 'src/app/alertmsg/alert-message/alert-message.service';
 import { AlertOptions } from 'src/app/alertmsg/alert-message/alert-message.model';
- 
+import { LocationConfigState } from 'src/app/saletran/store/locationconfigstore/locationconfig.state';
+import { props, Store } from '@ngrx/store';
+import { setLocationConfig } from 'src/app/saletran/store/locationconfigstore/locationconfig.action';
+
 @Component({
     selector: 'app-logon-vendorlt',
     templateUrl: './vendorlt.component.html',
@@ -29,10 +32,11 @@ export class VendorLTComponent implements OnInit {
 
     constructor(private logonSvc: LogonSvc, 
         private router: Router,
-        private _sharedSvc: LogonDataService, 
+        private _logonDataSvc: LogonDataService, 
         private _localStorageSvc: LocalStorageService, 
         private _saleTranSvc: SalesTranService,
-        private _alertSvc: AlertService ) { }
+        private _alertSvc: AlertService,
+        private _locConfigStore: Store<LocationConfigState> ) { }
     cookieVal = '';
     ngOnInit() {
 
@@ -70,6 +74,7 @@ export class VendorLTComponent implements OnInit {
             if(data == null) {
                 return;
             }
+            //debugger;
 
             if (!data.results.success) {
                 this.errorMsgDisplay = 'block';
@@ -104,16 +109,17 @@ export class VendorLTComponent implements OnInit {
             
 
             console.log('vendorlt sending data to subject');
-            this._sharedSvc.setLTVendorLogonData(data);
+            this._logonDataSvc.setLTVendorLogonData(data);
 
 
 
             this._saleTranSvc.getLocationConfig(+data.locationUID, +data.individualUID).subscribe(data => {
 
-                this._sharedSvc.setLocationConfig(data);
+                this._logonDataSvc.setLocationConfig(data);
+                this._locConfigStore.dispatch(setLocationConfig({ locationConfig: data }));
 
                 this._saleTranSvc.getTenderTypes(1, 100).subscribe(data => {
-                    this._sharedSvc.setTenderTypes(data);
+                    this._logonDataSvc.setTenderTypes(data);
                 });               
                 console.log('vendorlt navigating to SalesCart');
                 this.router.navigate(['/salestran']);    

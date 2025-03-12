@@ -1,31 +1,30 @@
-<modal [showCloseButton]="false" [closeOnEscape]="false" [closeOnOutsideClick]="false">
-    <modal-header>
+
+    <div class="modal-header">
         <h4>Enter Tips</h4>
-    </modal-header>
-    <modal-content>
+    </div>
+    <div class="modal-content">
         <table class="table table-striped">
             <tr><th>Serviced By</th><th>Tip</th></tr>
         <tr *ngFor="let assoc of assocSaleTips;" class="form-group">
             <td><label>{{assoc.firstName + ' ' + assoc.lastName}}</label></td>
-            <td><input type="text" TwoDigitDecimalDirectiveDirective class="dc saleassocid form-control" id="dc{{assoc.tipAssociateId}}" [ngModel]="assoc.tipAmount" (change)="onTipChanged($event)" (keydown)="keyValidate($event)" /></td>
+            <td><input type="number" TwoDigitDecimalDirectiveDirective class="dc saleassocid form-control" id="dc{{assoc.indivLocId}}" [(ngModel)]="assoc.tipAmount"  /></td>
             <!-- <td><input type="number" class="ndc saleassocid form-control" id="ndc{{assoc.individualUID}}" [ngModel]="assocSaleTips[i].tipAmtLocCurr | number: '0.2-2'" /></td> -->
         </tr>
         <tr>
             <td><label>Total:</label></td>
             <td>
-                <input type="text" TwoDigitDecimalDirectiveDirective class="dc saleassocid form-control" id="dcTotal" value="{{dcTotal}}" (change)="onTotalAmountChanged($event)" (keydown)="keyValidate($event)" />
+                <input type="number" TwoDigitDecimalDirectiveDirective class="dc saleassocid form-control" id="dcTotal" value="{{dcTotal}}" (change)="onTotalAmountChanged($event)" (keydown)="keyValidate($event)" />
             </td>
             <!-- <td>
                 <input type="number" class="ndc saleassocid form-control" id="ndcTotal" value="{{ndcTotal}}" />
             </td> -->
         </tr>
     </table>
-    </modal-content>
-    <modal-footer>
+</div>
+    <div class="modal-footer">
         <div class="row">
             <button class="btn btn-info" (click)="Save()">Save</button>&nbsp;
             <button class="btn btn-info" (click)="Cancel()">Cancel</button>&nbsp;
         </div>
-    </modal-footer>
+    </div>
 
-</modal>

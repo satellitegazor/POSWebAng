@@ -27,7 +27,7 @@ export class TicketObjectEffects {
                         return saveTicketSplitSuccess({rslt});
                     }),
                     catchError((errResp) => {
-                        const errMessage = errResp + "Unable to load LocationConfig. Please logoff and logon again";
+                        const errMessage = errResp + "Unable to save ticket data. Please logoff and logon again";
                         return of(saveTicketSplitFailed(errResp));
                     })                        
                 )
