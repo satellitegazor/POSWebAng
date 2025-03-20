@@ -53,7 +53,7 @@ export const initTktObj = createAction(INIT_TKT_OBJ,
 
 export const resetTktObj = createAction(RESET_TKT_OBJ, 
     props<{dummyNumber: number}>());
-    
+
 export const saveTicketSplit = createAction(SAVE_TICKET_SPLIT,
     props<{tktObj: TicketSplit}>());
 

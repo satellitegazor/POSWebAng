@@ -24,7 +24,7 @@ import { CurrencyInputDirective } from './directives/currency-input.directive';
 import { SummaryComponent } from './reports/salestran/summary/summary.component';
 import { DetailComponent } from './reports/salestran/detail/detail.component';
 import { SalestranComponent } from './reports/salestran/salestran/salestran.component';
-import { TwoDigitDecimalDirectiveDirective } from './directives/two-digit-decimal-directive.directive';
+import { DecimalDirective } from './directives/decimal-directive';
 import { LtcTicketReceiptComponent } from './rcpt/ltc-ticket-receipt/ltc-ticket-receipt.component';
 import { AlertMessageModule } from './alertmsg/alert-message/alert-message.module';
 import { RcptModule } from './rcpt/rcpt.module';
@@ -43,7 +43,7 @@ import { InactiveLogoutInterceptor } from './auth/inactive-logout.interceptor';
     SummaryComponent,
     DetailComponent,
     SalestranComponent,
-    TwoDigitDecimalDirectiveDirective,
+    
     
     
   ],
@@ -55,7 +55,7 @@ import { InactiveLogoutInterceptor } from './auth/inactive-logout.interceptor';
     LogonModule,
     SalesTranModule,  
     SharedSubjectModule,  
-
+    DecimalDirective,
     NgbModalModule,
     HttpClientModule,
     EffectsModule.forRoot([]),

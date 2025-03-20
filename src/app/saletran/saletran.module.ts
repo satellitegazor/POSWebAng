@@ -38,13 +38,15 @@ import { SaveTicketSuccessComponent } from './save-ticket-success/save-ticket-su
 import { SplitPayComponent } from './tender/split-pay/split-pay.component';
 import { TicketLookupComponent } from '../shared/ticket-lookup/ticket-lookup.component';
 import { SharedModule } from '../shared/shared.module';
+import { DecimalDirective } from '../directives/decimal-directive';
 
 
 
 @NgModule({
     declarations: [DeptListComponent, SalesCartComponent, SalesCategoryComponent, SaleItemComponent,
         TktSaleItemComponent,  
-        CouponsModalDlgComponent, PartPayComponent, BalanceDueComponent, SaleTotalsComponent, CheckoutPageComponent, CheckoutItemsComponent, TenderPageComponent, TipsModalDlgComponent, SaveTicketSuccessComponent, SplitPayComponent],
+        CouponsModalDlgComponent, PartPayComponent, BalanceDueComponent, SaleTotalsComponent, CheckoutPageComponent, 
+        CheckoutItemsComponent, TenderPageComponent, TipsModalDlgComponent, SaveTicketSuccessComponent, SplitPayComponent],
     imports: [
         CommonModule,
         FormsModule,
@@ -59,7 +61,8 @@ import { SharedModule } from '../shared/shared.module';
         EffectsModule.forFeature([LocationAssocEffects]),
         StoreModule.forFeature(TKT_OBJ_STATE, TktObjReducer),
         EffectsModule.forFeature([TicketObjectEffects]),
-        SharedModule
+        SharedModule,
+        DecimalDirective
     ],
     providers: [authinterceptorProviders],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],

@@ -86,10 +86,10 @@ export class CheckoutItemsComponent implements OnInit {
     for (let k = 0; k < this.tktDtlItems.length; k++) {
       
       
-      let exchCpnTotal = (this.tktDtlItems[k].unitPrice * this.tktDtlItems[k].quantity) * this.tktDtlItems[k].exchangeCouponDiscountPct * 0.01;
-      let saleTaxTotal = (this.tktDtlItems[k].unitPrice * this.tktDtlItems[k].quantity) * this.tktDtlItems[k].salesTaxPct * 0.01;
+      let exchCpnTotal = Number(Number((this.tktDtlItems[k].unitPrice * this.tktDtlItems[k].quantity) * this.tktDtlItems[k].exchangeCouponDiscountPct * 0.01).toFixed(2));  
+      let saleTaxTotal = Number(Number((this.tktDtlItems[k].unitPrice * this.tktDtlItems[k].quantity) * this.tktDtlItems[k].salesTaxPct * 0.01).toFixed(2));
       let vndDiscountTotal = this.tktDtlItems[k].discountAmount | 0;
-      let subTotal = (this.tktDtlItems[k].unitPrice * this.tktDtlItems[k].quantity);
+      let subTotal = Number(Number(this.tktDtlItems[k].unitPrice * this.tktDtlItems[k].quantity).toFixed(2));
 
       this.subTotal += subTotal;
       this.exchCpnTotal += exchCpnTotal;

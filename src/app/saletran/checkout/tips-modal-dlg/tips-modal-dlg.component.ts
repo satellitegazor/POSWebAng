@@ -70,12 +70,14 @@ export class TipsModalDlgComponent implements OnInit {
   }
 
   onTipChanged(event: any) {
+    let tipAmt: number =0
     this.assocSaleTips.forEach(elem => {
       if(elem.indivLocId == Number(event.target.id.substr(2))) {
-        elem.tipAmount = Number(event.target.value);
+        elem.tipAmount = Number(event.target.value.replace(',', ''));
+        tipAmt = elem.tipAmount;
       }
-      this.dcTotal += elem.tipAmount;
-    })
+    })    
+    this.dcTotal += tipAmt;
   }
 
   onTotalAmountChanged(event: any) {
@@ -110,10 +112,7 @@ export class TipsModalDlgComponent implements OnInit {
 
   public Save() {
 
-    
-
     this._store.dispatch(removeTndrWithSaveCode({ tndrCode: "SV" }))
-
 
     let totalTipAmt = 0;
     
@@ -136,6 +135,7 @@ export class TipsModalDlgComponent implements OnInit {
     }
 
   }
+  
   public Cancel() {
     this.modal.dismissAll('');
   }

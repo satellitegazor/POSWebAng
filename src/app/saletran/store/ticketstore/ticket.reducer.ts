@@ -38,6 +38,8 @@ export const _tktObjReducer = createReducer(
 
    }),
 
+   
+
    on(resetTktObj, (state, action) => {
 
       let k: number = action.dummyNumber;
@@ -73,7 +75,22 @@ export const _tktObjReducer = createReducer(
             totalSaleFC : 0,
             transactionID: 0,
             updateCoupons: false,
-            updateCustomer: false
+            updateCustomer: false,
+         },
+         tktTotals: {
+            ...state.tktTotals,
+            subTotalDC: 0,
+            subTotalNDC: 0,
+            grandTotalDC: 0,
+            grandTotalNDC: 0,
+            totalExchCpnAmtDC: 0,
+            totalExchCpnAmtNDC: 0,
+            totalSavingsDC: 0,
+            totalSavingsNDC: 0,
+            totalTaxDC: 0,
+            totalTaxNDC: 0,
+            tipTotalDC: 0,
+            tipTotalNDC: 0
          }
       }
    }),
