@@ -16,6 +16,8 @@ import { ConditionalExpr } from '@angular/compiler';
 import { getCheckoutItemsSelector } from '../store/ticketstore/ticket.selector';
 import { Router } from '@angular/router';
 
+import { currSymbls } from 'src/app/models/CurrencySymbols';
+
 @Component({
     selector: 'app-tkt-sale-item',
     templateUrl: './tkt-sale-item.component.html',
@@ -33,6 +35,10 @@ export class TktSaleItemComponent implements OnInit {
     public allowTips: boolean = false;
     public SaleAssocList: LTC_Associates[] = [];
     public indivId: number = 0;
+
+    public dfltCurrSymbl: string = '$'
+    public exchRate: number = 1;
+    public dfltCurrCode: string = 'USD'
 
     ngOnInit(): void {
 
@@ -52,6 +58,9 @@ export class TktSaleItemComponent implements OnInit {
             this.SaleAssocList = data.associates
         })
 
+        this.dfltCurrSymbl = currSymbls.find(x => x.key == this._logonDataSvc.getDfltCurrCode())?.value ?? '$'; 
+        this.exchRate = this._logonDataSvc.getExchangeRate();
+        this.dfltCurrCode = this._logonDataSvc.getDfltCurrCode();
         
     }
 

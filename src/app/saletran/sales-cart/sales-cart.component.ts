@@ -84,7 +84,7 @@ export class SalesCartComponent implements OnInit, OnDestroy {
         let today = new Date();
         today.toDateString()
         this._saleTranSvc.GetDailyExchRate(+this.vendorLoginResult.locationUID, today.getMonth() + 1 + '-' + today.getDate() + '-' + today.getFullYear(), +this.vendorLoginResult.individualUID).subscribe(data => {
-            data.Data
+            this._logonDataSvc.setDailyExchRate(data.data);
         })
 
         this._store.select(getCheckoutItemsCount).subscribe(itemCount => {

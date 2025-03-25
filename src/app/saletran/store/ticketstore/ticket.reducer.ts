@@ -137,7 +137,7 @@ export const _tktObjReducer = createReducer(
       })
 
 
-      newCheckOutItem.ticketDetailId = _tktObj.tktList.length;
+      newCheckOutItem.ticketDetailId = -1 * (_tktObj.tktList.length + 1);
       newCheckOutItem.lineItemTaxAmount = state.tktObj.taxExempted ? 0 : newCheckOutItem.unitPrice * newCheckOutItem.quantity * newCheckOutItem.salesTaxPct * 0.01;
       newCheckOutItem.lineItemDollarDisplayAmount = (newCheckOutItem.unitPrice * newCheckOutItem.quantity) + newCheckOutItem.lineItemTaxAmount;
 
@@ -287,7 +287,7 @@ export const _tktObjReducer = createReducer(
          ...state,
          tktObj: {
             ...state.tktObj,
-            tktList: state.tktObj.tktList.filter(itm => (itm.salesItemUID != action.saleItemId && itm.ticketDetailId != action.tktDtlId))
+            tktList: state.tktObj.tktList.filter(itm => (itm.salesItemUID != action.saleItemId && (action.tktDtlId == 0 || itm.ticketDetailId != action.tktDtlId)))
          }
       }
    }),
@@ -858,6 +858,29 @@ export const _tktObjReducer = createReducer(
             ...state.tktObj,
             transactionID: action.rslt.transactionId,
             ticketNumber: action.rslt.ticketNumber,
+            tktList : state.tktObj.tktList.map(itm => {
+               action.rslt.ticketDetailList.forEach(obj => {
+                  if(itm.srvdByAssociateVal > 0 && itm.salesItemUID == obj.saleItemUID && itm.srvdByAssociateVal == obj.individualLocationUID) {
+                     return {
+                        ...itm,
+                        ticketDetailId: obj.ticketDetailId
+                     }
+                  }
+                  else {
+                     if(itm.salesItemUID == obj.saleItemUID) {
+                        return {
+                           ...itm,
+                           ticketDetailId: obj.ticketDetailId
+                        }
+                     }
+                     else {
+                        return {
+                           ...itm
+                        }
+                     }
+                  }
+               });
+            })
          },
          saveTktRsltMdl: action.rslt
       }

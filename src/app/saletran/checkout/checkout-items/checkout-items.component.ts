@@ -11,6 +11,7 @@ import { getCheckoutItemsSelector, getTicketTotals, getTktObjSelector } from '..
 import { tktObjInitialState, saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { CouponsModalDlgComponent } from '../coupons/coupons.component';
 import { TipsModalDlgComponent } from '../tips-modal-dlg/tips-modal-dlg.component';
+import { currSymbls } from 'src/app/models/CurrencySymbols';
 
 @Component({
     selector: 'app-checkout-items',
@@ -38,6 +39,12 @@ export class CheckoutItemsComponent implements OnInit {
   vndDiscountTotal: number = 0;
   taxExempt: boolean = false;
 
+
+  public dfltCurrSymbl: string = '$'
+  public exchRate: number = 1;
+  public dfltCurrCode: string = 'USD'
+
+
   ngOnInit(): void {
 
     this.locationConfig = this._logonDataSvc.getLocationConfig();
@@ -49,14 +56,19 @@ export class CheckoutItemsComponent implements OnInit {
       this.updateCheckoutTotals();
     })
 
+    this.dfltCurrSymbl = currSymbls.find(x => x.key == this._logonDataSvc.getDfltCurrCode())?.value ?? '$'; 
+    this.exchRate = this._logonDataSvc.getExchangeRate();
+    this.dfltCurrCode = this._logonDataSvc.getDfltCurrCode();
+    
     this._store.select(getTicketTotals).subscribe(tktTotals => {
       this.subTotal = tktTotals.subTotalDC;
       this.exchCpnTotal = tktTotals.totalExchCpnAmtDC;
       this.grandTotal = tktTotals.grandTotalDC;
-      this.totalSavings = tktTotals.totalSavingsDC;
-      this.saleTaxTotal = tktTotals.totalTaxDC;
+      this.totalSavings = tktTotals.totalSavingsDC??0;
+      this.saleTaxTotal = tktTotals.totalTaxDC??0;
       this.tipsTotal = tktTotals.tipTotalDC;
     })
+
 
 
   }

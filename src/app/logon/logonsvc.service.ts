@@ -34,4 +34,5 @@ export class LogonSvc {
         return this.httpclient.post<any>(GlobalConstants.CPOS_SVCS_URL + '/common/TestPost', JSON.stringify(strVal), { headers: this.headerObjs });
     }
 
+
 }

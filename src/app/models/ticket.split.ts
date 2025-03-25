@@ -60,7 +60,15 @@ export class TicketSplit {
         public ticketTenderId: number = 0;
         public partPayId: number = 0;
         public refundCount: number = 0;
+        public ticketDetailList: TicketDetailListAry[] = [] as TicketDetailListAry[];
 
+    }
+
+    export class TicketDetailListAry {
+        public saleAssociateId: number = 0;
+        public ticketDetailId: number = 0;
+        public individualLocationUID: number = 0;
+        public saleItemUID: number = 0;
     }
 
     export class TicketTotals {

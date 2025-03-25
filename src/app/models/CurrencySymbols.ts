@@ -1,0 +1,43 @@
+interface CurrSymbl {
+    key: string;
+    value: string;
+}
+
+export var currSymbls: CurrSymbl[] = [
+    { key: "USD", value: "$" },
+    { key: "EUR", value: "€" },
+    { key: "GBP", value: "£" },
+    { key: "JPY", value: "¥" },
+    { key: "AUD", value: "A$" },
+    { key: "CAD", value: "C$" },
+    { key: "CHF", value: "Fr" },
+    { key: "CNY", value: "¥" },
+    { key: "SEK", value: "kr" },
+    { key: "NZD", value: "NZ$" },
+    { key: "KRW", value: "₩" },
+    { key: "SGD", value: "S$" },
+    { key: "NOK", value: "kr" },
+    { key: "MXN", value: "Mex$" },
+    { key: "INR", value: "₹" },
+    { key: "RUB", value: "₽" },
+    { key: "ZAR", value: "R" },
+    { key: "BRL", value: "R$" },
+    { key: "TRY", value: "₺" },
+    { key: "TWD", value: "NT$" },
+    { key: "DKK", value: "kr" },
+    { key: "PLN", value: "zł" },
+    { key: "THB", value: "฿" },
+    { key: "IDR", value: "Rp" },
+    { key: "HUF", value: "Ft" },
+    { key: "CZK", value: "Kč" },
+    { key: "ILS", value: "₪" },
+    { key: "CLP", value: "CLP$" },
+    { key: "PHP", value: "₱" },
+    { key: "AED", value: "د.إ" },
+    { key: "COP", value: "COL$" },
+    { key: "SAR", value: "﷼" },
+    { key: "MYR", value: "RM" },
+    { key: "RON", value: "lei" },
+    { key: "PKR", value: "₨" },
+    { key: "IQD", value: "ع.د" },
+    { key: "DZD", value: "د.ج" }]

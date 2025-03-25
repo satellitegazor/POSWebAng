@@ -23,20 +23,20 @@
                         <span class="label label-default">&nbsp; {{itm.srvdByAssociateText}} &nbsp;</span>
                     </td>
                     <td class="rightjustfy">
-                        <label class="label label-default">{{itm.unitPrice  | number:'1.2-2' }}</label>
+                        <label class="label label-default">{{dfltCurrSymbl}}{{itm.unitPrice  | number:'1.2-2' }}</label>
                     </td>
                     <td class="rightjustfy"> 
-                        <a class="hyplink" id="vndrDisc_{{itm.salesItemUID}}_{{itm.ticketDetailId}}" (click)="DisplayVendorDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc)" >{{ itm.vndCpnAmountDC  | number:'1.2-2' }}</a>
+                        <a class="hyplink" id="vndrDisc_{{itm.salesItemUID}}_{{itm.ticketDetailId}}" (click)="DisplayVendorDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc)" >{{dfltCurrSymbl}}{{ itm.vndCpnAmountDC  | number:'1.2-2' }}</a>
                     </td>
                     <td class="rightjustfy">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
-                        <a class="hyplink" id="exchDisc_{{itm.salesItemUID}}_{{itm.ticketDetailId}}" (click)="DisplayExchDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc)" >{{ itm.exchCpnAmountDC  | number:'1.2-2' }}</a>
+                        <a class="hyplink" id="exchDisc_{{itm.salesItemUID}}_{{itm.ticketDetailId}}" (click)="DisplayExchDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc)" >{{dfltCurrSymbl}}{{ itm.exchCpnAmountDC  | number:'1.2-2' }}</a>
                         <!-- <label class="label label-default">{{(itm.unitPrice * itm.quantity) * itm.exchangeCouponDiscountPct * 0.01  | number:'1.2-2'}}</label> -->
                     </td>
                     <td class="rightjustfy">
-                        <label class="label label-default">{{ itm.lineItemTaxAmount  | number:'1.2-2'}}</label>
+                        <label class="label label-default">{{dfltCurrSymbl}}{{ itm.lineItemTaxAmount  | number:'1.2-2'}}</label>
                     </td>
                     <td class="rightjustfy">
-                        <label class="label label-default">{{itm.lineItemDollarDisplayAmount  | number:'1.2-2' }}</label>
+                        <label class="label label-default">{{dfltCurrSymbl}}{{itm.lineItemDollarDisplayAmount  | number:'1.2-2' }}</label>
                     </td>
                 </tr>
             </table>
@@ -76,7 +76,7 @@
                         <label>Item Subtotal</label>
                     </td>
                     <td style="width:33%" class="rightjustfy">
-                        {{subTotal | number:'1.2-2'}}
+                        {{dfltCurrSymbl}}{{subTotal | number:'1.2-2'}}
                     </td>
                 </tr>
                 <tr>
@@ -85,7 +85,7 @@
                     </td>
                     <td style="width:33%" class="rightjustfy">
                         
-                        <a class="hyplink" id="exchTranCoupon" (click)="DisplayExchTranDiscPopUp()" >{{exchCpnTotal | number:'1.2-2'}}</a>
+                        <a class="hyplink" id="exchTranCoupon" (click)="DisplayExchTranDiscPopUp()" >{{dfltCurrSymbl}}{{exchCpnTotal | number:'1.2-2'}}</a>
                     </td>
                 </tr>
                 <tr>
@@ -93,7 +93,7 @@
                         <label>Sales Tax</label>
                     </td>
                     <td style="width:33%" class="rightjustfy">
-                        {{saleTaxTotal | number:'1.2-2'}}
+                        {{dfltCurrSymbl}}{{saleTaxTotal | number:'1.2-2'}}
                     </td>
                 </tr>
                 <tr *ngIf="allowTips">
@@ -101,7 +101,7 @@
                         <label>Tips</label>
                     </td>
                     <td style="width:33%" class="rightjustfy">
-                        <a class="hyplink" id="tipsTotal" (click)="DisplayTipsPopUp()" >{{tipsTotal | number:'1.2-2'}}</a>
+                        <a class="hyplink" id="tipsTotal" (click)="DisplayTipsPopUp()" >{{dfltCurrSymbl}}{{tipsTotal | number:'1.2-2'}}</a>
 
                     </td>
                 </tr>
@@ -110,7 +110,7 @@
                         <label>Grand Total</label>
                     </td>
                     <td style="width:33%" class="rightjustfy">
-                        {{grandTotal | number:'1.2-2'}}
+                        {{dfltCurrSymbl}}{{grandTotal | number:'1.2-2'}}
                     </td>
                 </tr>
                 <tr>
@@ -118,7 +118,7 @@
                         <label>Total Savings</label>
                     </td>
                     <td style="width:33%" class="rightjustfy">
-                        {{totalSavings | number:'1.2-2'}}
+                        {{dfltCurrSymbl}}{{totalSavings | number:'1.2-2'}}
                     </td>
                 </tr>
             </table>

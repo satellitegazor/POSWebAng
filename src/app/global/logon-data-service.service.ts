@@ -297,19 +297,19 @@ export class LogonDataService {
     }
 
     public setDailyExchRate(exchRate: DailyExchRate) {
-        sessionStorage.setItem('BusDate', exchRate.BusDate.toString());
-        sessionStorage.setItem('CliTimeVar', exchRate.CliTimeVar.toString());
-        sessionStorage.setItem('CurrCode', exchRate.CurrCode.toString());
-        sessionStorage.setItem('DailyExchRateId', exchRate.DailyExchRateId.toString());
-        sessionStorage.setItem('DfltCurrCode', exchRate.DfltCurrCode.toString());
-        sessionStorage.setItem('ExchangeRate', exchRate.ExchangeRate.toString());
-        sessionStorage.setItem('ForeignCurrCode', exchRate.ForeignCurrCode.toString());
-        sessionStorage.setItem('IsForeignCurr', exchRate.IsForeignCurr.toString());
-        sessionStorage.setItem('OneFCurrRate', exchRate.OneFCurrRate.toString());
-        sessionStorage.setItem('OneUSDRate', exchRate.OneUSDRate.toString());
-        sessionStorage.setItem('PrevDayExchRate', exchRate.PrevDayExchRate.toString());
-        sessionStorage.setItem('PrevDayIsOneUSD', exchRate.PrevDayIsOneUSD.toString());
-        sessionStorage.setItem('SaleTranCount', exchRate.SaleTranCount.toString());
+        sessionStorage.setItem('BusDate', exchRate.busDate.toString());
+        sessionStorage.setItem('CliTimeVar', exchRate.cliTimeVar.toString());
+        sessionStorage.setItem('CurrCode', exchRate.currCode.toString());
+        sessionStorage.setItem('DailyExchRateId', exchRate.dailyExchRateId.toString());
+        sessionStorage.setItem('DfltCurrCode', exchRate.dfltCurrCode.toString());
+        sessionStorage.setItem('ExchangeRate', exchRate.exchangeRate.toString());
+        //sessionStorage.setItem('ForeignCurrCode', exchRate.foreignCurrCode.toString());
+        sessionStorage.setItem('IsForeignCurr', exchRate.isForeignCurr.toString());
+        sessionStorage.setItem('OneFCurrRate', exchRate.oneFCurrRate.toString());
+        sessionStorage.setItem('OneUSDRate', exchRate.oneUSDRate.toString());
+        sessionStorage.setItem('PrevDayExchRate', exchRate.prevDayExchRate.toString());
+        sessionStorage.setItem('PrevDayIsOneUSD', exchRate.prevDayIsOneUSD.toString());
+        sessionStorage.setItem('SaleTranCount', exchRate.saleTranCount.toString());
     }
 
     public setLoadTicket(loadTicket: boolean) {
