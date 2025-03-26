@@ -1,22 +1,19 @@
 <div class="modal-header">
-    <h4>{{Title}}</h4>
+    <h4>Validate Pin</h4>
 </div>
 <div class="modal-content">
     <div class="panel" style="margin-left: 5%;margin-right: 5%;">
-        <div class="panel-title">{{DiscountName}}</div>
+        <div class="panel-title">Pin Validation</div>
         <div class="panel-body">
             <table class="table table-striped">
                 <tr>
-                    <td>{{ItemName}}</td>
-                    <td class="ra">%</td>
-                    <td><input class="form-control" type="text" appdecimal name="percentage" id="percentage"
-                            (change)="percentChanged()" [(ngModel)]="DiscountPct" /></td>
+                    <td>Enter Pin</td>
+                    <td class="ra"></td>
+                    <td><input class="form-control" type="password" appdecimal name="lpin" id="lpin"/></td>
                     <td>&nbsp;</td>
-                    <td class="ra">{{dfltCurrSymbl}}</td>
-                    <td><input class="form-control" type="text" appdecimal name="amount" id="amount"
-                            (change)="amountChanged()" [(ngModel)]="DiscountAmt" /></td>
                 </tr>
                 <tr>
+                    <td><button id="btnMainMenu">Main Menu</button></td><td><button class="btn btn-primary" id="btnLogout">Logout</button></td>
                 </tr>
                 <tr>
                 </tr>

@@ -6,6 +6,7 @@ import { CouponType } from 'src/app/global/global.constants';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn } from '../../store/ticketstore/ticket.action';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
+import { currSymbls } from 'src/app/models/CurrencySymbols';
 
 @Component({
     selector: 'app-coupons',
@@ -26,27 +27,34 @@ export class CouponsModalDlgComponent implements OnInit {
 
   constructor(private modal: NgbModal, private logonDataSvc: LogonDataService, private _store: Store<saleTranDataInterface>) { }
 
-  ngOnInit(): void {
+  public dfltCurrSymbl: string = '$'
+  public exchRate: number = 1;
+  public dfltCurrCode: string = 'USD'
 
+  ngOnInit(): void {
+    this.exchRate = this.logonDataSvc.getExchangeRate();
+    this.dfltCurrCode = this.logonDataSvc.getDfltCurrCode();
+
+    this.dfltCurrSymbl = currSymbls.find(x => x.key == this.dfltCurrCode)?.value ?? '$';
   }
 
 
   public Apply() {
     switch(this.CpnType) {
-    case(CouponType.exchCpnItem): {
+      case(CouponType.exchCpnItem): {
 
-      this._store.dispatch(upsertSaleItemExchCpn({logonDataSvc: this.logonDataSvc, saleItemId: this.SaleItemId, tktDtlId: this.TktDtlId, cpnPct: this.DiscountPct, cpnAmt: this.DiscountAmt}));
+        this._store.dispatch(upsertSaleItemExchCpn({logonDataSvc: this.logonDataSvc, saleItemId: this.SaleItemId, tktDtlId: this.TktDtlId, cpnPct: this.DiscountPct, cpnAmt: this.DiscountAmt}));
+      }
+      break;
+      case(CouponType.vndCpnItem):{
+        this._store.dispatch(upsertSaleItemVndCpn({logonDataSvc: this.logonDataSvc, saleItemId: this.SaleItemId, tktDtlId: this.TktDtlId, cpnPct: this.DiscountPct, cpnAmt: this.DiscountAmt}));
+      }
+      break;
+      case(CouponType.exchCpnTran): {
+        this._store.dispatch(upsertTranExchCpn({logonDataSvc: this.logonDataSvc, cpnPct: this.DiscountPct, cpnAmt: this.DiscountAmt}));
+      }
+      break;
     }
-    break;
-    case(CouponType.vndCpnItem):{
-      this._store.dispatch(upsertSaleItemVndCpn({logonDataSvc: this.logonDataSvc, saleItemId: this.SaleItemId, tktDtlId: this.TktDtlId, cpnPct: this.DiscountPct, cpnAmt: this.DiscountAmt}));
-    }
-    break;
-    case(CouponType.exchCpnTran): {
-      this._store.dispatch(upsertTranExchCpn({logonDataSvc: this.logonDataSvc, cpnPct: this.DiscountPct, cpnAmt: this.DiscountAmt}));
-    }
-    break;
-  }
     this.modal.dismissAll('');
   }
 
