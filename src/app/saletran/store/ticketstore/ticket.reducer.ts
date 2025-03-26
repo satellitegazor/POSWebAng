@@ -859,28 +859,29 @@ export const _tktObjReducer = createReducer(
             transactionID: action.rslt.transactionId,
             ticketNumber: action.rslt.ticketNumber,
             tktList : state.tktObj.tktList.map(itm => {
-               action.rslt.ticketDetailList.forEach(obj => {
-                  if(itm.srvdByAssociateVal > 0 && itm.salesItemUID == obj.saleItemUID && itm.srvdByAssociateVal == obj.individualLocationUID) {
+               let salesItem = action.rslt.ticketDetailList.filter(obj => itm.salesItemUID == obj.saleItemUID )[0];
+
+               if(itm.srvdByAssociateVal > 0 && itm.salesItemUID == salesItem.saleItemUID && itm.srvdByAssociateVal == salesItem.individualLocationUID) {
+                  return {
+                     ...itm,
+                     ticketDetailId: salesItem.ticketDetailId
+                  }
+               }
+               else {
+                  if(itm.salesItemUID == salesItem.saleItemUID) {
                      return {
                         ...itm,
-                        ticketDetailId: obj.ticketDetailId
+                        ticketDetailId: salesItem.ticketDetailId
                      }
                   }
                   else {
-                     if(itm.salesItemUID == obj.saleItemUID) {
-                        return {
-                           ...itm,
-                           ticketDetailId: obj.ticketDetailId
-                        }
-                     }
-                     else {
-                        return {
-                           ...itm
-                        }
+                     return {
+                        ...itm
                      }
                   }
-               });
+               }
             })
+            
          },
          saveTktRsltMdl: action.rslt
       }
