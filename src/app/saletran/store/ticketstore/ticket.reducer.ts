@@ -859,16 +859,16 @@ export const _tktObjReducer = createReducer(
             transactionID: action.rslt.transactionId,
             ticketNumber: action.rslt.ticketNumber,
             tktList : state.tktObj.tktList.map(itm => {
-               let salesItem = action.rslt.ticketDetailList.filter(obj => itm.salesItemUID == obj.saleItemUID )[0];
+               let salesItem = action.rslt.ticketDetailList.filter(obj => obj.salesItemUID === itm.salesItemUID)[0];
 
-               if(itm.srvdByAssociateVal > 0 && itm.salesItemUID == salesItem.saleItemUID && itm.srvdByAssociateVal == salesItem.individualLocationUID) {
+               if(itm.srvdByAssociateVal > 0 && itm.salesItemUID == salesItem.salesItemUID && itm.srvdByAssociateVal == salesItem.individualLocationUID) {
                   return {
                      ...itm,
                      ticketDetailId: salesItem.ticketDetailId
                   }
                }
                else {
-                  if(itm.salesItemUID == salesItem.saleItemUID) {
+                  if(itm.salesItemUID == salesItem.salesItemUID) {
                      return {
                         ...itm,
                         ticketDetailId: salesItem.ticketDetailId

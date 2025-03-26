@@ -68,7 +68,7 @@ export class TicketSplit {
         public saleAssociateId: number = 0;
         public ticketDetailId: number = 0;
         public individualLocationUID: number = 0;
-        public saleItemUID: number = 0;
+        public salesItemUID: number = 0;
     }
 
     export class TicketTotals {
