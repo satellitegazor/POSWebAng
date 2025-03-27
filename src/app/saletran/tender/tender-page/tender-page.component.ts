@@ -5,7 +5,7 @@ import { getRemainingBalance, getRemainingBalanceFC, getBalanceDue, getBalanceDu
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TicketTender } from 'src/app/models/ticket.tender';
-import { addTender, saveTicketSplit, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
+import { addTender, saveCompleteTicketSplit, saveTicketSplit, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
 import { LocalStorageService } from 'src/app/global/local-storage.service';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { TenderTypeModel } from '../../models/tender.type';
@@ -70,7 +70,7 @@ export class TenderPageComponent implements OnInit {
     var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
     
     if(tktObjData != null) {
-      this._store.dispatch(saveTicketSplit({ tktObj:  tktObjData}));
+      this._store.dispatch(saveCompleteTicketSplit({ tktObj:  tktObjData}));
     }
     this.route.navigate(['/savetktsuccess']);
     

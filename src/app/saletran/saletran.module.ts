@@ -39,6 +39,7 @@ import { SplitPayComponent } from './tender/split-pay/split-pay.component';
 import { TicketLookupComponent } from '../shared/ticket-lookup/ticket-lookup.component';
 import { SharedModule } from '../shared/shared.module';
 import { DecimalDirective } from '../directives/decimal-directive';
+import { PinValidateComponent } from './pin-validate/pin-validate.component';
 
 
 
@@ -46,7 +47,8 @@ import { DecimalDirective } from '../directives/decimal-directive';
     declarations: [DeptListComponent, SalesCartComponent, SalesCategoryComponent, SaleItemComponent,
         TktSaleItemComponent,  
         CouponsModalDlgComponent, PartPayComponent, BalanceDueComponent, SaleTotalsComponent, CheckoutPageComponent, 
-        CheckoutItemsComponent, TenderPageComponent, TipsModalDlgComponent, SaveTicketSuccessComponent, SplitPayComponent],
+        CheckoutItemsComponent, TenderPageComponent, TipsModalDlgComponent, SaveTicketSuccessComponent, SplitPayComponent,
+        PinValidateComponent],
     imports: [
         CommonModule,
         FormsModule,

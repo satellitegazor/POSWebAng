@@ -16,6 +16,11 @@ export const RESET_TKT_OBJ = 'resetTktObj';
 export const SAVE_TICKET_SPLIT = '[SaveTicket] Start'
 export const SAVE_TICKET_SPLIT_SUCCESS = '[SaveTicket] Success'
 export const SAVE_TICKET_SPLIT_FAILED = '[SaveTicket] Failure'
+
+export const SAVE_COMPLETE_TICKET_SPLIT = '[SaveCompleteTicket] Start'
+export const SAVE_COMPLETE_TICKET_SPLIT_SUCCESS = '[SaveCompleteTicket] Success'
+export const SAVE_COMPLETE_TICKET_SPLIT_FAILED = '[SaveCompleteTicket] Failure'
+
 export const ADD_CUST_ID = 'add CustomerId to TktObj';
 export const ADD_NEW_CUST = 'add New Customer to TktObj';
 export const ADD_TENDER_OBJ = 'addTenderToTktObj';
@@ -62,6 +67,16 @@ export const saveTicketSplitSuccess = createAction(SAVE_TICKET_SPLIT_SUCCESS,
 
 export const saveTicketSplitFailed = createAction(SAVE_TICKET_SPLIT_FAILED,
         props<{rslt: SaveTicketResultsModel}>());
+
+export const saveCompleteTicketSplit = createAction(SAVE_COMPLETE_TICKET_SPLIT,
+    props<{tktObj: TicketSplit}>());
+
+export const saveCompleteTicketSplitSuccess = createAction(SAVE_COMPLETE_TICKET_SPLIT_SUCCESS,
+    props<{rslt: SaveTicketResultsModel}>());
+
+export const saveCompleteTicketSplitFailed = createAction(SAVE_COMPLETE_TICKET_SPLIT_FAILED,
+        props<{rslt: SaveTicketResultsModel}>());
+        
 
 export const addCustomerId = createAction(ADD_CUST_ID, 
     props<{custId: number}>())

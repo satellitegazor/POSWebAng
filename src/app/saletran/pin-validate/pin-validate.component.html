@@ -9,11 +9,9 @@
                 <tr>
                     <td>Enter Pin</td>
                     <td class="ra"></td>
-                    <td><input class="form-control" type="password" appdecimal name="lpin" id="lpin"/></td>
+                    <td><input class="form-control" type="password" [(ngModel)]="vpin" maxlength="4" placeholder="Enter Pin"  (keyup)="pinKeyUp($event)"
+                        autofocus="autofocus"  name="lpin" id="lpin" /></td>
                     <td>&nbsp;</td>
-                </tr>
-                <tr>
-                    <td><button id="btnMainMenu">Main Menu</button></td><td><button class="btn btn-primary" id="btnLogout">Logout</button></td>
                 </tr>
                 <tr>
                 </tr>
@@ -26,9 +24,7 @@
     <table class="table table-striped" >
         <tr>
             <td style="width: 50%;"></td>
-            <td>
-                <button class="btn btn-info" (click)="Apply()">Apply</button>&nbsp;
-            </td>
-            <td><button class="btn btn-info" (click)="Cancel()">Cancel</button>&nbsp;</td>
-    </table>
+            <td><button class="btn btn-primary" id="btnMainMenu">Main Menu</button></td>
+            <td><button class="btn btn-primary" id="btnLogout">Logout</button></td>
+</table>
 </div>

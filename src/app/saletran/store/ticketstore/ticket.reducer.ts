@@ -7,7 +7,7 @@ import { AssociateSaleTips } from "src/app/models/associate.sale.tips";
 import { LTC_Customer } from "src/app/models/customer";
 import { TicketTender } from "src/app/models/ticket.tender";
 import { SalesTransactionCheckoutItem } from "../../models/salesTransactionCheckoutItem";
-import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketSplitSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData, removeTndrWithSaveCode } from "./ticket.action";
+import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketSplitSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData, removeTndrWithSaveCode, saveCompleteTicketSplitSuccess } from "./ticket.action";
 
 import { tktObjInitialState, saleTranDataInterface } from "./ticket.state";
 
@@ -849,6 +849,17 @@ export const _tktObjReducer = createReducer(
             totalTaxDC: totalTaxDC,
             totalTaxNDC: totalTaxNDC
          }
+      }
+   }),
+   on(saveCompleteTicketSplitSuccess, (state, action) => {
+      return {
+         ...state,
+         tktObj: {
+            ...state.tktObj,
+            transactionID: action.rslt.transactionId,
+            ticketNumber: action.rslt.ticketNumber,            
+         },
+         saveTktRsltMdl: action.rslt
       }
    }),
    on(saveTicketSplitSuccess, (state, action) => {

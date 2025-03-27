@@ -33,12 +33,12 @@
                     <td style="width:30%" *ngIf="allowTips">
                         <div class="row">
 
-                            <button type="button" style="width:10%;" class="btn-primary btn" id="btnm{{i}}" (click)="btnMinusClicked($event, i);">
+                            <button type="button" style="width:10%;padding-right: 5px;padding-left: 5px;" class="btn-primary btn" id="btnm{{i}}" (click)="btnMinusClicked($event, i);">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash-lg" viewBox="0 0 16 16">
                                     <path fill-rule="evenodd" d="M2 8a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11A.5.5 0 0 1 2 8Z" />
                                 </svg>
-                            </button><div style="width:1%"></div>                   
-                            <select #ddlAssociate id="ddlAssociate_{{itm.salesItemUID}}_{{i}}" style="width:89%;" class="form-control dropdown" 
+                            </button>&nbsp;
+                            <select #ddlAssociate id="ddlAssociate_{{itm.salesItemUID}}_{{i}}" style="width:85%;" class="form-control form-select" 
                                     (change)="onAssociateChange($event, +ddlAssociate.value, itm.salesItemUID, -1 * (i + 1), ddlAssociate.innerText)">
                                 <option *ngFor="let indiv of SaleAssocList" value="{{indiv.individualLocationUID}}" [selected]="indiv.individualLocationUID == itm.srvdByAssociateVal">
                                 {{indiv.firstName + ' ' + indiv.lastName}}

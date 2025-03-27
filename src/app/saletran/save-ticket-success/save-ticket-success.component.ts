@@ -6,6 +6,8 @@ import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { resetTktObj, saveTicketSplitSuccess } from '../store/ticketstore/ticket.action';
 import { SaveTicketResultsModel } from 'src/app/models/ticket.split';
 import { getSavedTicketResult } from '../store/ticketstore/ticket.selector';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { PinValidateComponent } from '../pin-validate/pin-validate.component';
 
 @Component({
     selector: 'app-save-ticket-success',
@@ -18,7 +20,8 @@ export class SaveTicketSuccessComponent implements OnInit {
   constructor(private _store: Store<saleTranDataInterface>,
     private activatedRoute: ActivatedRoute,
     private route: Router,
-    private _logonDataSvc: LogonDataService) {
+    private _logonDataSvc: LogonDataService,
+    private _modalService: NgbModal){
 
   }
 
@@ -35,7 +38,13 @@ export class SaveTicketSuccessComponent implements OnInit {
 
   ReceiptOption(optn: string) {
     this._store.dispatch(resetTktObj({dummyNumber: 0}));
-    this.route.navigate(['/salestran'])
+
+    if(this._logonDataSvc.getLocationConfig().pINReqdForSalesTran) {
+      this._modalService.open(PinValidateComponent);
+    }
+    else {
+      this.route.navigate(['/salestran'])
+    }
   }
 
 }

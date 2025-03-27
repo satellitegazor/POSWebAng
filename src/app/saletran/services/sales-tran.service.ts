@@ -96,6 +96,14 @@ export class SalesTranService {
             { headers: this.headerObjs });
     }
 
+    public saveCompleteTicketSplit(model: TicketSplit) {
+        
+        return this.httpClient.put<SaveTicketResultsModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveSplitPayments?guid=' + GlobalConstants.PUT_GUID + '&uid=' + model.individualUID + '&DBVal=0',
+            JSON.stringify(model),
+            { headers: this.headerObjs });
+    }
+
     public GetDailyExchRate(locationId: number, busdate: string, individualUID: number) {
         return this.httpClient.get<DailyExchRateMdl>(
             GlobalConstants.CPOS_SVCS_URL + '/ltc/GetDailyExchRate?guid=' + GlobalConstants.GET_GUID + '&LocationId=' + locationId + '&BusDate=' + busdate + '&uid=' + individualUID + '&DBVal=0',

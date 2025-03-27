@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { LogonRoutingModule } from './logon.routing';
 import { VendorLTComponent } from './vendorlt/vendorlt.component';
 import { VendorSTComponent } from './vendorst/vendorst.component';
+
 import { SbmComponent } from './sbm/sbm.component';
 import { authinterceptorProviders } from '../auth/auth.interceptor';
 import { SharedSubjectModule } from '../shared-subject/shared-subject.module';
@@ -22,7 +23,6 @@ import { GetAuthLoginReducer } from '../authstate/auth.reducer';
     SharedSubjectModule,
     EffectsModule.forFeature([LoginAuthEffects]),
     StoreModule.forFeature(LOGIN_AUTH_STATE, GetAuthLoginReducer)
-
   ],
   providers: [authinterceptorProviders],
     //exports: [VendorLTComponent, VendorSTComponent, SbmComponent]
