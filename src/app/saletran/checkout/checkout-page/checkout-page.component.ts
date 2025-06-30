@@ -2,7 +2,7 @@ import { keyframes } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import {  NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { select, Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { TicketTender } from 'src/app/models/ticket.tender';
@@ -19,17 +19,16 @@ import { firstValueFrom, Observable, Subscription, take } from 'rxjs';
 import { TicketSplit } from 'src/app/models/ticket.split';
 
 @Component({
-    selector: 'app-checkout-page',
-    templateUrl: './checkout-page.component.html',
-    styleUrls: ['./checkout-page.component.css'],
-    standalone: false
+  selector: 'app-checkout-page',
+  templateUrl: './checkout-page.component.html',
+  styleUrls: ['./checkout-page.component.css'],
+  standalone: false
 })
 export class CheckoutPageComponent implements OnInit {
 
   constructor(private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
     private _sharedSubSvc: SharedSubjectService, private modalService: NgbModal, private _store: Store<saleTranDataInterface>,
-    private router: Router) 
-    { }
+    private router: Router) { }
 
   displayCustSearchDlg: string = '';
   showErrMsg: boolean = false;
@@ -43,7 +42,7 @@ export class CheckoutPageComponent implements OnInit {
   _tenderTypesModel: TenderTypeModel = {} as TenderTypeModel;
   _displayTenders: TenderType[] = [];
   tenderButtonWidthPercent: number = 0;
-    isRefund: boolean = false;
+  isRefund: boolean = false;
 
   public ngOnInit(): void {
 
@@ -57,7 +56,7 @@ export class CheckoutPageComponent implements OnInit {
     this.tenderButtonUIDisplay();
 
     this._store.select(getCheckoutItemsSelector).subscribe(items => {
-      if(items == null)
+      if (items == null)
         return;
       this.tenderAmount = 0;
       items.forEach(itm => {
@@ -69,21 +68,21 @@ export class CheckoutPageComponent implements OnInit {
   btnCustDetailsClick(evt: Event) {
     this.displayCustSearchDlg = "display";
     const modalRef = this.modalService.open(CustomerSearchComponent, {
-      centered:true
+      centered: true
     });
   }
 
   async btnTndrClick(evt: Event) {
 
-    this._store.dispatch(updateCheckoutTotals({logonDataSvc: this._logonDataSvc}));
-    
+    this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
+
     let tndrCode = (evt.target as Element).id
-    if(this._logonDataSvc.getBusinessModel() != 5) {
-      this.router.navigate(['tender'], {queryParams: {code: tndrCode}})
+    if (this._logonDataSvc.getBusinessModel() != 5) {
+      this.router.navigate(['tender'], { queryParams: { code: tndrCode } })
     }
     else {
       this.displayCustSearchDlg = "display";
-      
+
       let tndrObj: TicketTender = new TicketTender();
       tndrObj.tenderTypeCode = "SV";
       tndrObj.tenderAmount = this.tenderAmount;
@@ -96,18 +95,25 @@ export class CheckoutPageComponent implements OnInit {
       if (tktObjData) {
         this._store.dispatch(saveTicketSplit({ tktObj: tktObjData }));
       }
-      const modalRef = this.modalService.open(TipsModalDlgComponent, {
-                
-      });
 
-      modalRef.componentInstance.tndrCode = tndrCode;
+      if (tktObjData?.tipAmountDC == 0) {
+        const modalRef = this.modalService.open(TipsModalDlgComponent, {});
+        modalRef.componentInstance.tndrCode = tndrCode;
+      }
+      else {
+        this.router.navigate(['tender'], { queryParams: { code: tndrCode } })
+      }
     }
   }
 
+  async btnSplitPayClick(evt: Event) {
+    this.router.navigate(['splitpay'], { queryParams: { code: 'SP' } });
+  }
+
   public tenderButtonUIDisplay(): void {
-    
+
     this._displayTenders = this._tenderTypesModel.types?.filter((tndr) => tndr.isRefundType == this.isRefund);
-    this.tenderButtonWidthPercent = 99 / (this._displayTenders?.length + 1);
+    this.tenderButtonWidthPercent = 99 / (this._displayTenders?.length + (this.isRefund ? 1 : 2)); // +1 for split pay button
   }
 
   closeCustSearchDlg() {
