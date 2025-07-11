@@ -88,7 +88,7 @@ export class SalesTranService {
             { headers: this.headerObjs });
     }
 
-    public saveTicketSplit(model: TicketSplit) {
+    public saveTicketForGuestCheck(model: TicketSplit) {
         
         return this.httpClient.put<SaveTicketResultsModel>(
             GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveSplitPayments?guid=' + GlobalConstants.PUT_GUID + '&uid=' + model.individualUID + '&DBVal=0',

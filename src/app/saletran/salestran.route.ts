@@ -9,13 +9,15 @@ import { TenderPageComponent } from './tender/tender-page/tender-page.component'
 import { SaveTicketSuccessComponent } from './save-ticket-success/save-ticket-success.component';
 import { MiscModule } from '../misc-module/misc.module';
 import { SplitPayComponent } from './tender/split-pay/split-pay.component';
+import { SplitTenderPageComponent } from './tender/split-tender-page/split-tender-page.component';
 
 const routes: Routes = [
     { path: 'salestran', component: SalesCartComponent },
     { path: 'checkout', component: CheckoutPageComponent },
     { path: 'tender', component: TenderPageComponent },
     { path: 'savetktsuccess', component: SaveTicketSuccessComponent },
-    { path: 'splitpay', component: SplitPayComponent}
+    { path: 'splitpay', component: SplitPayComponent},
+    { path: 'splittender', component: SplitTenderPageComponent}
     //{ path: '', component: SalesCartComponent},
     //{ path: 'rlogon', loadChildren? : './misc-module/mic.module##MiscModuleRoutingModule' }
 ];

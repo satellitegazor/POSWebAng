@@ -7,8 +7,8 @@ import { AssociateSaleTips } from "src/app/models/associate.sale.tips";
 import { LTC_Customer } from "src/app/models/customer";
 import { TicketTender } from "src/app/models/ticket.tender";
 import { SalesTransactionCheckoutItem } from "../../models/salesTransactionCheckoutItem";
-import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketSplitSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData, removeTndrWithSaveCode, saveCompleteTicketSplitSuccess } from "./ticket.action";
-
+import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketForGuestCheckSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData, removeTndrWithSaveCode, saveCompleteTicketSplitSuccess } from "./ticket.action";
+import { Round2DecimalService } from "src/app/services/round2-decimal.service";
 import { tktObjInitialState, saleTranDataInterface } from "./ticket.state";
 
 export const _tktObjReducer = createReducer(
@@ -28,19 +28,23 @@ export const _tktObjReducer = createReducer(
 
    on(removeTndrWithSaveCode, (state, action) => {
       let tndrCode: string = action.tndrCode;
+      console.log("removeTndrWithSaveCode called with code: " + tndrCode);
+      state.tktObj.ticketTenderList.forEach(tndr => { console.log("Tender Code: " + tndr.tenderTypeCode); });
+
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
-            ticketTenderList: state.tktObj.ticketTenderList.filter(tndr => tndr.tenderTypeCode != tndrCode)
+            ticketTenderList: state.tktObj.ticketTenderList.length == 1 ? [] : state.tktObj.ticketTenderList.filter(tndr => tndr.tenderTypeCode != tndrCode)
          }
       }
-
    }),
 
    
 
    on(resetTktObj, (state, action) => {
+
+      console.log("resetTktObj called");
 
       let k: number = action.dummyNumber;
       return {
@@ -342,22 +346,22 @@ export const _tktObjReducer = createReducer(
          let saleTaxTotal = ((updatedTktList[k].unitPrice * updatedTktList[k].quantity) * updatedTktList[k].salesTaxPct * 0.01 * 100) / 100;
          let vndDiscountTotal = (updatedTktList[k].discountAmount | 0 * 100) / 100;
 
-         updatedTktList[k].lineItemDollarDisplayAmount = ((subTotal - exchCpnTotal - vndDiscountTotal + saleTaxTotal) * 100) / 100;
+         updatedTktList[k].lineItemDollarDisplayAmount = Round2DecimalService.round(((subTotal - exchCpnTotal - vndDiscountTotal + saleTaxTotal) * 100) / 100);
          updatedTktList[k].lineItemTaxAmount = saleTaxTotal;
-         updatedTktList[k].discountAmount = exchCpnTotal + vndDiscountTotal;
+         updatedTktList[k].discountAmount = Round2DecimalService.round(exchCpnTotal + vndDiscountTotal);
 
-         totalSale += updatedTktList[k].lineItemDollarDisplayAmount;
+         totalSale += Round2DecimalService.round(updatedTktList[k].lineItemDollarDisplayAmount);
 
-         let subTotalFC = ((updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity) * 100) / 100;
-         let exchCpnTotalFC = ((updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity) * updatedTktList[k].exchangeCouponDiscountPct * 0.01 * 100) / 100;
-         let saleTaxTotalFC = ((updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity) * updatedTktList[k].salesTaxPct * 0.01 * 100) / 100;
-         let vndDiscountTotalFC = (updatedTktList[k].dCDiscountAmount | 0 * 100) / 100;
+         let subTotalFC = Round2DecimalService.round(((updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity) * 100) / 100);
+         let exchCpnTotalFC = Round2DecimalService.round(((updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity) * updatedTktList[k].exchangeCouponDiscountPct * 0.01 * 100) / 100);
+         let saleTaxTotalFC = Round2DecimalService.round(((updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity) * updatedTktList[k].salesTaxPct * 0.01 * 100) / 100);
+         let vndDiscountTotalFC = Round2DecimalService.round((updatedTktList[k].dCDiscountAmount | 0 * 100) / 100);
 
-         updatedTktList[k].dCLineItemDollarDisplayAmount = ((subTotalFC - exchCpnTotalFC - vndDiscountTotalFC + saleTaxTotalFC) * 100) / 100;
+         updatedTktList[k].dCLineItemDollarDisplayAmount = Round2DecimalService.round(((subTotalFC - exchCpnTotalFC - vndDiscountTotalFC + saleTaxTotalFC) * 100) / 100);
          updatedTktList[k].dCLineItemTaxAmount = (saleTaxTotalFC * 100) / 100;
          updatedTktList[k].dCDiscountAmount = (exchCpnTotalFC + vndDiscountTotalFC * 100) / 100;
 
-         totalSaleFC += (updatedTktList[k].dCLineItemDollarDisplayAmount * 100) / 100;
+         totalSaleFC += Round2DecimalService.round((updatedTktList[k].dCLineItemDollarDisplayAmount * 100) / 100);
       }
 
       return {
@@ -498,23 +502,23 @@ export const _tktObjReducer = createReducer(
       }
       else {
          if (action.logonDataSvc.getExchCouponAfterTax()) {
-            dCLineItemTaxAmount = (lineItemGrantTotal) * tktItem.salesTaxPct / 100;
-            lineItemEnvTaxAmount = (lineItemGrantTotal) * tktItem.envrnmtlTaxPct / 100;
-            lineItemDollarDisplayAmount = (((lineItemGrantTotal + dCLineItemTaxAmount + lineItemEnvTaxAmount) - exchDiscAmtDC) * 100) / 100;
+            dCLineItemTaxAmount = Number(Number((lineItemGrantTotal) * tktItem.salesTaxPct / 100).toFixed(2)) 
+            lineItemEnvTaxAmount = Number(Number((lineItemGrantTotal) * tktItem.envrnmtlTaxPct / 100).toFixed(2));
+            lineItemDollarDisplayAmount = Number(Number((lineItemGrantTotal + dCLineItemTaxAmount + lineItemEnvTaxAmount) - exchDiscAmtDC).toFixed(2));
 
-            fCLineItemTaxAmount = (lineitemGrandTotalNDC) * tktItem.salesTaxPct / 100;
-            fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC) * tktItem.envrnmtlTaxPct / 100;
-            fCLineItemDollarDisplayAmount = ((lineitemGrandTotalNDC + fCLineItemTaxAmount + fCLineItemEnvTaxAmount - exchDiscAmtNDC) * 100) / 100;
+            fCLineItemTaxAmount = Number(Number((lineitemGrandTotalNDC) * tktItem.salesTaxPct / 100).toFixed(2));
+            fCLineItemEnvTaxAmount = Number(Number((lineitemGrandTotalNDC) * tktItem.envrnmtlTaxPct / 100).toFixed(2));
+            fCLineItemDollarDisplayAmount = Number(Number(((lineitemGrandTotalNDC + fCLineItemTaxAmount + fCLineItemEnvTaxAmount - exchDiscAmtNDC) * 100) / 100).toFixed(2));
 
          }
          else {
-            dCLineItemTaxAmount = (lineItemGrantTotal - exchDiscAmtDC - tktItem.vndCpnAmountDC) * tktItem.salesTaxPct / 100;
-            lineItemEnvTaxAmount = (lineItemGrantTotal - exchDiscAmtDC - tktItem.vndCpnAmountDC) * tktItem.envrnmtlTaxPct / 100;
-            lineItemDollarDisplayAmount = (((lineItemGrantTotal + dCLineItemTaxAmount + lineItemEnvTaxAmount)) * 100) / 100;
+            dCLineItemTaxAmount = Number(Number((lineItemGrantTotal - exchDiscAmtDC - tktItem.vndCpnAmountDC) * tktItem.salesTaxPct / 100).toFixed(2));
+            lineItemEnvTaxAmount = Number(Number((lineItemGrantTotal - exchDiscAmtDC - tktItem.vndCpnAmountDC) * tktItem.envrnmtlTaxPct / 100).toFixed(2));
+            lineItemDollarDisplayAmount = Number(Number((((lineItemGrantTotal + dCLineItemTaxAmount + lineItemEnvTaxAmount)) * 100) / 100).toFixed(2));
 
-            dCLineItemTaxAmount = (lineitemGrandTotalNDC - (exchDiscAmtNDC + tktItem.vndCpnAmountNDC)) * tktItem.salesTaxPct / 100;
-            fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC - (exchDiscAmtNDC + tktItem.vndCpnAmountNDC)) * tktItem.envrnmtlTaxPct / 100;
-            fCLineItemDollarDisplayAmount = ((lineitemGrandTotalNDC - (exchDiscAmtNDC + tktItem.vndCpnAmountNDC) + fCLineItemTaxAmount + fCLineItemEnvTaxAmount) * 100) / 100;
+            dCLineItemTaxAmount = Number(Number((lineitemGrandTotalNDC - (exchDiscAmtNDC + tktItem.vndCpnAmountNDC)) * tktItem.salesTaxPct / 100).toFixed(2));
+            fCLineItemEnvTaxAmount = Number(Number((lineitemGrandTotalNDC - (exchDiscAmtNDC + tktItem.vndCpnAmountNDC)) * tktItem.envrnmtlTaxPct / 100).toFixed(2));
+            fCLineItemDollarDisplayAmount = Number(Number(((lineitemGrandTotalNDC - (exchDiscAmtNDC + tktItem.vndCpnAmountNDC) + fCLineItemTaxAmount + fCLineItemEnvTaxAmount) * 100) / 100).toFixed(2));
          }
 
          dCCouponLineItemDollarAmount =  exchDiscAmtDC;
@@ -862,14 +866,19 @@ export const _tktObjReducer = createReducer(
          saveTktRsltMdl: action.rslt
       }
    }),
-   on(saveTicketSplitSuccess, (state, action) => {
+   on(saveTicketForGuestCheckSuccess, (state, action) => {
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
             transactionID: action.rslt.transactionId,
             ticketNumber: action.rslt.ticketNumber,
+            ticketTenderList: [] as TicketTender[],
             tktList : state.tktObj.tktList.map(itm => {
+               if(action.rslt.ticketDetailList == null || action.rslt.ticketDetailList.length == 0) {
+                  console.warn("No ticket details found in the response");
+                  return { ...itm }
+               }
                let salesItem = action.rslt.ticketDetailList.filter(obj => obj.salesItemUID === itm.salesItemUID)[0];
 
                if(itm.srvdByAssociateVal > 0 && itm.salesItemUID == salesItem.salesItemUID && itm.srvdByAssociateVal == salesItem.individualLocationUID) {

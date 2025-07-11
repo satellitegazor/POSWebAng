@@ -1,22 +1,50 @@
 <div class="panel">
     <div class="panel-body">
         <table class="table">
+
             <tr>
-                <td style="text-align: left;">
+                <td class="desc">
+                    Payment Amount:
+                </td>
+                <td class="tender-amount">
+                    {{ticketTotalDC }}
+                </td>
+                <td class="tender-amount">
+                    {{ticketTotalNDC}}
+                </td>
+            </tr>
+            <tr>
+                <td class="desc">
                     Tender Type:
                 </td>
-                <td style="text-align: right;">
-                    Tender Amount: 
+                <td class="tender-amount">
+                    Tender Amount (Default Currency): 
+                </td>
+                <td class="tender-amount">
+                    Tender Amount (Foreign Currency): 
                 </td>
             </tr>
             <tr *ngFor="let tndr of tndrs">
-                <td style="text-align: left;">
+                <td class="desc">
                 {{tndr.tenderTypeDesc}}
                 </td>
-                <td style="text-align: right;">
+                <td class="tender-amount">
                 {{tndr.tenderAmount}}
                 </td>
-            </tr>
+                <td class="tender-amount">
+                    {{tndr.fCTenderAmount}}
+                </td>
+                </tr>
+            <tr>
+                <td style="text-align: left;">
+                    Total Tender Amount:
+                </td>
+                <td class="tender-amount">
+                    <input type="text" id="dcTndrAmt" class="form-control" [(ngModel)]="tenderAmountDC" (change)="TipAmountChanged($event)" />
+                </td>
+                <td class="tender-amount">
+                    <input type="text" id="ndcTndrAmt" class="form-control" [(ngModel)]="tenderAmountNDC" />
+                </td>
         </table>
     </div>
 </div>

@@ -59,13 +59,13 @@ export const initTktObj = createAction(INIT_TKT_OBJ,
 export const resetTktObj = createAction(RESET_TKT_OBJ, 
     props<{dummyNumber: number}>());
 
-export const saveTicketSplit = createAction(SAVE_TICKET_SPLIT,
+export const saveTicketForGuestCheck = createAction(SAVE_TICKET_SPLIT,
     props<{tktObj: TicketSplit}>());
 
-export const saveTicketSplitSuccess = createAction(SAVE_TICKET_SPLIT_SUCCESS,
+export const saveTicketForGuestCheckSuccess = createAction(SAVE_TICKET_SPLIT_SUCCESS,
     props<{rslt: SaveTicketResultsModel}>());
 
-export const saveTicketSplitFailed = createAction(SAVE_TICKET_SPLIT_FAILED,
+export const saveTicketForGuestCheckFailed = createAction(SAVE_TICKET_SPLIT_FAILED,
         props<{rslt: SaveTicketResultsModel}>());
 
 export const saveCompleteTicketSplit = createAction(SAVE_COMPLETE_TICKET_SPLIT,

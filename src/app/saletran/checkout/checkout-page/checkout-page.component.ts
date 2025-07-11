@@ -11,12 +11,13 @@ import { CustomerSearchComponent } from '../../../shared/customer-search/custome
 import { LocationConfig } from '../../models/location-config';
 import { TenderType, TenderTypeModel } from '../../models/tender.type';
 import { SalesTranService } from '../../services/sales-tran.service';
-import { addTender, removeTndrWithSaveCode, saveTicketSplit, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
+import { addTender, removeTndrWithSaveCode, saveTicketForGuestCheck, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
 import { getCheckoutItemsSelector, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { TipsModalDlgComponent } from '../tips-modal-dlg/tips-modal-dlg.component';
 import { firstValueFrom, Observable, Subscription, take } from 'rxjs';
 import { TicketSplit } from 'src/app/models/ticket.split';
+import { DailyExchRate } from 'src/app/models/exchange.rate';
 
 @Component({
   selector: 'app-checkout-page',
@@ -26,8 +27,11 @@ import { TicketSplit } from 'src/app/models/ticket.split';
 })
 export class CheckoutPageComponent implements OnInit {
 
-  constructor(private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
-    private _sharedSubSvc: SharedSubjectService, private modalService: NgbModal, private _store: Store<saleTranDataInterface>,
+  constructor(private _saleTranSvc: SalesTranService, 
+    private _logonDataSvc: LogonDataService,
+    private _sharedSubSvc: SharedSubjectService, 
+    private modalService: NgbModal, 
+    private _store: Store<saleTranDataInterface>,
     private router: Router) { }
 
   displayCustSearchDlg: string = '';
@@ -86,6 +90,7 @@ export class CheckoutPageComponent implements OnInit {
       let tndrObj: TicketTender = new TicketTender();
       tndrObj.tenderTypeCode = "SV";
       tndrObj.tenderAmount = this.tenderAmount;
+      tndrObj.fCTenderAmount = this.tenderAmount * this._logonDataSvc.getExchangeRate();
       tndrObj.tndMaintTimestamp = new Date(Date.now())
       tndrObj.currCode = this._logonDataSvc.getLocationConfig().defaultCurrency;
       tndrObj.fCCurrCode = this._logonDataSvc.getLocationConfig().currCode;
@@ -93,7 +98,8 @@ export class CheckoutPageComponent implements OnInit {
 
       var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
       if (tktObjData) {
-        this._store.dispatch(saveTicketSplit({ tktObj: tktObjData }));
+        this._store.dispatch(saveTicketForGuestCheck({ tktObj: tktObjData }));
+        
       }
 
       if (tktObjData?.tipAmountDC == 0) {
@@ -107,7 +113,38 @@ export class CheckoutPageComponent implements OnInit {
   }
 
   async btnSplitPayClick(evt: Event) {
-    this.router.navigate(['splitpay'], { queryParams: { code: 'SP' } });
+    this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
+
+    let tndrCode = (evt.target as Element).id
+    if (this._logonDataSvc.getBusinessModel() != 5) {
+      this.router.navigate(['splitpay'], { queryParams: { code: tndrCode } })
+    }
+    else {
+      //this.displayCustSearchDlg = "display";
+
+      let tndrObj: TicketTender = new TicketTender();
+      tndrObj.tenderTypeCode = "SV";
+      tndrObj.tenderAmount = this.tenderAmount;
+      tndrObj.fCTenderAmount = this.tenderAmount * this._logonDataSvc.getExchangeRate();
+      tndrObj.tndMaintTimestamp = new Date(Date.now())
+      tndrObj.currCode = this._logonDataSvc.getLocationConfig().defaultCurrency;
+      tndrObj.fCCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+      this._store.dispatch(addTender({ tndrObj }));
+
+      var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+      if (tktObjData) {
+        this._store.dispatch(saveTicketForGuestCheck({ tktObj: tktObjData }));
+        this._store.dispatch(removeTndrWithSaveCode({ tndrCode: "SV" }))
+      }      
+
+      if (tktObjData?.tipAmountDC == 0) {
+        const modalRef = this.modalService.open(TipsModalDlgComponent, {});
+        modalRef.componentInstance.tndrCode = tndrCode;
+      }
+      else {
+        this.router.navigate(['splitpay'], { queryParams: { code: tndrCode } })
+      }
+    }
   }
 
   public tenderButtonUIDisplay(): void {

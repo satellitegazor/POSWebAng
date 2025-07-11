@@ -104,7 +104,7 @@ export class TipsModalDlgComponent implements OnInit {
       }
     }
     this.lineItemTotalDC = totalTipAmt;
-    this.lineItemTotalNDC = totalTipAmt;
+    this.lineItemTotalNDC = totalTipAmt * this._logonDataSvc.getExchangeRate();
 
     this.tipTotalDC = diffAmt;
     this.tipTotalNDC = diffAmt;
@@ -112,17 +112,17 @@ export class TipsModalDlgComponent implements OnInit {
 
   public Save() {
 
-    this._store.dispatch(removeTndrWithSaveCode({ tndrCode: "SV" }))
+    //this._store.dispatch(removeTndrWithSaveCode({ tndrCode: "SV" }))
 
     let totalTipAmt = 0;
     
     this.assocSaleTips.forEach(function(obj: AssociateSaleTips, indx: number) {
       console.log('in Save Tip: ' + obj.tipAmount);
       totalTipAmt += obj.tipAmount;
-      
     })
+
     this.tipTotalDC = totalTipAmt;
-    this.tipTotalNDC = totalTipAmt;
+    this.tipTotalNDC = totalTipAmt ;
     this.dcTotal += totalTipAmt;
 
     this.modal.dismissAll();
@@ -131,7 +131,7 @@ export class TipsModalDlgComponent implements OnInit {
     
     console.log('in Save Tip TenderCode: ' + this.tndrCode);
     if(this.tndrCode != "") {
-      this.router.navigate(['tender'], {queryParams: {code: this.tndrCode}})
+      this.router.navigate([this.tndrCode == 'btnSplitPay' ? 'splitpay' : 'tender'], {queryParams: {code: this.tndrCode}})
     }
 
   }

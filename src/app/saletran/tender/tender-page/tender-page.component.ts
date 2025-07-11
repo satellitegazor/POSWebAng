@@ -5,10 +5,10 @@ import { getRemainingBalance, getRemainingBalanceFC, getBalanceDue, getBalanceDu
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TicketTender } from 'src/app/models/ticket.tender';
-import { addTender, saveCompleteTicketSplit, saveTicketSplit, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
+import { addTender, saveCompleteTicketSplit, saveTicketForGuestCheck, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
 import { LocalStorageService } from 'src/app/global/local-storage.service';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { TenderTypeModel } from '../../models/tender.type';
+import { TenderType, TenderTypeModel } from '../../models/tender.type';
 import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheckoutItem';
 import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
 import { getLocCnfgIsAllowTipsSelector } from '../../store/locationconfigstore/locationconfig.selector';
@@ -56,6 +56,7 @@ export class TenderPageComponent implements OnInit {
   }
 
   async btnApprove(evt: Event) {
+    console.log("btnApprove clicked");
 
     let tndrObj: TicketTender = new TicketTender();
     tndrObj.tenderTypeCode = this._tenderTypeCode;
@@ -64,6 +65,12 @@ export class TenderPageComponent implements OnInit {
     tndrObj.tndMaintTimestamp = new Date(Date.now())
     tndrObj.currCode = this._logonDataSvc.getLocationConfig().defaultCurrency;
     tndrObj.fCCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+    console.log("TenderTypes length" + this._logonDataSvc.getTenderTypes().types.length);
+    let tndrTypeObj = this._logonDataSvc.getTenderTypes().types.find((t: TenderType) => t.tenderTypeCode == this._tenderTypeCode);
+    if(tndrTypeObj != null) {
+      console.log("TenderTypeDesc: " + tndrTypeObj.tenderTypeDesc);
+      tndrObj.tenderTypeDesc = tndrTypeObj.tenderTypeDesc.valueOf();
+    }
 
     this._store.dispatch(addTender({ tndrObj }));
 
@@ -106,7 +113,7 @@ export class TenderPageComponent implements OnInit {
       tenderTotals += tktObj.ticketTenderList[key].tenderAmount;
     }
 
-    if(allowPartPay && tktObj.partialAmount > 0 && tktObj.partialAmount == tenderTotals || Number(ticketTotal).toPrecision(2) == Number(tenderTotals).toPrecision(2)) {
+    if(allowPartPay && tktObj.partialAmount > 0 && tktObj.partialAmount == tenderTotals || Number(ticketTotal).toFixed(2) == Number(tenderTotals).toFixed(2)) {
       return true;
     }
     else {

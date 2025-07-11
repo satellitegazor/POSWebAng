@@ -3,7 +3,7 @@ import { saleTranDataInterface } from '../store/ticketstore/ticket.state';
 import { Store } from '@ngrx/store';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { resetTktObj, saveTicketSplitSuccess } from '../store/ticketstore/ticket.action';
+import { resetTktObj, saveTicketForGuestCheckSuccess } from '../store/ticketstore/ticket.action';
 import { SaveTicketResultsModel } from 'src/app/models/ticket.split';
 import { getSavedTicketResult } from '../store/ticketstore/ticket.selector';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';

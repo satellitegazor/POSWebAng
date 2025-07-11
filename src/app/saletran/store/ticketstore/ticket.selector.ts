@@ -17,6 +17,12 @@ export const getCheckoutItemsSelector = createSelector(getTktObjState,
     return state.tktObj ? state.tktObj.tktList : null;
   });
 
+export const getTicketTendersSelector = createSelector(getTktObjState,
+  (state) => {
+    return state.tktObj ? state.tktObj.ticketTenderList : null;
+  });
+
+
 export const getBalanceDue = createSelector(getTktObjState,
   (state) => {
     let tenderTotal: number = 0;
@@ -31,23 +37,23 @@ export const getBalanceDueFC = createSelector(getTktObjState,
     return Round2DecimalService.round(state.tktObj.balanceDue);
   });
 
-  export const getRemainingBalance = createSelector(getTktObjState,
-    (state) => {
-      let tenderTotal: number = 0;
-      state.tktObj.ticketTenderList.forEach(tndr => tenderTotal += tndr.tenderAmount);
-      let ticketTotal: number = 0;
-      state.tktObj.tktList.forEach(itm => ticketTotal += itm.lineItemDollarDisplayAmount);
-      return Round2DecimalService.round(ticketTotal + state.tktObj.tipAmountDC - tenderTotal);
-    });
-  
-    export const getRemainingBalanceFC = createSelector(getTktObjState,
-      (state) => {
-        let tenderTotalFC: number = 0;
-        state.tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += tndr.fCTenderAmount);
-        let ticketTotalFC: number = 0;
-        state.tktObj.tktList.forEach(itm => ticketTotalFC += itm.dCLineItemDollarDisplayAmount);
-        return Round2DecimalService.round(ticketTotalFC + state.tktObj.tipAmountNDC - tenderTotalFC);
-      });
+export const getRemainingBalance = createSelector(getTktObjState,
+  (state) => {
+    let tenderTotal: number = 0;
+    state.tktObj.ticketTenderList.forEach(tndr => tenderTotal += tndr.tenderAmount);
+    let ticketTotal: number = 0;
+    state.tktObj.tktList.forEach(itm => ticketTotal += itm.lineItemDollarDisplayAmount);
+    return Round2DecimalService.round(ticketTotal + state.tktObj.tipAmountDC - tenderTotal);
+  });
+
+export const getRemainingBalanceFC = createSelector(getTktObjState,
+  (state) => {
+    let tenderTotalFC: number = 0;
+    state.tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += tndr.fCTenderAmount);
+    let ticketTotalFC: number = 0;
+    state.tktObj.tktList.forEach(itm => ticketTotalFC += itm.dCLineItemDollarDisplayAmount);
+    return Round2DecimalService.round(ticketTotalFC + state.tktObj.tipAmountNDC - tenderTotalFC);
+  });
 
 export const getCheckoutItemsCount = createSelector(getTktObjState,
   (state) => {
@@ -64,14 +70,34 @@ export const getSavedTicketResult = createSelector(getTktObjState,
     return state.saveTktRsltMdl;
   })
 
-export const getAssocTipList = createSelector(getTktObjState, 
+export const getAssocTipList = createSelector(getTktObjState,
   (state) => {
     return state.tktObj.associateTips;
   })
 
-export const getIsCustomerAddedToTicket = createSelector(getTktObjState, 
+export const getIsCustomerAddedToTicket = createSelector(getTktObjState,
   (state) => {
-    return state.tktObj.customerId > 0 || state.tktObj.updateCustomer || (state.tktObj.customer.cLastName != undefined) ;
+    return state.tktObj.customerId > 0 || state.tktObj.updateCustomer || (state.tktObj.customer.cLastName != undefined);
 
-})
+  })
 
+  export const getTicketTotalToPayDC = createSelector(getTktObjState,
+    (state) => {
+      let ticketTotal: number = 0;
+      state.tktObj.tktList.forEach(itm => ticketTotal += itm.lineItemDollarDisplayAmount);
+      let tipTotal: number = 0;
+      state.tktObj.associateTips.forEach(tip => tipTotal += tip.tipAmount);
+      
+      return Round2DecimalService.round(ticketTotal + state.tktObj.tipAmountDC);
+    });
+
+    export const getTicketTotalToPayNDC = createSelector(getTktObjState,
+      (state) => {
+        let ticketTotalFC: number = 0;
+        state.tktObj.tktList.forEach(itm => ticketTotalFC += itm.dCLineItemDollarDisplayAmount);
+        let tipTotalFC: number = 0;
+        state.tktObj.associateTips.forEach(tip => tipTotalFC += tip.tipAmtLocCurr);
+       
+        return Round2DecimalService.round(ticketTotalFC + state.tktObj.tipAmountNDC);
+      });
+    
