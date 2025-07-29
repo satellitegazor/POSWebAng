@@ -142,8 +142,8 @@ export const _tktObjReducer = createReducer(
 
 
       newCheckOutItem.ticketDetailId = -1 * (_tktObj.tktList.length + 1);
-      newCheckOutItem.lineItemTaxAmount = state.tktObj.taxExempted ? 0 : newCheckOutItem.unitPrice * newCheckOutItem.quantity * newCheckOutItem.salesTaxPct * 0.01;
-      newCheckOutItem.lineItemDollarDisplayAmount = (newCheckOutItem.unitPrice * newCheckOutItem.quantity) + newCheckOutItem.lineItemTaxAmount;
+      newCheckOutItem.lineItemTaxAmount = Number(Number(state.tktObj.taxExempted ? 0 : newCheckOutItem.unitPrice * newCheckOutItem.quantity * newCheckOutItem.salesTaxPct * 0.01).toFixed(2));
+      newCheckOutItem.lineItemDollarDisplayAmount = Number(Number((newCheckOutItem.unitPrice * newCheckOutItem.quantity) + newCheckOutItem.lineItemTaxAmount).toFixed(2));
 
       if(saleAssocAry.filter(assoc => assoc.indivLocId == newCheckOutItem.srvdByAssociateVal).length > 0) {
          saleAssocAry.filter(assoc => assoc.indivLocId == newCheckOutItem.srvdByAssociateVal).at(0)?.tipSaleItemIdList.push(newCheckOutItem.salesItemUID);
@@ -159,13 +159,13 @@ export const _tktObjReducer = createReducer(
       lgrandTotalNDC += newCheckOutItem.dCLineItemDollarDisplayAmount;
       ltotalExchCpnAmtDC += newCheckOutItem.exchCpnAmountDC;
       ltotalExchCpnAmtNDC += newCheckOutItem.exchCpnAmountNDC;
-      ltotalSavingsDC += newCheckOutItem.exchCpnAmountDC + newCheckOutItem.discountAmount + newCheckOutItem.lineItmKatsaCpnAmt;
-      ltotalSavingsNDC += newCheckOutItem.exchCpnAmountNDC + newCheckOutItem.dCDiscountAmount + newCheckOutItem.fCLineItmKatsaCpnAmt;
-      ltotalTaxDC += newCheckOutItem.lineItemTaxAmount + newCheckOutItem.lineItemEnvTaxAmount;
-      ltotalTaxNDC += newCheckOutItem.dCLineItemTaxAmount + newCheckOutItem.fCLineItemEnvTaxAmount;
+      ltotalSavingsDC += Number(Number(newCheckOutItem.exchCpnAmountDC + newCheckOutItem.discountAmount + newCheckOutItem.lineItmKatsaCpnAmt).toFixed(2));
+      ltotalSavingsNDC += Number(Number(newCheckOutItem.exchCpnAmountNDC + newCheckOutItem.dCDiscountAmount + newCheckOutItem.fCLineItmKatsaCpnAmt).toFixed(2));
+      ltotalTaxDC += Number(Number(newCheckOutItem.lineItemTaxAmount + newCheckOutItem.lineItemEnvTaxAmount).toFixed(2));
+      ltotalTaxNDC += Number(Number(newCheckOutItem.dCLineItemTaxAmount + newCheckOutItem.fCLineItemEnvTaxAmount).toFixed(2));
 
-      lsubTotalDC = lgrandTotalDC - ltotalTaxDC;
-      lsubTotalNDC = lgrandTotalNDC - ltotalTaxNDC;
+      lsubTotalDC = Number(Number(lgrandTotalDC - ltotalTaxDC).toFixed(2));
+      lsubTotalNDC = Number(Number(lgrandTotalNDC - ltotalTaxNDC).toFixed(2));
 
       return {
          ...state,

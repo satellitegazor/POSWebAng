@@ -29,6 +29,9 @@ import { LtcTicketReceiptComponent } from './rcpt/ltc-ticket-receipt/ltc-ticket-
 import { AlertMessageModule } from './alertmsg/alert-message/alert-message.module';
 import { RcptModule } from './rcpt/rcpt.module';
 import { InactiveLogoutInterceptor } from './auth/inactive-logout.interceptor';
+import { AlertMessageComponent } from './alertmsg/alert-message/alert-message.component';
+
+
 
  
 @NgModule({
@@ -43,8 +46,7 @@ import { InactiveLogoutInterceptor } from './auth/inactive-logout.interceptor';
     SummaryComponent,
     DetailComponent,
     SalestranComponent,
-    
-    
+    //AlertMessageComponent
     
   ],
   imports: [
@@ -66,6 +68,7 @@ import { InactiveLogoutInterceptor } from './auth/inactive-logout.interceptor';
       autoPause: true
     , connectInZone: true}),
     RcptModule,
+    
   ],
   providers: [{provide: LogonDataService}, {
         provide: HTTP_INTERCEPTORS,

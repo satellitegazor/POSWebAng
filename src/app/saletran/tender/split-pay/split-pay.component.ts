@@ -5,14 +5,14 @@ import { getBalanceDue, getTktObjSelector, getTicketTendersSelector, getBalanceD
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { SalesTranService } from '../../services/sales-tran.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { SharedSubjectService } from 'src/app/shared-subject/shared-subject.service';
 import { TenderType, TenderTypeModel } from '../../models/tender.type';
 import { firstValueFrom, Subscription, take } from 'rxjs';
 import { TipsModalDlgComponent } from '../../checkout/tips-modal-dlg/tips-modal-dlg.component';
 import { updateCheckoutTotals, addTender, saveTicketForGuestCheck, removeTndrWithSaveCode } from '../../store/ticketstore/ticket.action';
-
+import { AlertModalComponent } from 'src/app/alert-modal/alert-modal.component';
 
 @Component({
   selector: 'app-split-pay',
@@ -21,6 +21,11 @@ import { updateCheckoutTotals, addTender, saveTicketForGuestCheck, removeTndrWit
   standalone: false
 })
 export class SplitPayComponent implements OnInit {
+   modalOptions: NgbModalOptions = {
+        backdrop: 'static',
+        keyboard: false
+    };
+
   _tenderTypesModel: TenderTypeModel = {} as TenderTypeModel;
   _displayTenders: TenderType[] = [];
   tenderButtonWidthPercent: number = 0;
@@ -55,15 +60,6 @@ export class SplitPayComponent implements OnInit {
       // Perform actions based on the new ID
     });
 
-    //await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
-
-    // this._store.select(getTktObjSelector).subscribe(data => {
-    //   console.log('SplitPay component getTktObjSelector data:', data);
-    //   if (data) {
-    //     this.tndrs = data?.ticketTenderList;
-    //   }
-    // })
-
     this._store.select(getTicketTotalToPayDC).subscribe(data => {
       console.log('SplitPay component getRemainingBalance data:', data);
       if (data) {
@@ -82,6 +78,16 @@ export class SplitPayComponent implements OnInit {
       //console.log('SplitPay component getTicketTendersSelector data:', data);
       if (data) {
         this.tndrs = data;
+        let totalPaidDC: number = 0;
+        let totalPaidNDC: number = 0;
+
+        this.tndrs.forEach(t => {
+          totalPaidDC += t.tenderAmount;
+          totalPaidNDC += t.fCTenderAmount;
+        });
+
+        this.tenderAmountDC = Number(Number(this.ticketTotalDC - totalPaidDC).toFixed(2));
+        this.tenderAmountNDC = Number(Number(this.ticketTotalNDC - totalPaidNDC).toFixed(2));
       }
     });
 
@@ -95,12 +101,25 @@ export class SplitPayComponent implements OnInit {
     this._displayTenders = this._tenderTypesModel.types?.filter((tndr) => tndr.isRefundType == false);
     this.tenderButtonWidthPercent = 99 / (this._displayTenders?.length); // +1 for split pay button
   }
-  TipAmountChanged(evt: any) {
-    console.log('SplitPay component TipAmountChanged called with event:', evt);
+
+  PaymentAmountChanged(evt: any) {
+
+    //console.log('SplitPay component TipAmountChanged called with event:', evt);
+    if(Number(Number(evt.target.value).toFixed(2)) > this.ticketTotalDC) {
+      evt.target.value = Number(Number(this.ticketTotalDC).toFixed(2));
+      const modalRef = this.modalService.open(AlertModalComponent, this.modalOptions);
+      modalRef.componentInstance.title = 'Tender Amount Exceeds Total';
+      modalRef.componentInstance.message = 'The tender amount cannot exceed the total amount due.';
+      //modalRef.componentInstance.options = this.modalOptions;
+      modalRef.result.then(() => {
+        console.log('Alert modal closed');
+      }, () => {
+        console.log('Alert modal dismissed');
+      });
+      return;
+    }
     this.tenderAmountDC = evt.target.value;
-    this.tenderAmountNDC = this.tenderAmountDC * this._logonDataSvc.getExchangeRate();
-    //console.log('SplitPay component TipAmountChanged tenderAmountDC:', this.tenderAmountDC);
-    //console.log('SplitPay component TipAmountChanged tenderAmountNDC:', this.tenderAmountNDC);
+    this.tenderAmountNDC = Number(Number(this.tenderAmountDC * this._logonDataSvc.getExchangeRate()).toFixed(2));
   }
 
   async btnTndrClick(evt: Event) {

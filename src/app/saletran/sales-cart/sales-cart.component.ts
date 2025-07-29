@@ -8,7 +8,7 @@ import { Dept, SaleItem, SalesCat } from '../models/sale.item';
 import { SaleItemResultsModel } from '../models/sale.item.results.model';
 import { SalesTranService } from '../services/sales-tran.service';
 import { TktSaleItemComponent } from '../tkt-sale-item/tkt-sale-item.component';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { CustomerSearchComponent } from '../../shared/customer-search/customer-search.component';
 
 import { getSaleItemsStart, getSaleItemsActionSuccess, getSaleitemsFail } from '../store/saleitemstore/saleitem.action';
@@ -33,6 +33,12 @@ import {initialLocationConfigState, LocationConfigState} from '../store/location
 })
 export class SalesCartComponent implements OnInit, OnDestroy {
 
+       modalOptions: NgbModalOptions = {
+            backdrop: 'static',
+            keyboard: false,
+            centered: true
+        };
+        
     constructor(private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
         private _sharedSubSvc: SharedSubjectService, private modalService: NgbModal, private _store: Store<saleTranDataInterface>,
     private _locConfigStore: Store<LocationConfigState>) {
@@ -165,7 +171,7 @@ export class SalesCartComponent implements OnInit, OnDestroy {
 
     btnCustDetailsClick(evt: Event) {
         this.displayCustSearchDlg = "display";
-        const modalRef = this.modalService.open(CustomerSearchComponent);
+        const modalRef = this.modalService.open(CustomerSearchComponent, this.modalOptions);
         modalRef.componentInstance.data = "search customer";
         
     }
@@ -176,7 +182,7 @@ export class SalesCartComponent implements OnInit, OnDestroy {
 
     btnTicketLkup(evt: Event) {
         this.displayTicketLookupDlg = "display";
-        const modalRef = this.modalService.open(TicketLookupComponent)
+        const modalRef = this.modalService.open(TicketLookupComponent, this.modalOptions);
         modalRef.componentInstance.displayMsg = "search ticket";    
     }
 

@@ -18,6 +18,8 @@ import { TenderType } from '../../models/tender.type';
 })
 export class SplitTenderPageComponent {
 
+  
+
 private _tenderTypeCode: string = '';
 tenderAmount: number = 0;
 tenderAmountFC: number = 0;

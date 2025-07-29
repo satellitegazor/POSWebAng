@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { CouponType } from 'src/app/global/global.constants';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
@@ -20,6 +20,11 @@ import { currSymbls } from 'src/app/models/CurrencySymbols';
     standalone: false
 })
 export class CheckoutItemsComponent implements OnInit {
+   
+  modalOptions: NgbModalOptions = {
+        backdrop: 'static',
+        keyboard: false
+    };
 
   constructor(private _store: Store<saleTranDataInterface>, 
     private _logonDataSvc: LogonDataService,
@@ -120,7 +125,7 @@ export class CheckoutItemsComponent implements OnInit {
   }
 
   public DisplayVendorDiscPopUp(saleItemId: number, tktDetailId: number, itemName: string) {
-    const modalRef = this._modalService.open(CouponsModalDlgComponent);
+    const modalRef = this._modalService.open(CouponsModalDlgComponent, this.modalOptions);
     
       modalRef.componentInstance.SaleItemId = saleItemId;
       modalRef.componentInstance.TktDtlId = tktDetailId;
@@ -132,7 +137,7 @@ export class CheckoutItemsComponent implements OnInit {
   }
 
   public DisplayExchDiscPopUp(saleItemId: number, tktDetailId: number, itemName: string) {
-    const modalRef = this._modalService.open(CouponsModalDlgComponent);
+    const modalRef = this._modalService.open(CouponsModalDlgComponent, this.modalOptions);
     
     modalRef.componentInstance.SaleItemId = saleItemId;
     modalRef.componentInstance.TktDtlId = tktDetailId;
@@ -143,7 +148,7 @@ export class CheckoutItemsComponent implements OnInit {
     
   }
   public DisplayExchTranDiscPopUp() {
-    const modalRef = this._modalService.open(CouponsModalDlgComponent);
+    const modalRef = this._modalService.open(CouponsModalDlgComponent, this.modalOptions);
       modalRef.componentInstance.DiscountName = "Exchange Discount";
       modalRef.componentInstance.Title = "Exchange Coupon";
       modalRef.componentInstance.CpnType = CouponType.exchCpnTran;

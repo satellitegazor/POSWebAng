@@ -40,10 +40,10 @@
                     Total Tender Amount:
                 </td>
                 <td class="tender-amount">
-                    <input type="text" id="dcTndrAmt" class="form-control" [(ngModel)]="tenderAmountDC" (change)="TipAmountChanged($event)" />
+                    <input type="text" id="dcTndrAmt" autocomplete="off" class="form-control" [(ngModel)]="tenderAmountDC" (change)="PaymentAmountChanged($event)" />
                 </td>
                 <td class="tender-amount">
-                    <input type="text" id="ndcTndrAmt" class="form-control" [(ngModel)]="tenderAmountNDC" />
+                    <input type="text" id="ndcTndrAmt" autocomplete="off" class="form-control" [(ngModel)]="tenderAmountNDC" />
                 </td>
         </table>
     </div>

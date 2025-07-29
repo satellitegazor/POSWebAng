@@ -2,7 +2,7 @@ import { keyframes } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap'
 import { select, Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { TicketTender } from 'src/app/models/ticket.tender';
@@ -26,6 +26,13 @@ import { DailyExchRate } from 'src/app/models/exchange.rate';
   standalone: false
 })
 export class CheckoutPageComponent implements OnInit {
+
+
+     modalOptions: NgbModalOptions = {
+          backdrop: 'static',
+          keyboard: false,
+          centered: true
+      };
 
   constructor(private _saleTranSvc: SalesTranService, 
     private _logonDataSvc: LogonDataService,
@@ -71,9 +78,7 @@ export class CheckoutPageComponent implements OnInit {
 
   btnCustDetailsClick(evt: Event) {
     this.displayCustSearchDlg = "display";
-    const modalRef = this.modalService.open(CustomerSearchComponent, {
-      centered: true
-    });
+    const modalRef = this.modalService.open(CustomerSearchComponent, this.modalOptions);
   }
 
   async btnTndrClick(evt: Event) {
@@ -103,7 +108,7 @@ export class CheckoutPageComponent implements OnInit {
       }
 
       if (tktObjData?.tipAmountDC == 0) {
-        const modalRef = this.modalService.open(TipsModalDlgComponent, {});
+        const modalRef = this.modalService.open(TipsModalDlgComponent, this.modalOptions);
         modalRef.componentInstance.tndrCode = tndrCode;
       }
       else {
@@ -138,7 +143,7 @@ export class CheckoutPageComponent implements OnInit {
       }      
 
       if (tktObjData?.tipAmountDC == 0) {
-        const modalRef = this.modalService.open(TipsModalDlgComponent, {});
+        const modalRef = this.modalService.open(TipsModalDlgComponent, this.modalOptions);
         modalRef.componentInstance.tndrCode = tndrCode;
       }
       else {
