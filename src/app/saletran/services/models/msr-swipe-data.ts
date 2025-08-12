@@ -1,4 +1,6 @@
-class MSRSwipeData
+import { PinPadResult } from "./pinpad-result";
+
+export class MSRSwipeData
 {
     public rslt:PinPadResult = new PinPadResult();
     public ResponseText:string = '';

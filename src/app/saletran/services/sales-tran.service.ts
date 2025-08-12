@@ -14,6 +14,8 @@ import { SaveTicketResultsModel, TicketSplit } from 'src/app/models/ticket.split
 import { DailyExchRateMdl } from 'src/app/models/exchange.rate';
 import { TenderTypeModel } from '../models/tender.type';
 import { LTC_SingleTransactionResultsModel, LTC_Ticket, LTC_TransactionDetailsModel, SingleTransactionId, TicketLookupResult } from '../models/ticket.list';
+import { TicketTender,  SaveTenderResult, SaveTenderResultModel } from 'src/app/models/ticket.tender';
+import { ExchCardTndr, SaveExchCardTndrResult } from 'src/app/models/exch.card.tndr';
 
 
 @Injectable({
@@ -101,6 +103,17 @@ export class SalesTranService {
         return this.httpClient.put<SaveTicketResultsModel>(
             GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveSplitPayments?guid=' + GlobalConstants.PUT_GUID + '&uid=' + model.individualUID + '&DBVal=0',
             JSON.stringify(model),
+            { headers: this.headerObjs });
+    }
+
+    public saveTenderObj(tndrObj: TicketTender) {
+        return this.httpClient.put<SaveTenderResultModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveTender?guid=' + GlobalConstants.PUT_GUID 
+                + '&uid=' + tndrObj.tndMaintUserId 
+                + '&bFromLinuxTab=true'
+                + 'appType=1'
+                + '&DBVal=0',
+            JSON.stringify(tndrObj),
             { headers: this.headerObjs });
     }
 

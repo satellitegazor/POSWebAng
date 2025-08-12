@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { TicketTender } from 'src/app/models/ticket.tender';
-import { getBalanceDue, getTktObjSelector, getTicketTendersSelector, getBalanceDueFC, getRemainingBalance, getRemainingBalanceFC, getTicketTotalToPayDC, getTicketTotalToPayNDC } from '../../store/ticketstore/ticket.selector';
+import { getBalanceDue, getTktObjSelector, getTicketTendersSelector, getBalanceDueFC, getRemainingBalanceDC, getRemainingBalanceFC, getTicketTotalToPayDC, getTicketTotalToPayNDC } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { SalesTranService } from '../../services/sales-tran.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -61,14 +61,14 @@ export class SplitPayComponent implements OnInit {
     });
 
     this._store.select(getTicketTotalToPayDC).subscribe(data => {
-      console.log('SplitPay component getRemainingBalance data:', data);
+      //console.log('SplitPay component getRemainingBalanceDC data:', data);
       if (data) {
         this.ticketTotalDC = data;
       }
     })
 
     this._store.select(getTicketTotalToPayNDC).subscribe(data => {
-      console.log('SplitPay component getRemainingBalanceFC data:', data);
+      //console.log('SplitPay component getRemainingBalanceFC data:', data);
       if (data) {
         this.ticketTotalNDC = data;
       }
@@ -83,7 +83,7 @@ export class SplitPayComponent implements OnInit {
 
         this.tndrs.forEach(t => {
           totalPaidDC += t.tenderAmount;
-          totalPaidNDC += t.fCTenderAmount;
+          totalPaidNDC += t.fcTenderAmount;
         });
 
         this.tenderAmountDC = Number(Number(this.ticketTotalDC - totalPaidDC).toFixed(2));
@@ -130,7 +130,27 @@ export class SplitPayComponent implements OnInit {
     let tndrCode = (evt.target as Element).id
     let busMdl = this._logonDataSvc.getBusinessModel()
 
-    this.router.navigate(['splittender'], { queryParams: { code: tndrCode, tenderAmount: this.tenderAmountDC, tenderAmountFC: this.tenderAmountNDC } })
+    let tndrCompRoute = '';
+    switch (tndrCode) {
+      case 'EG' :
+      case 'CC' :
+      case 'RC' :
+        tndrCompRoute = 'eaglecash';
+        break;
+      case 'CA':
+      case 'CR':
+        tndrCompRoute = 'cashcheck';
+        break;
+      case 'XC':
+      case 'XR':
+      case 'MS':
+      case 'MR':
+        tndrCompRoute = 'pinpadtran';
+        break;
+    }
+
+
+    this.router.navigate([tndrCompRoute], { queryParams: { code: tndrCode, tenderAmount: this.tenderAmountDC, tenderAmountFC: this.tenderAmountNDC } })
 
   }
 

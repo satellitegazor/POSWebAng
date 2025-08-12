@@ -1,10 +1,14 @@
-class VfoneCaptureTran {
+import { PinPadResult } from "./pinpad-result";
+
+export class VfoneCaptureTran {
     public rslt:PinPadResult = new PinPadResult();
     public ResponseText: string = '';
     public Result: string = '';
     public ResultCode: string = '';
     public TerminationStatus: string = '';
     public Counter: number = 0;
+    public TicketTenderId: number = 0;
+    public TransactionId: number = 0;
     public TRANS_SEQ_NUM: string = '';
     public INTRN_SEQ_NUM: string = '';
     public TROUTD: string = '';

@@ -10,6 +10,9 @@ import { SaveTicketSuccessComponent } from './save-ticket-success/save-ticket-su
 import { MiscModule } from '../misc-module/misc.module';
 import { SplitPayComponent } from './tender/split-pay/split-pay.component';
 import { SplitTenderPageComponent } from './tender/split-tender-page/split-tender-page.component';
+import { CreditCardTndrComponent } from './tender/credit-card-tndr/credit-card-tndr.component';
+import { EgConcTndrComponent } from './tender/eg-conc-tndr/eg-conc-tndr.component';
+import { CashTndrComponent } from './tender/cash-tndr/cash-tndr.component';
 
 const routes: Routes = [
     { path: 'salestran', component: SalesCartComponent },
@@ -17,7 +20,10 @@ const routes: Routes = [
     { path: 'tender', component: TenderPageComponent },
     { path: 'savetktsuccess', component: SaveTicketSuccessComponent },
     { path: 'splitpay', component: SplitPayComponent},
-    { path: 'splittender', component: SplitTenderPageComponent}
+    { path: 'splittender', component: SplitTenderPageComponent},
+    { path: 'pinpadtran', component: CreditCardTndrComponent},
+    { path: 'eaglecash', component:EgConcTndrComponent},
+    { path: 'cashcheck', component:CashTndrComponent},
     //{ path: '', component: SalesCartComponent},
     //{ path: 'rlogon', loadChildren? : './misc-module/mic.module##MiscModuleRoutingModule' }
 ];

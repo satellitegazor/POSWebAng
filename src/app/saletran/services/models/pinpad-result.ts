@@ -1,4 +1,4 @@
-class PinPadResult
+export class PinPadResult
 {
     public IsSuccessful:boolean = false;
     public ReturnMsg:string = "";

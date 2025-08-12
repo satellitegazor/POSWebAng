@@ -33,11 +33,11 @@ export const getBalanceDue = createSelector(getTktObjState,
 export const getBalanceDueFC = createSelector(getTktObjState,
   (state) => {
     let tenderTotalFC: number = 0;
-    state.tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += tndr.fCTenderAmount);
+    state.tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += tndr.fcTenderAmount);
     return Round2DecimalService.round(state.tktObj.balanceDue);
   });
 
-export const getRemainingBalance = createSelector(getTktObjState,
+export const getRemainingBalanceDC = createSelector(getTktObjState,
   (state) => {
     let tenderTotal: number = 0;
     state.tktObj.ticketTenderList.forEach(tndr => tenderTotal += tndr.tenderAmount);
@@ -49,11 +49,27 @@ export const getRemainingBalance = createSelector(getTktObjState,
 export const getRemainingBalanceFC = createSelector(getTktObjState,
   (state) => {
     let tenderTotalFC: number = 0;
-    state.tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += tndr.fCTenderAmount);
+    state.tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += tndr.fcTenderAmount);
     let ticketTotalFC: number = 0;
     state.tktObj.tktList.forEach(itm => ticketTotalFC += itm.dCLineItemDollarDisplayAmount);
     return Round2DecimalService.round(ticketTotalFC + state.tktObj.tipAmountNDC - tenderTotalFC);
   });
+
+  export interface AmountDCNDC{
+    amountDC: number;
+    amountNDC: number;
+  }
+
+  export const getRemainingBal = createSelector(getRemainingBalanceDC, getRemainingBalanceFC,
+
+    (remBalDC : number, remBalFC: number): AmountDCNDC => {  
+
+      return {
+        amountDC: remBalDC,
+        amountNDC: remBalFC
+      };
+    }
+  );
 
 export const getCheckoutItemsCount = createSelector(getTktObjState,
   (state) => {

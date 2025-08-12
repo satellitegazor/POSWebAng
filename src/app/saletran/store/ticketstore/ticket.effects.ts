@@ -4,7 +4,7 @@ import { select, State, Store } from "@ngrx/store";
 import { of } from "rxjs";
 import { catchError, concatMap, exhaustMap, map, mergeMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { SalesTranService } from "../../services/sales-tran.service";
-import { saveTicketForGuestCheck, saveTicketForGuestCheckSuccess, saveTicketForGuestCheckFailed, saveCompleteTicketSplit, saveCompleteTicketSplitSuccess, saveCompleteTicketSplitFailed } from "./ticket.action";
+import { saveTicketForGuestCheck, saveTicketForGuestCheckSuccess, saveTicketForGuestCheckFailed, saveCompleteTicketSplit, saveCompleteTicketSplitSuccess, saveCompleteTicketSplitFailed, saveTenderObj, saveTenderObjSuccess, saveTenderObjFailed } from "./ticket.action";
 import { saleTranDataInterface } from "./ticket.state";
 import { getTktObjSelector } from './ticket.selector';
 
@@ -42,6 +42,23 @@ export class TicketObjectEffects {
                     catchError((errResp) => {
                         const errMessage = errResp + "Unable to save ticket data. Please logoff and logon again";
                         return of(saveCompleteTicketSplitFailed(errResp));
+                    })                        
+                )
+            })
+        )
+    });
+    saveTenderEffect$ = createEffect(() => {
+        return this.action$.pipe(
+            ofType(saveTenderObj),
+            mergeMap((action) => {
+
+                return this.saleTranSvc.saveTenderObj(action.tndrObj).pipe(
+                    map(data => {
+                        return saveTenderObjSuccess({data});
+                    }),
+                    catchError((errResp) => {
+                        const errMessage = errResp + "Unable to save ticket data. Please logoff and logon again";
+                        return of(saveTenderObjFailed(errResp));
                     })                        
                 )
             })

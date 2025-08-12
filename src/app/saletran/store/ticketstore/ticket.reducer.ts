@@ -7,7 +7,7 @@ import { AssociateSaleTips } from "src/app/models/associate.sale.tips";
 import { LTC_Customer } from "src/app/models/customer";
 import { TicketTender } from "src/app/models/ticket.tender";
 import { SalesTransactionCheckoutItem } from "../../models/salesTransactionCheckoutItem";
-import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketForGuestCheckSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData, removeTndrWithSaveCode, saveCompleteTicketSplitSuccess } from "./ticket.action";
+import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketForGuestCheckSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData, removeTndrWithSaveCode, saveCompleteTicketSplitSuccess, addPinpadResp, saveTenderObjSuccess } from "./ticket.action";
 import { Round2DecimalService } from "src/app/services/round2-decimal.service";
 import { tktObjInitialState, saleTranDataInterface } from "./ticket.state";
 
@@ -327,6 +327,17 @@ export const _tktObjReducer = createReducer(
          }
       }
    }),
+   on(addPinpadResp, (state, action) => {
+
+      return {
+         ...state,
+         tktObj: {
+            ...state.tktObj,
+            vMTndr: action.respObj
+         }
+      }
+   }),
+   
 
    on(updateCheckoutTotals, (state, action) => {
 
@@ -853,6 +864,26 @@ export const _tktObjReducer = createReducer(
             totalTaxDC: totalTaxDC,
             totalTaxNDC: totalTaxNDC
          }
+      }
+   }),
+   on(saveTenderObjSuccess, (state, action) => {
+
+      return {
+         ...state,
+         tktObj: {
+            ...state.tktObj,
+            ticketTenderList: state.tktObj.ticketTenderList.map(tndr => {
+               if (tndr.rrn == action.data.data.rrn) {
+                  return {
+                     ...tndr,
+                     tickettenderid: action.data.data.ticketTenderId,                  
+                  };
+               }
+               else {
+                  return tndr
+               }
+            }),
+         },
       }
    }),
    on(saveCompleteTicketSplitSuccess, (state, action) => {

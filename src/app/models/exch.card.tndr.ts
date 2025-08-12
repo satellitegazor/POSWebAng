@@ -94,3 +94,8 @@
     public pRESWIPED: number = 0;
     public eMV_TAG_9F35: string = '';
 }
+
+export class SaveExchCardTndrResult {
+    public exchCardTndrId: number = 0;
+    public ticketTenderId: number = 0;
+}

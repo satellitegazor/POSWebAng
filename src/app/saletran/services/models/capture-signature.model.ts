@@ -1,4 +1,6 @@
-class SigCapture {
+import { PinPadResult } from "./pinpad-result";
+
+export class SigCapture {
     public rslt: PinPadResult = new PinPadResult();
     public ResponseText: string= '';
     public Result: string= '';

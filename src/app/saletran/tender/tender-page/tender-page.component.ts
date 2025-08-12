@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { TicketSplit } from 'src/app/models/ticket.split';
-import { getRemainingBalance, getRemainingBalanceFC, getBalanceDue, getBalanceDueFC, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
+import { getRemainingBalanceDC, getRemainingBalanceFC, getBalanceDue, getBalanceDueFC, getTktObjSelector, getRemainingBal } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TicketTender } from 'src/app/models/ticket.tender';
@@ -12,20 +12,24 @@ import { TenderType, TenderTypeModel } from '../../models/tender.type';
 import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheckoutItem';
 import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
 import { getLocCnfgIsAllowTipsSelector } from '../../store/locationconfigstore/locationconfig.selector';
-import { firstValueFrom, Observable, Subscription, take } from 'rxjs';
+import { combineLatest, filter, firstValueFrom, forkJoin, Observable, Subscription, take } from 'rxjs';
+import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
+import { UtilService } from 'src/app/services/util.service';
 
 @Component({
-    selector: 'app-tender-page',
-    templateUrl: './tender-page.component.html',
-    styleUrls: ['./tender-page.component.css'],
-    standalone: false
+  selector: 'app-tender-page',
+  templateUrl: './tender-page.component.html',
+  styleUrls: ['./tender-page.component.css'],
+  standalone: false
 })
 export class TenderPageComponent implements OnInit {
 
   constructor(private _store: Store<saleTranDataInterface>,
     private activatedRoute: ActivatedRoute,
     private route: Router,
-    private _logonDataSvc: LogonDataService) {
+    private _logonDataSvc: LogonDataService,
+    private _cposWebSvc: CPOSWebSvcService,
+    private _utilSvc: UtilService) {
   }
 
   private _tktObj: TicketSplit = {} as TicketSplit;
@@ -34,26 +38,57 @@ export class TenderPageComponent implements OnInit {
   private _defaultCurrency: string = '';
   private _tenderTypeCode: string = '';
 
-  private subscription:Subscription = {} as Subscription;
+  private subscription: Subscription = {} as Subscription;
 
   ngOnInit(): void {
 
-    this._store.select(getTktObjSelector).subscribe(data => {
-      if (data == null)
-        return;
+    forkJoin([
+      this._store.select(getRemainingBal).pipe(take(1)),
+      this.activatedRoute.queryParams.pipe(take(1))
+    ]).subscribe(([tenderBal, queryParams]) => {
+      this.tenderAmount = tenderBal.amountDC;
+      this.tenderAmountFC = tenderBal.amountNDC;
+      this._tenderTypeCode = queryParams['code'];
+      this.getAuthorization();
 
-      this._store.select(getRemainingBalance).subscribe(data => {
-        this.tenderAmount = data;
-      })      
-      this._store.select(getRemainingBalanceFC).subscribe(data => {
-        this.tenderAmountFC = data;
-      })
-    })
+    });
 
-    this.activatedRoute.queryParams.subscribe(params => {
-      this._tenderTypeCode = params['code'];
-    })
+
   }
+
+  private async getAuthorization() {
+
+    let InvoiceId = this._utilSvc.getUniqueRRN();
+    let exchNum = this._utilSvc.getUniqueRRN();
+    let tranAmt = this.tenderAmount;
+    let isRefund = false;
+
+    this._cposWebSvc.captureCardTran(InvoiceId, exchNum, tranAmt, isRefund).subscribe({
+      next: async (data) => {
+        console.log("Capture Card Transaction Response: ", data);
+        if (data.rslt.IsSuccessful) {
+          console.log("Transaction Successful");
+          let tndrObj: TicketTender = new TicketTender();
+          tndrObj.tenderTypeCode = this._tenderTypeCode;
+          tndrObj.tenderAmount = this.tenderAmount;
+          tndrObj.fcTenderAmount = this.tenderAmountFC;
+          tndrObj.tndMaintTimestamp = new Date(Date.now());
+          //tndrObj. = this._logonDataSvc.getLocationConfig().defaultCurrency;
+          tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+          tndrObj.tenderTypeCode = this._tenderTypeCode;
+          this._store.dispatch(addTender({ tndrObj }));
+
+          var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+
+          if (tktObjData != null) {
+            this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData }));
+          }
+          this.route.navigate(['/savetktsuccess']);
+        }
+      }
+    });
+  }
+
 
   async btnApprove(evt: Event) {
     console.log("btnApprove clicked");
@@ -61,13 +96,13 @@ export class TenderPageComponent implements OnInit {
     let tndrObj: TicketTender = new TicketTender();
     tndrObj.tenderTypeCode = this._tenderTypeCode;
     tndrObj.tenderAmount = this.tenderAmount;
-    tndrObj.fCTenderAmount = this.tenderAmountFC;
+    tndrObj.fcTenderAmount = this.tenderAmountFC;
     tndrObj.tndMaintTimestamp = new Date(Date.now())
-    tndrObj.currCode = this._logonDataSvc.getLocationConfig().defaultCurrency;
-    tndrObj.fCCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+    //tndrObj.currCode = this._logonDataSvc.getLocationConfig().defaultCurrency;
+    tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
     console.log("TenderTypes length" + this._logonDataSvc.getTenderTypes().types.length);
     let tndrTypeObj = this._logonDataSvc.getTenderTypes().types.find((t: TenderType) => t.tenderTypeCode == this._tenderTypeCode);
-    if(tndrTypeObj != null) {
+    if (tndrTypeObj != null) {
       console.log("TenderTypeDesc: " + tndrTypeObj.tenderTypeDesc);
       tndrObj.tenderTypeDesc = tndrTypeObj.tenderTypeDesc.valueOf();
     }
@@ -75,12 +110,12 @@ export class TenderPageComponent implements OnInit {
     this._store.dispatch(addTender({ tndrObj }));
 
     var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
-    
-    if(tktObjData != null) {
-      this._store.dispatch(saveCompleteTicketSplit({ tktObj:  tktObjData}));
+
+    if (tktObjData != null) {
+      this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData }));
     }
     this.route.navigate(['/savetktsuccess']);
-    
+
   }
 
   btnDecline(evt: Event) {
@@ -89,19 +124,19 @@ export class TenderPageComponent implements OnInit {
 
   private IsTicketComplete(tktObj: TicketSplit): boolean {
 
-    if(tktObj.tktList.length == 0)
+    if (tktObj.tktList.length == 0)
       return false;
 
-    if(tktObj.ticketTenderList.length == 0)
+    if (tktObj.ticketTenderList.length == 0)
       return false;
 
     let ticketTotal = 0;
-    
-    for(const key in tktObj.tktList) {
+
+    for (const key in tktObj.tktList) {
       ticketTotal += tktObj.tktList[key].lineItemDollarDisplayAmount;
     }
 
-    for(const key in tktObj.associateTips) {
+    for (const key in tktObj.associateTips) {
       ticketTotal += tktObj.associateTips[key].tipAmount;
     }
 
@@ -109,11 +144,11 @@ export class TenderPageComponent implements OnInit {
 
     let tenderTotals = 0;
 
-    for(const key in tktObj.ticketTenderList) {
+    for (const key in tktObj.ticketTenderList) {
       tenderTotals += tktObj.ticketTenderList[key].tenderAmount;
     }
 
-    if(allowPartPay && tktObj.partialAmount > 0 && tktObj.partialAmount == tenderTotals || Number(ticketTotal).toFixed(2) == Number(tenderTotals).toFixed(2)) {
+    if (allowPartPay && tktObj.partialAmount > 0 && tktObj.partialAmount == tenderTotals || Number(ticketTotal).toFixed(2) == Number(tenderTotals).toFixed(2)) {
       return true;
     }
     else {

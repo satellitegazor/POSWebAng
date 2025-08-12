@@ -5,7 +5,7 @@ import { firstValueFrom, Subscription, take } from 'rxjs';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { TicketTender } from 'src/app/models/ticket.tender';
 import { addTender, saveCompleteTicketSplit } from '../../store/ticketstore/ticket.action';
-import { getRemainingBalance, getRemainingBalanceFC, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
+import { getRemainingBalanceDC, getRemainingBalanceFC, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { TicketSplit } from 'src/app/models/ticket.split';
 import { TenderType } from '../../models/tender.type';
@@ -65,10 +65,10 @@ btnDecline($event: MouseEvent) {
     let tndrObj: TicketTender = new TicketTender();
     tndrObj.tenderTypeCode = this._tenderTypeCode;
     tndrObj.tenderAmount = this.tenderAmount;
-    tndrObj.fCTenderAmount = this.tenderAmountFC;
+    tndrObj.fcTenderAmount = this.tenderAmountFC;
     tndrObj.tndMaintTimestamp = new Date(Date.now())
-    tndrObj.currCode = this._logonDataSvc.getLocationConfig().defaultCurrency;
-    tndrObj.fCCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+    //tndrObj.currCode = this._logonDataSvc.getLocationConfig().defaultCurrency;
+    tndrObj.fcCurrCode   = this._logonDataSvc.getLocationConfig().currCode;
     console.log("TenderTypes length" + this._logonDataSvc.getTenderTypes().types.length);
     let tndrTypeObj = this._logonDataSvc.getTenderTypes().types.find((t: TenderType) => t.tenderTypeCode == this._tenderTypeCode);
     if(tndrTypeObj != null) {

@@ -95,10 +95,10 @@ export class CheckoutPageComponent implements OnInit {
       let tndrObj: TicketTender = new TicketTender();
       tndrObj.tenderTypeCode = "SV";
       tndrObj.tenderAmount = this.tenderAmount;
-      tndrObj.fCTenderAmount = this.tenderAmount * this._logonDataSvc.getExchangeRate();
+      tndrObj.fcTenderAmount = this.tenderAmount * this._logonDataSvc.getExchangeRate();
       tndrObj.tndMaintTimestamp = new Date(Date.now())
-      tndrObj.currCode = this._logonDataSvc.getLocationConfig().defaultCurrency;
-      tndrObj.fCCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+      //tndrObj.currCode = this._logonDataSvc.getLocationConfig().defaultCurrency;
+      tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
       this._store.dispatch(addTender({ tndrObj }));
 
       var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
@@ -130,10 +130,10 @@ export class CheckoutPageComponent implements OnInit {
       let tndrObj: TicketTender = new TicketTender();
       tndrObj.tenderTypeCode = "SV";
       tndrObj.tenderAmount = this.tenderAmount;
-      tndrObj.fCTenderAmount = this.tenderAmount * this._logonDataSvc.getExchangeRate();
+      tndrObj.fcTenderAmount = this.tenderAmount * this._logonDataSvc.getExchangeRate();
       tndrObj.tndMaintTimestamp = new Date(Date.now())
-      tndrObj.currCode = this._logonDataSvc.getLocationConfig().defaultCurrency;
-      tndrObj.fCCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+      //tndrObj.currCode = this._logonDataSvc.getLocationConfig().defaultCurrency;
+      tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
       this._store.dispatch(addTender({ tndrObj }));
 
       var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));

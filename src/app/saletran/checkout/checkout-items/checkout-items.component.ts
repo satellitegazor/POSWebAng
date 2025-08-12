@@ -23,7 +23,8 @@ export class CheckoutItemsComponent implements OnInit {
    
   modalOptions: NgbModalOptions = {
         backdrop: 'static',
-        keyboard: false
+        keyboard: false,
+        centered: true
     };
 
   constructor(private _store: Store<saleTranDataInterface>, 
@@ -156,7 +157,7 @@ export class CheckoutItemsComponent implements OnInit {
   }
 
   public DisplayTipsPopUp() {
-    const modalRef = this._modalService.open(TipsModalDlgComponent)
+    const modalRef = this._modalService.open(TipsModalDlgComponent, this.modalOptions);
     modalRef.componentInstance.tndrCode = "";    
   }
 }

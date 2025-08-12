@@ -3,10 +3,11 @@ import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
 import { LTC_Customer } from 'src/app/models/customer';
 import { SaveTicketResultsModel, TicketSplit } from 'src/app/models/ticket.split';
-import { TicketTender } from 'src/app/models/ticket.tender';
+import { SaveTenderResultModel, SaveTenderResult, TicketTender } from 'src/app/models/ticket.tender';
 import { LocationConfig } from '../../models/location-config';
 import { LTC_Associates } from '../../models/location.associates';
 import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheckoutItem';
+import { ExchCardTndr, SaveExchCardTndrResult } from 'src/app/models/exch.card.tndr';
  
 export const ADD_SALE_ITEM = 'addSaleItem';
 export const INC_SALE_ITEM_QTY = 'incSaleItemQty';
@@ -24,6 +25,7 @@ export const SAVE_COMPLETE_TICKET_SPLIT_FAILED = '[SaveCompleteTicket] Failure'
 export const ADD_CUST_ID = 'add CustomerId to TktObj';
 export const ADD_NEW_CUST = 'add New Customer to TktObj';
 export const ADD_TENDER_OBJ = 'addTenderToTktObj';
+export const ADD_PINPAD_RESP = 'addPinpadResponse';
 export const UPD_SALE_ITEM = 'updSaleItems';
 export const UPD_CHK_OUT_TOTALS = 'updCheckoutTotals';
 export const UPD_SRVD_BY_ASSOC = 'updateServedByAssociate';
@@ -31,6 +33,15 @@ export const UPSERT_ASSOC_TIPS = 'upsertAssocTips';
 export const DELETE_SALE_ITEM = 'delSaleitemZeroQty';
 export const UPDATE_TAX_EXEMPT = 'updateTaxExempt';
 export const UPDATE_ASSOC_IN_ASSOCTIPS = 'updateAssocInAssocTips';
+
+export const SAVE_TENDER_OBJ = 'saveTenderObj';
+export const SAVE_TENDER_OBJ_SUCCESS = 'saveTenderObjSuccess';
+export const SAVE_TENDER_OBJ_FAILED = 'saveTenderObjFailed';
+
+export const SAVE_PINPAD_RESP = 'savePinpadResponse';
+export const SAVE_PINPAD_RESP_SUCCESS = 'savePinpadResponseSuccess';
+export const SAVE_PINPAD_RESP_FAILED = 'savePinpadResponseFailed';
+
 
 export const UPSERT_SALE_ITEM_EXCH_CPN = 'upsertSaleItemExchCpn';
 export const UPSERT_SALE_ITEM_VND_CPN = 'upsertSaleItemVndCpn';
@@ -77,6 +88,19 @@ export const saveCompleteTicketSplitSuccess = createAction(SAVE_COMPLETE_TICKET_
 export const saveCompleteTicketSplitFailed = createAction(SAVE_COMPLETE_TICKET_SPLIT_FAILED,
         props<{rslt: SaveTicketResultsModel}>());
         
+export const saveTenderObj = createAction(SAVE_TENDER_OBJ,
+    props<{tndrObj: TicketTender}>());
+export const saveTenderObjSuccess = createAction(SAVE_TENDER_OBJ_SUCCESS,
+    props<{data: SaveTenderResultModel}>());
+export const saveTenderObjFailed = createAction(SAVE_TENDER_OBJ_FAILED,
+    props<{data: SaveTenderResultModel}>());
+
+export const savePinpadResponse = createAction(SAVE_PINPAD_RESP,
+    props<{respObj: ExchCardTndr}>());
+export const savePinpadResponseSuccess = createAction(SAVE_PINPAD_RESP,
+    props<{respObj: SaveExchCardTndrResult}>());
+export const savePinpadResponseFailed = createAction(SAVE_PINPAD_RESP,
+    props<{respObj: SaveExchCardTndrResult}>());
 
 export const addCustomerId = createAction(ADD_CUST_ID, 
     props<{custId: number}>())
@@ -86,6 +110,10 @@ export const addNewCustomer = createAction(ADD_CUST_ID,
 
 export const addTender = createAction(ADD_TENDER_OBJ,
     props<{tndrObj: TicketTender}>());
+
+export const addPinpadResp = createAction(ADD_PINPAD_RESP,
+    props<{respObj: ExchCardTndr}>());
+    
 
 export const updateSaleitems = createAction(UPD_SALE_ITEM,
     props<{item: SalesTransactionCheckoutItem}>());

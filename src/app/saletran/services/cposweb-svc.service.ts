@@ -1,6 +1,10 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { PinPadResult } from './models/pinpad-result';
+import { MSRSwipeData } from './models/msr-swipe-data';
+import { VfoneCaptureTran } from './models/capture-tran.model';
+import { SigCapture } from './models/capture-signature.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +17,7 @@ export class CPOSWebSvcService {
     this.headerObjs = this.headerObjs.append('Accept', '*/*');
   }
 
-  private cposWebSvcUrl: string = 'https://localhost/cposwebsvc/'
+  private cposWebSvcUrl: string = 'http://127.0.0.1:8000/cposwebsvc/'
 
   
   captureCardData(displayMsg: string, appType: number): Observable<MSRSwipeData> {    
@@ -25,7 +29,7 @@ export class CPOSWebSvcService {
 
   captureCardTran(invoiceId: string, exchNum: string, tranAmt: number, isRefund: boolean): Observable<VfoneCaptureTran> {
 
-    return this.httpClient.get<VfoneCaptureTran>(this.cposWebSvcUrl + 'pinpad/CaptureCardTran?InvoiceId=' + invoiceId + '&ExchNum=' + exchNum + '&TranAmt=' + tranAmt + '&IsRefund=' + isRefund,
+    return this.httpClient.get<VfoneCaptureTran>(this.cposWebSvcUrl + 'pinpad/CaptureCardTran?InvoiceId=' + invoiceId + '&ExchNum=' + exchNum + '&TranAmt=' + tranAmt + '&IsRefund=' + isRefund + "&PlanNum=10001" ,
     { headers: this.headerObjs });
   }
 
