@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { select, Store } from '@ngrx/store';
@@ -9,7 +9,7 @@ import { firstValueFrom, Subscription, take } from 'rxjs';
 import { getRemainingBal, getRemainingBalanceDC, getRemainingBalanceFC, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { TenderStatusType, TicketTender } from 'src/app/models/ticket.tender';
 import { TenderType } from '../../models/tender.type';
-import { addTender, saveCompleteTicketSplit } from '../../store/ticketstore/ticket.action';
+import { addTender, saveCompleteTicketSplit, saveTenderObj } from '../../store/ticketstore/ticket.action';
 import { UtilService } from 'src/app/services/util.service';
 import { VfoneCaptureTran } from '../../services/models/capture-tran.model';
 
@@ -19,11 +19,15 @@ import { VfoneCaptureTran } from '../../services/models/capture-tran.model';
   templateUrl: './credit-card-tndr.component.html',
   styleUrl: './credit-card-tndr.component.css'
 })
-export class CreditCardTndrComponent {
+export class CreditCardTndrComponent implements AfterViewInit {
+  @ViewChild('btnApprove') btnApprove!: ElementRef<HTMLButtonElement>;
+  @ViewChild('btnDecline') btnDecline!: ElementRef<HTMLButtonElement>;
+  @ViewChild('btnCancel') btnCancel!: ElementRef<HTMLButtonElement>;
 
-dcCurrSymbl: any;
-ndcCurrSymbl: any;
-  constructor(private _cposWebSvc: CPOSWebSvcService, 
+  dcCurrSymbl: string | undefined;
+  ndcCurrSymbl: string | undefined;
+
+  constructor(private _cposWebSvc: CPOSWebSvcService,
     private _store: Store<saleTranDataInterface>,
     private activatedRoute: ActivatedRoute,
     private route: Router,
@@ -33,13 +37,17 @@ ndcCurrSymbl: any;
   }
 
   private _tktObj: TicketSplit = {} as TicketSplit;
-    
+
   private _captureTranResponse: VfoneCaptureTran = {} as VfoneCaptureTran;
   private subscription: Subscription = {} as Subscription;
 
   private _tndrObj: TicketTender = {} as TicketTender;
 
   ngOnInit(): void {
+
+    if (typeof this._tndrObj === 'undefined' || this._tndrObj == null) {
+      this._tndrObj = {} as TicketTender;
+    }
 
     this._store.select(getRemainingBal).subscribe(data => {
       this._tndrObj.tenderAmount = data.amountDC
@@ -53,81 +61,114 @@ ndcCurrSymbl: any;
     this._store.select(getTktObjSelector).subscribe(data => {
       if (data == null)
         return;
-
       this._tktObj = data;
-      this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
     })
 
+    console.log("before updating tndMaintUserId and tndMaintTimestamp");
     this._tndrObj.tndMaintUserId = this._logonDataSvc.getLocationConfig().individualUID.toString();
+    console.log("after updating tndMaintUserId and tndMaintTimestamp");
+
     this._tndrObj.tndMaintTimestamp = new Date(Date.now());
     this._tndrObj.tenderStatus = TenderStatusType.InProgress; // Assuming 1 is the
     this._tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
     this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
     this._tndrObj.tenderTypeDesc = "pinpad";
-    this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
-  
+
+    let tndrCopy = JSON.parse(JSON.stringify(this._tndrObj))
+    this._store.dispatch(addTender({ tndrObj: tndrCopy }));
+    this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
+
     this.dcCurrSymbl = this._logonDataSvc.getLocationConfig().defaultCurrency;
     this.ndcCurrSymbl = this._logonDataSvc.getLocationConfig().currCode;
+  }
 
-    let exchNum = this._logonDataSvc.getLocationConfig().facilityNumber.substring(0, 4) ;
+  ngAfterViewInit(): void {
+
+    let exchNum = this._logonDataSvc.getLocationConfig().facilityNumber.substring(0, 4);
     let IsRefund = this._logonDataSvc.getTenderTypes().types.find((t: TenderType) => t.tenderTypeCode == this._tndrObj.tenderTypeCode)?.isRefundType || false;
 
     this._cposWebSvc.captureCardTran(this._tndrObj.rrn, exchNum, this._tndrObj.tenderAmount, IsRefund).subscribe({
-      next: (data) => { 
+      next: (data) => {
         this._captureTranResponse = data;
         console.log("CaptureCardTran response: ", data);
-        
-        if(this._captureTranResponse.rslt.IsSuccessful) {
-          if(this._captureTranResponse.Result.toLowerCase().includes("approval") || this._captureTranResponse.Result.toLowerCase().includes("approved")) {
-            let btn = document.getElementById('btnApprove') as HTMLButtonElement;
+
+        if (this._captureTranResponse.rslt?.IsSuccessful) {
+          if (this._captureTranResponse.Result.toLowerCase().includes("approval") || this._captureTranResponse.Result.toLowerCase().includes("approved")) {
+
             console.log("Transaction approved, proceeding with tender addition.");
-            btn.click();
+            if (this.btnApprove) {
+              this.btnApprove.nativeElement.click();
+            }
+            else {
+              console.error("btnApprove element not found.");
+            }
           }
           else {
             let btn = document.getElementById('btnDecline') as HTMLButtonElement;
-            console.log("Transaction declined, proceeding with decline action.");
-            btn.click();
+            if (this.btnDecline) {
+              console.log("Transaction declined, proceeding with decline action.");
+              this.btnDecline.nativeElement.click();
+            }
+            else {
+              console.error("btnDecline element not found.");
+            }
           }
         }
         else {
           console.error("Transaction failed: ", this._captureTranResponse.rslt.ReturnMsg);
+          if (this.btnDecline) {
+            this.btnDecline.nativeElement.click();
+          }
+          else {
+            console.error("btnDecline 2 element not found.");
+          }
         }
-      } ,
+      },
       error: (err) => {
         console.error("Error capturing card transaction: ", err);
+        if (this.btnDecline) {
+          this.btnDecline.nativeElement.click();
+        }
+        else {
+          console.error("btnDecline 3 element not found.");
+        }
       }
     });
   }
 
+  ngOnDestroy(): void {
+    // Clean up subscriptions to prevent memory leaks
+    //if (this.subscription) {
+      //this.subscription.unsubscribe();
+    //}
+  }
+
   async btnApproveClick(evt: Event) {
+
     console.log("btnApprove clicked");
 
-    
-    //tndrObj.currCode = this._logonDataSvc.getLocationConfig().defaultCurrency;
-    
-    console.log("TenderTypes length" + this._logonDataSvc.getTenderTypes().types.length);
-    let tndrTypeObj = this._logonDataSvc.getTenderTypes().types.find((t: TenderType) => t.tenderTypeCode == this._tndrObj.tenderTypeCode);
-    if (tndrTypeObj != null) {
-      console.log("TenderTypeDesc: " + tndrTypeObj.tenderTypeDesc);
-      this._tndrObj.tenderTypeDesc = tndrTypeObj.tenderTypeDesc.valueOf();
-    }
     this._tndrObj.tenderStatus = TenderStatusType.Complete; // Assuming 2 is the status for approved tender
     this._tndrObj.authNbr = this._captureTranResponse.AUTH_CODE;
     this._tndrObj.tenderAmount = this._captureTranResponse.APPROVED_AMOUNT;
     this._tndrObj.cardEndingNbr = this._captureTranResponse.ACCT_NUM.slice(-4);;
     this._tndrObj.tenderTypeDesc = "pinpad";
-    this._tndrObj.inStoreCardNbrTmp = this._captureTranResponse.ACCT_NUM;    
-    
+    this._tndrObj.inStoreCardNbrTmp = this._captureTranResponse.ACCT_NUM;
+    this._tndrObj.tndMaintTimestamp = new Date(Date.now());
     this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
 
-    this._store.dispatch(addTender({ tndrObj: this._tndrObj }));
+    let tndrCopy = JSON.parse(JSON.stringify(this._tndrObj))
+    this._store.dispatch(addTender({ tndrObj: tndrCopy }));
 
     var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
 
-    if (tktObjData != null) {
+    if (tktObjData != null && this.IsTicketComplete(tktObjData)) {
       this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData }));
+      this.route.navigate(['/savetktsuccess']);
     }
-    this.route.navigate(['/savetktsuccess']);
+    else {
+      this.route.navigate(['/checkout']);
+    }
+
 
   }
 
@@ -136,39 +177,43 @@ ndcCurrSymbl: any;
   }
 
   btnCancelClick(evt: Event) {
-    console.log("btnCancel clicked"); 
+    console.log("btnCancel clicked");
   }
 
   private IsTicketComplete(tktObj: TicketSplit): boolean {
 
-    if (tktObj.tktList.length == 0)
+    if (tktObj.tktList.length == 0) {
+      console.log("Ticket is empty, cannot be completed.");
       return false;
+    }
 
-    if (tktObj.ticketTenderList.length == 0)
+    if (tktObj.ticketTenderList.length == 0) {
+      console.log("No tenders found for the ticket, cannot be completed.");
       return false;
-
+    }
     let ticketTotal = 0;
 
     for (const key in tktObj.tktList) {
-      ticketTotal += tktObj.tktList[key].lineItemDollarDisplayAmount;
+      ticketTotal += parseFloat((tktObj.tktList[key].lineItemDollarDisplayAmount).toFixed(2));
     }
 
     for (const key in tktObj.associateTips) {
-      ticketTotal += tktObj.associateTips[key].tipAmount;
+      ticketTotal += parseFloat((tktObj.associateTips[key].tipAmount).toFixed(2));
     }
 
     let allowPartPay = this._logonDataSvc.getAllowPartPay();
 
     let tenderTotals = 0;
+    tktObj.ticketTenderList.forEach((tender) => {
+      tenderTotals += parseFloat((tender.tenderAmount).toFixed(2));
+    })
 
-    for (const key in tktObj.ticketTenderList) {
-      tenderTotals += tktObj.ticketTenderList[key].tenderAmount;
-    }
-
-    if (allowPartPay && tktObj.partialAmount > 0 && tktObj.partialAmount == tenderTotals || Number(ticketTotal).toFixed(2) == Number(tenderTotals).toFixed(2)) {
+    if ((allowPartPay && tktObj.partialAmount > 0 && tktObj.partialAmount == tenderTotals) || Number(ticketTotal).toFixed(2) == Number(tenderTotals).toFixed(2)) {
+      console.log("Ticket is complete with total: " + ticketTotal + " and tender total: " + tenderTotals);
       return true;
     }
     else {
+      console.log("Ticket is not complete. Ticket total: " + ticketTotal + ", Tender total: " + tenderTotals);
       return false;
     }
   }

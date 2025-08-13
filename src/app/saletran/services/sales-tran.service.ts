@@ -110,9 +110,8 @@ export class SalesTranService {
         return this.httpClient.put<SaveTenderResultModel>(
             GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveTender?guid=' + GlobalConstants.PUT_GUID 
                 + '&uid=' + tndrObj.tndMaintUserId 
-                + '&bFromLinuxTab=true'
-                + 'appType=1'
-                + '&DBVal=0',
+                + '&appType=1'
+                + '&bFromLinuxTab=true',
             JSON.stringify(tndrObj),
             { headers: this.headerObjs });
     }

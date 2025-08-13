@@ -18,6 +18,7 @@ import { TipsModalDlgComponent } from '../tips-modal-dlg/tips-modal-dlg.componen
 import { firstValueFrom, Observable, Subscription, take } from 'rxjs';
 import { TicketSplit } from 'src/app/models/ticket.split';
 import { DailyExchRate } from 'src/app/models/exchange.rate';
+import { UtilService } from 'src/app/services/util.service';
 
 @Component({
   selector: 'app-checkout-page',
@@ -39,7 +40,8 @@ export class CheckoutPageComponent implements OnInit {
     private _sharedSubSvc: SharedSubjectService, 
     private modalService: NgbModal, 
     private _store: Store<saleTranDataInterface>,
-    private router: Router) { }
+    private router: Router,
+    private _utilSvc: UtilService) { }
 
   displayCustSearchDlg: string = '';
   showErrMsg: boolean = false;
@@ -97,14 +99,14 @@ export class CheckoutPageComponent implements OnInit {
       tndrObj.tenderAmount = this.tenderAmount;
       tndrObj.fcTenderAmount = this.tenderAmount * this._logonDataSvc.getExchangeRate();
       tndrObj.tndMaintTimestamp = new Date(Date.now())
-      //tndrObj.currCode = this._logonDataSvc.getLocationConfig().defaultCurrency;
+      tndrObj.rrn = this._utilSvc.getUniqueRRN();
+
       tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
       this._store.dispatch(addTender({ tndrObj }));
 
       var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
       if (tktObjData) {
-        this._store.dispatch(saveTicketForGuestCheck({ tktObj: tktObjData }));
-        
+        this._store.dispatch(saveTicketForGuestCheck({ tktObj: tktObjData }));        
       }
 
       if (tktObjData?.tipAmountDC == 0) {

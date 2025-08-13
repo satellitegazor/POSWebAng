@@ -317,18 +317,30 @@ export const _tktObjReducer = createReducer(
    }),
    on(addTender, (state, action) => {
 
+      let tenderListCopy: TicketTender[] = JSON.parse(JSON.stringify(state.tktObj.ticketTenderList));
+      if(tenderListCopy.filter(tndr => tndr.rrn == action.tndrObj.rrn).length > 0) {
+         let tndrObj: TicketTender = tenderListCopy.filter(tndr => tndr.rrn == action.tndrObj.rrn)[0];
+         tndrObj.authNbr = action.tndrObj.authNbr;
+         tndrObj.cardEndingNbr = action.tndrObj.cardEndingNbr;
+         tndrObj.tndMaintTimestamp = new Date(Date.now());
+         tndrObj.tenderTypeDesc = "pinpad";
+         tndrObj.cardEntryMode = action.tndrObj.cardEntryMode;
+      }
+      else {
+         tenderListCopy.push(action.tndrObj);
+      }
+
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
-            ticketTenderList: [...state.tktObj.ticketTenderList,
-            action.tndrObj],
-            transactionDate: new Date(Date.now())
+            ticketTenderList: tenderListCopy,
+            transactionDate: new Date(Date.now())                        
          }
       }
    }),
-   on(addPinpadResp, (state, action) => {
 
+   on(addPinpadResp, (state, action) => {
       return {
          ...state,
          tktObj: {
