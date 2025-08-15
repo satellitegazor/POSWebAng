@@ -5,7 +5,7 @@ import { firstValueFrom, Subscription, take } from 'rxjs';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { TicketTender } from 'src/app/models/ticket.tender';
 import { addTender, saveCompleteTicketSplit } from '../../store/ticketstore/ticket.action';
-import { getRemainingBalanceDC, getRemainingBalanceFC, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
+import { getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { TicketSplit } from 'src/app/models/ticket.split';
 import { TenderType } from '../../models/tender.type';

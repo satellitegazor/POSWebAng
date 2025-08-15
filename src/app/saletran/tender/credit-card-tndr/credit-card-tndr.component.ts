@@ -5,13 +5,14 @@ import { select, Store } from '@ngrx/store';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { TicketSplit } from 'src/app/models/ticket.split';
-import { firstValueFrom, Subscription, take } from 'rxjs';
-import { getRemainingBal, getRemainingBalanceDC, getRemainingBalanceFC, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
+import { filter, firstValueFrom, Subscription, take } from 'rxjs';
+import { getRemainingBal, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { TenderStatusType, TicketTender } from 'src/app/models/ticket.tender';
 import { TenderType } from '../../models/tender.type';
 import { addTender, saveCompleteTicketSplit, saveTenderObj } from '../../store/ticketstore/ticket.action';
 import { UtilService } from 'src/app/services/util.service';
 import { VfoneCaptureTran } from '../../services/models/capture-tran.model';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-credit-card-tndr',
@@ -49,30 +50,48 @@ export class CreditCardTndrComponent implements AfterViewInit {
       this._tndrObj = {} as TicketTender;
     }
 
-    this._store.select(getRemainingBal).subscribe(data => {
-      this._tndrObj.tenderAmount = data.amountDC
-      this._tndrObj.fcTenderAmount = data.amountNDC;
-    })
+
+  // this.subscription = forkJoin([
+  //   this._store.pipe(select(getRemainingBal)),
+  //   this._store.pipe(select(getTktObjSelector)),
+    
+  // ]).pipe(
+  //   filter(([bal, tktObj]) => !!bal && !!tktObj)
+  // ).subscribe(([bal, tktObj]) => {
+  //   console.log('All data loaded:', { bal, tktObj });
+  //     this._tktObj = tktObj != null ? tktObj : {} as TicketSplit;
+  //     this._tndrObj.tenderAmount = bal.amountDC
+  //     this._tndrObj.fcTenderAmount = bal.amountNDC;    
+  //     console.log("Tender Amount: ", this._tndrObj.tenderAmount);
+  // });
+
 
     this.activatedRoute.queryParams.subscribe(params => {
       this._tndrObj.tenderTypeCode = params['code'];
     })
 
+    this._store.select(getRemainingBal).subscribe(data => {
+      this._tndrObj.tenderAmount = data.amountDC
+      this._tndrObj.fcTenderAmount = data.amountNDC;
+      console.log("selector getRemainingBal Tender Amount: ", this._tndrObj.tenderAmount);
+    })
+
     this._store.select(getTktObjSelector).subscribe(data => {
       if (data == null)
         return;
+      console.log("getTktObjSelector data: ", data);
       this._tktObj = data;
     })
 
-    console.log("before updating tndMaintUserId and tndMaintTimestamp");
+    console.log("filling tender object with data ");
     this._tndrObj.tndMaintUserId = this._logonDataSvc.getLocationConfig().individualUID.toString();
-    console.log("after updating tndMaintUserId and tndMaintTimestamp");
-
     this._tndrObj.tndMaintTimestamp = new Date(Date.now());
     this._tndrObj.tenderStatus = TenderStatusType.InProgress; // Assuming 1 is the
     this._tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
     this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
     this._tndrObj.tenderTypeDesc = "pinpad";
+    this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
+    this._tndrObj.ticketTenderId = 0;
 
     let tndrCopy = JSON.parse(JSON.stringify(this._tndrObj))
     this._store.dispatch(addTender({ tndrObj: tndrCopy }));
@@ -138,9 +157,9 @@ export class CreditCardTndrComponent implements AfterViewInit {
 
   ngOnDestroy(): void {
     // Clean up subscriptions to prevent memory leaks
-    //if (this.subscription) {
-      //this.subscription.unsubscribe();
-    //}
+    // if (this.subscription) {
+    //   this.subscription.unsubscribe();
+    // }
   }
 
   async btnApproveClick(evt: Event) {
@@ -158,6 +177,7 @@ export class CreditCardTndrComponent implements AfterViewInit {
 
     let tndrCopy = JSON.parse(JSON.stringify(this._tndrObj))
     this._store.dispatch(addTender({ tndrObj: tndrCopy }));
+    this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
 
     var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
 

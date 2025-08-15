@@ -91,6 +91,8 @@ export class SalesTranService {
     }
 
     public saveTicketForGuestCheck(model: TicketSplit) {
+
+        console.log('SalesTranSvc saveTicketForGuestCheck called', model)
         
         return this.httpClient.put<SaveTicketResultsModel>(
             GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveSplitPayments?guid=' + GlobalConstants.PUT_GUID + '&uid=' + model.individualUID + '&DBVal=0',
@@ -99,6 +101,8 @@ export class SalesTranService {
     }
 
     public saveCompleteTicketSplit(model: TicketSplit) {
+
+        console.log('SalesTranSvc saveCompleteTicketSplit called ', model)
         
         return this.httpClient.put<SaveTicketResultsModel>(
             GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveSplitPayments?guid=' + GlobalConstants.PUT_GUID + '&uid=' + model.individualUID + '&DBVal=0',
@@ -107,10 +111,11 @@ export class SalesTranService {
     }
 
     public saveTenderObj(tndrObj: TicketTender) {
+        console.log('SalesTranSvc saveTenderObj called', tndrObj)
         return this.httpClient.put<SaveTenderResultModel>(
             GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveTender?guid=' + GlobalConstants.PUT_GUID 
                 + '&uid=' + tndrObj.tndMaintUserId 
-                + '&appType=1'
+                + '&appType=2'
                 + '&bFromLinuxTab=true',
             JSON.stringify(tndrObj),
             { headers: this.headerObjs });

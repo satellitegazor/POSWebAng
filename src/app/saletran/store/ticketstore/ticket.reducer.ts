@@ -880,6 +880,7 @@ export const _tktObjReducer = createReducer(
    }),
    on(saveTenderObjSuccess, (state, action) => {
 
+      console.log("saveTenderObjSuccess", action.data);
       return {
          ...state,
          tktObj: {
@@ -899,6 +900,7 @@ export const _tktObjReducer = createReducer(
       }
    }),
    on(saveCompleteTicketSplitSuccess, (state, action) => {
+      console.log("saveCompleteTicketSplitSuccess", action.rslt);
       return {
          ...state,
          tktObj: {
@@ -910,6 +912,7 @@ export const _tktObjReducer = createReducer(
       }
    }),
    on(saveTicketForGuestCheckSuccess, (state, action) => {
+      console.log("saveTicketForGuestCheckSuccess", action.rslt);
       return {
          ...state,
          tktObj: {

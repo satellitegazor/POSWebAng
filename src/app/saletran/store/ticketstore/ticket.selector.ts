@@ -37,39 +37,50 @@ export const getBalanceDueFC = createSelector(getTktObjState,
     return Round2DecimalService.round(state.tktObj.balanceDue);
   });
 
-export const getRemainingBalanceDC = createSelector(getTktObjState,
-  (state) => {
-    let tenderTotal: number = 0;
-    state.tktObj.ticketTenderList.forEach(tndr => tenderTotal += tndr.tenderAmount);
-    let ticketTotal: number = 0;
-    state.tktObj.tktList.forEach(itm => ticketTotal += itm.lineItemDollarDisplayAmount);
-    return Round2DecimalService.round(ticketTotal + state.tktObj.tipAmountDC - tenderTotal);
-  });
+// export const getRemainingBalanceDC = createSelector(getTktObjState,
+//   (state) => {
+//     let tenderTotal: number = 0;
+//     state.tktObj.ticketTenderList.forEach(tndr => tenderTotal += parseFloat((tndr.tenderAmount).toFixed(2)));
+//     let ticketTotal: number = 0;
+//     state.tktObj.tktList.forEach(itm => ticketTotal += itm.lineItemDollarDisplayAmount);
+//     return Round2DecimalService.round(ticketTotal + state.tktObj.tipAmountDC - tenderTotal);
+//   });
 
-export const getRemainingBalanceFC = createSelector(getTktObjState,
-  (state) => {
-    let tenderTotalFC: number = 0;
-    state.tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += tndr.fcTenderAmount);
-    let ticketTotalFC: number = 0;
-    state.tktObj.tktList.forEach(itm => ticketTotalFC += itm.dCLineItemDollarDisplayAmount);
-    return Round2DecimalService.round(ticketTotalFC + state.tktObj.tipAmountNDC - tenderTotalFC);
-  });
+// export const getRemainingBalanceFC = createSelector(getTktObjState,
+//   (state) => {
+//     let tenderTotalFC: number = 0;
+//     state.tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += parseFloat((tndr.fcTenderAmount).toFixed(2)));
+//     let ticketTotalFC: number = 0;
+//     state.tktObj.tktList.forEach(itm => ticketTotalFC += itm.dCLineItemDollarDisplayAmount);
+//     return Round2DecimalService.round(ticketTotalFC + state.tktObj.tipAmountNDC - tenderTotalFC);
+//   });
 
   export interface AmountDCNDC{
     amountDC: number;
     amountNDC: number;
   }
 
-  export const getRemainingBal = createSelector(getRemainingBalanceDC, getRemainingBalanceFC,
+  export const getRemainingBal = createSelector(getTktObjState,
+  (state) => {
+    let tenderTotal: number = 0;
+    state.tktObj.ticketTenderList.forEach(tndr => tenderTotal += parseFloat((tndr.tenderAmount).toFixed(2)));
+    let ticketTotal: number = 0;
+    state.tktObj.tktList.forEach(itm => ticketTotal += parseFloat((itm.lineItemDollarDisplayAmount).toFixed(2)));
+    let tipTotal: number = 0;
+    state.tktObj.associateTips.forEach(tip => tipTotal += parseFloat((tip.tipAmount).toFixed(2)));
 
-    (remBalDC : number, remBalFC: number): AmountDCNDC => {  
+    let tenderTotalFC: number = 0;
+    state.tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += parseFloat((tndr.fcTenderAmount).toFixed(2)));
+    let ticketTotalFC: number = 0;
+    state.tktObj.tktList.forEach(itm => ticketTotalFC += parseFloat((itm.dCLineItemDollarDisplayAmount).toFixed(2)));
+    let tipTotalFC: number = 0;
+    state.tktObj.associateTips.forEach(tip => tipTotalFC += parseFloat((tip.tipAmtLocCurr).toFixed(2)));
 
-      return {
-        amountDC: remBalDC,
-        amountNDC: remBalFC
-      };
-    }
-  );
+    return {
+      amountDC: Round2DecimalService.round(ticketTotal + tipTotal  - tenderTotal),
+      amountNDC: Round2DecimalService.round(ticketTotalFC + tipTotalFC  - tenderTotalFC)
+    } as AmountDCNDC;
+  });
 
 export const getCheckoutItemsCount = createSelector(getTktObjState,
   (state) => {

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { TicketSplit } from 'src/app/models/ticket.split';
-import { getRemainingBalanceDC, getRemainingBalanceFC, getBalanceDue, getBalanceDueFC, getTktObjSelector, getRemainingBal } from '../../store/ticketstore/ticket.selector';
+import { getBalanceDue, getBalanceDueFC, getTktObjSelector, getRemainingBal } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TicketTender } from 'src/app/models/ticket.tender';

@@ -54,6 +54,7 @@ export class TicketObjectEffects {
 
                 return this.saleTranSvc.saveTenderObj(action.tndrObj).pipe(
                     map(data => {
+                        console.log("saveTenderObj success ");
                         return saveTenderObjSuccess({data});
                     }),
                     catchError((errResp) => {
