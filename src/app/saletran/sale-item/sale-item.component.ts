@@ -29,7 +29,7 @@ export class SaleItemComponent implements OnInit {
       }
 
       this.salesItemListRefreshEvent.subscribe(data => {
-        console.log('subscription called salesitmListRefresh: ' + data);
+        //console.log('subscription called salesitmListRefresh: ' + data);
         if(data) {
           this.activeId = this.saleItemList[0].salesItemID;
         }

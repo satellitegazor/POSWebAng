@@ -49,33 +49,33 @@ export class SplitPayComponent implements OnInit {
 
   ngOnInit(): void {
 
-    console.log('SplitPay component ngOnInit called');
+    //console.log('SplitPay component ngOnInit called');
     this._tenderTypesModel = this._logonDataSvc.getTenderTypes();
 
     this.tenderButtonUIDisplay();
 
     this.routeSubscription = this.activRoute.paramMap.subscribe(params => {
       const id = params.get('id');
-      //console.log('SplitPay component activatedRoute param id:', id);
+      ////console.log('SplitPay component activatedRoute param id:', id);
       // Perform actions based on the new ID
     });
 
     this._store.select(getTicketTotalToPayDC).subscribe(data => {
-      //console.log('SplitPay component getRemainingBalanceDC data:', data);
+      ////console.log('SplitPay component getRemainingBalanceDC data:', data);
       if (data) {
         this.ticketTotalDC = data;
       }
     })
 
     this._store.select(getTicketTotalToPayNDC).subscribe(data => {
-      //console.log('SplitPay component getRemainingBalanceFC data:', data);
+      ////console.log('SplitPay component getRemainingBalanceFC data:', data);
       if (data) {
         this.ticketTotalNDC = data;
       }
     })
 
     this._store.select(getTicketTendersSelector).subscribe(data => {
-      //console.log('SplitPay component getTicketTendersSelector data:', data);
+      ////console.log('SplitPay component getTicketTendersSelector data:', data);
       if (data) {
         this.tndrs = data;
         let totalPaidDC: number = 0;
@@ -104,7 +104,7 @@ export class SplitPayComponent implements OnInit {
 
   PaymentAmountChanged(evt: any) {
 
-    //console.log('SplitPay component TipAmountChanged called with event:', evt);
+    ////console.log('SplitPay component TipAmountChanged called with event:', evt);
     if(Number(Number(evt.target.value).toFixed(2)) > this.ticketTotalDC) {
       evt.target.value = Number(Number(this.ticketTotalDC).toFixed(2));
       const modalRef = this.modalService.open(AlertModalComponent, this.modalOptions);
@@ -112,9 +112,9 @@ export class SplitPayComponent implements OnInit {
       modalRef.componentInstance.message = 'The tender amount cannot exceed the total amount due.';
       //modalRef.componentInstance.options = this.modalOptions;
       modalRef.result.then(() => {
-        console.log('Alert modal closed');
+        //console.log('Alert modal closed');
       }, () => {
-        console.log('Alert modal dismissed');
+        //console.log('Alert modal dismissed');
       });
       return;
     }
@@ -124,7 +124,7 @@ export class SplitPayComponent implements OnInit {
 
   async btnTndrClick(evt: Event) {
 
-    console.log('SplitPay component btnTndrClick called with event:', evt);
+    //console.log('SplitPay component btnTndrClick called with event:', evt);
     this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
 
     let tndrCode = (evt.target as Element).id

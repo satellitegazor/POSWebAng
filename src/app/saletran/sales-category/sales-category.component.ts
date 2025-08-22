@@ -26,7 +26,7 @@ export class SalesCategoryComponent implements OnInit {
         }
 
         this.salesCatListRefreshEvent.subscribe(data => {
-            console.log('subscription called salesCatListRefresh: ' + data);
+            //console.log('subscription called salesCatListRefresh: ' + data);
             if(data) {
                 this.activeId = this.saleCatList[0].salesCategoryID;
             }

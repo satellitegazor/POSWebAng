@@ -14,7 +14,7 @@ private specialkeys: Array<string> = ['Backspace', 'Tab', 'End', 'Home', '-', 'A
 
   @HostListener('keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
-    console.log(this.el.nativeElement.value);
+    //console.log(this.el.nativeElement.value);
 
     if(this.specialkeys.indexOf(event.key) !== -1) {
       return;

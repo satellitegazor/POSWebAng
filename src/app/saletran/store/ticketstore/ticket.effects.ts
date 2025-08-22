@@ -4,9 +4,11 @@ import { select, State, Store } from "@ngrx/store";
 import { of } from "rxjs";
 import { catchError, concatMap, exhaustMap, map, mergeMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { SalesTranService } from "../../services/sales-tran.service";
-import { saveTicketForGuestCheck, saveTicketForGuestCheckSuccess, saveTicketForGuestCheckFailed, saveCompleteTicketSplit, saveCompleteTicketSplitSuccess, saveCompleteTicketSplitFailed, saveTenderObj, saveTenderObjSuccess, saveTenderObjFailed } from "./ticket.action";
+import { saveTicketForGuestCheck, saveTicketForGuestCheckSuccess, saveTicketForGuestCheckFailed, saveCompleteTicketSplit, saveCompleteTicketSplitSuccess, saveCompleteTicketSplitFailed, saveTenderObj, saveTenderObjSuccess, saveTenderObjFailed, savePinpadResponse, savePinpadResponseFailed, savePinpadResponseSuccess } from "./ticket.action";
 import { saleTranDataInterface } from "./ticket.state";
 import { getTktObjSelector } from './ticket.selector';
+import { CPOSAppType } from "src/app/services/util.service";
+
 
 @Injectable()
 export class TicketObjectEffects {
@@ -54,7 +56,7 @@ export class TicketObjectEffects {
 
                 return this.saleTranSvc.saveTenderObj(action.tndrObj).pipe(
                     map(data => {
-                        console.log("saveTenderObj success ");
+                        //console.log("saveTenderObj success ");
                         return saveTenderObjSuccess({data});
                     }),
                     catchError((errResp) => {
@@ -64,6 +66,28 @@ export class TicketObjectEffects {
                 )
             })
         )
+    });
+    savePinpadResponseEffect$ = createEffect(() => {
+        return this.action$.pipe(
+            ofType(savePinpadResponse),
+            withLatestFrom(this.store.pipe(select(getTktObjSelector))),
+            exhaustMap(([action, tktObj]) => {
+                if (tktObj && tktObj.VMTndr) {
+                    return this.saleTranSvc.saveFDMSTenderObj(tktObj.VMTndr, tktObj.transactionID, CPOSAppType.LongTerm, tktObj.individualUID).pipe(
+                        map(resp => {
+                            //console.log("savePinpadResponse success ");
+                            return savePinpadResponseSuccess({respObj: resp.data});
+                        }),
+                        catchError((errResp) => {
+                            const errMessage = errResp + "Unable to save pinpad response. Please logoff and logon again";
+                            return of(savePinpadResponseFailed(errResp));
+                        })
+                    );
+                } else {
+                    return of(savePinpadResponseFailed({msg: "No valid ticket object found to save pinpad response."}));
+                }
+            })
+        );
     });
 
 }

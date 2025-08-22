@@ -65,9 +65,9 @@ export class TenderPageComponent implements OnInit {
 
     this._cposWebSvc.captureCardTran(InvoiceId, exchNum, tranAmt, isRefund).subscribe({
       next: async (data) => {
-        console.log("Capture Card Transaction Response: ", data);
+        //console.log("Capture Card Transaction Response: ", data);
         if (data.rslt.IsSuccessful) {
-          console.log("Transaction Successful");
+          //console.log("Transaction Successful");
           let tndrObj: TicketTender = new TicketTender();
           tndrObj.tenderTypeCode = this._tenderTypeCode;
           tndrObj.tenderAmount = this.tenderAmount;
@@ -91,7 +91,7 @@ export class TenderPageComponent implements OnInit {
 
 
   async btnApprove(evt: Event) {
-    console.log("btnApprove clicked");
+    //console.log("btnApprove clicked");
 
     let tndrObj: TicketTender = new TicketTender();
     tndrObj.tenderTypeCode = this._tenderTypeCode;
@@ -100,10 +100,10 @@ export class TenderPageComponent implements OnInit {
     tndrObj.tndMaintTimestamp = new Date(Date.now())
     //tndrObj.currCode = this._logonDataSvc.getLocationConfig().defaultCurrency;
     tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
-    console.log("TenderTypes length" + this._logonDataSvc.getTenderTypes().types.length);
+    //console.log("TenderTypes length" + this._logonDataSvc.getTenderTypes().types.length);
     let tndrTypeObj = this._logonDataSvc.getTenderTypes().types.find((t: TenderType) => t.tenderTypeCode == this._tenderTypeCode);
     if (tndrTypeObj != null) {
-      console.log("TenderTypeDesc: " + tndrTypeObj.tenderTypeDesc);
+      //console.log("TenderTypeDesc: " + tndrTypeObj.tenderTypeDesc);
       tndrObj.tenderTypeDesc = tndrTypeObj.tenderTypeDesc.valueOf();
     }
 

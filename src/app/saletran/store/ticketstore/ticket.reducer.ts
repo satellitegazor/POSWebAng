@@ -7,9 +7,10 @@ import { AssociateSaleTips } from "src/app/models/associate.sale.tips";
 import { LTC_Customer } from "src/app/models/customer";
 import { TicketTender } from "src/app/models/ticket.tender";
 import { SalesTransactionCheckoutItem } from "../../models/salesTransactionCheckoutItem";
-import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketForGuestCheckSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData, removeTndrWithSaveCode, saveCompleteTicketSplitSuccess, addPinpadResp, saveTenderObjSuccess } from "./ticket.action";
+import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketForGuestCheckSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData, removeTndrWithSaveCode, saveCompleteTicketSplitSuccess, addPinpadResp, saveTenderObjSuccess, savePinpadResponse, updateTenderRRN } from "./ticket.action";
 import { Round2DecimalService } from "src/app/services/round2-decimal.service";
 import { tktObjInitialState, saleTranDataInterface } from "./ticket.state";
+import { ExchCardTndr } from "src/app/models/exch.card.tndr";
 
 export const _tktObjReducer = createReducer(
    tktObjInitialState,
@@ -28,7 +29,7 @@ export const _tktObjReducer = createReducer(
 
    on(removeTndrWithSaveCode, (state, action) => {
       let tndrCode: string = action.tndrCode;
-      console.log("removeTndrWithSaveCode called with code: " + tndrCode);
+      //console.log("removeTndrWithSaveCode called with code: " + tndrCode);
       state.tktObj.ticketTenderList.forEach(tndr => { console.log("Tender Code: " + tndr.tenderTypeCode); });
 
       return {
@@ -44,7 +45,7 @@ export const _tktObjReducer = createReducer(
 
    on(resetTktObj, (state, action) => {
 
-      console.log("resetTktObj called");
+      //console.log("resetTktObj called");
 
       let k: number = action.dummyNumber;
       return {
@@ -318,7 +319,7 @@ export const _tktObjReducer = createReducer(
    on(addTender, (state, action) => {
 
       let tenderListCopy: TicketTender[] = JSON.parse(JSON.stringify(state.tktObj.ticketTenderList));
-      if(tenderListCopy.filter(tndr => tndr.rrn == action.tndrObj.rrn).length > 0) {
+      if(tenderListCopy.filter(tndr => (tndr.rrn == action.tndrObj.rrn || tndr.ticketTenderId == action.tndrObj.ticketTenderId )).length > 0) {
          let tndrObj: TicketTender = tenderListCopy.filter(tndr => tndr.rrn == action.tndrObj.rrn)[0];
          tndrObj.authNbr = action.tndrObj.authNbr;
          tndrObj.cardEndingNbr = action.tndrObj.cardEndingNbr;
@@ -340,12 +341,32 @@ export const _tktObjReducer = createReducer(
       }
    }),
 
+   // on(savePinpadResponse, (state, action) => {
+
+   
+
+   //    return {
+   //       ...state,
+   //       tktObj: {
+   //          ...state.tktObj,
+   //          vMTndr: respObj
+   //       }
+   //    }
+   // }
+
+   // ),
+
    on(addPinpadResp, (state, action) => {
+   
+      let respObj: ExchCardTndr = JSON.parse(JSON.stringify(action.respObj));
+      respObj.ticketTenderId = state.tktObj.ticketTenderList.filter(tndr => tndr.rrn == respObj.INVOICE)[0]?.ticketTenderId
+      respObj.transactionId = state.tktObj.transactionID;
+
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
-            vMTndr: action.respObj
+            VMTndr: respObj
          }
       }
    }),
@@ -880,19 +901,22 @@ export const _tktObjReducer = createReducer(
    }),
    on(saveTenderObjSuccess, (state, action) => {
 
-      console.log("saveTenderObjSuccess", action.data);
+      //console.log("saveTenderObjSuccess", action.data);
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
             ticketTenderList: state.tktObj.ticketTenderList.map(tndr => {
+               console.log("tender rrn:", tndr.rrn, " data rrn:", action.data.data.rrn);
                if (tndr.rrn == action.data.data.rrn) {
+                  console.log("Updating tender with RRN:", tndr.rrn, "with ticketTenderId:", action.data.data.ticketTenderId);
                   return {
                      ...tndr,
-                     tickettenderid: action.data.data.ticketTenderId,                  
+                     ticketTenderId: action.data.data.ticketTenderId,                  
                   };
                }
                else {
+                  console.log("No match for tender with RRN:", tndr.rrn);
                   return tndr
                }
             }),
@@ -900,7 +924,7 @@ export const _tktObjReducer = createReducer(
       }
    }),
    on(saveCompleteTicketSplitSuccess, (state, action) => {
-      console.log("saveCompleteTicketSplitSuccess", action.rslt);
+      //console.log("saveCompleteTicketSplitSuccess", action.rslt);
       return {
          ...state,
          tktObj: {
@@ -912,7 +936,7 @@ export const _tktObjReducer = createReducer(
       }
    }),
    on(saveTicketForGuestCheckSuccess, (state, action) => {
-      console.log("saveTicketForGuestCheckSuccess", action.rslt);
+      //console.log("saveTicketForGuestCheckSuccess", action.rslt);
       return {
          ...state,
          tktObj: {
@@ -960,6 +984,26 @@ export const _tktObjReducer = createReducer(
             isPartialPay: action.partPayFlag,
             partialAmount: action.partPayAmountDC,
             partialAmountFC: action.partPayAmountNDC
+         }
+      }
+   }),
+   on(updateTenderRRN, (state, action) => {
+      return {
+         ...state,
+         tktObj: {
+            ...state.tktObj,
+            ticketTenderList: state.tktObj.ticketTenderList.map(tndr => {
+               if (tndr.rrn == action.oldRRN) {
+                  
+                  return {
+                     ...tndr,
+                     rrn: action.newRRN
+                  };
+               }
+               else {
+                  return tndr;
+               }
+            })
          }
       }
    })

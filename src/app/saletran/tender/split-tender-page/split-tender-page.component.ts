@@ -61,7 +61,7 @@ btnDecline($event: MouseEvent) {
   this.route.navigate(['/checkout']);
 }
   async btnApprove($event: MouseEvent) {
-    console.log('SplitTenderPage component btnApprove called');
+    //console.log('SplitTenderPage component btnApprove called');
     let tndrObj: TicketTender = new TicketTender();
     tndrObj.tenderTypeCode = this._tenderTypeCode;
     tndrObj.tenderAmount = this.tenderAmount;
@@ -69,10 +69,10 @@ btnDecline($event: MouseEvent) {
     tndrObj.tndMaintTimestamp = new Date(Date.now())
     //tndrObj.currCode = this._logonDataSvc.getLocationConfig().defaultCurrency;
     tndrObj.fcCurrCode   = this._logonDataSvc.getLocationConfig().currCode;
-    console.log("TenderTypes length" + this._logonDataSvc.getTenderTypes().types.length);
+    //console.log("TenderTypes length" + this._logonDataSvc.getTenderTypes().types.length);
     let tndrTypeObj = this._logonDataSvc.getTenderTypes().types.find((t: TenderType) => t.tenderTypeCode == this._tenderTypeCode);
     if(tndrTypeObj != null) {
-      console.log("TenderTypeDesc: " + tndrTypeObj.tenderTypeDesc);
+      //console.log("TenderTypeDesc: " + tndrTypeObj.tenderTypeDesc);
       tndrObj.tenderTypeDesc = tndrTypeObj.tenderTypeDesc.valueOf();
     }
 
@@ -109,13 +109,13 @@ btnDecline($event: MouseEvent) {
       ticketTotal += Number(Number(tktObj.tktList[key].lineItemDollarDisplayAmount).toFixed(2));
     }
 
-    console.log('line item ticketTotal: ' + ticketTotal);
+    //console.log('line item ticketTotal: ' + ticketTotal);
 
     for(const key in tktObj.associateTips) {
       ticketTotal += Number(Number(tktObj.associateTips[key].tipAmount).toFixed(2));
     }
 
-    console.log('line item + tips ticketTotal: ' + ticketTotal);
+    //console.log('line item + tips ticketTotal: ' + ticketTotal);
 
     let allowPartPay = this._logonDataSvc.getAllowPartPay();
 
@@ -128,8 +128,8 @@ btnDecline($event: MouseEvent) {
     ticketTotal = Number(Number(ticketTotal).toFixed(2));
     tenderTotals = Number(Number(tenderTotals).toFixed(2));
 
-    console.log('ticketTotal: ' + ticketTotal);
-    console.log('tenderTotals: ' + tenderTotals);
+    //console.log('ticketTotal: ' + ticketTotal);
+    //console.log('tenderTotals: ' + tenderTotals);
 
     if(allowPartPay && tktObj.partialAmount > 0 && tktObj.partialAmount == tenderTotals || Number(ticketTotal).toFixed(2) == Number(tenderTotals).toFixed(2)) {
       return true;

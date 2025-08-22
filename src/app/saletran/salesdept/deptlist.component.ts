@@ -15,7 +15,7 @@ export class DeptListComponent implements OnInit {
     @Output() deptClicked: EventEmitter<number> = new EventEmitter();
     activeId: number | null = null;
     public ngOnInit() {
-        console.log('DeptList ngOnInit');
+        //console.log('DeptList ngOnInit');
         if (this.deptList.length > 0) {
             this.activeId = this.deptList[0].departmentUID;
         }

@@ -87,7 +87,7 @@ export class TktSaleItemComponent implements OnInit {
 
     onAssociateChange(evt: any, indivLocId: number, saleItemId: number, indx: number, srvdByAssociateName: string) {
 
-        console.log(evt.target)
+        //console.log(evt.target)
 
          setTimeout(function(obj: any, saleItemId: number, indx: number, indivLocId: number, srvdByAssociateName: string) {
              obj._store.dispatch(updateServedByAssociate({saleItemId, indx, indLocId: indivLocId, srvdByAssociateName}))

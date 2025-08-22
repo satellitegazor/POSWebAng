@@ -51,6 +51,7 @@ export const UPDATE_PARTPAY_DATA = 'updatePartpayData';
 
 export const UPDATE_LOCATION_CONFIG = 'updateLocationConfig';
 export const REMOVE_TNDR_SAVE_CODE = "removeTenderWithSaveCode";
+export const UPDATE_TENDER_RRN = 'updateTenderRRN';
 
 export const addSaleItem = createAction(ADD_SALE_ITEM,
     props<{saleItem: SalesTransactionCheckoutItem}>());
@@ -100,7 +101,7 @@ export const savePinpadResponse = createAction(SAVE_PINPAD_RESP,
 export const savePinpadResponseSuccess = createAction(SAVE_PINPAD_RESP,
     props<{respObj: SaveExchCardTndrResult}>());
 export const savePinpadResponseFailed = createAction(SAVE_PINPAD_RESP,
-    props<{respObj: SaveExchCardTndrResult}>());
+    props<{msg: string}>());
 
 export const addCustomerId = createAction(ADD_CUST_ID, 
     props<{custId: number}>())
@@ -113,7 +114,9 @@ export const addTender = createAction(ADD_TENDER_OBJ,
 
 export const addPinpadResp = createAction(ADD_PINPAD_RESP,
     props<{respObj: ExchCardTndr}>());
-    
+
+export const updateTenderRRN = createAction(UPDATE_TENDER_RRN,
+    props<{oldRRN: string, newRRN: string}>());
 
 export const updateSaleitems = createAction(UPD_SALE_ITEM,
     props<{item: SalesTransactionCheckoutItem}>());

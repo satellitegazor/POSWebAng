@@ -117,7 +117,7 @@ export class TipsModalDlgComponent implements OnInit {
     let totalTipAmt = 0;
     
     this.assocSaleTips.forEach(function(obj: AssociateSaleTips, indx: number) {
-      console.log('in Save Tip: ' + obj.tipAmount);
+      //console.log('in Save Tip: ' + obj.tipAmount);
       totalTipAmt += obj.tipAmount;
     })
 
@@ -129,7 +129,7 @@ export class TipsModalDlgComponent implements OnInit {
     
     this._store.dispatch(upsertAssocTips({ assocTipsList: this.assocSaleTips, totalTipAmtDC:this.tipTotalDC, totalTipAmtNDC: this.tipTotalNDC }));
     
-    console.log('in Save Tip TenderCode: ' + this.tndrCode);
+    //console.log('in Save Tip TenderCode: ' + this.tndrCode);
     if(this.tndrCode != "") {
       this.router.navigate([this.tndrCode == 'btnSplitPay' ? 'splitpay' : 'tender'], {queryParams: {code: this.tndrCode}})
     }

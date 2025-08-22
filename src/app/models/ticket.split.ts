@@ -41,7 +41,7 @@ export class TicketSplit {
     public shipHandlingFC: number = 0;
     public shipHandlingTaxAmtFC: number = 0;
     public ticketRRN: string = '';
-    public vMTndr: ExchCardTndr = new ExchCardTndr();
+    public VMTndr: ExchCardTndr = new ExchCardTndr();
     public tipAmountDC: number = 0;
     public tipAmountNDC: number = 0;
     }

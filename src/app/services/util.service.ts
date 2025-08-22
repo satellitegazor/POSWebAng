@@ -7,7 +7,7 @@ export class UtilService {
 
   constructor() { }
 
-  public getUniqueRRN(): string {
+  public getUniqueRRN(): string {  
     const date = new Date();
     const year = date.getFullYear().toString(); // Last two digits of the year
     const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is 0-indexed
@@ -15,7 +15,14 @@ export class UtilService {
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     const seconds = date.getSeconds().toString().padStart(2, '0');
+    const milliseconds = date.getMilliseconds().toString().padStart(3, '0');
     
-    return `${year}${month}${day}${hours}${minutes}${seconds}`;
+    return `${year}${month}${day}${hours}${minutes}${seconds}${milliseconds}`;
   }
+}
+
+export class CPOSAppType {
+  static readonly LongTerm = 2; // Example value, adjust as needed
+  static readonly ShortTerm = 1; // Example value, adjust as needed
+  // Add other app types as necessary
 }

@@ -15,7 +15,7 @@ import { DailyExchRateMdl } from 'src/app/models/exchange.rate';
 import { TenderTypeModel } from '../models/tender.type';
 import { LTC_SingleTransactionResultsModel, LTC_Ticket, LTC_TransactionDetailsModel, SingleTransactionId, TicketLookupResult } from '../models/ticket.list';
 import { TicketTender,  SaveTenderResult, SaveTenderResultModel } from 'src/app/models/ticket.tender';
-import { ExchCardTndr, SaveExchCardTndrResult } from 'src/app/models/exch.card.tndr';
+import { ExchCardTndr, SaveExchCardTndrResult, SaveExchCardTndrResultModel } from 'src/app/models/exch.card.tndr';
 
 
 @Injectable({
@@ -36,7 +36,7 @@ export class SalesTranService {
         
         //this._sharedSvc.LogonDetails.subscribe(data => {
         //    this.vendorLoginResult = data;
-        //    console.log('subscribe data arrived')
+        //    //console.log('subscribe data arrived')
 
         //});
         //this.vendorLoginResult = _sharedSvc.getLTVendorLogonData();
@@ -44,7 +44,7 @@ export class SalesTranService {
     }
 
     //public getVendorLogonData(): VendorLoginResultsModel {
-    //    console.log('getVendorLogonData')
+    //    //console.log('getVendorLogonData')
     //    this.vendorLoginResult = this._sharedSvc.getLTVendorLogonData();
     //    this.getAllSaleItems();
     //    return this.vendorLoginResult;
@@ -58,19 +58,19 @@ export class SalesTranService {
     //}
 
     public getSaleItemListFromDB(locationId: number, contractid: number): Observable<SaleItemResultsModel> {
-        console.log('SalesTranSvc getSaleItemListFromDB called')
+        //console.log('SalesTranSvc getSaleItemListFromDB called')
         return this.httpClient.get<SaleItemResultsModel>(GlobalConstants.CPOS_SVCS_URL + '/ltc/GetMenuItem?guid=' + GlobalConstants.GET_GUID +
             '&uid=0&pLocationUID=' + locationId + '&pContractUID=' + contractid + '&pFacilityUID=0&pBusinessFunctionUID=0&pSalesCatUID=0&pDepartmentUID=0&pActive=1',
             { headers: this.headerObjs });
     }
  
     public getVendorLoginResult(): VendorLoginResultsModel {
-        console.log('SalesTranSvc getVendorLoginResult called')
+        //console.log('SalesTranSvc getVendorLoginResult called')
         return this.vendorLoginResult;
     }
 
     public getCustomerLookup(pFirst: string, pLast: string, pPhone: string, uid: number): Observable<LTC_CustomerLookupResultsModel> {
-        console.log('SalesTranSvc getSaleItemListFromDB called')
+        //console.log('SalesTranSvc getSaleItemListFromDB called')
         return this.httpClient.get<LTC_CustomerLookupResultsModel>(GlobalConstants.CPOS_SVCS_URL + '/common/GetCustomerLookup?guid=' + GlobalConstants.GET_GUID +
             '&uid=0&pFirst=' + pFirst + '&pLast=' + pLast  + '&pPhone=' + pPhone + '',
             { headers: this.headerObjs });
@@ -92,7 +92,7 @@ export class SalesTranService {
 
     public saveTicketForGuestCheck(model: TicketSplit) {
 
-        console.log('SalesTranSvc saveTicketForGuestCheck called', model)
+        //console.log('SalesTranSvc saveTicketForGuestCheck called', model)
         
         return this.httpClient.put<SaveTicketResultsModel>(
             GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveSplitPayments?guid=' + GlobalConstants.PUT_GUID + '&uid=' + model.individualUID + '&DBVal=0',
@@ -102,7 +102,7 @@ export class SalesTranService {
 
     public saveCompleteTicketSplit(model: TicketSplit) {
 
-        console.log('SalesTranSvc saveCompleteTicketSplit called ', model)
+        //console.log('SalesTranSvc saveCompleteTicketSplit called ', model)
         
         return this.httpClient.put<SaveTicketResultsModel>(
             GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveSplitPayments?guid=' + GlobalConstants.PUT_GUID + '&uid=' + model.individualUID + '&DBVal=0',
@@ -111,13 +111,24 @@ export class SalesTranService {
     }
 
     public saveTenderObj(tndrObj: TicketTender) {
-        console.log('SalesTranSvc saveTenderObj called', tndrObj)
+        //console.log('SalesTranSvc saveTenderObj called', tndrObj)
         return this.httpClient.put<SaveTenderResultModel>(
             GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveTender?guid=' + GlobalConstants.PUT_GUID 
                 + '&uid=' + tndrObj.tndMaintUserId 
                 + '&appType=2'
                 + '&bFromLinuxTab=true',
             JSON.stringify(tndrObj),
+            { headers: this.headerObjs });
+    }
+
+    public saveFDMSTenderObj(fdmsTndr: ExchCardTndr, transactionId: number, appType: number, uid: number) {
+        //console.log('SalesTranSvc saveFDMSenderObj called', transactionId)
+        return this.httpClient.put<SaveExchCardTndrResultModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveFDMSTender?guid=' + GlobalConstants.PUT_GUID 
+                + '&uid=' + uid 
+                + '&appType=' + appType 
+                + '&transactionId=' + transactionId,
+            JSON.stringify(fdmsTndr),
             { headers: this.headerObjs });
     }
 

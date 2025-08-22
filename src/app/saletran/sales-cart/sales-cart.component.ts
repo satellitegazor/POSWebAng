@@ -42,7 +42,7 @@ export class SalesCartComponent implements OnInit, OnDestroy {
     constructor(private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
         private _sharedSubSvc: SharedSubjectService, private modalService: NgbModal, private _store: Store<saleTranDataInterface>,
     private _locConfigStore: Store<LocationConfigState>) {
-        console.log('SalesCart constructor')
+        //console.log('SalesCart constructor')
     }
 
 
@@ -70,7 +70,7 @@ export class SalesCartComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
 
-        console.log('SalesCart ngOnInit')
+        //console.log('SalesCart ngOnInit')
         this.vendorLoginResult = this._logonDataSvc.getLTVendorLogonData();
 
         this._buildTktObj();
@@ -129,7 +129,7 @@ export class SalesCartComponent implements OnInit, OnDestroy {
                 this.saleCatList.push(itm);
             }
         });
-        console.log('setting salesCategoryListRefresh to true');
+        //console.log('setting salesCategoryListRefresh to true');
         this.salesCategoryListRefresh.next(true);
 
         this.getSaleItemList(this.saleCatList[0].salesCategoryID);
@@ -145,7 +145,7 @@ export class SalesCartComponent implements OnInit, OnDestroy {
                 this.saleItemList.push(itm);
             }
         });
-        console.log('setting salesItemListRefresh to true');
+        //console.log('setting salesItemListRefresh to true');
         this.salesItemListRefresh.next(true)
     }
 
@@ -158,7 +158,7 @@ export class SalesCartComponent implements OnInit, OnDestroy {
     }
 
     saleItemClicked(id: any) {
-        console.log('Sale Item Clicked: ' + id);
+        //console.log('Sale Item Clicked: ' + id);
     }
 
     private _buildTktObj() {

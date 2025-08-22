@@ -13,8 +13,8 @@ export class SignalRService {
   public startConnection = () => {
     this.hubConnection = new signalR.HubConnectionBuilder().withUrl("/signalrnotify").build();
     this.hubConnection.start()
-                      .then(() => console.log('Connection Started'))
-                      .catch(err => console.log('Error while starting connection: ' + err));
+                      .then(() => //console.log('Connection Started'))
+                      .catch(err => //console.log('Error while starting connection: ' + err));
   }
 
   public dataListener = () => {

@@ -108,7 +108,7 @@ export class VendorLTComponent implements OnInit {
 
             
 
-            console.log('vendorlt sending data to subject');
+            //console.log('vendorlt sending data to subject');
             this._logonDataSvc.setLTVendorLogonData(data);
 
 
@@ -121,7 +121,7 @@ export class VendorLTComponent implements OnInit {
                 this._saleTranSvc.getTenderTypes(1, 100).subscribe(data => {
                     this._logonDataSvc.setTenderTypes(data);
                 });               
-                console.log('vendorlt navigating to SalesCart');
+                //console.log('vendorlt navigating to SalesCart');
                 this.router.navigate(['/salestran']);    
             });
 
@@ -157,7 +157,7 @@ export class VendorLTComponent implements OnInit {
             },
             error: err => {
                 alert('No locations found for given Vendor, Exchange Number.');
-                console.log(err);
+                //console.log(err);
             }
         })
     }

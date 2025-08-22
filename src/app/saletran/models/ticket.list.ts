@@ -1,6 +1,7 @@
 import { RouterEvent } from "@angular/router";
 import { MobileBase } from "src/app/models/mobile.base";
 import { LTC_Customer } from "src/app/models/customer";
+import { TicketTender } from "src/app/models/ticket.tender";
 
 export class TicketList {
     public ticketNum: string = '';
@@ -353,38 +354,38 @@ export class SalesTransactionCheckoutItem {
 }
 
 
-export class TicketTender {
-    ticketTenderId: number = 0;
-    tenderTypeId: number = 0;
-    tenderTransactionId: number = 0;
-    tenderTypeCode: string= "";
-    tenderTypeDesc: string= "";
-    isRefundType: boolean = false;
-    isSignature: boolean = false;
-    displayOrder: number = 0;
-    cardEndingNbr: string= "";
-    tracking: string= "";
-    traceId: string= "";
-    authNbr: string= "";
-    tenderAmount: number = 0;
-    changeDue: number = 0;
-    fCChangeDue: number = 0;
-    cardBalance: number = 0;
-    fCTenderAmount: number = 0;
-    fCCurrCode: string= "";
-    transactionNumber: string= "";
-    tndMaintTimestamp: Date = {} as Date;
-    tndMaintUserId: string= "";
-    tipAmount: number = 0;
-    fCTipAmount: number = 0;
-    exchCardType: string= "";
-    exchCardPymntType: string= "";
-    cardEntryMode: string= "";
-    signatureType: string= "";
-    milstarPlanNum: string= "";
-    checkNumber: string= "";
+// export class TicketTender {
+//     ticketTenderId: number = 0;
+//     tenderTypeId: number = 0;
+//     tenderTransactionId: number = 0;
+//     tenderTypeCode: string= "";
+//     tenderTypeDesc: string= "";
+//     isRefundType: boolean = false;
+//     isSignature: boolean = false;
+//     displayOrder: number = 0;
+//     cardEndingNbr: string= "";
+//     tracking: string= "";
+//     traceId: string= "";
+//     authNbr: string= "";
+//     tenderAmount: number = 0;
+//     changeDue: number = 0;
+//     fCChangeDue: number = 0;
+//     cardBalance: number = 0;
+//     fCTenderAmount: number = 0;
+//     fCCurrCode: string= "";
+//     transactionNumber: string= "";
+//     tndMaintTimestamp: Date = {} as Date;
+//     tndMaintUserId: string= "";
+//     tipAmount: number = 0;
+//     fCTipAmount: number = 0;
+//     exchCardType: string= "";
+//     exchCardPymntType: string= "";
+//     cardEntryMode: string= "";
+//     signatureType: string= "";
+//     milstarPlanNum: string= "";
+//     checkNumber: string= "";
 
-}
+// }
 
 
 

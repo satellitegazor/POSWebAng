@@ -36,7 +36,7 @@ var TicketSplit = /** @class */ (function () {
         this.shipHandlingFC = 0;
         this.shipHandlingTaxAmtFC = 0;
         this.cliTimeVar = 0;
-        this.vMTndr = new exch_card_tndr_1.ExchCardTndr();
+        this.VMTndr = new exch_card_tndr_1.ExchCardTndr();
     }
     return TicketSplit;
 }());

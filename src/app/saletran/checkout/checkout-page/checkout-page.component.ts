@@ -60,7 +60,7 @@ export class CheckoutPageComponent implements OnInit {
   public ngOnInit(): void {
 
 
-    console.log('CheckoutPage component ngOnInit called');
+    //console.log('CheckoutPage component ngOnInit called');
     this.locationConfig = this._logonDataSvc.getLocationConfig();
     this.isOConus = this.locationConfig.rgnCode != "CON";
 

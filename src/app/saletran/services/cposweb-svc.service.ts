@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PinPadResult } from './models/pinpad-result';
 import { MSRSwipeData } from './models/msr-swipe-data';
-import { VfoneCaptureTran } from './models/capture-tran.model';
+import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
 import { SigCapture } from './models/capture-signature.model';
 
 @Injectable({
@@ -27,9 +27,9 @@ export class CPOSWebSvcService {
 
   }
 
-  captureCardTran(invoiceId: string, exchNum: string, tranAmt: number, isRefund: boolean): Observable<VfoneCaptureTran> {
+  captureCardTran(invoiceId: string, exchNum: string, tranAmt: number, isRefund: boolean): Observable<ExchCardTndr> {
 
-    return this.httpClient.get<VfoneCaptureTran>(this.cposWebSvcUrl + 'pinpad/CaptureCardTran?InvoiceId=' + invoiceId + '&ExchNum=' + exchNum + '&TranAmt=' + tranAmt + '&IsRefund=' + isRefund + "&PlanNum=10001" ,
+    return this.httpClient.get<ExchCardTndr>(this.cposWebSvcUrl + 'pinpad/CaptureCardTran?InvoiceId=' + invoiceId + '&ExchNum=' + exchNum + '&TranAmt=' + tranAmt + '&IsRefund=' + isRefund + "&PlanNum=10001" ,
     { headers: this.headerObjs });
   }
 
