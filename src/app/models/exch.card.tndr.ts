@@ -188,6 +188,7 @@ export class ExchCardTndr {
   PinPadSerialNum: string = '';
   ResponseXml: string = '';
   VFONE_WEBSRV_VER: string = '';
+  RRN: string = '';
   
 
 }

@@ -75,7 +75,7 @@ export class TicketObjectEffects {
                 if (tktObj && tktObj.VMTndr) {
                     return this.saleTranSvc.saveFDMSTenderObj(tktObj.VMTndr, tktObj.transactionID, CPOSAppType.LongTerm, tktObj.individualUID).pipe(
                         map(resp => {
-                            //console.log("savePinpadResponse success ");
+                            console.log("savePinpadResponse success ");
                             return savePinpadResponseSuccess({respObj: resp.data});
                         }),
                         catchError((errResp) => {

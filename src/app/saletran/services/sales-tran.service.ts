@@ -127,7 +127,7 @@ export class SalesTranService {
             GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveFDMSTender?guid=' + GlobalConstants.PUT_GUID 
                 + '&uid=' + uid 
                 + '&appType=' + appType 
-                + '&transactionId=' + transactionId,
+                + '&TransactionId=' + transactionId,
             JSON.stringify(fdmsTndr),
             { headers: this.headerObjs });
     }

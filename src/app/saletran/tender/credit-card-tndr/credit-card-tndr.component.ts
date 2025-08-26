@@ -188,6 +188,10 @@ export class CreditCardTndrComponent implements AfterViewInit {
     this._tndrObj.tndMaintTimestamp = new Date(Date.now());
     this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
 
+    this._captureTranResponse.ticketTenderId = this._tndrObj.ticketTenderId;
+    this._captureTranResponse.transactionId = this._tktObj.transactionID;
+    this._captureTranResponse.RRN = this._tndrObj.rrn;
+
     let tndrCopy = JSON.parse(JSON.stringify(this._tndrObj))
     this._store.dispatch(addTender({ tndrObj: tndrCopy }));
     this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
