@@ -20,7 +20,7 @@ export class LogonSvc {
     public GetLocations(vendornum: String): Observable<VendorLocationsResultModel> {
 
         let CliTimeVar = GlobalConstants.GetClientTimeVariance();
-        return this.httpclient.get<VendorLocationsResultModel>(GlobalConstants.CPOS_SVCS_URL + '/common/GetVendorLocations?guid=' + GlobalConstants.GET_GUID + '&vid=' + vendornum + '&CliTimeVar=' + CliTimeVar,
+        return this.httpclient.get<VendorLocationsResultModel>(GlobalConstants.CPOS_SVCS_URL + '/common/GetVendorLocations?guid=' + GlobalConstants.GET_GUID + '&uid=100&vid=' + vendornum + '&CliTimeVar=' + CliTimeVar,
             { headers: this.headerObjs });
     }
 

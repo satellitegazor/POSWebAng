@@ -40,6 +40,7 @@ import { TicketLookupComponent } from '../shared/ticket-lookup/ticket-lookup.com
 import { SharedModule } from '../shared/shared.module';
 import { DecimalDirective } from '../directives/decimal-directive';
 import { PinValidateComponent } from './pin-validate/pin-validate.component';
+import { PosCurrencyDirective } from '../directives/pos-currency.directive';
 
 
 
@@ -64,8 +65,9 @@ import { PinValidateComponent } from './pin-validate/pin-validate.component';
         StoreModule.forFeature(TKT_OBJ_STATE, TktObjReducer),
         EffectsModule.forFeature([TicketObjectEffects]),
         SharedModule,
-        DecimalDirective
+        DecimalDirective, PosCurrencyDirective
     ],
+    exports: [],
     providers: [authinterceptorProviders],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 

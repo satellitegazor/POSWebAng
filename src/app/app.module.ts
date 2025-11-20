@@ -20,16 +20,15 @@ import { GetAuthLoginReducer } from './authstate/auth.reducer';
 import { LOGIN_AUTH_STATE } from './authstate/auth.selector';
 import { LogonDataService } from './global/logon-data-service.service';
 import { LogonSvc } from './logon/logonsvc.service';
-import { CurrencyInputDirective } from './directives/currency-input.directive';
 import { SummaryComponent } from './reports/salestran/summary/summary.component';
 import { DetailComponent } from './reports/salestran/detail/detail.component';
 import { SalestranComponent } from './reports/salestran/salestran/salestran.component';
-import { DecimalDirective } from './directives/decimal-directive';
 import { LtcTicketReceiptComponent } from './rcpt/ltc-ticket-receipt/ltc-ticket-receipt.component';
 import { AlertMessageModule } from './alertmsg/alert-message/alert-message.module';
 import { RcptModule } from './rcpt/rcpt.module';
 import { InactiveLogoutInterceptor } from './auth/inactive-logout.interceptor';
 import { AlertMessageComponent } from './alertmsg/alert-message/alert-message.component';
+import { PosCurrencyDirective } from './directives/pos-currency.directive';
 
 
 
@@ -42,12 +41,15 @@ import { AlertMessageComponent } from './alertmsg/alert-message/alert-message.co
     AppComponent,
     NavMenuComponent,
     HomeComponent,
-    CurrencyInputDirective,
     SummaryComponent,
     DetailComponent,
     SalestranComponent,
+    
     //AlertMessageComponent
     
+  ],
+  exports: [
+
   ],
   imports: [
     BrowserModule,
@@ -57,7 +59,6 @@ import { AlertMessageComponent } from './alertmsg/alert-message/alert-message.co
     LogonModule,
     SalesTranModule,  
     SharedSubjectModule,  
-    DecimalDirective,
     NgbModalModule,
     HttpClientModule,
     EffectsModule.forRoot([]),

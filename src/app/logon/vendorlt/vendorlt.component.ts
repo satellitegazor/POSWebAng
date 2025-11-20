@@ -111,20 +111,18 @@ export class VendorLTComponent implements OnInit {
             //console.log('vendorlt sending data to subject');
             this._logonDataSvc.setLTVendorLogonData(data);
 
-
+            this._saleTranSvc.getTenderTypes(1, 100).subscribe(data => {
+                this._logonDataSvc.setTenderTypes(data);
+            });
 
             this._saleTranSvc.getLocationConfig(+data.locationUID, +data.individualUID).subscribe(data => {
 
                 this._logonDataSvc.setLocationConfig(data);
                 this._locConfigStore.dispatch(setLocationConfig({ locationConfig: data }));
 
-                this._saleTranSvc.getTenderTypes(1, 100).subscribe(data => {
-                    this._logonDataSvc.setTenderTypes(data);
-                });               
                 //console.log('vendorlt navigating to SalesCart');
                 this.router.navigate(['/salestran']);    
             });
-
         });
     }
 

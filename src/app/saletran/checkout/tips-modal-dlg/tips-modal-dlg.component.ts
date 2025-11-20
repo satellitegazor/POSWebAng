@@ -80,9 +80,10 @@ export class TipsModalDlgComponent implements OnInit {
     this.dcTotal += tipAmt;
   }
 
-  onTotalAmountChanged(event: any) {
+  onTotalAmountChanged(value: number) {
 
-    let totalTipAmt = Number(event.target.value);
+    let totalTipAmt = Number(value);
+    console.log('onTotalAmountChanged Total Tip Amt: ' + totalTipAmt);
     if(totalTipAmt < this.lineItemTotalDC) {
       return;
     }
