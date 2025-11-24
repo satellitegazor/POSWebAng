@@ -81,6 +81,8 @@ export const _tktObjReducer = createReducer(
             transactionID: 0,
             updateCoupons: false,
             updateCustomer: false,
+            tipAmountDC: 0,
+            tipAmountNDC: 0
          },
          tktTotals: {
             ...state.tktTotals,
@@ -130,7 +132,7 @@ export const _tktObjReducer = createReducer(
          ltotalTaxNDC += k.dCLineItemTaxAmount + k.fCLineItemEnvTaxAmount;
 
          if(saleAssocAry.filter(assoc => assoc.indivLocId == k.srvdByAssociateVal).length > 0) {
-            saleAssocAry.filter(assoc => assoc.indivLocId == k.srvdByAssociateVal).at(0)?.tipSaleItemIdList.push(k.salesItemUID);
+            saleAssocAry.filter(assoc => assoc.indivLocId == k.srvdByAssociateVal)[0]?.tipSaleItemIdList.push(k.salesItemUID);
          }
          else {
             let saleAssoc: AssociateSaleTips = new AssociateSaleTips();
@@ -147,7 +149,7 @@ export const _tktObjReducer = createReducer(
       newCheckOutItem.lineItemDollarDisplayAmount = Number(Number((newCheckOutItem.unitPrice * newCheckOutItem.quantity) + newCheckOutItem.lineItemTaxAmount).toFixed(2));
 
       if(saleAssocAry.filter(assoc => assoc.indivLocId == newCheckOutItem.srvdByAssociateVal).length > 0) {
-         saleAssocAry.filter(assoc => assoc.indivLocId == newCheckOutItem.srvdByAssociateVal).at(0)?.tipSaleItemIdList.push(newCheckOutItem.salesItemUID);
+         saleAssocAry.filter(assoc => assoc.indivLocId == newCheckOutItem.srvdByAssociateVal)[0]?.tipSaleItemIdList.push(newCheckOutItem.salesItemUID);
       }
       else {
          let saleAssoc: AssociateSaleTips = new AssociateSaleTips();
@@ -223,7 +225,7 @@ export const _tktObjReducer = createReducer(
       state.tktObj.tktList.forEach(function(val: SalesTransactionCheckoutItem, indx: number) {
          
          let assocTips: AssociateSaleTips = new AssociateSaleTips();
-         let aTips = assocTipsAry.filter(obj => obj.indivLocId == val.srvdByAssociateVal).at(0);         
+         let aTips = assocTipsAry.filter(obj => obj.indivLocId == val.srvdByAssociateVal)[0];         
 
          if(aTips) {
             assocTips = aTips;

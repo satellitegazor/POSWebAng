@@ -89,7 +89,7 @@ export class CheckoutPageComponent implements OnInit {
 
     let tndrCode = (evt.target as Element).id
     if (this._logonDataSvc.getBusinessModel() != 5) {
-      this.router.navigate(['tender'], { queryParams: { code: tndrCode } })
+      this.router.navigate([this._utilSvc.tenderCodePageMap.get(tndrCode)], { queryParams: { code: tndrCode } })
     }
     else {
       this.displayCustSearchDlg = "display";

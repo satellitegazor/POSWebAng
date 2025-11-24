@@ -73,7 +73,7 @@ export class LogonDataService {
 
             let egTndrs = this._ltTenderTypeMdl.types.filter(tndr => tndr.tenderTypeCode == 'EG');
             if(egTndrs && egTndrs.length > 0) {
-                let eg = egTndrs.at(0);
+                let eg = egTndrs[0]
                 if(eg)
                     eg.displayThisTender = false;
 

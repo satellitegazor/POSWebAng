@@ -10,6 +10,7 @@ import { removeTndrWithSaveCode, upsertAssocTips } from '../../store/ticketstore
 import { getCheckoutItemsSelector, getTicketTotals, getAssocTipList } from '../../store/ticketstore/ticket.selector';
 
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
+import { UtilService } from 'src/app/services/util.service';
 
 @Component({
     selector: 'app-tips-modal-dlg',
@@ -20,7 +21,7 @@ import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 export class TipsModalDlgComponent implements OnInit {
 
   constructor(private modal: NgbModal, private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
-    private _store: Store<saleTranDataInterface>, private router: Router) { }
+    private _store: Store<saleTranDataInterface>, private router: Router,  private utilSvc: UtilService) { }
 
     public tndrCode: string = ''
     saleAssocList: LTC_Associates[] = [];
@@ -132,7 +133,7 @@ export class TipsModalDlgComponent implements OnInit {
     
     //console.log('in Save Tip TenderCode: ' + this.tndrCode);
     if(this.tndrCode != "") {
-      this.router.navigate([this.tndrCode == 'btnSplitPay' ? 'splitpay' : 'tender'], {queryParams: {code: this.tndrCode}})
+      this.router.navigate([this.utilSvc.tenderCodePageMap.get(this.tndrCode)], {queryParams: {code: this.tndrCode}})
     }
 
   }

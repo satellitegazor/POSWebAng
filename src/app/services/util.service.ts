@@ -19,6 +19,17 @@ export class UtilService {
     
     return `${year}${month}${day}${hours}${minutes}${seconds}${milliseconds}`;
   }
+
+  public tenderCodePageMap = new Map<string, string>([
+    ['btnSplitPay', 'splitpay'],
+    ['CK', 'cashcheck'],
+    ['XC', 'pinpadtran'],
+    ['XR', 'pinpadtran'],
+    ['GC', 'pinpadtran'],
+    ['CC', 'tender'],
+    ['EG', 'eaglecash'],
+    ['MS', 'pinpadtran']
+  ]);
 }
 
 export class CPOSAppType {
