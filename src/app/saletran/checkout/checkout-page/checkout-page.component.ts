@@ -88,7 +88,7 @@ export class CheckoutPageComponent implements OnInit {
     this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
 
     let tndrCode = (evt.target as Element).id
-    if (this._logonDataSvc.getBusinessModel() != 5) {
+    if (this._logonDataSvc.getBusinessModel() != 5 || tndrCode == "CA") {
       this.router.navigate([this._utilSvc.tenderCodePageMap.get(tndrCode)], { queryParams: { code: tndrCode } })
     }
     else {

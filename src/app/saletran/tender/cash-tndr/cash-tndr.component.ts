@@ -38,6 +38,7 @@ export class CashTndrComponent {
     private _logonDataSvc: LogonDataService,
     private _utilSvc: UtilService) {
     // Initialization logic can go here if needed
+    this.loadFastCashButtons();
   }
 
   private _tktObj: TicketSplit = {} as TicketSplit;
@@ -45,6 +46,8 @@ export class CashTndrComponent {
   private subscription: Subscription = {} as Subscription;
 
   private _tndrObj: TicketTender = {} as TicketTender;
+  usdFastCashButtons: number[] = [];
+  foreignFastCashButtons: number[] = [];
 
   ngOnInit(): void {
 
@@ -72,6 +75,45 @@ export class CashTndrComponent {
 
   }
 
+  private loadFastCashButtons(): void {
+    // USD Fast Cash
+    let usdFastCash = this._logonDataSvc.getLocationConfig().uSDFastcash;
+    let frgnFastCash = this._logonDataSvc.getLocationConfig().frgnFastcash;
+
+    if (usdFastCash) {
+      this.usdFastCashButtons = usdFastCash
+        .split(',')
+        .map(val => parseFloat(val.trim()))
+        .filter(val => (!isNaN(val) && val >= this._tndrObj.tenderAmount!))
+        .sort((a, b) => a - b);
+    }
+
+    // Foreign Fast Cash
+    if (frgnFastCash) {
+      this.foreignFastCashButtons = frgnFastCash
+        .split(',')
+        .map(val => parseFloat(val.trim()))
+        .filter(val => (!isNaN(val) && val >= this._tndrObj.fcTenderAmount!))
+        .sort((a, b) => a - b);
+    }
+  }
+  // Handler for USD fast cash button click
+  onUsdFastCashClick(amount: number): void {
+    this._tndrObj.changeDue = amount - (this.tenderAmount || 0);
+    this.btnApproveClick(new Event('click'));
+  }
+
+  // Handler for Foreign fast cash button click
+  onForeignFastCashClick(amount: number): void {
+    this._tndrObj.fcChangeDue = amount - (this.tenderAmountFC || 0);
+    this.btnApproveClick(new Event('click'));
+  }
+
+  // Optional: Exact cash button
+  onExactCash(): void {
+    this.btnApproveClick(new Event('click'));
+  }
+
   async btnApproveClick(evt: Event) {
 
     //this._tndrObj = JSON.parse(JSON.stringify(this._tktObj.ticketTenderList.filter(tndr => tndr.rrn == this._tndrObj.rrn)[0]))
@@ -79,7 +121,7 @@ export class CashTndrComponent {
 
     this._tndrObj.tenderStatus = TenderStatusType.InProgress;
     this._tndrObj.isAuthorized = true;
-    this._tndrObj.tenderTypeCode = "EG";
+    this._tndrObj.tenderTypeCode = "CA";
     this._tndrObj.tndMaintTimestamp = new Date(Date.now());
     this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
     this._store.dispatch(addTender({ tndrObj: this._tndrObj }));

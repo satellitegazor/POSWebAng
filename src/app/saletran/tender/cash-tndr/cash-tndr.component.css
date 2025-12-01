@@ -1,0 +1,60 @@
+.fast-cash-group {
+    margin: 20px 0;
+}
+
+.fast-cash-group h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+}
+
+.fast-cash-btn {
+    padding: 15px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.usd-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.usd-btn:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+.foreign-btn {
+    background-color: #2196F3;
+    color: white;
+}
+
+.foreign-btn:hover {
+    background-color: #1976D2;
+    transform: scale(1.05);
+}
+
+.exact-btn {
+    margin-top: 15px;
+    padding: 12px 24px;
+    background-color: #FF9800;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.summary {
+    margin-top: 20px;
+    font-size: 1.2em;
+    text-align: right;
+}

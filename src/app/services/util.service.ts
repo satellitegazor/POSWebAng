@@ -23,6 +23,7 @@ export class UtilService {
   public tenderCodePageMap = new Map<string, string>([
     ['btnSplitPay', 'splitpay'],
     ['CK', 'cashcheck'],
+    ['CA', 'cashcheck'],
     ['XC', 'pinpadtran'],
     ['XR', 'pinpadtran'],
     ['GC', 'pinpadtran'],

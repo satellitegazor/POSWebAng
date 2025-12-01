@@ -1,1 +1,80 @@
-<p>cash-tndr works!</p>
+<div class="panel">
+    <div class="panel-body">
+        <table class="table">
+            <tr>
+                <td style="width:50%;"></td>
+                <td style="text-align: left;">
+                    Payment Amount (default currency):
+                </td>
+                <td style="text-align: right;">
+                    Payment Amount:
+                </td>
+            </tr>
+            <tr>
+                <td style="width:50%;"></td>
+                <td style="text-align: left;">
+                    {{dcCurrSymbl}}{{tenderAmount}}
+                </td>
+                <td style="text-align: right;">
+                    {{ndcCurrSymbl}}{{tenderAmountFC}}
+                </td>
+            </tr>
+        </table>
+        <p class="text-center">
+            <strong>Please click approve if Eagle Cash payment is approved</strong>
+        </p>
+    </div>
+</div>
+<div class="fast-cash-section">
+
+    <!-- USD Fast Cash Buttons -->
+    <div class="fast-cash-group" *ngIf="usdFastCashButtons.length > 0">
+        <h4>USD Quick Cash</h4>
+        <div class="button-grid">
+            <button *ngFor="let amount of usdFastCashButtons" class="fast-cash-btn usd-btn"
+                (click)="onUsdFastCashClick(amount)">
+                ${{ amount.toFixed(2) }}
+            </button>
+        </div>
+    </div>
+
+    <!-- Foreign Currency Fast Cash Buttons -->
+    <div class="fast-cash-group" *ngIf="foreignFastCashButtons.length > 0">
+        <h4>Foreign Quick Cash</h4>
+        <div class="button-grid">
+            <button *ngFor="let amount of foreignFastCashButtons" class="fast-cash-btn foreign-btn"
+                (click)="onForeignFastCashClick(amount)">
+                {{ amount.toFixed(2) }} (Foreign)
+            </button>
+        </div>
+    </div>
+
+    <!-- Optional: Exact Amount Button -->
+    <button class="exact-btn" (click)="onExactCash()">Exact Amount</button>
+
+</div>
+<div class="footer fixed-bottom cncsnFooter">
+    <div class="row">
+        <button #btnApprove class="border border-white btn btn-info btn-lg ftrbtn" id="btnApprove"
+            aria-label="Left Align" (click)="btnApproveClick($event)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill"
+                viewBox="0 0 16 16">
+                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+            </svg> Approve
+        </button>
+        <button #btnDecline class="border border-white btn btn-info btn-lg ftrbtn" id="btnDecline"
+            aria-label="Left Align" (click)="btnDeclineClick($event)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill"
+                viewBox="0 0 16 16">
+                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+            </svg> Decline
+        </button>
+        <button #btnCancel class="border border-white btn btn-info btn-lg ftrbtn" id="btnCancel" aria-label="Left Align"
+            (click)="btnCancelClick($event)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill"
+                viewBox="0 0 16 16">
+                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+            </svg> Cancelled
+        </button>
+    </div>
+</div>
