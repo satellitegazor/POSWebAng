@@ -123,7 +123,12 @@ export const updateSaleitems = createAction(UPD_SALE_ITEM,
 
 export const removeTndrWithSaveCode = createAction(REMOVE_TNDR_SAVE_CODE,
     props<{tndrCode: string}>());
-    
+
+export const markTendersComplete = createAction('SAVE_COMPLETE_TENDER',
+    props<{status: number}>());
+
+export const markTicketComplete = createAction('SAVE_COMPLETE_TICKET',
+    props<{status: number}>());
 
 export const updateCheckoutTotals = createAction(UPD_CHK_OUT_TOTALS, props<{logonDataSvc: LogonDataService}>());
 
@@ -140,5 +145,7 @@ export const upsertSaleItemVndCpn = createAction(UPSERT_SALE_ITEM_VND_CPN, props
 export const upsertTranExchCpn = createAction(UPSERT_TRAN_EXCH_CPN, props<{logonDataSvc: LogonDataService, cpnPct: number, cpnAmt: number}>());
 
 export const updatePartPayData = createAction(UPDATE_PARTPAY_DATA, props<{partPayFlag: boolean, partPayAmountDC: number, partPayAmountNDC: number}>());
+
+
 
 //export const updateLocationConfig = createAction(UPDATE_LOCATION_CONFIG, props<{}>)

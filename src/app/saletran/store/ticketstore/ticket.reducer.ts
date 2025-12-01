@@ -5,9 +5,9 @@ import { Action, createReducer, on } from "@ngrx/store";
 import { GlobalConstants } from "src/app/global/global.constants";
 import { AssociateSaleTips } from "src/app/models/associate.sale.tips";
 import { LTC_Customer } from "src/app/models/customer";
-import { TicketTender } from "src/app/models/ticket.tender";
+import { TenderStatusType, TicketTender } from "src/app/models/ticket.tender";
 import { SalesTransactionCheckoutItem } from "../../models/salesTransactionCheckoutItem";
-import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketForGuestCheckSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData, removeTndrWithSaveCode, saveCompleteTicketSplitSuccess, addPinpadResp, saveTenderObjSuccess, savePinpadResponse, updateTenderRRN } from "./ticket.action";
+import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketForGuestCheckSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData, removeTndrWithSaveCode, saveCompleteTicketSplitSuccess, addPinpadResp, saveTenderObjSuccess, savePinpadResponse, updateTenderRRN, markTendersComplete, markTicketComplete } from "./ticket.action";
 import { Round2DecimalService } from "src/app/services/round2-decimal.service";
 import { tktObjInitialState, saleTranDataInterface } from "./ticket.state";
 import { ExchCardTndr } from "src/app/models/exch.card.tndr";
@@ -1008,9 +1008,31 @@ export const _tktObjReducer = createReducer(
             })
          }
       }
+   }),
+   on(markTendersComplete, (state, action) => {
+      return {
+         ...state,
+         tktObj: {
+            ...state.tktObj,
+            ticketTenderList: state.tktObj.ticketTenderList.map(tndr => {
+               return {
+                  ...tndr,
+                  tenderStatus: TenderStatusType.Complete
+               };
+            })
+         }
+      }
+   }),
+   on(markTicketComplete, (state, action) => {
+      return {
+         ...state,
+         tktObj: {
+            ...state.tktObj,
+            ticketStatus: 2
+         }
+      }
    })
-);
-
+)
 
 
 export function TktObjReducer(state: saleTranDataInterface, action: Action) {

@@ -297,6 +297,7 @@ export class LogonDataService {
     }
 
     public setDailyExchRate(exchRate: DailyExchRate) {
+        
         sessionStorage.setItem('BusDate', exchRate.busDate.toString());
         sessionStorage.setItem('CliTimeVar', exchRate.cliTimeVar.toString());
         sessionStorage.setItem('CurrCode', exchRate.currCode.toString());

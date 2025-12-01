@@ -114,7 +114,7 @@ export class CheckoutPageComponent implements OnInit {
         modalRef.componentInstance.tndrCode = tndrCode;
       }
       else {
-        this.router.navigate(['tender'], { queryParams: { code: tndrCode } })
+        this.router.navigate([this._utilSvc.tenderCodePageMap.get(tndrCode)], { queryParams: { code: tndrCode } })
       }
     }
   }

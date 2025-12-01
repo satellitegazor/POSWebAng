@@ -9,11 +9,12 @@ import { filter, firstValueFrom, Subscription, take } from 'rxjs';
 import { getRemainingBal, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { TenderStatusType, TicketTender } from 'src/app/models/ticket.tender';
 import { TenderType } from '../../models/tender.type';
-import { addPinpadResp, addTender, saveCompleteTicketSplit, savePinpadResponse, saveTenderObj, updateTenderRRN } from '../../store/ticketstore/ticket.action';
+import { addPinpadResp, addTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, savePinpadResponse, saveTenderObj, updateTenderRRN } from '../../store/ticketstore/ticket.action';
 import { UtilService } from 'src/app/services/util.service';
 //import { VfoneCaptureTran } from '../../services/models/capture-tran.model';
 import { forkJoin } from 'rxjs';
 import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
+import { TenderUtil } from '../tender-util';
 
 @Component({
   selector: 'app-credit-card-tndr',
@@ -50,22 +51,6 @@ export class CreditCardTndrComponent implements AfterViewInit {
     if (typeof this._tndrObj === 'undefined' || this._tndrObj == null) {
       this._tndrObj = {} as TicketTender;
     }
-
-
-  // this.subscription = forkJoin([
-  //   this._store.pipe(select(getRemainingBal)),
-  //   this._store.pipe(select(getTktObjSelector)),
-    
-  // ]).pipe(
-  //   filter(([bal, tktObj]) => !!bal && !!tktObj)
-  // ).subscribe(([bal, tktObj]) => {
-  //   //console.log('All data loaded:', { bal, tktObj });
-  //     this._tktObj = tktObj != null ? tktObj : {} as TicketSplit;
-  //     this._tndrObj.tenderAmount = bal.amountDC
-  //     this._tndrObj.fcTenderAmount = bal.amountNDC;    
-  //     //console.log("Tender Amount: ", this._tndrObj.tenderAmount);
-  // });
-
 
     this.activatedRoute.queryParams.subscribe(params => {
       this._tndrObj.tenderTypeCode = params['code'];
@@ -179,7 +164,8 @@ export class CreditCardTndrComponent implements AfterViewInit {
 
     console.log("btnApproveClick Tender Object before update: ", this._tndrObj);
 
-    this._tndrObj.tenderStatus = TenderStatusType.Complete; // Assuming 2 is the status for approved tender
+    this._tndrObj.tenderStatus = TenderStatusType.InProgress; 
+    this._tndrObj.isAuthorized = true;
     this._tndrObj.authNbr = this._captureTranResponse.AUTH_CODE;
     this._tndrObj.tenderAmount = this._captureTranResponse.APPROVED_AMOUNT;
     this._tndrObj.cardEndingNbr = this._captureTranResponse.ACCT_NUM.slice(-4);;
@@ -200,7 +186,11 @@ export class CreditCardTndrComponent implements AfterViewInit {
 
     var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
 
-    if (tktObjData != null && this.IsTicketComplete(tktObjData)) {
+    if (tktObjData != null && 
+      TenderUtil.IsTicketComplete(tktObjData, this._logonDataSvc.getAllowPartPay())) {
+
+      this._store.dispatch(markTendersComplete({ status: 4 }));
+      this._store.dispatch(markTicketComplete({ status: 2 }));
       this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData }));
       this.route.navigate(['/savetktsuccess']);
     }
@@ -215,43 +205,5 @@ export class CreditCardTndrComponent implements AfterViewInit {
 
   btnCancelClick(evt: Event) {
     //console.log("btnCancel clicked");
-  }
-
-  private IsTicketComplete(tktObj: TicketSplit): boolean {
-
-    if (tktObj.tktList.length == 0) {
-      //console.log("Ticket is empty, cannot be completed.");
-      return false;
-    }
-
-    if (tktObj.ticketTenderList.length == 0) {
-      //console.log("No tenders found for the ticket, cannot be completed.");
-      return false;
-    }
-    let ticketTotal = 0;
-
-    for (const key in tktObj.tktList) {
-      ticketTotal += parseFloat((tktObj.tktList[key].lineItemDollarDisplayAmount).toFixed(2));
-    }
-
-    for (const key in tktObj.associateTips) {
-      ticketTotal += parseFloat((tktObj.associateTips[key].tipAmount).toFixed(2));
-    }
-
-    let allowPartPay = this._logonDataSvc.getAllowPartPay();
-
-    let tenderTotals = 0;
-    tktObj.ticketTenderList.forEach((tender) => {
-      tenderTotals += parseFloat((tender.tenderAmount).toFixed(2));
-    })
-
-    if ((allowPartPay && tktObj.partialAmount > 0 && tktObj.partialAmount == tenderTotals) || Number(ticketTotal).toFixed(2) == Number(tenderTotals).toFixed(2)) {
-      //console.log("Ticket is complete with total: " + ticketTotal + " and tender total: " + tenderTotals);
-      return true;
-    }
-    else {
-      //console.log("Ticket is not complete. Ticket total: " + ticketTotal + ", Tender total: " + tenderTotals);
-      return false;
-    }
   }
 }
