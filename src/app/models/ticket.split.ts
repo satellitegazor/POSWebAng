@@ -61,6 +61,8 @@ export class TicketSplit {
         public partPayId: number = 0;
         public refundCount: number = 0;
         public ticketDetailList: TicketDetailListAry[] = [] as TicketDetailListAry[];
+        public changeDueUSD: number = 0;
+        public changeDueFC: number = 0;
 
     }
 

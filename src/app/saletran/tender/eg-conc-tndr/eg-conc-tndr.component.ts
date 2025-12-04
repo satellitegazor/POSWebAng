@@ -51,7 +51,7 @@ export class EgConcTndrComponent {
     })
 
     this.dcCurrSymbl = this._logonDataSvc.getDfltCurrCode();
-    this.ndcCurrSymbl = this._logonDataSvc.getForeignCurrCode();
+    this.ndcCurrSymbl = this._logonDataSvc.getNonDfltCurrCode();
 
     this._store.select(getRemainingBal).subscribe(data => {
       this._tndrObj.tenderAmount = data.amountDC

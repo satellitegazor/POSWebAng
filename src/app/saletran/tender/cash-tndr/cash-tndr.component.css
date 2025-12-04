@@ -1,60 +1,106 @@
-.fast-cash-group {
-    margin: 20px 0;
+.ftrbtn {
+    width: 33.3%;
+}
+.fast-cash-panel {
+    width: 80vw;
+    /* 80% of screen width */
+    max-width: 1000px;
+    /* Optional: prevent too wide on large screens */
+    margin: 20px auto;
+    /* Perfectly centered */
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    border: 1px solid #ddd;
 }
 
-.fast-cash-group h4 {
-    margin: 0 0 10px 0;
-    color: #333;
+.panel-title {
+    text-align: center;
+    margin: 0 0 20px 0;
+    font-size: 1.6em;
+    color: #1a1a1a;
+    font-weight: 600;
 }
 
-.button-grid {
+.fast-cash-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.currency-group {
+    background: white;
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.currency-title {
+    margin: 0 0 12px 0;
+    font-size: 1em;
+    color: #555;
+    text-align: center;
+    font-weight: 500;
+}
+
+.buttons-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
 }
 
-.fast-cash-btn {
-    padding: 15px;
-    font-size: 1.1em;
+.quick-cash-btn {
+    height: 60px;
+    /* Fixed height → same size */
+    font-size: 1.4em;
     font-weight: bold;
+    background: linear-gradient(145deg, #4CAF50, #45a049);
+    color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.usd-btn {
-    background-color: #4CAF50;
-    color: white;
+.quick-cash-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(145deg, #45a049, #388e3c);
 }
 
-.usd-btn:hover {
-    background-color: #45a049;
-    transform: scale(1.05);
+.quick-cash-btn:active {
+    transform: translateY(1px);
 }
 
-.foreign-btn {
-    background-color: #2196F3;
-    color: white;
+/* Make foreign buttons slightly different color but same size */
+.currency-group:nth-child(2) .quick-cash-btn {
+    background: linear-gradient(145deg, #2196F3, #1976D2);
 }
 
-.foreign-btn:hover {
-    background-color: #1976D2;
-    transform: scale(1.05);
+.currency-group:nth-child(2) .quick-cash-btn:hover {
+    background: linear-gradient(145deg, #1976D2, #1565C0);
+}
+
+.exact-amount-wrapper {
+    text-align: center;
+    margin-top: 20px;
 }
 
 .exact-btn {
-    margin-top: 15px;
-    padding: 12px 24px;
-    background-color: #FF9800;
+    padding: 16px 32px;
+    font-size: 1.5em;
+    font-weight: bold;
+    background: #FF9800;
     color: white;
     border: none;
-    border-radius: 6px;
-    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.summary {
-    margin-top: 20px;
-    font-size: 1.2em;
-    text-align: right;
+.exact-btn:hover {
+    background: #F57C00;
+    transform: scale(1.05);
 }

@@ -378,6 +378,8 @@ export const _tktObjReducer = createReducer(
 
       let ExchCouponsAfterTax = action.logonDataSvc.getExchCouponAfterTax();
       let VendCouponsAfterTax = action.logonDataSvc.getVendorCouponAfterTax();
+      let exchRateObj = action.logonDataSvc.getDailyExchRate()
+      let exchangeRate: number = Round2DecimalService.round(exchRateObj.dfltCurrCode == 'USD' ? exchRateObj.exchangeRate : 1 / exchRateObj.exchangeRate * 10000) / 10000;
 
       var updatedTktList: SalesTransactionCheckoutItem[] = JSON.parse(JSON.stringify([...state.tktObj.tktList]));
       let totalSale: number = 0;
@@ -398,10 +400,15 @@ export const _tktObjReducer = createReducer(
 
          totalSale += Round2DecimalService.round(updatedTktList[k].lineItemDollarDisplayAmount);
 
-         let subTotalFC = Round2DecimalService.round(((updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity) * 100) / 100);
-         let exchCpnTotalFC = Round2DecimalService.round(((updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity) * updatedTktList[k].exchangeCouponDiscountPct * 0.01 * 100) / 100);
-         let saleTaxTotalFC = Round2DecimalService.round(((updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity) * updatedTktList[k].salesTaxPct * 0.01 * 100) / 100);
-         let vndDiscountTotalFC = Round2DecimalService.round((updatedTktList[k].dCDiscountAmount | 0 * 100) / 100);
+         // let subTotalFC = Round2DecimalService.round(((updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity) * 100) / 100);
+         // let exchCpnTotalFC = Round2DecimalService.round(((updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity) * updatedTktList[k].exchangeCouponDiscountPct * 0.01 * 100) / 100);
+         // let saleTaxTotalFC = Round2DecimalService.round(((updatedTktList[k].dCUnitPrice * updatedTktList[k].quantity) * updatedTktList[k].salesTaxPct * 0.01 * 100) / 100);
+         // let vndDiscountTotalFC = Round2DecimalService.round((updatedTktList[k].dCDiscountAmount | 0 * 100) / 100);
+
+         let subTotalFC = Round2DecimalService.round(((subTotal * (exchangeRate) ) * 100) / 100);
+         let exchCpnTotalFC = Round2DecimalService.round(((exchCpnTotal * exchangeRate) * 100) / 100);
+         let saleTaxTotalFC = Round2DecimalService.round(((saleTaxTotal * exchangeRate) * 100) / 100);
+         let vndDiscountTotalFC = Round2DecimalService.round((vndDiscountTotal * exchangeRate * 100) / 100);
 
          updatedTktList[k].dCLineItemDollarDisplayAmount = Round2DecimalService.round(((subTotalFC - exchCpnTotalFC - vndDiscountTotalFC + saleTaxTotalFC) * 100) / 100);
          updatedTktList[k].dCLineItemTaxAmount = (saleTaxTotalFC * 100) / 100;

@@ -25,33 +25,39 @@
         </p>
     </div>
 </div>
-<div class="fast-cash-section">
+<!-- Fast Cash Panel – 80% width, centered -->
+<div class="fast-cash-panel">
+    <h3 class="panel-title">Fast Cash Tender</h3>
 
-    <!-- USD Fast Cash Buttons -->
-    <div class="fast-cash-group" *ngIf="usdFastCashButtons.length > 0">
-        <h4>USD Quick Cash</h4>
-        <div class="button-grid">
-            <button *ngFor="let amount of usdFastCashButtons" class="fast-cash-btn usd-btn"
-                (click)="onUsdFastCashClick(amount)">
-                ${{ amount.toFixed(2) }}
-            </button>
+    <div class="fast-cash-container">
+        <!-- USD Fast Cash Buttons -->
+        <div class="currency-group" *ngIf="usdFastCashButtons.length > 0">
+            <h4 class="currency-title">{{dcCurrencyCode}}</h4>
+            <div class="buttons-grid">
+                <button *ngFor="let amount of usdFastCashButtons" class="quick-cash-btn"
+                    (click)="onUsdFastCashClick(amount)">
+                    {{dcCurrSymbl}}{{ amount.toFixed(2) }}
+                </button>
+            </div>
+        </div>
+
+        <div class="currency-group" *ngIf="foreignFastCashButtons.length > 0">
+            <h4 class="currency-title">{{ndcCurrencyCode}}</h4>
+            <div class="buttons-grid">
+                <button *ngFor="let amount of foreignFastCashButtons" class="quick-cash-btn"
+                    (click)="onForeignFastCashClick(amount)">
+                    {{ndcCurrSymbl}}{{ amount.toFixed(2) }}
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Foreign Currency Fast Cash Buttons -->
-    <div class="fast-cash-group" *ngIf="foreignFastCashButtons.length > 0">
-        <h4>Foreign Quick Cash</h4>
-        <div class="button-grid">
-            <button *ngFor="let amount of foreignFastCashButtons" class="fast-cash-btn foreign-btn"
-                (click)="onForeignFastCashClick(amount)">
-                {{ amount.toFixed(2) }} (Foreign)
-            </button>
-        </div>
+    <!-- Optional: Exact Amount Button (outside grid for prominence) -->
+    <div class="exact-amount-wrapper">
+        <button class="exact-btn" (click)="onExactCash()">
+            Exact Amount: {{dcCurrSymbl}}{{ tenderAmount!.toFixed(2) }}
+        </button>
     </div>
-
-    <!-- Optional: Exact Amount Button -->
-    <button class="exact-btn" (click)="onExactCash()">Exact Amount</button>
-
 </div>
 <div class="footer fixed-bottom cncsnFooter">
     <div class="row">

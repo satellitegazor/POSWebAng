@@ -148,7 +148,7 @@ export class TenderPageComponent implements OnInit {
       tenderTotals += tktObj.ticketTenderList[key].tenderAmount;
     }
 
-    if (allowPartPay && tktObj.partialAmount > 0 && tktObj.partialAmount == tenderTotals || Number(ticketTotal).toFixed(2) == Number(tenderTotals).toFixed(2)) {
+    if (allowPartPay && tktObj.partialAmount > 0 && tktObj.partialAmount == tenderTotals || Number(Number(ticketTotal).toFixed(2)) == Number(Number(tenderTotals).toFixed(2))) {
       return true;
     }
     else {

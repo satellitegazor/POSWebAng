@@ -23,7 +23,7 @@
                         <span class="label label-default">&nbsp; {{itm.srvdByAssociateText}} &nbsp;</span>
                     </td>
                     <td class="rightjustfy">
-                        <label class="label label-default">{{dfltCurrSymbl}}{{itm.unitPrice  | number:'1.2-2' }}</label>
+                        <label class="label label-default">{{dcCurrSymbl}}{{itm.unitPrice  | number:'1.2-2' }}</label>
                     </td>
                     <td class="rightjustfy"> 
                         <a class="hyplink" id="vndrDisc_{{itm.salesItemUID}}_{{itm.ticketDetailId}}" (click)="DisplayVendorDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc)" >{{dfltCurrSymbl}}{{ itm.vndCpnAmountDC  | number:'1.2-2' }}</a>
@@ -33,10 +33,10 @@
                         <!-- <label class="label label-default">{{(itm.unitPrice * itm.quantity) * itm.exchangeCouponDiscountPct * 0.01  | number:'1.2-2'}}</label> -->
                     </td>
                     <td class="rightjustfy">
-                        <label class="label label-default">{{dfltCurrSymbl}}{{ itm.lineItemTaxAmount  | number:'1.2-2'}}</label>
+                        <label class="label label-default">{{dcCurrSymbl}}{{ itm.lineItemTaxAmount  | number:'1.2-2'}}</label>
                     </td>
                     <td class="rightjustfy">
-                        <label class="label label-default">{{dfltCurrSymbl}}{{itm.lineItemDollarDisplayAmount  | number:'1.2-2' }}</label>
+                        <label class="label label-default">{{dcCurrSymbl}}{{itm.lineItemDollarDisplayAmount  | number:'1.2-2' }}</label>
                     </td>
                 </tr>
             </table>

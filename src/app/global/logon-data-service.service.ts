@@ -51,8 +51,6 @@ export class LogonDataService {
         sessionStorage.setItem('countryCode', ltVendorLogonData.countryCode);
         sessionStorage.setItem('currCode', ltVendorLogonData.currCode);
         sessionStorage.setItem('ccDevice', ltVendorLogonData.ccDevice);
-        sessionStorage.setItem('usdFastcash', ltVendorLogonData.usdFastcash);
-        sessionStorage.setItem('frgnFastcash', ltVendorLogonData.frgnFastcash);
         sessionStorage.setItem('uuidExists', String(ltVendorLogonData.uuidExists != null ? ltVendorLogonData.uuidExists : false ))
         sessionStorage.setItem('eagleCashOptn', String(ltVendorLogonData.eagleCashOptn != null ? ltVendorLogonData.eagleCashOptn : false));
         sessionStorage.setItem('useShipHndlng', String(ltVendorLogonData.useShipHndlng != null ? ltVendorLogonData.useShipHndlng : false));
@@ -159,7 +157,7 @@ export class LogonDataService {
         sessionStorage.setItem('locationUID', locConfig.configs[0].locationUID.toString());
         sessionStorage.setItem('locationName', locConfig.configs[0].locationName);
         sessionStorage.setItem('storeName', locConfig.configs[0].storeName);
-        sessionStorage.setItem('pINReqdForSalesTran', (locConfig.configs[0].pINReqdForSalesTran ? locConfig.configs[0].pINReqdForSalesTran : false).toString());
+        sessionStorage.setItem('pINReqdForSalesTran', (locConfig.configs[0].pinReqdForSalesTran ? locConfig.configs[0].pinReqdForSalesTran : false).toString());
         sessionStorage.setItem('associateName', locConfig.individuals[0].associateName);
         sessionStorage.setItem('associateRole', locConfig.configs[0].associateRole);
         sessionStorage.setItem('associateRoleDesc', locConfig.configs[0].associateRoleDesc);
@@ -188,7 +186,7 @@ export class LogonDataService {
         sessionStorage.setItem('cCDevice', locConfig.configs[0].cCDevice);
         sessionStorage.setItem('regionId', locConfig.configs[0].regionId);
         sessionStorage.setItem('defaultCurrency', locConfig.configs[0].defaultCurrency);
-        sessionStorage.setItem('uSDFastcash', locConfig.configs[0].uSDFastcash);
+        sessionStorage.setItem('usdFastcash', locConfig.configs[0].usdFastcash);
         sessionStorage.setItem('frgnFastcash', locConfig.configs[0].frgnFastcash);
         sessionStorage.setItem('countryDialCode', locConfig.configs[0].countryDialCode);
         sessionStorage.setItem('addressLine1', locConfig.configs[0].addressLine1);
@@ -252,7 +250,7 @@ export class LogonDataService {
         locConfig.locationUID = Number(sessionStorage.getItem('locationUID') ? sessionStorage.getItem('locationUID') : '0');
         locConfig.locationName = String(sessionStorage.getItem('locationName') ? sessionStorage.getItem('locationName') : '0');
         locConfig.storeName = String(sessionStorage.getItem('storeName') ? sessionStorage.getItem('storeName') : '0');
-        locConfig.pINReqdForSalesTran = (sessionStorage.getItem('pINReqdForSalesTran') ? sessionStorage.getItem('pINReqdForSalesTran') : 'false') == 'true';
+        locConfig.pinReqdForSalesTran = (sessionStorage.getItem('pinReqdForSalesTran') ? sessionStorage.getItem('pinReqdForSalesTran') : 'false') == 'true';
         locConfig.associateName = String(sessionStorage.getItem('associateName') ? sessionStorage.getItem('associateName') : '0');
         locConfig.associateRole = String(sessionStorage.getItem('associateRole') ? sessionStorage.getItem('associateRole') : '0');
         locConfig.associateRoleDesc = String(sessionStorage.getItem('associateRoleDesc') ? sessionStorage.getItem('associateRoleDesc') : '0');
@@ -281,7 +279,7 @@ export class LogonDataService {
         locConfig.cCDevice = String(sessionStorage.getItem('cCDevice') ? sessionStorage.getItem('cCDevice') : '0');
         locConfig.regionId = String(sessionStorage.getItem('regionId') ? sessionStorage.getItem('regionId') : '0');
         locConfig.defaultCurrency = String(sessionStorage.getItem('defaultCurrency') ? sessionStorage.getItem('defaultCurrency') : '0');
-        locConfig.uSDFastcash = String(sessionStorage.getItem('uSDFastcash') ? sessionStorage.getItem('uSDFastcash') : '0');
+        locConfig.usdFastcash = String(sessionStorage.getItem('usdFastcash') ? sessionStorage.getItem('usdFastcash') : '0');
         locConfig.frgnFastcash = String(sessionStorage.getItem('frgnFastcash') ? sessionStorage.getItem('frgnFastcash') : '0');
         locConfig.countryDialCode = String(sessionStorage.getItem('countryDialCode') ? sessionStorage.getItem('countryDialCode') : '0');
         locConfig.addressLine1 = String(sessionStorage.getItem('addressLine1') ? sessionStorage.getItem('addressLine1') : '0');
@@ -296,6 +294,26 @@ export class LogonDataService {
         return locConfig;
     }
 
+    public getDailyExchRate(): DailyExchRate {
+        var dailyExchRate: DailyExchRate = new DailyExchRate();
+
+        dailyExchRate.busDate = new Date(Date.parse(sessionStorage.getItem('BusDate') ? sessionStorage.getItem('BusDate')! : "01/01/1970"));
+        dailyExchRate.cliTimeVar = Number(sessionStorage.getItem('CliTimeVar') ? sessionStorage.getItem('CliTimeVar') : '0');
+        dailyExchRate.currCode = String(sessionStorage.getItem('CurrCode') ? sessionStorage.getItem('CurrCode') : '');
+        dailyExchRate.dailyExchRateId = Number(sessionStorage.getItem('DailyExchRateId') ? sessionStorage.getItem('DailyExchRateId') : '0');
+        dailyExchRate.dfltCurrCode = String(sessionStorage.getItem('DfltCurrCode') ? sessionStorage.getItem('DfltCurrCode') : '');
+        dailyExchRate.exchangeRate = Number(sessionStorage.getItem('ExchangeRate') ? sessionStorage.getItem('ExchangeRate') : '0');
+        //dailyExchRate.foreignCurrCode = String(sessionStorage.getItem('ForeignCurrCode') ? sessionStorage.getItem('ForeignCurrCode') : '');
+        dailyExchRate.isForeignCurr = Boolean(sessionStorage.getItem('IsForeignCurr') ? sessionStorage.getItem('IsForeignCurr') : 'false');
+        dailyExchRate.oneFCurrRate = Number(sessionStorage.getItem('OneFCurrRate') ? sessionStorage.getItem('OneFCurrRate') : '0');
+        dailyExchRate.oneUSDRate = Number(sessionStorage.getItem('OneUSDRate') ? sessionStorage.getItem('OneUSDRate') : '0');
+        dailyExchRate.prevDayExchRate = Number(sessionStorage.getItem('PrevDayExchRate') ? sessionStorage.getItem('PrevDayExchRate') : '0');
+        dailyExchRate.prevDayIsOneUSD = Boolean(sessionStorage.getItem('PrevDayIsOneUSD') ? sessionStorage.getItem('PrevDayIsOneUSD') : 'false');
+        dailyExchRate.saleTranCount = Number(sessionStorage.getItem('SaleTranCount') ? sessionStorage.getItem('SaleTranCount') : '0');
+
+        return dailyExchRate;
+    }
+
     public setDailyExchRate(exchRate: DailyExchRate) {
         
         sessionStorage.setItem('BusDate', exchRate.busDate.toString());
@@ -303,6 +321,12 @@ export class LogonDataService {
         sessionStorage.setItem('CurrCode', exchRate.currCode.toString());
         sessionStorage.setItem('DailyExchRateId', exchRate.dailyExchRateId.toString());
         sessionStorage.setItem('DfltCurrCode', exchRate.dfltCurrCode.toString());
+        if(exchRate.currCode != exchRate.dfltCurrCode) {
+            sessionStorage.setItem('NonDfltCurrCode', exchRate.currCode.toString());
+        }
+        else {
+            sessionStorage.setItem('NonDfltCurrCode', 'USD');
+        }
         sessionStorage.setItem('ExchangeRate', exchRate.exchangeRate.toString());
         //sessionStorage.setItem('ForeignCurrCode', exchRate.foreignCurrCode.toString());
         sessionStorage.setItem('IsForeignCurr', exchRate.isForeignCurr.toString());
@@ -332,12 +356,11 @@ export class LogonDataService {
         return Boolean(sessionStorage.getItem('IsForeignCurr') ? sessionStorage.getItem('IsForeignCurr') : 'false').valueOf();
     }
 
-    public getForeignCurrCode(): string {
-        return String(sessionStorage.getItem('ForeignCurrCode') ? sessionStorage.getItem('ForeignCurrCode') : '').valueOf();
+    public getNonDfltCurrCode(): string {
+        return String(sessionStorage.getItem('NonDfltCurrCode') ? sessionStorage.getItem('NonDfltCurrCode') : '').valueOf();
     }
     public getDfltCurrCode(): string {
         return String(sessionStorage.getItem('DfltCurrCode') ? sessionStorage.getItem('DfltCurrCode') : 'USD').valueOf();
     }
-
 
 }

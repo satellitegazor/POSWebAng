@@ -32,14 +32,14 @@ export class SaveTicketSuccessComponent implements OnInit {
   ngOnInit(): void {
     this._store.select(getSavedTicketResult).subscribe(data => {
       this.saveTktRsltMdl = data;
-      this.tktSaveResultMessage = this.saveTktRsltMdl.ticketNumber > 0 ? 'Ticket save Successful' : 'Ticket saving...'
+      this.tktSaveResultMessage = this.saveTktRsltMdl.ticketNumber > 0 ? ('Ticket save Successful')  : 'Ticket saving...'
     })
   }
 
   ReceiptOption(optn: string) {
     this._store.dispatch(resetTktObj({dummyNumber: 0}));
 
-    if(this._logonDataSvc.getLocationConfig().pINReqdForSalesTran) {
+    if(this._logonDataSvc.getLocationConfig().pinReqdForSalesTran) {
       this._modalService.open(PinValidateComponent);
     }
     else {

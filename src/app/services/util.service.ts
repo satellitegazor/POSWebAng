@@ -31,6 +31,16 @@ export class UtilService {
     ['EG', 'eaglecash'],
     ['MS', 'pinpadtran']
   ]);
+
+  public currencySymbols = new Map<string, string>([
+    ['USD', '$'],
+    ['EUR', '€'],
+    ['GBP', '£'],
+    ['JPY', '¥'],
+    ['KRW', '₩'],
+    ['TRY', '₺'],
+    ['PLN', 'zł'],
+  ]);
 }
 
 export class CPOSAppType {

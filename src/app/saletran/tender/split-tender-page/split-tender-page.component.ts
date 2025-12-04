@@ -54,7 +54,7 @@ tenderAmountFC: number = 0;
     })
 
     this.defaultCurrCode = this._logonDataSvc.getDfltCurrCode();
-    this.nonDefaultCurrCode = this._logonDataSvc.getForeignCurrCode()
+    this.nonDefaultCurrCode = this._logonDataSvc.getNonDfltCurrCode();
   }
   
 btnDecline($event: MouseEvent) {

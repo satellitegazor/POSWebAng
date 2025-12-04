@@ -12,6 +12,7 @@ import { tktObjInitialState, saleTranDataInterface } from '../../store/ticketsto
 import { CouponsModalDlgComponent } from '../coupons/coupons.component';
 import { TipsModalDlgComponent } from '../tips-modal-dlg/tips-modal-dlg.component';
 import { currSymbls } from 'src/app/models/CurrencySymbols';
+import { UtilService } from 'src/app/services/util.service';
 
 @Component({
     selector: 'app-checkout-items',
@@ -30,7 +31,8 @@ export class CheckoutItemsComponent implements OnInit {
   constructor(private _store: Store<saleTranDataInterface>, 
     private _logonDataSvc: LogonDataService,
     private _modalService: NgbModal,
-    private _router: Router) { }
+    private _router: Router,
+    private _utilSvc: UtilService) { }
 
   allowTips: boolean = false;
   tktDtlItems: SalesTransactionCheckoutItem[] = [];
@@ -46,7 +48,10 @@ export class CheckoutItemsComponent implements OnInit {
   taxExempt: boolean = false;
 
 
-  public dfltCurrSymbl: string = '$'
+  
+  dcCurrSymbl: string | undefined;
+  ndcCurrSymbl: string | undefined;
+
   public exchRate: number = 1;
   public dfltCurrCode: string = 'USD'
 
@@ -59,10 +64,13 @@ export class CheckoutItemsComponent implements OnInit {
     this._store.select(getCheckoutItemsSelector).subscribe(saleItems => {
       this.tktDtlItems = saleItems == null ? [] : saleItems;
 
-      this.updateCheckoutTotals();
+      this.calcCheckoutTotals();
     })
 
-    this.dfltCurrSymbl = currSymbls.find(x => x.key == this._logonDataSvc.getDfltCurrCode())?.value ?? '$'; 
+    
+    this.dcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getDfltCurrCode());
+    this.ndcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getNonDfltCurrCode());
+
     this.exchRate = this._logonDataSvc.getExchangeRate();
     this.dfltCurrCode = this._logonDataSvc.getDfltCurrCode();
     
@@ -91,7 +99,7 @@ export class CheckoutItemsComponent implements OnInit {
     this._router.navigateByUrl('/salestran');
   }
 
-  public updateCheckoutTotals() {
+  public calcCheckoutTotals() {
 
     this.subTotal = 0;
     this.exchCpnTotal = 0;
@@ -100,9 +108,7 @@ export class CheckoutItemsComponent implements OnInit {
     this.grandTotal = 0;
     this.totalSavings = 0;
 
-
     for (let k = 0; k < this.tktDtlItems.length; k++) {
-      
       
       let exchCpnTotal = Number(Number((this.tktDtlItems[k].unitPrice * this.tktDtlItems[k].quantity) * this.tktDtlItems[k].exchangeCouponDiscountPct * 0.01).toFixed(2));  
       let saleTaxTotal = Number(Number((this.tktDtlItems[k].unitPrice * this.tktDtlItems[k].quantity) * this.tktDtlItems[k].salesTaxPct * 0.01).toFixed(2));
@@ -120,9 +126,9 @@ export class CheckoutItemsComponent implements OnInit {
       checkOutItem.discountAmount = Number(Number(exchCpnTotal + vndDiscountTotal).toFixed(2));
 
     }
+
     this.grandTotal = Number(Number(this.subTotal - this.exchCpnTotal + this.saleTaxTotal).toFixed(2));
     this.totalSavings = Number(Number(this.exchCpnTotal + this.vndDiscountTotal).toFixed(2));
-
   }
 
   public DisplayVendorDiscPopUp(saleItemId: number, tktDetailId: number, itemName: string) {

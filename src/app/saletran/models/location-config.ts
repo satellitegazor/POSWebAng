@@ -22,7 +22,7 @@ export class LocationConfig {
     public locationUID: number = 0;
     public locationName: string = '';
     public storeName: string = '';
-    public pINReqdForSalesTran: boolean = false;
+    public pinReqdForSalesTran: boolean = false;
     public associateName: string = '';
     public associateRole: string = '';
     public associateRoleDesc: string = '';
@@ -51,7 +51,7 @@ export class LocationConfig {
     public cCDevice: string = '';
     public regionId: string = '';
     public defaultCurrency: string = '';
-    public uSDFastcash: string = '';
+    public usdFastcash: string = '';
     public frgnFastcash: string = '';
     public countryDialCode: string = '';
     public addressLine1: string = '';

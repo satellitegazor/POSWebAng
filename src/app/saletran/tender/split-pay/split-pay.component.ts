@@ -92,7 +92,7 @@ export class SplitPayComponent implements OnInit {
     });
 
     this.defaultCurrCode = this._logonDataSvc.getDfltCurrCode();
-    this.nonDefaultCurrCode = this._logonDataSvc.getForeignCurrCode()
+    this.nonDefaultCurrCode = this._logonDataSvc.getNonDfltCurrCode()
 
   }
 

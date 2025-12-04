@@ -12,11 +12,11 @@ import { firstValueFrom, Subscription, take } from 'rxjs';
 import { getRemainingBal, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { TenderUtil } from '../tender-util';
 import { addTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj } from '../../store/ticketstore/ticket.action';
-
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-cash-tndr',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './cash-tndr.component.html',
   styleUrl: './cash-tndr.component.css'
 })
@@ -28,6 +28,8 @@ export class CashTndrComponent {
 
   dcCurrSymbl: string | undefined;
   ndcCurrSymbl: string | undefined;
+  dcCurrencyCode: string = '';
+  ndcCurrencyCode: string = '';
   tenderAmountFC: number | undefined;
   tenderAmount: number | undefined;
 
@@ -38,33 +40,49 @@ export class CashTndrComponent {
     private _logonDataSvc: LogonDataService,
     private _utilSvc: UtilService) {
     // Initialization logic can go here if needed
-    this.loadFastCashButtons();
+    
   }
 
   private _tktObj: TicketSplit = {} as TicketSplit;
   private _captureTranResponse: ExchCardTndr = {} as ExchCardTndr;
   private subscription: Subscription = {} as Subscription;
 
-  private _tndrObj: TicketTender = {} as TicketTender;
+  _tndrObj: TicketTender = {
+    tenderTypeCode: '',
+    tenderAmount: 0,
+    fcTenderAmount: 0,
+    tenderStatus: TenderStatusType.InProgress,
+    isAuthorized: false,
+    tndMaintTimestamp: new Date(),
+  } as TicketTender;
+
   usdFastCashButtons: number[] = [];
   foreignFastCashButtons: number[] = [];
 
   ngOnInit(): void {
 
     this.activatedRoute.queryParams.subscribe(params => {
-      this._tndrObj.tenderTypeCode = params['code'];
+      this._tndrObj.tenderTypeCode = params['code'] || 'CA';
     })
 
-    this.dcCurrSymbl = this._logonDataSvc.getDfltCurrCode();
-    this.ndcCurrSymbl = this._logonDataSvc.getForeignCurrCode();
+    this.dcCurrencyCode = this._logonDataSvc.getDfltCurrCode();
+    this.ndcCurrencyCode = this._logonDataSvc.getNonDfltCurrCode();
+
+    this.dcCurrSymbl =  this._utilSvc.currencySymbols.get(this.dcCurrencyCode);
+    this.ndcCurrSymbl = this._utilSvc.currencySymbols.get(this.ndcCurrencyCode);
 
     this._store.select(getRemainingBal).subscribe(data => {
-      this._tndrObj.tenderAmount = data.amountDC
-      this._tndrObj.fcTenderAmount = data.amountNDC;
-      this.tenderAmount = data.amountDC;
-      this.tenderAmountFC = data.amountNDC;
-      //console.log("selector getRemainingBal Tender Amount: ", this._tndrObj.tenderAmount);
+      this.tenderAmount = data.amountDC || 0.0;
+      this.tenderAmountFC = data.amountNDC || 0.0;
+
+      this._tndrObj = {
+        ...this._tndrObj,
+        tenderAmount: this.tenderAmount,
+        fcTenderAmount: this.tenderAmountFC
+      };
     })
+
+    this.loadFastCashButtons();
 
     this._store.select(getTktObjSelector).subscribe(data => {
       if (data == null)
@@ -73,18 +91,20 @@ export class CashTndrComponent {
       this._tktObj = data;
     })
 
+
   }
 
   private loadFastCashButtons(): void {
     // USD Fast Cash
-    let usdFastCash = this._logonDataSvc.getLocationConfig().uSDFastcash;
+    let usdFastCash = this._logonDataSvc.getLocationConfig().usdFastcash;
+    
     let frgnFastCash = this._logonDataSvc.getLocationConfig().frgnFastcash;
 
     if (usdFastCash) {
       this.usdFastCashButtons = usdFastCash
         .split(',')
         .map(val => parseFloat(val.trim()))
-        .filter(val => (!isNaN(val) && val >= this._tndrObj.tenderAmount!))
+        .filter(val => (!isNaN(val) && val >= this._tndrObj.tenderAmount!)) 
         .sort((a, b) => a - b);
     }
 
