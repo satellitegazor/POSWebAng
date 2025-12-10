@@ -1,4 +1,4 @@
-﻿import { SalesTransactionCheckoutItem } from "../saletran/models/salesTransactionCheckoutItem";
+﻿import { SalesTransactionCheckoutItem } from "../longterm/models/salesTransactionCheckoutItem";
 import { AssociateSaleTips } from "./associate.sale.tips";
 import { LTC_Customer } from "./customer";
 import { ExchCardTndr } from "./exch.card.tndr";

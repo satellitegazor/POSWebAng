@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { DailyExchRate } from '../models/exchange.rate';
 import { VendorLoginResultsModel } from '../models/vendor.login.results.model';
-import { LocationConfig, LocationConfigModel } from '../saletran/models/location-config';
-import { TenderTypeModel } from '../saletran/models/tender.type';
+import { LocationConfig, LocationConfigModel } from '../longterm/models/location-config';
+import { TenderTypeModel } from '../longterm/models/tender.type';
 
 @Injectable({
   providedIn: 'root'

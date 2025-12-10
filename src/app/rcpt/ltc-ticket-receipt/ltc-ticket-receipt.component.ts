@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { LTC_Ticket } from 'src/app/saletran/models/ticket.list';
-import { SalesTranService } from 'src/app/saletran/services/sales-tran.service';
+import { LTC_Ticket } from 'src/app/longterm/models/ticket.list';
+import { SalesTranService } from 'src/app/longterm/saletran/services/sales-tran.service';
 import { TicketLookupComponent } from 'src/app/shared/ticket-lookup/ticket-lookup.component';
 
 @Component({

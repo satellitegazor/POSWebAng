@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { LTC_TransactionDetails } from 'src/app/saletran/models/ticket.list';
-import { SalesTranService } from 'src/app/saletran/services/sales-tran.service';
+import { LTC_TransactionDetails } from 'src/app/longterm/models/ticket.list';
+import { SalesTranService } from 'src/app/longterm/saletran/services/sales-tran.service';
 
 @Component({
     selector: 'app-tran-details',

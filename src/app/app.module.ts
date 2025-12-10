@@ -8,7 +8,6 @@ import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
 import { AuthInterceptor } from './auth/auth.interceptor';
-import { SalesTranModule } from './saletran/saletran.module';
 import { SharedSubjectModule } from './shared-subject/shared-subject.module';
 import { NgbModalModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { StoreModule } from '@ngrx/store';
@@ -29,7 +28,7 @@ import { RcptModule } from './rcpt/rcpt.module';
 import { InactiveLogoutInterceptor } from './auth/inactive-logout.interceptor';
 import { AlertMessageComponent } from './alertmsg/alert-message/alert-message.component';
 import { PosCurrencyDirective } from './directives/pos-currency.directive';
-
+import { SalesTranModule } from './longterm/saletran/saletran.module';
 
 
  

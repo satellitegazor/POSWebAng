@@ -1,4 +1,4 @@
-﻿import { LTC_Associates } from "../saletran/models/location.associates";
+﻿import { LTC_Associates } from "../longterm/models/location.associates";
 
 
 export class TktSaleItem {

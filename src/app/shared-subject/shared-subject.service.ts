@@ -1,7 +1,7 @@
 ﻿import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { VendorLoginResultsModel } from '../models/vendor.login.results.model';
-import { SaleItem } from '../saletran/models/sale.item';
+import { SaleItem } from '../longterm/models/sale.item';
 
 @Injectable()
 export class SharedSubjectService {

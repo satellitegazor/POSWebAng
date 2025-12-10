@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { SalesTranService } from '../../saletran/services/sales-tran.service';
-import { saleTranDataInterface } from '../../saletran/store/ticketstore/ticket.state';
+import { SalesTranService } from '../../longterm/saletran/services/sales-tran.service';
+import { saleTranDataInterface } from '../../longterm/saletran/store/ticketstore/ticket.state';
 import { LTC_Customer } from 'src/app/models/customer';
 import { Router } from '@angular/router';
 

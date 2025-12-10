@@ -3,9 +3,9 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { first } from 'rxjs';
 import { LTC_Customer } from 'src/app/models/customer';
-import { SalesTranService } from '../../saletran/services/sales-tran.service'; 
-import { addCustomerId } from '../../saletran/store/ticketstore/ticket.action';
-import { saleTranDataInterface } from '../../saletran/store/ticketstore/ticket.state';
+import { SalesTranService } from '../../longterm/saletran/services/sales-tran.service'; 
+import { addCustomerId } from '../../longterm/saletran/store/ticketstore/ticket.action';
+import { saleTranDataInterface } from '../../longterm/saletran/store/ticketstore/ticket.state';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 
 @Component({

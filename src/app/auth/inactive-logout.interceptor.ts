@@ -9,8 +9,8 @@ import { Observable, Subscription, delay, of } from 'rxjs';
 import { LocalStorageService } from '../global/local-storage.service';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { saleTranDataInterface } from '../saletran/store/ticketstore/ticket.state';
-import { resetTktObj } from '../saletran/store/ticketstore/ticket.action';
+import { saleTranDataInterface } from '../longterm/saletran/store/ticketstore/ticket.state';
+import { resetTktObj } from '../longterm/saletran/store/ticketstore/ticket.action';
 @Injectable()
 export class InactiveLogoutInterceptor implements HttpInterceptor {
   
