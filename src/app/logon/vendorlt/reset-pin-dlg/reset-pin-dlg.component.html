@@ -1,0 +1,25 @@
+<div class="modal-header">
+    <h4>Please change the password</h4>
+</div>
+<div class="modal-content">
+    <table class="table table-striped">
+        <tr class="form-group">
+            <td><label>New Pin:</label></td>
+            <td><input type="password" class="form-control" id="newpin" [(ngModel)]="newpin" /></td>
+            <!-- <td><input type="number" class="ndc saleassocid form-control" id="ndc{{assoc.individualUID}}" [ngModel]="assocSaleTips[i].tipAmtLocCurr | number: '0.2-2'" /></td> -->
+        </tr>
+        <tr>
+            <td><label>Confirm Pin:</label></td>
+            <td><input type="password" class="form-control" id="confirmpin" [(ngModel)]="verifypin" /></td>
+            <!-- <td>
+                <input type="number" class="ndc saleassocid form-control" id="ndcTotal" value="{{ndcTotal}}" />
+            </td> -->
+        </tr>
+    </table>
+</div>
+<div class="modal-footer">
+    <div class="row">
+        <button class="btn btn-info" (click)="Logon()">Save</button>&nbsp;
+        <button class="btn btn-info" (click)="Cancel()">Cancel</button>&nbsp;
+    </div>
+</div>

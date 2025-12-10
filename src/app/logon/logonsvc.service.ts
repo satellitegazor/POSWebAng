@@ -5,6 +5,8 @@ import { catchError } from 'rxjs/operators';
 import { VendorLocationsResultModel, VLogonModel } from './models/vlogon.model';
 import { GlobalConstants } from '../global/global.constants';
 import { VendorLoginResultsModel } from '../models/vendor.login.results.model';
+import { AssociatePINUpdateResultsModel } from './models/associate.pin.update.Result.model';
+import { MobileBase } from '../models/mobile.base';
 
 @Injectable({
     providedIn: 'root'
@@ -27,6 +29,11 @@ export class LogonSvc {
     public logonUser(mdl: VLogonModel): Observable<VendorLoginResultsModel> {
             
         return this.httpclient.post<VendorLoginResultsModel>(GlobalConstants.CPOS_SVCS_URL + '/common/ValPin',  JSON.stringify(mdl) , { headers: this.headerObjs });
+    }
+
+    public saveAssociatePIN(mdl: VLogonModel): Observable<MobileBase> {
+
+        return this.httpclient.post<MobileBase>(GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveAssociatePIN', JSON.stringify(mdl), { headers: this.headerObjs });
     }
 
     public testUser(): Observable<any> {

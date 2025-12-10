@@ -18,7 +18,7 @@
                     <label for="ddLocation">Location</label>
                     <select #ddlLocation id="ddLocation" class="form-control dropdown" (change)="onLocationChange($event, ddlLocation.value)">
                         <option *ngFor="let loc of LocationList" [selected]="loc.locationUID == selectedLocationId"
-                                value="{{loc.locationUID}}">
+                                [value]="loc.locationUID">
                             {{loc.facilityName}}
                         </option>
                     </select>
@@ -34,11 +34,11 @@
         <div id="nolocationsalert" class="alert alert-warning" role="alert" style="display:none">
             No Locations matched the given Exchange Number
         </div>
-        <div id="logonSuccessMsg" class="bar bar-footer bar-balanced alert alert-success alert-dismissible fade" style="display: {{successMsgDisplay}};">
+        <div id="logonSuccessMsg" class="bar bar-footer bar-balanced alert alert-success alert-dismissible fade" [style.display]="successMsgDisplay">
             <strong>Success!</strong> Your message has been sent successfully.
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-        <div id="logonFailMsg" class="alert alert-danger alert-dismissible fade" style="display: {{errorMsgDisplay}};">
+        <div id="logonFailMsg" class="alert alert-danger alert-dismissible fade" [style.display]="errorMsgDisplay">
             <strong>Error!</strong> Unable to login. Please verify the credentials entered.
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>

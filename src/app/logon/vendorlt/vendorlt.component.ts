@@ -11,6 +11,9 @@ import { AlertOptions } from 'src/app/alertmsg/alert-message/alert-message.model
 import { LocationConfigState } from 'src/app/saletran/store/locationconfigstore/locationconfig.state';
 import { props, Store } from '@ngrx/store';
 import { setLocationConfig } from 'src/app/saletran/store/locationconfigstore/locationconfig.action';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ResetPinDlgComponent } from './reset-pin-dlg/reset-pin-dlg.component';
+import { MandateTrainingComponent } from './mandate-training/mandate-training.component';
 
 @Component({
     selector: 'app-logon-vendorlt',
@@ -36,7 +39,8 @@ export class VendorLTComponent implements OnInit {
         private _localStorageSvc: LocalStorageService, 
         private _saleTranSvc: SalesTranService,
         private _alertSvc: AlertService,
-        private _locConfigStore: Store<LocationConfigState> ) { }
+        private _locConfigStore: Store<LocationConfigState>,
+        private _modalService: NgbModal ) { }
     cookieVal = '';
     ngOnInit() {
 
@@ -105,24 +109,61 @@ export class VendorLTComponent implements OnInit {
             this._localStorageSvc.setItemData('jwtToken', data.tokenString);
 
             this._localStorageSvc.setItemData('apptype', 'longterm')
-
-            
-
             //console.log('vendorlt sending data to subject');
             this._logonDataSvc.setLTVendorLogonData(data);
 
             this._saleTranSvc.getTenderTypes(1, 100).subscribe(data => {
                 this._logonDataSvc.setTenderTypes(data);
             });
-
             this._saleTranSvc.getLocationConfig(+data.locationUID, +data.individualUID).subscribe(data => {
 
                 this._logonDataSvc.setLocationConfig(data);
                 this._locConfigStore.dispatch(setLocationConfig({ locationConfig: data }));
 
-                //console.log('vendorlt navigating to SalesCart');
-                this.router.navigate(['/salestran']);    
             });
+            locModel.individualUID = +data.individualUID;
+
+            if(data.resetPIN == 1) {
+                const modalRef = this._modalService.open(ResetPinDlgComponent, { backdrop: 'static', keyboard: false, centered: true });
+                modalRef.result.then((result) => {
+                    if(result && result.newPin) {
+                        //console.log('vendorlt reset pin dialog closed with new pin');
+                        locModel.newPIN = result.newPin;
+                        locModel.verifyPIN = result.newPin;
+
+                        setTimeout(() => {
+                            this.logonSvc.saveAssociatePIN(locModel).subscribe(pinData => {   
+                                //console.log('vendorlt navigating to SalesCart');
+                                this.router.navigate(['/salestran']);
+                            });
+                        }, 500);
+                    }
+                }, (reason) => {
+                    //console.log('vendorlt reset pin dialog dismissed');
+                });
+                return;
+            }
+            if(data.resetPIN == 0 && data.showPrivTrngConfrm == 1) {
+                const modalRef = this._modalService.open(MandateTrainingComponent, { backdrop: 'static', keyboard: false, centered: true });
+                modalRef.componentInstance.vendorName = data.associateName;
+                modalRef.componentInstance.businessDate = new Date;
+                modalRef.result.then((result: any) => {
+                    locModel.pageID  = 2;
+                    locModel.privActConfmComplete = true;
+                    this.logonSvc.logonUser(locModel).subscribe(() => {   
+                        this.router.navigate(['/salestran']);
+                    });
+                    
+                    //console.log('vendorlt mandate training dialog closed');
+                }, (reason: any) => {
+                    //console.log('vendorlt mandate training dialog dismissed');
+                });
+                return;
+            }
+            //console.log('vendorlt navigating to SalesCart');
+            this.router.navigate(['/salestran']);
+
+
         });
     }
 
