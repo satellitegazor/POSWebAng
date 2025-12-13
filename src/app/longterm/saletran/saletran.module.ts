@@ -41,15 +41,19 @@ import { SharedModule } from '../../shared/shared.module';
 import { DecimalDirective } from '../../directives/decimal-directive';
 import { PinValidateComponent } from './pin-validate/pin-validate.component';
 import { PosCurrencyDirective } from '../../directives/pos-currency.directive';
+import { ItemButtonPageComponent } from '../itembuttonmenu/item-button-page/item-button-page.component';
+import { ItemButtonDeptListComponent } from '../itembuttonmenu/item-button-dept-list/item-button-dept-list.component';
+import { ItemButtonSalesCatListComponent } from '../itembuttonmenu/item-button-sales-cat-list/item-button-sales-cat-list.component';
+import { ItemButtonSalesItemListComponent } from '../itembuttonmenu/item-button-sales-item-list/item-button-sales-item-list.component';
 
-
+import { EditableButtonComponent } from '../itembuttonmenu/editable-button/editable-button.component';
 
 @NgModule({
     declarations: [DeptListComponent, SalesCartComponent, SalesCategoryComponent, SaleItemComponent,
         TktSaleItemComponent,  
         CouponsModalDlgComponent, PartPayComponent, BalanceDueComponent, SaleTotalsComponent, CheckoutPageComponent, 
         CheckoutItemsComponent, TenderPageComponent, TipsModalDlgComponent, SaveTicketSuccessComponent, SplitPayComponent,
-        PinValidateComponent],
+        PinValidateComponent, ItemButtonPageComponent, ItemButtonDeptListComponent, ItemButtonSalesCatListComponent, ItemButtonSalesItemListComponent],
     imports: [
         CommonModule,
         FormsModule,
@@ -65,7 +69,8 @@ import { PosCurrencyDirective } from '../../directives/pos-currency.directive';
         StoreModule.forFeature(TKT_OBJ_STATE, TktObjReducer),
         EffectsModule.forFeature([TicketObjectEffects]),
         SharedModule,
-        DecimalDirective, PosCurrencyDirective
+        DecimalDirective, PosCurrencyDirective,
+        EditableButtonComponent
     ],
     exports: [],
     providers: [authinterceptorProviders],

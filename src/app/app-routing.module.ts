@@ -9,6 +9,7 @@ const appRoutes: Routes = [
     { path: 'salestran', loadChildren: () => import('./longterm/saletran/saletran.module').then(mod => mod.SalesTranModule) },
     { path: 'misc', loadChildren: () => import('./misc-module/misc.module').then(mod => mod.MiscModule) },
     { path: 'lrcpt', loadChildren: () => import('./rcpt/rcpt.module').then(mod => mod.RcptModule) },
+    { path: 'itembtnmenu', loadChildren: () => import('./longterm/saletran/saletran.module').then(mod => mod.SalesTranModule) },
     
 ];
 

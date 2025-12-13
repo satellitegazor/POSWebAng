@@ -13,6 +13,7 @@ import { SplitTenderPageComponent } from './tender/split-tender-page/split-tende
 import { CreditCardTndrComponent } from './tender/credit-card-tndr/credit-card-tndr.component';
 import { EgConcTndrComponent } from './tender/eg-conc-tndr/eg-conc-tndr.component';
 import { CashTndrComponent } from './tender/cash-tndr/cash-tndr.component';
+import { ItemButtonPageComponent } from '../itembuttonmenu/item-button-page/item-button-page.component';
 
 const routes: Routes = [
     { path: 'salestran', component: SalesCartComponent },
@@ -24,8 +25,7 @@ const routes: Routes = [
     { path: 'pinpadtran', component: CreditCardTndrComponent},
     { path: 'eaglecash', component:EgConcTndrComponent},
     { path: 'cashcheck', component:CashTndrComponent},
-    //{ path: '', component: SalesCartComponent},
-    //{ path: 'rlogon', loadChildren? : './misc-module/mic.module##MiscModuleRoutingModule' }
+    { path: 'itembtnmenu', component: ItemButtonPageComponent}
 ];
 
 /*export const routing: ModuleWithProviders = RouterModule.forChild(routes)*/

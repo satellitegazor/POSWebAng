@@ -24,6 +24,7 @@ import { initTktObj } from '../store/ticketstore/ticket.action';
 import { TicketLookupComponent } from '../../../shared/ticket-lookup/ticket-lookup.component';
 import { getCheckoutItemsCount } from '../store/ticketstore/ticket.selector';
 import {initialLocationConfigState, LocationConfigState} from '../store/locationconfigstore/locationconfig.state';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-sales-cart',
@@ -40,8 +41,11 @@ export class SalesCartComponent implements OnInit, OnDestroy {
         };
         
     constructor(private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
-        private _sharedSubSvc: SharedSubjectService, private modalService: NgbModal, private _store: Store<saleTranDataInterface>,
-    private _locConfigStore: Store<LocationConfigState>) {
+        private _sharedSubSvc: SharedSubjectService, 
+        private modalService: NgbModal, 
+        private _store: Store<saleTranDataInterface>,
+        private router: Router,
+        private _locConfigStore: Store<LocationConfigState>) {
         //console.log('SalesCart constructor')
     }
 
@@ -50,13 +54,16 @@ export class SalesCartComponent implements OnInit, OnDestroy {
     saleItemList: SaleItem[] = [];
     saleCatList: SalesCat[] = [];
     vendorLoginResult: VendorLoginResultsModel = {} as VendorLoginResultsModel;
+
     allItemButtonMenuList: SaleItem[] = [];
     salesItemRsltMdl!: Observable<SaleItemResultsModel>;
+
     strongErrMessage: string = "";
     errMessage: string = "";
     displayCustSearchDlg: string = '';
     displayTicketLookupDlg: string = '';
     showErrMsg: boolean = false;
+    
     locationConfig: LocationConfig = {} as LocationConfig;
     locationIndividuals: LocationIndividual[] = [];
 
@@ -75,6 +82,10 @@ export class SalesCartComponent implements OnInit, OnDestroy {
 
         this._buildTktObj();
         this._saleTranSvc.getSaleItemListFromDB(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID).subscribe(data => {
+            if(data.itemButtonMenuResults == null || data.itemButtonMenuResults.length == 0) {
+                this.router.navigate(['/itembtnmenu']);
+                return;
+            }
             this.allItemButtonMenuList = data.itemButtonMenuResults;
             this.getDeptList();
         });

@@ -1,0 +1,14 @@
+<div class="panel">
+    <div class="panel-body ms-2 me-2 mt-2 mb-2">
+        <div class="row bkgray">
+            <div class="col-md-6" *ngFor="let itm of saleItemList; let index=index">
+                <button type="button"
+                    [ngClass]="[activeId === itm.salesItemID ? 'dpt btn btn-block btn-primary' : 'dpt btn btn-block btn-secondary']"
+                    style="margin-top: 10px;margin-bottom: 10px;" id="{{itm.salesItemID}}"
+                    (click)="salesItemClick($event, itm.salesItemID)">
+                    {{itm.salesItemDescription}}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

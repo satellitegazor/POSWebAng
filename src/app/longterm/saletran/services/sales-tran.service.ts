@@ -57,11 +57,12 @@ export class SalesTranService {
     //    });
     //}
 
-    public getSaleItemListFromDB(locationId: number, contractid: number): Observable<SaleItemResultsModel> {
+    public getSaleItemListFromDB(locationId: number, contractid: number, active: number = 1): Observable<SaleItemResultsModel> {
         //console.log('SalesTranSvc getSaleItemListFromDB called')
-        return this.httpClient.get<SaleItemResultsModel>(GlobalConstants.CPOS_SVCS_URL + '/ltc/GetMenuItem?guid=' + GlobalConstants.GET_GUID +
-            '&uid=0&pLocationUID=' + locationId + '&pContractUID=' + contractid + '&pFacilityUID=0&pBusinessFunctionUID=0&pSalesCatUID=0&pDepartmentUID=0&pActive=1',
-            { headers: this.headerObjs });
+        let url = GlobalConstants.CPOS_SVCS_URL + '/ltc/GetMenuItem?guid=' + GlobalConstants.GET_GUID +
+            '&uid=0&pLocationUID=' + locationId + '&pContractUID=' + contractid + '&pFacilityUID=0&pBusinessFunctionUID=0&pSalesCatUID=0&pDepartmentUID=0&pActive=' + active;
+            
+        return this.httpClient.get<SaleItemResultsModel>(url, { headers: this.headerObjs });
     }
  
     public getVendorLoginResult(): VendorLoginResultsModel {
@@ -178,6 +179,13 @@ export class SalesTranService {
             + '&pLocationUID=' + pLocationUID + '&pFacilityUID=' + pFacilityUID + '&pDepartmentUID=' + pDepartmentUID
             + '&pSource=' + pSource + '&pCustomerUID=' + pCustomerUID)
 
+    }
+
+    public updateSalesCatName(salesCat: SalesCat): Observable<SalesCat> {
+        return this.httpClient.put<SalesCat>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveSalesCategory?guid=' + GlobalConstants.PUT_GUID + '&uid=0&DBVal=0',
+            JSON.stringify(salesCat),
+            { headers: this.headerObjs });
     }
 
 }
