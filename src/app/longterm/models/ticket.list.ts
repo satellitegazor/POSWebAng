@@ -2,6 +2,7 @@ import { RouterEvent } from "@angular/router";
 import { MobileBase } from "src/app/models/mobile.base";
 import { LTC_Customer } from "src/app/models/customer";
 import { TicketTender } from "src/app/models/ticket.tender";
+import { SalesTransactionCheckoutItem } from "./salesTransactionCheckoutItem";
 
 export class TicketList {
     public ticketNum: string = '';
@@ -298,60 +299,6 @@ export class LTC_TicketCancel {
     ticketCancelTypeDesc: string= "";
 }
 
-
-export class SalesTransactionCheckoutItem {
-    ticketDetailId: number = 0;
-    tktTransactionID: number = 0;
-    salesItemDesc: string= "";
-    salesItemUID: number = 0;
-    salesCategoryUID: number = 0;
-    quantity: number = 0;
-    unitPrice: number = 0;
-    salesTaxPct: number = 0;
-    envrnmtlTaxPct: number = 0;
-    noOfTags: number = 0;
-    vendorCouponDiscountPct: number = 0;
-    discountAmount: number = 0;
-    exchangeCouponDiscountPct: number = 0;
-    couponLineItemDollarAmount: number = 0;
-    fCCouponLineItemDollarAmount: number = 0;
-    lineItemTaxAmount: number = 0;
-    lineItemEnvTaxAmount: number = 0;
-    lineItemDollarDisplayAmount: number = 0;
-    dtlMaintTimestamp: Date = {} as Date;
-    dtlMaintUserId: string= "";
-    isMiscellaneous: boolean = false;
-    locationUID: number = 0;
-    facilityUID: number = 0;
-    departmentUID: number = 0;
-    businessFunctionUID: number = 0;
-    deptName: string= "";
-    custInfoReq: boolean = false;
-    applyCouponsAfterTax: boolean = false;
-    allowPartPay: boolean = false;
-    allowSaveTkt: boolean = false;
-    instruction: string= "";
-    addlInstruction: string= "";
-    openCashDrwForTips: boolean = false;
-    allowTips: boolean = false;
-    srvdByAssociateVal: number = 0;
-    srvdByAssociateText: string= "";
-    businessFuncCode: string= "";
-    splInstUID: number = 0;
-    splInstDesc: string= "";
-    splInstOthRsn: string= "";
-    itemSaved: boolean = false;
-    dCCouponLineItemDollarAmount: number = 0;
-    dCDiscountAmount: number = 0;
-    dCLineItemDollarDisplayAmount: number = 0;
-    dCLineItemTaxAmount: number = 0;
-    dCUnitPrice: number = 0;
-    lineItmKatsaCpnAmt: number = 0;
-    fCLineItmKatsaCpnAmt: number = 0;
-    fCLineItemEnvTaxAmount: number = 0;
-
-
-}
 
 
 // export class TicketTender {

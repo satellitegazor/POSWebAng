@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { GlobalConstants } from '../../../global/global.constants';
-import { Dept, SaleItem, SalesCat } from '../../models/sale.item';
+import { Dept, SaleItem, SalesCat, SalesCategorySaveResponse } from '../../models/sale.item';
 import { SaleItemResultsModel } from '../../models/sale.item.results.model';
 import { Observable, throwError } from 'rxjs';
 import { SharedSubjectService } from '../../../shared-subject/shared-subject.service';
@@ -181,9 +181,9 @@ export class SalesTranService {
 
     }
 
-    public updateSalesCatName(salesCat: SalesCat): Observable<SalesCat> {
-        return this.httpClient.put<SalesCat>(
-            GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveSalesCategory?guid=' + GlobalConstants.PUT_GUID + '&uid=0&DBVal=0',
+    public updateSalesCatName(uid: number, salesCat: SalesCat): Observable<SalesCategorySaveResponse> {
+        return this.httpClient.put<SalesCategorySaveResponse>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveSalesCategory?guid=' + GlobalConstants.PUT_GUID + '&uid=' + uid + '&DBVal=0',
             JSON.stringify(salesCat),
             { headers: this.headerObjs });
     }

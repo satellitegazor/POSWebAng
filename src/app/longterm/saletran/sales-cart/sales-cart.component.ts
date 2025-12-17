@@ -135,15 +135,20 @@ export class SalesCartComponent implements OnInit, OnDestroy {
         this.saleCatList = [];
         let allDeptList = this.allItemButtonMenuList.filter(item => item.departmentUID == deptId);
         allDeptList.forEach(itm => {
-            let k = this.saleCatList.filter(ct => ct.salesCategoryID == itm.salesCategoryID);
+            let k = this.saleCatList.filter(ct => ct.salesCategoryUID == itm.salesCategoryID);
             if (k.length == 0) {
-                this.saleCatList.push(itm);
+                let cat = new SalesCat();
+                cat.salesCategoryUID = itm.salesCategoryID;
+                cat.description = itm.salesCategoryDescription;
+                cat.departmentName = itm.departmentName;
+                cat.departmentUID = itm.departmentUID;
+                this.saleCatList.push(cat);
             }
         });
         //console.log('setting salesCategoryListRefresh to true');
         this.salesCategoryListRefresh.next(true);
 
-        this.getSaleItemList(this.saleCatList[0].salesCategoryID);
+        this.getSaleItemList(this.saleCatList[0].salesCategoryUID);
     }
 
     public getSaleItemList(categoryId: number): void {

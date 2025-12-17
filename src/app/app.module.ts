@@ -28,6 +28,7 @@ import { RcptModule } from './rcpt/rcpt.module';
 import { InactiveLogoutInterceptor } from './auth/inactive-logout.interceptor';
 import { AlertMessageComponent } from './alertmsg/alert-message/alert-message.component';
 import { PosCurrencyDirective } from './directives/pos-currency.directive';
+import { PosCurrency3Directive } from './directives/pos-currency.directive.3';
 import { SalesTranModule } from './longterm/saletran/saletran.module';
 
 

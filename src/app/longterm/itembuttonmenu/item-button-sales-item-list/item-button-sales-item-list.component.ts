@@ -13,10 +13,23 @@ import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheck
   standalone: false
 })
 export class ItemButtonSalesItemListComponent {
+deleteItem(_t14: SaleItem) {
+throw new Error('Method not implemented.');
+}
+moveItemDown(_t15: number) {
+throw new Error('Method not implemented.');
+}
+moveItemUp(_t15: number) {
+throw new Error('Method not implemented.');
+}
+setDefaultTax(_t14: SaleItem) {
+throw new Error('Method not implemented.');
+}
 
   constructor(private _logonDataSvc: LogonDataService, private _store: Store<saleTranDataInterface>) { }
   @Input() saleItemList: SaleItem[] = [];
   @Input() salesItemListRefreshEvent: Observable<boolean> = new Observable<boolean>();
+  
   activeId: number = 0;
   ngOnInit(): void {
     if (this.saleItemList.length > 0) {

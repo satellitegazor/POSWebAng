@@ -45,6 +45,8 @@ import { ItemButtonPageComponent } from '../itembuttonmenu/item-button-page/item
 import { ItemButtonDeptListComponent } from '../itembuttonmenu/item-button-dept-list/item-button-dept-list.component';
 import { ItemButtonSalesCatListComponent } from '../itembuttonmenu/item-button-sales-cat-list/item-button-sales-cat-list.component';
 import { ItemButtonSalesItemListComponent } from '../itembuttonmenu/item-button-sales-item-list/item-button-sales-item-list.component';
+import { PosCurrency3Directive } from '../../directives/pos-currency.directive.3';
+
 
 import { EditableButtonComponent } from '../itembuttonmenu/editable-button/editable-button.component';
 
@@ -69,7 +71,7 @@ import { EditableButtonComponent } from '../itembuttonmenu/editable-button/edita
         StoreModule.forFeature(TKT_OBJ_STATE, TktObjReducer),
         EffectsModule.forFeature([TicketObjectEffects]),
         SharedModule,
-        DecimalDirective, PosCurrencyDirective,
+        DecimalDirective, PosCurrencyDirective, PosCurrency3Directive,
         EditableButtonComponent
     ],
     exports: [],

@@ -1,4 +1,6 @@
-﻿export class SaleItem {
+﻿import { MobileBase } from "src/app/models/mobile.base";
+
+export class SaleItem {
     allowEnvTax: boolean = false;
     allowPartPay: boolean = false;
     allowSaveTkt: boolean = false;
@@ -140,14 +142,45 @@ export const SaleItemInitialState: SaleItemInterface = {
 }
 
 export class SalesCat {
-    public salesCatActive: boolean = false;
+    public active: boolean = false;
     public salesCatMaintTimeStamp: Date = {} as Date;
     public salesCatTypeUID: number = 0;
-    public salesCategoryDescription: string = '';
-    public salesCategoryID: number = 0;
+    public description: string = '';
+    public salesCategoryUID: number = 0;
     public departmentName: string = '';
     public departmentUID: number = 0;
+    public displayOrder: number = 0;
+    public maintUserId: number = 0;
+    public cliTimeVar: number = 0;
+    public salesItemId: number = 0;
+}
 
+// models/sales-item.model.ts
+
+export class SavedSalesItem {
+    salesItemUID: number = 0;
+    salesCategoryUID: number = 0;
+    description: string = '';
+    unitPrice: number = 0;
+    salesTaxPct: number = 0;
+    displayOrder: number = 0;
+    active: boolean = true;
+    maintTimestamp: string | Date = new Date();
+    maintUserId: number = 0;
+    isMiscellaneous: boolean | null = null;
+    noOfTags: number | null = null;
+    cliTimeVar: number = 0;
+    envTaxPct: number | null = null;
+
+    constructor(init?: Partial<SavedSalesItem>) {
+        Object.assign(this, init);
+    }
+}
+
+export class SalesCategorySaveResponse {
+    public Results: MobileBase = new MobileBase();
+    public category: SalesCat = new SalesCat();
+    public item: SavedSalesItem = new SavedSalesItem();
 }
 
 export interface DeptInterface {

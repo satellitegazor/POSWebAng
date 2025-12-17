@@ -22,13 +22,13 @@ export class SalesCategoryComponent implements OnInit {
 
     ngOnInit(): void {
         if(this.saleCatList.length > 0) {
-            this.activeId = this.saleCatList[0].salesCategoryID;
+            this.activeId = this.saleCatList[0].salesCategoryUID;
         }
 
         this.salesCatListRefreshEvent.subscribe(data => {
             //console.log('subscription called salesCatListRefresh: ' + data);
             if(data) {
-                this.activeId = this.saleCatList[0].salesCategoryID;
+                this.activeId = this.saleCatList[0].salesCategoryUID;
             }
         });
     }

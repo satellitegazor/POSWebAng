@@ -13,10 +13,10 @@
             (keyup.escape)="cancel()" class="form-control form-control-lg" style="height: 100%;" #inputElement />
 
         <!-- Pencil Icon (always visible or on hover) -->
-        <!-- <i class="bi bi-pencil-square ms-2 text-muted pencil-icon" 
+        <i class="bi bi-pencil-square ms-2 text-muted pencil-icon" 
             [class.opacity-0]="!isEditing && !isHovered"
-            [class.opacity-75]="isHovered || isEditing"></i> -->
-        <span class="ms-2 pencil-icon" [class.opacity-0]="!isEditing && !isHovered" [class.opacity-75]="isHovered || !isEditing"
-            style="font-size: 1.6rem;">✏️</span>
+            [class.opacity-75]="isHovered || isEditing"></i>
+        <!-- <span class="ms-2 pencil-icon" [class.opacity-0]="!isEditing && !isHovered" [class.opacity-75]="isHovered || !isEditing"
+            style="font-size: 1.6rem;">✏️</span> -->
     </button>
 </div>

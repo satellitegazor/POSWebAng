@@ -12,6 +12,9 @@ import { LocationConfigState } from '../../saletran/store/locationconfigstore/lo
 import { saleTranDataInterface } from '../../saletran/store/ticketstore/ticket.state';
 import { Subject } from 'rxjs';
 import { VendorLoginResultsModel } from 'src/app/models/vendor.login.results.model';
+import { UtilService } from 'src/app/services/util.service';
+import { GlobalConstants } from 'src/app/global/global.constants';
+import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheckoutItem';
 
 @Component({
   selector: 'app-item-button-page',
@@ -20,16 +23,18 @@ import { VendorLoginResultsModel } from 'src/app/models/vendor.login.results.mod
   standalone: false
 })
 export class ItemButtonPageComponent implements OnInit, OnDestroy {
-btnSalesTranClick($event: PointerEvent) {
-throw new Error('Method not implemented.');
-}
-disableSaveBtn: any;
-btnSaveClick($event: PointerEvent) {
-throw new Error('Method not implemented.');
-}
-btnAddItemClick($event: PointerEvent) {
-throw new Error('Method not implemented.');
-}
+  
+
+  btnSalesTranClick($event: PointerEvent) {
+    throw new Error('Method not implemented.');
+  }
+  disableSaveBtn: any;
+  btnSaveClick($event: PointerEvent) {
+    throw new Error('Method not implemented.');
+  }
+  btnAddItemClick($event: PointerEvent) {
+    throw new Error('Method not implemented.');
+  }
   modalOptions: NgbModalOptions = {
     backdrop: 'static',
     keyboard: false,
@@ -41,10 +46,11 @@ throw new Error('Method not implemented.');
     private _locConfigStore: Store<LocationConfigState>) {
     //console.log('SalesCart constructor')
   }
-  
+
   allItemButtonMenuList: SaleItem[] = [];
   public salesCategoryListRefresh: Subject<boolean> = new Subject<boolean>();
   public salesItemListRefresh: Subject<boolean> = new Subject<boolean>();
+  public salesItemAddedInSC: Subject<SaleItem> = new Subject<SaleItem>();
   vendorLoginResult: VendorLoginResultsModel = {} as VendorLoginResultsModel;
 
   ngOnInit(): void {
@@ -52,6 +58,16 @@ throw new Error('Method not implemented.');
     this._saleTranSvc.getSaleItemListFromDB(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0).subscribe(data => {
       this.allItemButtonMenuList = data.itemButtonMenuResults;
       this.getDeptList();
+    });
+
+    this.salesItemAddedInSC.subscribe(data => {
+      //console.log('subscription called salesItemAddedInSC: ' + data);
+      if (data.salesItemID > 0) {
+        data.locationUID = +this.vendorLoginResult.locationUID;
+        data.contractUID = this.vendorLoginResult.contractUID;
+        this.saleItemList.push(data);
+        //this.getSaleItemList(data);
+      }
     });
 
   }
@@ -83,15 +99,28 @@ throw new Error('Method not implemented.');
     this.saleCatList = [];
     let allDeptList = this.allItemButtonMenuList.filter(item => item.departmentUID == deptId);
     allDeptList.forEach(itm => {
-      let k = this.saleCatList.filter(ct => ct.salesCategoryID == itm.salesCategoryID);
+      let k = this.saleCatList.filter(ct => ct.salesCategoryUID == itm.salesCategoryID);
+
       if (k.length == 0) {
-        this.saleCatList.push(itm);
+        let cat = new SalesCat();
+        cat.salesCategoryUID = itm.salesCategoryID;
+        cat.description = itm.salesCategoryDescription;
+        cat.departmentName = itm.departmentName;
+        cat.departmentUID = itm.departmentUID;
+        cat.salesCatTypeUID = itm.salesCatTypeUID;
+        cat.displayOrder = itm.displayOrder;
+        cat.cliTimeVar = GlobalConstants.GetClientTimeVariance();
+        cat.maintUserId = +this.vendorLoginResult.individualUID
+        cat.active = itm.salesCatActive
+        
+        this.saleCatList.push(cat);
+        //this.saleCatList.push(itm);
       }
     });
     //console.log('setting salesCategoryListRefresh to true');
     this.salesCategoryListRefresh.next(true);
 
-    this.getSaleItemList(this.saleCatList[0].salesCategoryID);
+    this.getSaleItemList(this.saleCatList[0].salesCategoryUID);
   }
 
   public getSaleItemList(categoryId: number): void {
