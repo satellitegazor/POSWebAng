@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './editable-button.component.css'
 })
 export class EditableButtonComponent implements AfterViewInit {
+
   // Only ONE @Input() — use setter to react to changes
   @Input() set name(val: string) {
     this._name = val || 'New Department';
@@ -19,6 +20,17 @@ export class EditableButtonComponent implements AfterViewInit {
 
   @ViewChild('inputElement') inputElement!: ElementRef<HTMLInputElement>;
 
+  private _isActive: boolean = false;
+  @Output() activate = new EventEmitter<void>();
+  @Input()
+  set isActive(value: boolean) {
+    this._isActive = value === true;  // coerce to boolean
+    // Optional: trigger change detection if needed
+    // this.changeDetectorRef.markForCheck();
+  }
+  get isActive(): boolean {
+    return this._isActive;
+  }
   // Private backing field
   private _name: string = 'New Department';
 
@@ -35,12 +47,22 @@ export class EditableButtonComponent implements AfterViewInit {
     this.editName = this._name;
   }
 
-  startEditing() {
+  startEditing(event: Event) {
+    event.stopPropagation();
     this.isEditing = true;
     setTimeout(() => {
       this.inputElement?.nativeElement.focus();
       this.inputElement?.nativeElement.select(); // optional: select all text
     }, 0);
+  }
+
+  onButtonClick(event: PointerEvent) {
+    if ((event.target as HTMLElement).closest('.pencil-icon')) {
+      return;
+    }
+
+    // Activate the button (emit event so parent can set isActive = true)
+    this.activate.emit();
   }
 
   save() {

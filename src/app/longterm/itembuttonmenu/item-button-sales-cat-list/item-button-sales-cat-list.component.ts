@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { SaleItem, SalesCat, SalesCategorySaveResponse } from '../../models/sale.item';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { SalesTranService } from '../../saletran/services/sales-tran.service';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { LogonSvc } from 'src/app/logon/logonsvc.service';
@@ -21,7 +21,7 @@ export class ItemButtonSalesCatListComponent {
     this.activeId = 0;
   }
   @Input() saleCatList: SalesCat[] = [];
-  @Input('') salesCatListRefreshEvent: Observable<boolean> = new Observable<boolean>();
+  @Input() salesCategoryListRefreshEvent: Subject<boolean> = new Subject<boolean>();
   @Output() saleCatClicked: EventEmitter<number> = new EventEmitter();
   @Output() saleItemAddedInSC: EventEmitter<SaleItem> = new EventEmitter();
   activeId: number = 0
@@ -31,17 +31,30 @@ export class ItemButtonSalesCatListComponent {
       this.activeId = this.saleCatList[0].salesCategoryUID;
     }
 
-    this.salesCatListRefreshEvent.subscribe(data => {
-      //console.log('subscription called salesCatListRefresh: ' + data);
-      if (data) {
-        this.activeId = this.saleCatList[0].salesCategoryUID;
-      }
-    });
+    // this.salesCategoryListRefreshEvent.subscribe(data => {
+    //   //console.log('subscription called salesCatListRefresh: ' + data);
+    //   if (data && this.saleCatList.length > 0) {
+    //        this.activeId= this.saleCatList[0].salesCategoryUID;
+    //   }
+    // });
+  }
+
+  ngOnChanges(changes:SimpleChanges): void {
+    if (changes['saleCatList'] && this.saleCatList.length > 0) {
+      this.activeId = this.saleCatList[0].salesCategoryUID;
+    }
   }
 
   public salesCatgClick(event: Event, catgId: number): void {
     this.activeId = catgId;
     this.saleCatClicked.emit(catgId);
+  }
+
+  selectCategoryBtn(_t7: SalesCat) {
+    this.saleCatList.forEach(cat => cat.active = false);
+    _t7.active = true;
+    this.activeId = _t7.salesCategoryUID;
+    this.saleCatClicked.emit(_t7.salesCategoryUID);
   }
 
   public updateSalesCatName(newName: string, catObj: SalesCat) {

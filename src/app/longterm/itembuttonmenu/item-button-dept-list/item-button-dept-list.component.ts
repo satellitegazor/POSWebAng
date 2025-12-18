@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, SimpleChange, SimpleChanges } from '@angular/core';
 import { SalesTranService } from '../../saletran/services/sales-tran.service';
 import { Dept } from '../../models/sale.item';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-item-button-dept-list',
@@ -9,14 +10,31 @@ import { Dept } from '../../models/sale.item';
   standalone: false
 })
 export class ItemButtonDeptListComponent {
-isHovered: any;
-  constructor(private _saleTranSvc: SalesTranService) { }
+
+  constructor(private _saleTranSvc: SalesTranService) { 
+
+  }
+
+
+  isHovered: any;
+  @Input() deptListRefreshEvent: Subject<boolean> = new Subject<boolean>();
   @Input() deptList: Dept[] = [];
   @Output() deptClicked: EventEmitter<number> = new EventEmitter();
   activeId: number | null = null;
+
   public ngOnInit() {
     //console.log('DeptList ngOnInit');
-    if (this.deptList.length > 0) {
+    this.deptListRefreshEvent.subscribe(data => {
+      //console.log('subscription called deptListRefresh: ' + data);
+      if(data && this.deptList.length > 0) {
+        this.activeId = this.deptList[0].departmentUID;
+      }
+    });
+    
+  }
+
+  ngOnChanges(changes:SimpleChanges) {
+    if(changes['deptList'] && this.deptList.length > 0) {
       this.activeId = this.deptList[0].departmentUID;
     }
   }

@@ -2,11 +2,15 @@
     <div class="panel-body ms-2 me-2 mt-2 mb-2">
 
         <div class="row bkgray">
+            <div style="display: none;">{{salesCategoryListRefreshEvent}}</div>
             <div class="col-md-3" *ngFor="let catg of saleCatList; let index = index">
                 <app-editable-button [name]="catg.description"
+                    [isActive]="this.activeId === catg.salesCategoryUID ? true : false"
                     (nameChange)="updateSalesCatName($event, catg)" (mouseenter)="isHovered = true"
                     (mouseleave)="isHovered = false"
-                    id="{{catg.salesCategoryUID}}">{{catg.description}}</app-editable-button>
+                    id="{{catg.salesCategoryUID}}"
+                    (activate)="selectCategoryBtn(catg)"
+                    >{{catg.description}}</app-editable-button>
                 <!-- <button type="button"
                     [ngClass]="[ activeId === catg.salesCategoryID ? 'dpt btn btn-block btn-primary' : 'dpt btn btn-block btn-secondary' ]"
                     style="margin-top: 10px;margin-bottom: 10px;" id="{{catg.salesCategoryID}}"

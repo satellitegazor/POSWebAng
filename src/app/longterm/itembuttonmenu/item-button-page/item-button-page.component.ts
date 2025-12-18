@@ -24,6 +24,7 @@ import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheck
 })
 export class ItemButtonPageComponent implements OnInit, OnDestroy {
   
+  listInitialized: boolean = false;  
 
   btnSalesTranClick($event: PointerEvent) {
     throw new Error('Method not implemented.');
@@ -48,12 +49,17 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
   }
 
   allItemButtonMenuList: SaleItem[] = [];
-  public salesCategoryListRefresh: Subject<boolean> = new Subject<boolean>();
+  public deptListRefreshEvent : Subject<boolean> = new Subject<boolean>();
+  public salesCategoryListRefreshEvent: Subject<boolean> = new Subject<boolean>();
   public salesItemListRefresh: Subject<boolean> = new Subject<boolean>();
   public salesItemAddedInSC: Subject<SaleItem> = new Subject<SaleItem>();
   vendorLoginResult: VendorLoginResultsModel = {} as VendorLoginResultsModel;
 
   ngOnInit(): void {
+    this.deptListRefreshEvent.next(false);
+    this.salesCategoryListRefreshEvent.next(false);
+    this.salesItemListRefresh.next(false);
+
     this.vendorLoginResult = this._logonDataSvc.getLTVendorLogonData();
     this._saleTranSvc.getSaleItemListFromDB(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0).subscribe(data => {
       this.allItemButtonMenuList = data.itemButtonMenuResults;
@@ -88,6 +94,7 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
         this.deptList.push(dpt);
       }
     });
+    this.deptListRefreshEvent.next(true);
 
     this.getSalesCategoryList(this.deptList[0].departmentUID);
   }
@@ -118,7 +125,7 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
       }
     });
     //console.log('setting salesCategoryListRefresh to true');
-    this.salesCategoryListRefresh.next(true);
+    this.salesCategoryListRefreshEvent.next(true);
 
     this.getSaleItemList(this.saleCatList[0].salesCategoryUID);
   }
@@ -135,6 +142,7 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
     });
     //console.log('setting salesItemListRefresh to true');
     this.salesItemListRefresh.next(true)
+    this.listInitialized = true;
   }
 
   deptClicked(id: any) {

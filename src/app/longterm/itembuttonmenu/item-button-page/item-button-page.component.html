@@ -1,16 +1,16 @@
 <div class="container-fluid" style="width:100%">
-    <app-item-button-dept-list [deptList]="deptList" (deptClicked)="deptClicked($event)">
+    <app-item-button-dept-list [deptList]="deptList" (deptClicked)="deptClicked($event)" [deptListRefreshEvent]="deptListRefreshEvent">
     </app-item-button-dept-list>
 </div>
 <div class="container-fluid" style="width:100%">
-    <app-item-button-sales-cat-list [saleCatList]="saleCatList" (saleCatClicked)="saleCatClicked($event)">
+    <app-item-button-sales-cat-list [saleCatList]="saleCatList" (saleCatClicked)="saleCatClicked($event)" [salesCategoryListRefreshEvent]="salesCategoryListRefreshEvent">
     </app-item-button-sales-cat-list>
 </div>
 <div class="container-fluid row" style="width:100%">
     <app-item-button-sales-item-list [saleItemList]="saleItemList" (saleItemClicked)="saleItemClicked($event)">
     </app-item-button-sales-item-list>
 </div>
-<app-child [salesCategoryListRefreshEvent]="salesCategoryListRefresh.asObservable()"></app-child>
+
 <app-child [salesItemListRefreshEvent]="salesItemListRefresh.asObservable()"></app-child>
 <app-child [salesItemAddedInSCEvent]="salesItemAddedInSC.asObservable()"></app-child>
 

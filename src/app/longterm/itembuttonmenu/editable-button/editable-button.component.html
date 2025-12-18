@@ -1,7 +1,10 @@
 <div class="position-relative d-inline-block w-100">
     <button type="button"
-        class="btn btn-lg w-100 text-start d-flex justify-content-between align-items-center editable-btn"
-        [class.btn-secondary]="!isEditing" [class.btn-outline-primary]="isEditing" (click)="startEditing()" #btnElement>
+        class="btn btn-md w-100 text-start d-flex justify-content-between align-items-center editable-btn"
+        [class.btn-primary]="isActive"
+        [class.btn-secondary]="!isActive"
+        [class.btn-outline-primary]="isEditing" (click)="onButtonClick($event)"         
+        #btnElement>
 
         <!-- Display Mode -->
         <span *ngIf="!isEditing" class="flex-grow-1 text-truncate pe-4">
@@ -13,9 +16,8 @@
             (keyup.escape)="cancel()" class="form-control form-control-lg" style="height: 100%;" #inputElement />
 
         <!-- Pencil Icon (always visible or on hover) -->
-        <i class="bi bi-pencil-square ms-2 text-muted pencil-icon" 
-            [class.opacity-0]="!isEditing && !isHovered"
-            [class.opacity-75]="isHovered || isEditing"></i>
+        <span class="ms-2 pencil-icon" style="font-size: 1.6rem; cursor: pointer; opacity: 0.75;"
+            (click)="startEditing($event)">✏️</span>
         <!-- <span class="ms-2 pencil-icon" [class.opacity-0]="!isEditing && !isHovered" [class.opacity-75]="isHovered || !isEditing"
             style="font-size: 1.6rem;">✏️</span> -->
     </button>
