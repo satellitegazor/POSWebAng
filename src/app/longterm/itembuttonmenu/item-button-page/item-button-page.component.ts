@@ -26,14 +26,8 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
   
   listInitialized: boolean = false;  
 
-  btnSalesTranClick($event: PointerEvent) {
-    throw new Error('Method not implemented.');
-  }
   disableSaveBtn: any;
   btnSaveClick($event: PointerEvent) {
-    throw new Error('Method not implemented.');
-  }
-  btnAddItemClick($event: PointerEvent) {
     throw new Error('Method not implemented.');
   }
   modalOptions: NgbModalOptions = {
@@ -54,6 +48,9 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
   public salesItemListRefresh: Subject<boolean> = new Subject<boolean>();
   public salesItemAddedInSC: Subject<SaleItem> = new Subject<SaleItem>();
   vendorLoginResult: VendorLoginResultsModel = {} as VendorLoginResultsModel;
+
+  deptIdSelected: number = 0;
+  salesCatIdSelected: number = 0
 
   ngOnInit(): void {
     this.deptListRefreshEvent.next(false);
@@ -84,6 +81,9 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
 
 
   public getDeptList(): void {
+
+    this.deptIdSelected = this.allItemButtonMenuList[0].departmentUID;
+    this.salesCatIdSelected = this.allItemButtonMenuList[0].salesCategoryID;
 
     this.allItemButtonMenuList.forEach(item => {
       let dptCount = this.deptList.filter(d => d.departmentUID == item.departmentUID).length;
@@ -147,10 +147,12 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
 
   deptClicked(id: any) {
     this.getSalesCategoryList(id);
+    this.deptIdSelected = id;
   }
 
   saleCatClicked(id: any) {
     this.getSaleItemList(id);
+    this.salesCatIdSelected = id;
   }
 
   saleItemClicked(id: any) {
@@ -162,6 +164,22 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
   public saleItemList: SaleItem[] = [];
   public saleCatList: SalesCat[] = [];
 
+  btnAddItemClick($event: PointerEvent) {
+     
+    let newSaleItem: SaleItem = JSON.parse(JSON.stringify(this.allItemButtonMenuList.filter(item => item.departmentUID == this.deptIdSelected && item.salesCategoryID == this.salesCatIdSelected)[0]));
+    newSaleItem.salesItemID = 0;
+    newSaleItem.salesItemDescription = '';
+    newSaleItem.price = 0;
+    newSaleItem.salesTax = 0;
+    newSaleItem.saleItemActive = true;
+    
+    this.saleItemList.push(newSaleItem);
+    this.salesItemListRefresh.next(true);
+  }
+
+  btnSalesTranClick($event: PointerEvent) {
+    throw new Error('Method not implemented.');
+  }
 
 
 }

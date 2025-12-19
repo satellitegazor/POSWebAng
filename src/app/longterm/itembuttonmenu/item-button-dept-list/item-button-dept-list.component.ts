@@ -19,8 +19,9 @@ export class ItemButtonDeptListComponent {
   isHovered: any;
   @Input() deptListRefreshEvent: Subject<boolean> = new Subject<boolean>();
   @Input() deptList: Dept[] = [];
-  @Output() deptClicked: EventEmitter<number> = new EventEmitter();
+  @Output() deptClicked: EventEmitter<number> = new EventEmitter<number>();
   activeId: number | null = null;
+
 
   public ngOnInit() {
     //console.log('DeptList ngOnInit');
