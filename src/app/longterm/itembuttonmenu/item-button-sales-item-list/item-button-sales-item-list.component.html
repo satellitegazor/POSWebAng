@@ -1,5 +1,7 @@
 <div class="panel">
     <div class="panel-body ms-2 me-2 mt-2 mb-2">
+        <form [formGroup] = "saleItemForm">
+            <div formArrayName="saleItemList">
         <table class="table table-hover table-bordered align-middle">
             <thead class="table-dark">
                 <tr>
@@ -11,20 +13,24 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let item of saleItemList; let i = index" [attr.data-salesitem-id]="item.salesItemID"
-                    [attr.data-department-id]="item.departmentUID">
+
+                <tr *ngFor="let itemCtrl of saleItemListArray.controls; let i = index" 
+                    [formGroupName]="i" [attr.data-salesitem-id]="itemCtrl.get('id')?.value"
+                    [attr.data-departmentuid]="itemCtrl.get('departmentUID')?.value"
+                    [attr.data-categoryuid]="itemCtrl.get('salesCategoryID')?.value">
         
                     <!-- Item Description -->
                     <td>
                         <input type="text" class="form-control" style="text-transform: capitalize;"
-                            [(ngModel)]="item.salesItemDescription" placeholder="Enter Item Description Here">
+                            placeholder="Enter Item Description Here"
+                            formControlName="description">
                     </td>
         
                     <!-- Price -->
                     <td class="text-center">
                         <input type="number" class="form-control text-center" 
-                            appPosCurrency  [(ngModel)]="item.price"
-                            placeholder="Price">
+                            appPosCurrency  
+                            placeholder="Price" formControlName="price">
                     </td>
         
                     <!-- Sales Tax + Default Tax Button -->
@@ -32,9 +38,9 @@
                         <div class="input-group">
                             <input type="text" class="form-control text-center" 
                                 appPosCurrency3 name="saleTax_{{i}}"
-                                [(ngModel)]="item.salesTax" placeholder="Tax %">
+                                placeholder="Tax %" formControlName="salesTax">
                             <button class="btn btn-outline-success btn-sm" type="button" title="Set Default Sales Tax"
-                                (click)="setDefaultTax(item)">
+                                (click)="setDefaultTax(itemCtrl.get('salesTax')?.value)">
                                 <i class="bi bi-check-lg"></i>
                             </button>
                         </div>
@@ -56,13 +62,13 @@
         
                     <!-- Delete Action -->
                     <td class="text-center">
-                        <button type="button" class="btn btn-danger btn-sm" (click)="deleteItem(item)" title="Delete Item">
+                        <button type="button" class="btn btn-danger btn-sm" (click)="deleteItem(itemCtrl.get('id')?.value)" title="Delete Item">
                             <i class="bi bi-trash"></i> Delete
                         </button>
                     </td>
                 </tr>
             </tbody>
-        </table>
+        </table></div></form>
         <!-- <div class="row bkgray">
             <div class="col-md-6" *ngFor="let itm of saleItemList; let index=index">
                 <button type="button"

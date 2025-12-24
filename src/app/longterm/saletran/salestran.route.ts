@@ -25,7 +25,7 @@ const routes: Routes = [
     { path: 'pinpadtran', component: CreditCardTndrComponent},
     { path: 'eaglecash', component:EgConcTndrComponent},
     { path: 'cashcheck', component:CashTndrComponent},
-    { path: 'itembtnmenu', component: ItemButtonPageComponent}
+    { path: 'itembtnmenu', component: ItemButtonPageComponent, canDeactivate: ['CanDeactivateGuard'] },
 ];
 
 /*export const routing: ModuleWithProviders = RouterModule.forChild(routes)*/

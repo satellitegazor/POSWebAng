@@ -1,13 +1,121 @@
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <!-- Top Row: Location Name + Default Currency -->
+        <div class="row align-items-center mb-4">
+            <div class="col-md-2 fw-bold">
+                Location Name
+            </div>
+            <div class="col-md-4">
+                <div class="fw-medium" id="locName">
+                    {{LocationName}}
+                </div>
+            </div>
+
+            <div *ngIf="rgnCode != 'CON'" lass="col-md-2 text-md-end fw-bold">
+                Default Currency
+            </div>
+            <div  *ngIf="rgnCode != 'CON'"class="col-md-4">
+                <div class="btn-group" role="group" aria-label="Default Currency">
+                    <input type="checkbox" class="btn-check" id="dvCurUSD" autocomplete="off"
+                        [checked]="defaultCurrency === 'USD'">
+                    <label class="btn btn-outline-primary" for="dvCurUSD">USD ($)</label>
+
+                    <input type="checkbox" class="btn-check" id="dvCurLocal" autocomplete="off"
+                        [checked]="defaultCurrency === currCode">
+                    <label class="btn btn-outline-primary active" for="dvCurLocal">{{currCode}}({{currCodeSymbl}})</label>
+                </div>
+            </div>
+
+            <div class="col-md-2 text-md-end">
+                <button class="btn btn-primary d-none" id="copyIBSM">Copy Menu</button>
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Bottom Row: Configuration Switches -->
+        <div class="row g-4 align-items-center">
+            <!-- Allow Sales Tax Exemption -->
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label fw-bold">Allow Sales Tax Exemption</label>
+                <div class="form-switch form-switch-lg">
+                    <input class="form-check-input" type="checkbox" id="ddlAllowExcemption"
+                        [checked]="allowTaxExemption">
+                    <label class="form-check-label ms-3" for="ddlAllowExcemption">
+                        {{ allowTaxExemption ? 'Yes' : 'No' }}
+                    </label>
+                </div>
+            </div>
+
+            <!-- Apply Concession Discounts -->
+            <div class="col-lg-3 col-md-6">
+                <div class="form-switch form-switch-lg">
+                    <label class="form-label fw-bold">Apply Concession Discounts</label>
+                    <input class="form-check-input" type="checkbox" id="ddlAllowVendorCoupons" [checked]="exchangeCouponAfterTax">
+                    <label class="form-check-label ms-3" for="ddlAllowVendorCoupons">
+                        {{ exchangeCouponAfterTax ? 'Yes' : 'No' }}
+                    </label>
+                </div>
+                <!-- <label class="form-label fw-bold">Apply Concession Discounts</label>
+                <select class="form-select" id="ddlAllowVendorCoupons">
+                    <option value="false" [selected]="concessionDiscountAfterTax === false">Before Tax</option>
+                    <option value="true" [selected]="concessionDiscountAfterTax === true">After Tax</option>
+                </select> -->
+            </div>
+
+            <!-- Apply Exchange Coupons -->
+            <div class="col-lg-3 col-md-6">
+                <div class="form-switch form-switch-lg">
+                    <label class="form-label fw-bold">Apply Exchange Coupons</label>
+                    <input class="form-check-input" type="checkbox" id="ddlAllowExchangeCoupons" [checked]="concessionDiscountAfterTax">
+                    <label class="form-check-label ms-3" for="ddlAllowExchangeCoupons">
+                        {{ concessionDiscountAfterTax ? 'Yes' : 'No' }}
+                    </label>
+                </div>
+                <!-- <label class="form-label fw-bold">Apply Exchange Coupons</label>
+                <select class="form-select" id="ddlAllowExchangeCoupons">
+                    <option value="false" [selected]="exchangeCouponAfterTax === false">Before Tax</option>
+                    <option value="true" [selected]="exchangeCouponAfterTax === true">After Tax</option>
+                </select> -->
+            </div>
+
+            <!-- Open Cash Drawer for Tips -->
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label fw-bold">Open Cash Drawer for Tips</label>
+                <div class="form-switch form-switch-lg">
+                    <input class="form-check-input" type="checkbox" id="ddlOpenCashDrawer"
+                        [checked]="openCashDrawerForTips">
+                    <label class="form-check-label ms-3" for="ddlOpenCashDrawer">
+                        {{ openCashDrawerForTips ? 'Yes' : 'No' }}
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="container-fluid" style="width:100%">
-    <app-item-button-dept-list [deptList]="deptList" (deptClicked)="deptClicked($event)" [deptListRefreshEvent]="deptListRefreshEvent">
+    <app-item-button-dept-list [deptList]="deptList" 
+        (deptClicked)="deptClicked($event)" 
+        [deptListRefreshEvent]="deptListRefreshEvent">
     </app-item-button-dept-list>
 </div>
 <div class="container-fluid" style="width:100%">
-    <app-item-button-sales-cat-list [saleCatList]="saleCatList" (saleCatClicked)="saleCatClicked($event)" [salesCategoryListRefreshEvent]="salesCategoryListRefreshEvent">
+    <app-item-button-sales-cat-list [saleCatList]="saleCatList" 
+        (saleCatClicked)="saleCatClicked($event)" 
+        [salesCategoryListRefreshEvent]="salesCategoryListRefreshEvent"
+        (categorySelected)="selectCategory($event)"
+        (categoryAdded)="addCategory($event)"
+        (categoryUpdated)="updateCategory($event)"
+        >
     </app-item-button-sales-cat-list>
 </div>
 <div class="container-fluid row" style="width:100%">
-    <app-item-button-sales-item-list [saleItemList]="saleItemList" (saleItemClicked)="saleItemClicked($event)">
+    <app-item-button-sales-item-list 
+        [saleItemList]="saleItemList" 
+        (saleItemClicked)="saleItemClicked($event)"
+        (itemAdded)="addItem($event)"
+        (itemUpdated)="updateItem($event)"
+        (itemDeleted)="deleteItem($event)">
     </app-item-button-sales-item-list>
 </div>
 

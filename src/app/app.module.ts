@@ -1,6 +1,6 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA, Directive  } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LogonModule } from './logon/logon.module';
 import { ModuleRouting } from './app-routing.module';
@@ -30,7 +30,7 @@ import { AlertMessageComponent } from './alertmsg/alert-message/alert-message.co
 import { PosCurrencyDirective } from './directives/pos-currency.directive';
 import { PosCurrency3Directive } from './directives/pos-currency.directive.3';
 import { SalesTranModule } from './longterm/saletran/saletran.module';
-
+import { ConfirmDialogComponent } from './shared/confirm-dialog';
 
  
 @NgModule({
@@ -44,15 +44,17 @@ import { SalesTranModule } from './longterm/saletran/saletran.module';
     SummaryComponent,
     DetailComponent,
     SalestranComponent,
+    ConfirmDialogComponent
     
     //AlertMessageComponent
     
   ],
   exports: [
-
+  ConfirmDialogComponent
   ],
   imports: [
     BrowserModule,
+    ReactiveFormsModule,
     ModuleRouting,
     FormsModule, 
     AlertMessageModule,
@@ -68,7 +70,7 @@ import { SalesTranModule } from './longterm/saletran/saletran.module';
       logOnly: environment.production,
       autoPause: true
     , connectInZone: true}),
-    RcptModule,
+    RcptModule
     
   ],
   providers: [{provide: LogonDataService}, {

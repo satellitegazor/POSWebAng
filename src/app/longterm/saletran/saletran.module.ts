@@ -9,12 +9,8 @@ import { SalesCategoryComponent } from './sales-category/sales-category.componen
 import { SharedSubjectModule } from '../../shared-subject/shared-subject.module';
 import { SaleItemComponent } from './sale-item/sale-item.component';
 import { TktSaleItemComponent } from './tkt-sale-item/tkt-sale-item.component';
-import { CustomerSearchComponent } from '../../shared/customer-search/customer-search.component';
-import { CustomerNewComponent } from '../../shared/customer-new/customer-new.component';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { StoreModule } from '@ngrx/store';
-import { GET_SALE_ITEM_MENU, SHARED_SALE_ITEMS_MENU_STATE } from './store/saleitemstore/saleitem.selector';
-import { GetSaleItemMenuReducer } from './store/saleitemstore/saleitem.reducers';
 import { EffectsModule } from '@ngrx/effects';
 import { SaleItemEffects } from './store/saleitemstore/saleitem.effects';
 import { GetLocationConfigReducer } from './store/locationconfigstore/locationconfig.reducer';
@@ -47,17 +43,21 @@ import { ItemButtonSalesCatListComponent } from '../itembuttonmenu/item-button-s
 import { ItemButtonSalesItemListComponent } from '../itembuttonmenu/item-button-sales-item-list/item-button-sales-item-list.component';
 import { PosCurrency3Directive } from '../../directives/pos-currency.directive.3';
 
-
+import { ReactiveFormsModule } from '@angular/forms';
 import { EditableButtonComponent } from '../itembuttonmenu/editable-button/editable-button.component';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog';
+import { CanDeactivateGuard } from 'src/app/shared/can-component-deactivate';
 
 @NgModule({
     declarations: [DeptListComponent, SalesCartComponent, SalesCategoryComponent, SaleItemComponent,
-        TktSaleItemComponent,  
-        CouponsModalDlgComponent, PartPayComponent, BalanceDueComponent, SaleTotalsComponent, CheckoutPageComponent, 
-        CheckoutItemsComponent, TenderPageComponent, TipsModalDlgComponent, SaveTicketSuccessComponent, SplitPayComponent,
-        PinValidateComponent, ItemButtonPageComponent, ItemButtonDeptListComponent, ItemButtonSalesCatListComponent, ItemButtonSalesItemListComponent],
+        TktSaleItemComponent, CouponsModalDlgComponent, PartPayComponent, BalanceDueComponent, 
+        SaleTotalsComponent, CheckoutPageComponent, CheckoutItemsComponent, TenderPageComponent, 
+        TipsModalDlgComponent, SaveTicketSuccessComponent, SplitPayComponent, PinValidateComponent, 
+        ItemButtonPageComponent, ItemButtonDeptListComponent, ItemButtonSalesCatListComponent, 
+        ItemButtonSalesItemListComponent],
     imports: [
         CommonModule,
+        ReactiveFormsModule,
         FormsModule,
         SalesTranRoutingModule,
         SharedSubjectModule,
@@ -75,7 +75,7 @@ import { EditableButtonComponent } from '../itembuttonmenu/editable-button/edita
         EditableButtonComponent
     ],
     exports: [],
-    providers: [authinterceptorProviders],
+    providers: [authinterceptorProviders, CanDeactivateGuard],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 
     //exports: [VendorLTComponent, VendorSTComponent, SbmComponent]

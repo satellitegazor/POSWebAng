@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ItemButtonDeptListComponent } from '../item-button-dept-list/item-button-dept-list.component';
 import { ItemButtonSalesCatListComponent } from '../item-button-sales-cat-list/item-button-sales-cat-list.component';
 import { ItemButtonSalesItemListComponent } from '../item-button-sales-item-list/item-button-sales-item-list.component';
@@ -15,6 +15,8 @@ import { VendorLoginResultsModel } from 'src/app/models/vendor.login.results.mod
 import { UtilService } from 'src/app/services/util.service';
 import { GlobalConstants } from 'src/app/global/global.constants';
 import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheckoutItem';
+import { ThisReceiver } from '@angular/compiler';
+import { SaleItemButton } from '../../models/sale.item.button';
 
 @Component({
   selector: 'app-item-button-page',
@@ -23,24 +25,54 @@ import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheck
   standalone: false
 })
 export class ItemButtonPageComponent implements OnInit, OnDestroy {
+deleteItem($event: SaleItem) {
+throw new Error('Method not implemented.');
+}
+updateItem($event: SaleItem) {
+throw new Error('Method not implemented.');
+}
+addItem($event: SaleItem) {
+throw new Error('Method not implemented.');
+}
+updateCategory($event: Event) {
+throw new Error('Method not implemented.');
+}
+addCategory($event: Event) {
+throw new Error('Method not implemented.');
+}
+selectCategory($event: Event) {
+throw new Error('Method not implemented.');
+}
   
   listInitialized: boolean = false;  
-
+  // In your component.ts
+  defaultCurrency: string = 'EUR'; // or 'USD'
+  allowTaxExemption: boolean = true;
+  concessionDiscountAfterTax: boolean = false;
+  exchangeCouponAfterTax: boolean = false;
+  openCashDrawerForTips: boolean = false;
+  LocationName: string = '';
   disableSaveBtn: any;
-  btnSaveClick($event: PointerEvent) {
-    throw new Error('Method not implemented.');
-  }
+  rgnCode: string = 'CON';
+  currCode: string = '';
+  currCodeSymbl: string = '';
   modalOptions: NgbModalOptions = {
     backdrop: 'static',
     keyboard: false,
     centered: true
   };
 
-  constructor(private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
-    private _sharedSubSvc: SharedSubjectService, private modalService: NgbModal, private _store: Store<saleTranDataInterface>,
-    private _locConfigStore: Store<LocationConfigState>) {
+  constructor(private _saleTranSvc: SalesTranService, 
+    private _logonDataSvc: LogonDataService,
+    private _sharedSubSvc: SharedSubjectService, 
+    private modalService: NgbModal, 
+    private _store: Store<saleTranDataInterface>,
+    private _locConfigStore: Store<LocationConfigState>, 
+    private _utilSvc: UtilService) {
     //console.log('SalesCart constructor')
   }
+
+  @ViewChild(ItemButtonSalesItemListComponent) salesItemListChild!: ItemButtonSalesItemListComponent;
 
   allItemButtonMenuList: SaleItem[] = [];
   public deptListRefreshEvent : Subject<boolean> = new Subject<boolean>();
@@ -53,6 +85,17 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
   salesCatIdSelected: number = 0
 
   ngOnInit(): void {
+
+    let locationConfig = this._logonDataSvc.getLocationConfig();
+    this.LocationName = locationConfig.locationName;
+    this.defaultCurrency = locationConfig.defaultCurrency;
+    this.concessionDiscountAfterTax = locationConfig.vendCouponsAfterTax;
+    this.exchangeCouponAfterTax = locationConfig.exchCouponsAfterTax;
+    this.rgnCode = locationConfig.rgnCode;
+    this.openCashDrawerForTips = locationConfig.openCashDrawer;
+    this.currCode = locationConfig.currCode;
+    this.currCodeSymbl = this._utilSvc.currencySymbols.get(this.currCode) || this.currCode;
+
     this.deptListRefreshEvent.next(false);
     this.salesCategoryListRefreshEvent.next(false);
     this.salesItemListRefresh.next(false);
@@ -68,7 +111,7 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
       if (data.salesItemID > 0) {
         data.locationUID = +this.vendorLoginResult.locationUID;
         data.contractUID = this.vendorLoginResult.contractUID;
-        this.saleItemList.push(data);
+        this.saleItemList.push(new SaleItemButton(data));
         //this.getSaleItemList(data);
       }
     });
@@ -135,9 +178,9 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
     this.saleItemList = [];
     let allCatList = this.allItemButtonMenuList.filter(item => item.salesCategoryID == categoryId);
     allCatList.forEach(itm => {
-      let k = this.saleItemList.filter(si => si.salesItemID == itm.salesItemID);
+      let k = this.saleItemList.filter(si => si.id == itm.salesItemID);
       if (k.length == 0) {
-        this.saleItemList.push(itm);
+        this.saleItemList.push(new SaleItemButton(itm));
       }
     });
     //console.log('setting salesItemListRefresh to true');
@@ -161,19 +204,15 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
 
 
   public deptList: Dept[] = [];
-  public saleItemList: SaleItem[] = [];
+  public saleItemList: SaleItemButton[] = [];
   public saleCatList: SalesCat[] = [];
 
   btnAddItemClick($event: PointerEvent) {
      
     let newSaleItem: SaleItem = JSON.parse(JSON.stringify(this.allItemButtonMenuList.filter(item => item.departmentUID == this.deptIdSelected && item.salesCategoryID == this.salesCatIdSelected)[0]));
-    newSaleItem.salesItemID = 0;
-    newSaleItem.salesItemDescription = '';
-    newSaleItem.price = 0;
-    newSaleItem.salesTax = 0;
-    newSaleItem.saleItemActive = true;
+    let newSaleItemButton = new SaleItemButton(newSaleItem);
     
-    this.saleItemList.push(newSaleItem);
+    this.saleItemList.push(newSaleItemButton);
     this.salesItemListRefresh.next(true);
   }
 
@@ -181,5 +220,22 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
     throw new Error('Method not implemented.');
   }
 
+  btnSaveClick($event: PointerEvent) {
+    const saleItems = this.salesItemListChild.getCurrentSalesItems();
+    if(!saleItems || saleItems.length === 0){
+      console.log('No items to save');
+      return;
+    }
 
+    const payload = {
+      department: this.deptIdSelected,
+      category: this.salesCatIdSelected,
+      salesItems: saleItems
+    }
+
+    console.log('Saving payload: ', payload);
+
+    
+
+  }
 }
