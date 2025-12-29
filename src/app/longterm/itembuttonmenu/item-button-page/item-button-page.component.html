@@ -1,121 +1,114 @@
 <div class="card shadow-sm mb-4">
-    <div class="card-body">
-        <!-- Top Row: Location Name + Default Currency -->
-        <div class="row align-items-center mb-4">
-            <div class="col-md-2 fw-bold">
-                Location Name
+    <div class="card-body py-3">
+        <!-- Location Name + Default Currency Row -->
+        <div class="row align-items-center mb-2">
+            <div class="col-lg-2 col-md-3 col-12">
+                <label class="form-label fw-bold mb-1">Location Name</label>
             </div>
-            <div class="col-md-4">
-                <div class="fw-medium" id="locName">
-                    {{LocationName}}
+            <div class="col-lg-4 col-md-5 col-12">
+                <div class="border rounded p-2 bg-light">
+                    <span class="fw-medium fs-5" id="locName">{{ LocationName }}</span>
                 </div>
             </div>
 
-            <div *ngIf="rgnCode != 'CON'" lass="col-md-2 text-md-end fw-bold">
-                Default Currency
+            <!-- Default Currency (only show if not CONUS) -->
+            <div *ngIf="rgnCode !== 'CON'" class="col-lg-2 col-md-4 col-12 text-lg-end mt-3 mt-md-0">
+                <label class="form-label fw-bold mb-0">Default Currency</label>
             </div>
-            <div  *ngIf="rgnCode != 'CON'"class="col-md-4">
-                <div class="btn-group" role="group" aria-label="Default Currency">
-                    <input type="checkbox" class="btn-check" id="dvCurUSD" autocomplete="off"
-                        [checked]="defaultCurrency === 'USD'">
-                    <label class="btn btn-outline-primary" for="dvCurUSD">USD ($)</label>
+            <div *ngIf="rgnCode !== 'CON'" class="col-lg-4 col-md-12 col-12 mt-3 mt-md-0">
+                <div class="btn-group w-100" role="group">
+                    <input type="radio" class="btn-check" name="defaultCurrency" id="dvCurUSD"
+                        [checked]="defaultCurrency === 'USD'" (change)="defaultCurrency = 'USD'">
+                    <label class="btn btn-outline-primary flex-fill" for="dvCurUSD">
+                        USD ($)
+                    </label>
 
-                    <input type="checkbox" class="btn-check" id="dvCurLocal" autocomplete="off"
-                        [checked]="defaultCurrency === currCode">
-                    <label class="btn btn-outline-primary active" for="dvCurLocal">{{currCode}}({{currCodeSymbl}})</label>
+                    <input type="radio" class="btn-check" name="defaultCurrency" id="dvCurLocal"
+                        [checked]="defaultCurrency !== 'USD'" (change)="defaultCurrency = currCode">
+                    <label class="btn btn-outline-primary flex-fill" for="dvCurLocal">
+                        {{ currCode }} ({{ currCodeSymbl }})
+                    </label>
                 </div>
             </div>
 
-            <div class="col-md-2 text-md-end">
-                <button class="btn btn-primary d-none" id="copyIBSM">Copy Menu</button>
+            <!-- Copy Menu Button (right-aligned) -->
+            <div class="col-lg-12 col-md-12 text-end mt-3">
+                <button id="copyIBSM" class="btn btn-outline-secondary d-none">
+                    <i class="bi bi-copy me-2"></i>Copy Menu
+                </button>
             </div>
         </div>
 
-        <hr>
+        <hr class="my-1">
 
-        <!-- Bottom Row: Configuration Switches -->
-        <div class="row g-4 align-items-center">
-            <!-- Allow Sales Tax Exemption -->
-            <div class="col-lg-3 col-md-6">
-                <label class="form-label fw-bold">Allow Sales Tax Exemption</label>
-                <div class="form-switch form-switch-lg">
-                    <input class="form-check-input" type="checkbox" id="ddlAllowExcemption"
-                        [checked]="allowTaxExemption">
-                    <label class="form-check-label ms-3" for="ddlAllowExcemption">
-                        {{ allowTaxExemption ? 'Yes' : 'No' }}
-                    </label>
-                </div>
-            </div>
+        <!-- Configuration Switches (4 columns on large screens) -->
+        <div class="row g-4">
+<!-- Allow Sales Tax Exemption -->
+<div class="col-lg-3 col-md-6 col-12">
+    <div class="d-flex align-items-center">
+        <label class="form-label fw-bold me-3 mb-0">Allow Sales Tax Exemption</label>
+        <div class="form-switch form-switch-lg">
+            <input class="form-check-input" type="checkbox" id="ddlAllowExemption" [(ngModel)]="allowTaxExemption">
+        </div>
+        <span class="ms-3 fs-5 text-muted">{{ allowTaxExemption ? 'Yes' : 'No' }}</span>
+    </div>
+</div>
 
-            <!-- Apply Concession Discounts -->
-            <div class="col-lg-3 col-md-6">
-                <div class="form-switch form-switch-lg">
-                    <label class="form-label fw-bold">Apply Concession Discounts</label>
-                    <input class="form-check-input" type="checkbox" id="ddlAllowVendorCoupons" [checked]="exchangeCouponAfterTax">
-                    <label class="form-check-label ms-3" for="ddlAllowVendorCoupons">
-                        {{ exchangeCouponAfterTax ? 'Yes' : 'No' }}
-                    </label>
-                </div>
-                <!-- <label class="form-label fw-bold">Apply Concession Discounts</label>
-                <select class="form-select" id="ddlAllowVendorCoupons">
-                    <option value="false" [selected]="concessionDiscountAfterTax === false">Before Tax</option>
-                    <option value="true" [selected]="concessionDiscountAfterTax === true">After Tax</option>
-                </select> -->
-            </div>
+<!-- Apply Concession Discounts -->
+<div class="col-lg-3 col-md-6 col-12">
+    <div class="d-flex align-items-center">
+        <label class="form-label fw-bold me-3 mb-0">Apply Concession Discounts</label>
+        <div class="form-switch form-switch-lg">
+            <input class="form-check-input" type="checkbox" id="ddlAllowVendorCoupons"
+                [(ngModel)]="concessionDiscountAfterTax">
+        </div>
+        <span class="ms-3 fs-5 text-muted">
+            {{ concessionDiscountAfterTax ? 'After Tax' : 'Before Tax' }}
+        </span>
+    </div>
+</div>
 
-            <!-- Apply Exchange Coupons -->
-            <div class="col-lg-3 col-md-6">
-                <div class="form-switch form-switch-lg">
-                    <label class="form-label fw-bold">Apply Exchange Coupons</label>
-                    <input class="form-check-input" type="checkbox" id="ddlAllowExchangeCoupons" [checked]="concessionDiscountAfterTax">
-                    <label class="form-check-label ms-3" for="ddlAllowExchangeCoupons">
-                        {{ concessionDiscountAfterTax ? 'Yes' : 'No' }}
-                    </label>
-                </div>
-                <!-- <label class="form-label fw-bold">Apply Exchange Coupons</label>
-                <select class="form-select" id="ddlAllowExchangeCoupons">
-                    <option value="false" [selected]="exchangeCouponAfterTax === false">Before Tax</option>
-                    <option value="true" [selected]="exchangeCouponAfterTax === true">After Tax</option>
-                </select> -->
-            </div>
+<!-- Apply Exchange Coupons -->
+<div class="col-lg-3 col-md-6 col-12">
+    <div class="d-flex align-items-center">
+        <label class="form-label fw-bold me-3 mb-0">Apply Exchange Coupons</label>
+        <div class="form-switch form-switch-lg">
+            <input class="form-check-input" type="checkbox" id="ddlAllowExchangeCoupons"
+                [(ngModel)]="exchangeCouponAfterTax">
+        </div>
+        <span class="ms-3 fs-5 text-muted">
+            {{ exchangeCouponAfterTax ? 'After Tax' : 'Before Tax' }}
+        </span>
+    </div>
+</div>
 
-            <!-- Open Cash Drawer for Tips -->
-            <div class="col-lg-3 col-md-6">
-                <label class="form-label fw-bold">Open Cash Drawer for Tips</label>
-                <div class="form-switch form-switch-lg">
-                    <input class="form-check-input" type="checkbox" id="ddlOpenCashDrawer"
-                        [checked]="openCashDrawerForTips">
-                    <label class="form-check-label ms-3" for="ddlOpenCashDrawer">
-                        {{ openCashDrawerForTips ? 'Yes' : 'No' }}
-                    </label>
-                </div>
-            </div>
+<!-- Open Cash Drawer for Tips -->
+<div class="col-lg-3 col-md-6 col-12">
+    <div class="d-flex align-items-center">
+        <label class="form-label fw-bold me-3 mb-0">Open Cash Drawer for Tips</label>
+        <div class="form-switch form-switch-lg">
+            <input class="form-check-input" type="checkbox" id="ddlOpenCashDrawer" [(ngModel)]="openCashDrawerForTips">
+        </div>
+        <span class="ms-3 fs-5 text-muted">{{ openCashDrawerForTips ? 'Yes' : 'No' }}</span>
+    </div>
+</div>
         </div>
     </div>
 </div>
 <div class="container-fluid" style="width:100%">
-    <app-item-button-dept-list [deptList]="deptList" 
-        (deptClicked)="deptClicked($event)" 
+    <app-item-button-dept-list [deptList]="deptList" (deptClicked)="deptClicked($event)"
         [deptListRefreshEvent]="deptListRefreshEvent">
     </app-item-button-dept-list>
 </div>
 <div class="container-fluid" style="width:100%">
-    <app-item-button-sales-cat-list [saleCatList]="saleCatList" 
-        (saleCatClicked)="saleCatClicked($event)" 
-        [salesCategoryListRefreshEvent]="salesCategoryListRefreshEvent"
-        (categorySelected)="selectCategory($event)"
-        (categoryAdded)="addCategory($event)"
-        (categoryUpdated)="updateCategory($event)"
-        >
+    <app-item-button-sales-cat-list [saleCatList]="saleCatList" (saleCatClicked)="saleCatClicked($event)"
+        [salesCategoryListRefreshEvent]="salesCategoryListRefreshEvent" (categorySelected)="selectCategory($event)"
+        (categoryAdded)="addCategory($event)" (categoryUpdated)="updateCategory($event)">
     </app-item-button-sales-cat-list>
 </div>
 <div class="container-fluid row" style="width:100%">
-    <app-item-button-sales-item-list 
-        [saleItemList]="saleItemList" 
-        (saleItemClicked)="saleItemClicked($event)"
-        (itemAdded)="addItem($event)"
-        (itemUpdated)="updateItem($event)"
-        (itemDeleted)="deleteItem($event)">
+    <app-item-button-sales-item-list [saleItemList]="saleItemList" (saleItemClicked)="saleItemClicked($event)"
+        (itemAdded)="addItem($event)" (itemUpdated)="updateItem($event)" (itemDeleted)="deleteItem($event)">
     </app-item-button-sales-item-list>
 </div>
 
@@ -147,8 +140,8 @@
                     d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
             </svg> Admin menu
         </button>
-        <button class="border border-white btn btn-info btn-lg ftrbtn gotoTktLookUp" style="width:25%;" id="btnSalesTran"
-            aria-label="Left Align" (click)="btnSalesTranClick($event)">
+        <button class="border border-white btn btn-info btn-lg ftrbtn gotoTktLookUp" style="width:25%;"
+            id="btnSalesTran" aria-label="Left Align" (click)="btnSalesTranClick($event)">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye"
                 viewBox="0 0 16 16">
                 <path

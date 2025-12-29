@@ -16,6 +16,7 @@ import { TenderTypeModel } from '../../models/tender.type';
 import { LTC_SingleTransactionResultsModel, LTC_Ticket, LTC_TransactionDetailsModel, SingleTransactionId, TicketLookupResult } from '../../models/ticket.list';
 import { TicketTender,  SaveTenderResult, SaveTenderResultModel } from 'src/app/models/ticket.tender';
 import { ExchCardTndr, SaveExchCardTndrResult, SaveExchCardTndrResultModel } from 'src/app/models/exch.card.tndr';
+import { LTC_SaveSalesItemModel, LTC_SaveSalesItemModelParameters } from '../../models/long-term-sale-item';
 
 
 @Injectable({
@@ -185,6 +186,15 @@ export class SalesTranService {
         return this.httpClient.put<SalesCategorySaveResponse>(
             GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveSalesCategory?guid=' + GlobalConstants.PUT_GUID + '&uid=' + uid + '&DBVal=0',
             JSON.stringify(salesCat),
+            { headers: this.headerObjs });
+    }
+
+    public saveItemButtonMenu(itmBtnMnu: LTC_SaveSalesItemModelParameters, uid: number): Observable<LTC_SaveSalesItemModel>
+    {       //console.log('SalesTranSvc saveFDMSenderObj called', transactionId)
+        return this.httpClient.put<LTC_SaveSalesItemModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveItemButtonMenu?guid=' + GlobalConstants.PUT_GUID
+            + '&uid=' + uid,
+            JSON.stringify(itmBtnMnu),
             { headers: this.headerObjs });
     }
 

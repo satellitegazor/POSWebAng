@@ -17,6 +17,7 @@ import { GlobalConstants } from 'src/app/global/global.constants';
 import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheckoutItem';
 import { ThisReceiver } from '@angular/compiler';
 import { SaleItemButton } from '../../models/sale.item.button';
+import { LTC_SalesItems, LTC_SaveSalesItemModelParameters } from '../../models/long-term-sale-item';
 
 @Component({
   selector: 'app-item-button-page',
@@ -227,13 +228,60 @@ throw new Error('Method not implemented.');
       return;
     }
 
-    const payload = {
+    const payload1 = {
       department: this.deptIdSelected,
       category: this.salesCatIdSelected,
       salesItems: saleItems
     }
 
+    let payload: LTC_SaveSalesItemModelParameters = {
+      ContractUID: +this.vendorLoginResult.contractUID,
+      AllowTaxExemption: this.allowTaxExemption,
+      ExchCouponsAfterTax: this.exchangeCouponAfterTax,
+      VendCouponsAfterTax: this.concessionDiscountAfterTax,
+      OpenCashDrawerForTips: this.openCashDrawerForTips,
+      DefaultCurrency: this.defaultCurrency,  
+      SalesItems: saleItems.length > 0 ? saleItems.map<LTC_SalesItems>(item => {
+ 
+        let salesItem = new LTC_SalesItems();
+        salesItem.DisplayOrderItem = item.displayOrder;
+        salesItem.FacilityUID = +this.vendorLoginResult.locationUID;
+        salesItem.LocationUID = +this.vendorLoginResult.locationUID;
+        salesItem.BusinessFunctionID = 0;
+        salesItem.SalesCategoryID = item.salesCategoryID;
+        salesItem.SalesItemID = item.id;
+        salesItem.SalesItemDescription = item.description;
+        salesItem.Price = item.price;
+        salesItem.SalesTax = item.salesTax;
+        salesItem.Action = item.id > 0 ? 2 : 1; // 2 = update, 1 = insert
+        return salesItem;
+      }) : [] as LTC_SalesItems[],
+      
+      
+    }
+
+
     console.log('Saving payload: ', payload);
+    this._saleTranSvc.saveItemButtonMenu(payload, +this.vendorLoginResult.individualUID).subscribe(response => {
+
+      payload.SalesItems.forEach(payLoadItem => {
+        this.saleItemList = this.saleItemList.filter(item => item.id !== payLoadItem.SalesItemID);  // Remove items that were deleted
+      })
+
+      response.SalesItems.forEach(item => {
+        
+        let saleItemBtn = new SaleItemButton(new SaleItem());
+        saleItemBtn.id = item.SalesItemID;
+        saleItemBtn.description = item.SalesItemDescription;
+        saleItemBtn.price = item.Price;
+        saleItemBtn.salesTax = item.SalesTax;
+        saleItemBtn.displayOrder = item.DisplayOrderItem;
+        saleItemBtn.departmentUID = item.SalesCategoryID;
+        this.saleItemList.push(saleItemBtn);
+      });
+
+      console.log('Save response: ', response);
+    });
 
     
 
