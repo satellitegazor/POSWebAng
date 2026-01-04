@@ -31,7 +31,7 @@ export class PosCurrencyDirective implements ControlValueAccessor {
   }
 
   registerOnChange(fn: (val: number | null) => void): void { 
-    console.log('PosCurrencyDirective registerOnChange');
+    
     this.onChange = fn; 
   }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }

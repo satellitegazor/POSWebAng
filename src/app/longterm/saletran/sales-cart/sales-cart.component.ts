@@ -81,7 +81,7 @@ export class SalesCartComponent implements OnInit, OnDestroy {
         this.vendorLoginResult = this._logonDataSvc.getLTVendorLogonData();
 
         this._buildTktObj();
-        this._saleTranSvc.getSaleItemListFromDB(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID).subscribe(data => {
+        this._saleTranSvc.getSaleItemListFromDB(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0, 0, 0, 0).subscribe(data => {
             if(data.itemButtonMenuResults == null || data.itemButtonMenuResults.length == 0) {
                 this.router.navigate(['/itembtnmenu']);
                 return;

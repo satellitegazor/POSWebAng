@@ -20,7 +20,7 @@ export class ItemButtonDeptListComponent {
   @Input() deptListRefreshEvent: Subject<boolean> = new Subject<boolean>();
   @Input() deptList: Dept[] = [];
   @Output() deptClicked: EventEmitter<number> = new EventEmitter<number>();
-  activeId: number | null = null;
+  activeId: number = 0;
 
 
   public ngOnInit() {
@@ -28,7 +28,7 @@ export class ItemButtonDeptListComponent {
     this.deptListRefreshEvent.subscribe(data => {
       //console.log('subscription called deptListRefresh: ' + data);
       if(data && this.deptList.length > 0) {
-        this.activeId = this.deptList[0].departmentUID;
+        this.activeId = this.activeId > 0 ? this.activeId : this.deptList[0].departmentUID;
       }
     });
     
@@ -36,7 +36,7 @@ export class ItemButtonDeptListComponent {
 
   ngOnChanges(changes:SimpleChanges) {
     if(changes['deptList'] && this.deptList.length > 0) {
-      this.activeId = this.deptList[0].departmentUID;
+      this.activeId = this.activeId > 0 ? this.activeId : this.deptList[0].departmentUID;
     }
   }
 

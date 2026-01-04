@@ -1,0 +1,8 @@
+.toast-container .toast {
+    opacity: 0.98;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.toast:hover {
+    opacity: 1;
+}

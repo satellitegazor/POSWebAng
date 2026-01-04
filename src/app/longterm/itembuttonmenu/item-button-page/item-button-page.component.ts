@@ -18,6 +18,7 @@ import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheck
 import { ThisReceiver } from '@angular/compiler';
 import { SaleItemButton } from '../../models/sale.item.button';
 import { LTC_SalesItems, LTC_SaveSalesItemModelParameters } from '../../models/long-term-sale-item';
+import { ToastService } from 'src/app/services/toast.service';
 
 @Component({
   selector: 'app-item-button-page',
@@ -26,6 +27,9 @@ import { LTC_SalesItems, LTC_SaveSalesItemModelParameters } from '../../models/l
   standalone: false
 })
 export class ItemButtonPageComponent implements OnInit, OnDestroy {
+onSalesCategoryListRefresh() {
+  this.getAllSaleItems(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0, 0, 0, 0);
+}
 deleteItem($event: SaleItem) {
 throw new Error('Method not implemented.');
 }
@@ -69,7 +73,8 @@ throw new Error('Method not implemented.');
     private modalService: NgbModal, 
     private _store: Store<saleTranDataInterface>,
     private _locConfigStore: Store<LocationConfigState>, 
-    private _utilSvc: UtilService) {
+    private _utilSvc: UtilService,
+    private _toastSvc: ToastService ) {
     //console.log('SalesCart constructor')
   }
 
@@ -102,10 +107,9 @@ throw new Error('Method not implemented.');
     this.salesItemListRefresh.next(false);
 
     this.vendorLoginResult = this._logonDataSvc.getLTVendorLogonData();
-    this._saleTranSvc.getSaleItemListFromDB(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0).subscribe(data => {
-      this.allItemButtonMenuList = data.itemButtonMenuResults;
-      this.getDeptList();
-    });
+
+    this.getAllSaleItems(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0, 0, 0, 0);
+    
 
     this.salesItemAddedInSC.subscribe(data => {
       //console.log('subscription called salesItemAddedInSC: ' + data);
@@ -119,6 +123,20 @@ throw new Error('Method not implemented.');
 
   }
 
+  private getAllSaleItems(locationId: number, contractId: number, facilityid: number, businessFunctionId: number, salesCategoryId: number, departmentId: number): void {
+    this._saleTranSvc.getSaleItemListFromDB(locationId, contractId, facilityid, businessFunctionId, salesCategoryId, departmentId, 0).subscribe(data => {
+
+      this.allItemButtonMenuList = data.itemButtonMenuResults; //.filter(item => (item.salesItemDescription !== 'Enter Item Description Here' && item.saleItemActive) || (item.salesItemDescription == 'Enter Item Description Here' && !item.saleItemActive));
+      this.deptIdSelected = this.deptIdSelected > 0 ? this.deptIdSelected : this.allItemButtonMenuList[0].departmentUID;
+      this.getDeptList();
+      this.salesCatIdSelected = this.salesCatIdSelected > 0 ? this.salesCatIdSelected : this.allItemButtonMenuList[0].salesCategoryID;
+      this.getSalesCategoryList(this.deptIdSelected);
+      this.getSaleItemList(this.salesCatIdSelected);
+
+    });
+
+  }
+
   ngOnDestroy(): void {
     throw new Error('Method not implemented.');
   }
@@ -126,8 +144,6 @@ throw new Error('Method not implemented.');
 
   public getDeptList(): void {
 
-    this.deptIdSelected = this.allItemButtonMenuList[0].departmentUID;
-    this.salesCatIdSelected = this.allItemButtonMenuList[0].salesCategoryID;
 
     this.allItemButtonMenuList.forEach(item => {
       let dptCount = this.deptList.filter(d => d.departmentUID == item.departmentUID).length;
@@ -140,12 +156,10 @@ throw new Error('Method not implemented.');
     });
     this.deptListRefreshEvent.next(true);
 
-    this.getSalesCategoryList(this.deptList[0].departmentUID);
+    this.getSalesCategoryList(this.deptIdSelected > 0 ? this.deptIdSelected : this.deptList[0].departmentUID);
   }
 
   public getSalesCategoryList(deptId: number): void {
-
-
 
     this.saleCatList = [];
     let allDeptList = this.allItemButtonMenuList.filter(item => item.departmentUID == deptId);
@@ -167,11 +181,14 @@ throw new Error('Method not implemented.');
         this.saleCatList.push(cat);
         //this.saleCatList.push(itm);
       }
+
+      this.salesCatIdSelected = (this.salesCatIdSelected > 0 && this.saleCatList.filter(cat => cat.salesCategoryUID == this.salesCatIdSelected).length == 0) ? 
+        this.saleCatList[0].salesCategoryUID : this.salesCatIdSelected;
     });
     //console.log('setting salesCategoryListRefresh to true');
     this.salesCategoryListRefreshEvent.next(true);
 
-    this.getSaleItemList(this.saleCatList[0].salesCategoryUID);
+    this.getSaleItemList(this.salesCatIdSelected > 0 ? this.salesCatIdSelected : this.saleCatList[0].salesCategoryUID);
   }
 
   public getSaleItemList(categoryId: number): void {
@@ -179,11 +196,16 @@ throw new Error('Method not implemented.');
     this.saleItemList = [];
     let allCatList = this.allItemButtonMenuList.filter(item => item.salesCategoryID == categoryId);
     allCatList.forEach(itm => {
-      let k = this.saleItemList.filter(si => si.id == itm.salesItemID);
+      let k = this.saleItemList.filter(si => si.id == itm.salesItemID && itm.displayOrder > 0);
       if (k.length == 0) {
         this.saleItemList.push(new SaleItemButton(itm));
       }
     });
+
+    this.saleItemList = this.saleItemList.length > 1 && this.saleItemList.filter(si => si.description == 'Enter Item Description Here' && si.id > 0).length == 1 ?
+      this.saleItemList.filter(si => si.description != 'Enter Item Description Here' && si.id > 0) :
+      this.saleItemList;
+
     //console.log('setting salesItemListRefresh to true');
     this.salesItemListRefresh.next(true)
     this.listInitialized = true;
@@ -204,6 +226,7 @@ throw new Error('Method not implemented.');
   }
 
 
+
   public deptList: Dept[] = [];
   public saleItemList: SaleItemButton[] = [];
   public saleCatList: SalesCat[] = [];
@@ -211,8 +234,14 @@ throw new Error('Method not implemented.');
   btnAddItemClick($event: PointerEvent) {
      
     let newSaleItem: SaleItem = JSON.parse(JSON.stringify(this.allItemButtonMenuList.filter(item => item.departmentUID == this.deptIdSelected && item.salesCategoryID == this.salesCatIdSelected)[0]));
-    let newSaleItemButton = new SaleItemButton(newSaleItem);
     
+    let newSaleItemButton = new SaleItemButton(newSaleItem);
+    newSaleItemButton.id = 0;
+    newSaleItemButton.description = 'Enter Item Description Here';
+    newSaleItemButton.price = 0;
+    newSaleItemButton.salesTax = 0;
+    newSaleItemButton.displayOrder = this.saleItemList.length + 1;
+
     this.saleItemList.push(newSaleItemButton);
     this.salesItemListRefresh.next(true);
   }
@@ -222,9 +251,9 @@ throw new Error('Method not implemented.');
   }
 
   btnSaveClick($event: PointerEvent) {
-    const saleItems = this.salesItemListChild.getCurrentSalesItems();
+    const saleItems = this.salesItemListChild.getChangedItems();
     if(!saleItems || saleItems.length === 0){
-      console.log('No items to save');
+      this._toastSvc.warning('No changes to save.');
       return;
     }
 
@@ -264,22 +293,25 @@ throw new Error('Method not implemented.');
     console.log('Saving payload: ', payload);
     this._saleTranSvc.saveItemButtonMenu(payload, +this.vendorLoginResult.individualUID).subscribe(response => {
 
-      payload.SalesItems.forEach(payLoadItem => {
-        this.saleItemList = this.saleItemList.filter(item => item.id !== payLoadItem.SalesItemID);  // Remove items that were deleted
-      })
+      this.getAllSaleItems(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0, 0, 0, 0);
 
-      response.SalesItems.forEach(item => {
+      // payload.SalesItems.forEach(payLoadItem => {
+      //   this.saleItemList = this.saleItemList.filter(item => item.id !== payLoadItem.SalesItemID);  // Remove items that were deleted
+      // })
+
+      // response.salesItems.forEach(item => {
         
-        let saleItemBtn = new SaleItemButton(new SaleItem());
-        saleItemBtn.id = item.SalesItemID;
-        saleItemBtn.description = item.SalesItemDescription;
-        saleItemBtn.price = item.Price;
-        saleItemBtn.salesTax = item.SalesTax;
-        saleItemBtn.displayOrder = item.DisplayOrderItem;
-        saleItemBtn.departmentUID = item.SalesCategoryID;
-        this.saleItemList.push(saleItemBtn);
-      });
-
+      //   let saleItemBtn = new SaleItemButton(new SaleItem());
+      //   saleItemBtn.id = item.SalesItemID;
+      //   saleItemBtn.description = item.SalesItemDescription;
+      //   saleItemBtn.price = item.Price;
+      //   saleItemBtn.salesTax = item.SalesTax;
+      //   saleItemBtn.displayOrder = item.DisplayOrderItem;
+      //   saleItemBtn.departmentUID = item.SalesCategoryID;
+      //   this.saleItemList = this.saleItemList.filter(si => si.id !== saleItemBtn.id); // Remove existing item if present
+      //   this.saleItemList.push(saleItemBtn);
+      // });
+      this._toastSvc.success('Item Button Menu saved successfully.');
       console.log('Save response: ', response);
     });
 

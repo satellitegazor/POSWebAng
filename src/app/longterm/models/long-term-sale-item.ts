@@ -32,6 +32,6 @@ export class LTC_SalesItems {
 
 export class LTC_SaveSalesItemModel {
     Results: MobileBase = new MobileBase();
-    SalesItems: LTC_SalesItems[] = [];
+    salesItems: LTC_SalesItems[] = [];
     ShowAddMenuBtn: boolean = false;
 }

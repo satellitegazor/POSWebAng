@@ -102,17 +102,20 @@
 </div>
 <div class="container-fluid" style="width:100%">
     <app-item-button-sales-cat-list [saleCatList]="saleCatList" (saleCatClicked)="saleCatClicked($event)"
-        [salesCategoryListRefreshEvent]="salesCategoryListRefreshEvent" (categorySelected)="selectCategory($event)"
+        [salesCategoryListRefreshEvent]="salesCategoryListRefreshEvent.asObservable()" 
+        (salesCategoryListRefreshEvent)="onSalesCategoryListRefresh()"
+        (categorySelected)="selectCategory($event)"
         (categoryAdded)="addCategory($event)" (categoryUpdated)="updateCategory($event)">
     </app-item-button-sales-cat-list>
 </div>
 <div class="container-fluid row" style="width:100%">
     <app-item-button-sales-item-list [saleItemList]="saleItemList" (saleItemClicked)="saleItemClicked($event)"
-        (itemAdded)="addItem($event)" (itemUpdated)="updateItem($event)" (itemDeleted)="deleteItem($event)">
+        (itemAdded)="addItem($event)" (itemUpdated)="updateItem($event)" (itemDeleted)="deleteItem($event)"
+        [salesItemListRefreshEvent]="salesItemListRefresh.asObservable()">
     </app-item-button-sales-item-list>
 </div>
 
-<app-child [salesItemListRefreshEvent]="salesItemListRefresh.asObservable()"></app-child>
+
 <app-child [salesItemAddedInSCEvent]="salesItemAddedInSC.asObservable()"></app-child>
 
 <div class="footer fixed-bottom cncsnFooter">

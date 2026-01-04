@@ -14,6 +14,7 @@ import { setLocationConfig } from 'src/app/longterm/saletran/store/locationconfi
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ResetPinDlgComponent } from './reset-pin-dlg/reset-pin-dlg.component';
 import { MandateTrainingComponent } from './mandate-training/mandate-training.component';
+import { ToastService } from 'src/app/services/toast.service';
 
 @Component({
     selector: 'app-logon-vendorlt',
@@ -38,7 +39,7 @@ export class VendorLTComponent implements OnInit {
         private _logonDataSvc: LogonDataService, 
         private _localStorageSvc: LocalStorageService, 
         private _saleTranSvc: SalesTranService,
-        private _alertSvc: AlertService,
+        private _toastSvc: ToastService,
         private _locConfigStore: Store<LocationConfigState>,
         private _modalService: NgbModal ) { }
     cookieVal = '';
@@ -83,15 +84,13 @@ export class VendorLTComponent implements OnInit {
             if (!data.results.success) {
                 this.errorMsgDisplay = 'block';
                 this.successMsgDisplay = 'none';
-                let option: AlertOptions = new AlertOptions("", false, false);
-                this._alertSvc.error('Vendor Logon unsuccessful', option);
+                this._toastSvc.error('Vendor Logon unsuccessful');
                 return; 
             }
             else {
                 this.errorMsgDisplay = 'none';
                 this.successMsgDisplay = 'block';
-                let option: AlertOptions = new AlertOptions("", false, false);
-                this._alertSvc.success('Vendor Logon successful, moving on to Sale Transaction...', option);
+                this._toastSvc.success('Vendor Logon successful, moving on to Sale Transaction...');
             }
 
             let selectedLocId: number = this.selectedLocationId;

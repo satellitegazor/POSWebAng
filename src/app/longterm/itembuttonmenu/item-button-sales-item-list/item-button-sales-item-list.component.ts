@@ -71,7 +71,12 @@ export class ItemButtonSalesItemListComponent implements OnInit, OnChanges, CanC
     this.salesItemListRefreshEvent.subscribe(data => {
       //console.log('subscription called salesitmListRefresh: ' + data);
       if (data) {
+        if (this.saleItemList.length == 0 || typeof this.saleItemList[0].id == 'undefined') {
+            console.log('undefined sale item id');
+            return;
+        }
         this.activeId = this.saleItemList[0].id;
+        this.loadSaleItems();
       }
     });
     
@@ -134,6 +139,28 @@ export class ItemButtonSalesItemListComponent implements OnInit, OnChanges, CanC
       departmentUID: control.get('departmentUID')?.value,  // Add missing property
       salesCategoryID: control.get('salesCategoryUID')?.value  // Add missing property (note: form has salesCategoryUID, interface has salesCategoryID)
     })) as SaleItemButton[];
+  }
+
+  // Add this method — parent will call it on Save
+  getChangedItems(): SaleItemButton[] {
+    const changedItems: SaleItemButton[] = [];
+
+    this.saleItemListArray.controls.forEach((control: any, index: number) => {
+      if (control.dirty) {  // ← Only if user changed something
+        let updatedItem: SaleItemButton = new SaleItemButton(new SaleItem());
+        
+          updatedItem.id = control.get('id')?.value;
+          updatedItem.description = control.get('description')?.value.trim();
+          updatedItem.price = control.get('price')?.value;
+          updatedItem.salesTax = control.get('salesTax')?.value;
+          updatedItem.displayOrder = control.get('displayOrder')?.value || index + 1;
+          updatedItem.departmentUID = control.get('departmentUID')?.value;
+          updatedItem.salesCategoryID = control.get('salesCategoryUID')?.value;
+          changedItems.push(updatedItem);
+      }
+    });
+
+    return changedItems;
   }
 
 }

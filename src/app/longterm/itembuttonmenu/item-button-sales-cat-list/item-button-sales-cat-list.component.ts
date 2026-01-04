@@ -21,27 +21,22 @@ export class ItemButtonSalesCatListComponent {
     this.activeId = 0;
   }
   @Input() saleCatList: SalesCat[] = [];
-  @Input() salesCategoryListRefreshEvent: Subject<boolean> = new Subject<boolean>();
+  @Output() salesCategoryListRefreshEvent: Subject<boolean> = new Subject<boolean>();
   @Output() saleCatClicked: EventEmitter<number> = new EventEmitter();
   @Output() saleItemAddedInSC: EventEmitter<SaleItem> = new EventEmitter();
   activeId: number = 0
 
   ngOnInit(): void {
     if (this.saleCatList.length > 0) {
-      this.activeId = this.saleCatList[0].salesCategoryUID;
+      this.activeId = this.activeId > 0 && this.saleCatList.some(cat => cat.salesCategoryUID === this.activeId) ? this.activeId : this.saleCatList[0].salesCategoryUID;
+      this.saleCatClicked.emit(this.activeId);
     }
-
-    // this.salesCategoryListRefreshEvent.subscribe(data => {
-    //   //console.log('subscription called salesCatListRefresh: ' + data);
-    //   if (data && this.saleCatList.length > 0) {
-    //        this.activeId= this.saleCatList[0].salesCategoryUID;
-    //   }
-    // });
   }
 
   ngOnChanges(changes:SimpleChanges): void {
     if (changes['saleCatList'] && this.saleCatList.length > 0) {
-      this.activeId = this.saleCatList[0].salesCategoryUID;
+      this.activeId = this.activeId > 0 && this.saleCatList.some(cat => cat.salesCategoryUID === this.activeId) ? this.activeId : this.saleCatList[0].salesCategoryUID;
+      this.saleCatClicked.emit(this.activeId);
     }
   }
 
@@ -114,6 +109,7 @@ export class ItemButtonSalesCatListComponent {
         saleItem.displayOrder = data.item.displayOrder;
 
         this.saleItemAddedInSC.emit(saleItem);
+        this.salesCategoryListRefreshEvent.next(true)
         //console.log('Sales Category Added: ' + data.salesCategoryDescription);
       },
       error: (err: any) => {

@@ -1,0 +1,22 @@
+<!-- Place this at the very bottom of app.component.html -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+    <div *ngFor="let toast of toasts" [@slideInOut] class="toast show shadow-lg mb-2"
+        [ngClass]="getToastClass(toast.type)" role="alert" (click)="remove(toast)"
+        style="cursor: pointer; min-width: 300px; border-radius: 8px;">
+
+        <div class="toast-body d-flex align-items-center py-3 px-4">
+            <i class="bi me-3 fs-4" [ngClass]="{
+           'bi-info-circle-fill': toast.type === 'info',
+           'bi-check-circle-fill': toast.type === 'success',
+           'bi-exclamation-triangle-fill': toast.type === 'warning',
+           'bi-x-circle-fill': toast.type === 'error'
+         }"></i>
+            <div class="flex-grow-1">
+                <strong>{{ toast.type.charAt(0).toUpperCase() + toast.type.slice(1) }}</strong>
+                <div>{{ toast.message }}</div>
+            </div>
+            <button type="button" class="btn-close btn-close-white ms-3"
+                (click)="remove(toast); $event.stopPropagation()"></button>
+        </div>
+    </div>
+</div>

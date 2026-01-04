@@ -22,7 +22,7 @@ export class SaleItemEffects {
         return this.action$.pipe(
             ofType(getSaleItemsStart),
             exhaustMap((action) => {
-                    return this.saleItemSvc.getSaleItemListFromDB(action.locationId, action.contractid)
+                    return this.saleItemSvc.getSaleItemListFromDB(action.locationId, action.contractid, 0, 0, 0, 0)
                         .pipe(map(saleItemRsltMdl => getSaleItemsActionSuccess({saleItemRsltMdl})))
                             
                         //     (data) => {

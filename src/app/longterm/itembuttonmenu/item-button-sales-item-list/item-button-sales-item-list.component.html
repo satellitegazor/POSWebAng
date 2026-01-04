@@ -17,13 +17,17 @@
                 <tr *ngFor="let itemCtrl of saleItemListArray.controls; let i = index" 
                     [formGroupName]="i" [attr.data-salesitem-id]="itemCtrl.get('id')?.value"
                     [attr.data-departmentuid]="itemCtrl.get('departmentUID')?.value"
-                    [attr.data-categoryuid]="itemCtrl.get('salesCategoryID')?.value">
+                    [attr.data-categoryuid]="itemCtrl.get('salesCategoryUID')?.value">
         
                     <!-- Item Description -->
                     <td>
                         <input type="text" class="form-control" style="text-transform: capitalize;"
                             placeholder="Enter Item Description Here"
                             formControlName="description">
+                        <input type="hidden" formControlName="id">
+                        <input type="hidden" formControlName="salesCategoryUID">
+                        <input type="hidden" formControlName="departmentUID">
+                        <input type="hidden" formControlName="displayOrder" value="{{i}}">
                     </td>
         
                     <!-- Price -->

@@ -58,10 +58,10 @@ export class SalesTranService {
     //    });
     //}
 
-    public getSaleItemListFromDB(locationId: number, contractid: number, active: number = 1): Observable<SaleItemResultsModel> {
+    public getSaleItemListFromDB(locationId: number, contractid: number, facilityid: number, businessFunctionId: number, salesCategoryId: number, departmentId: number, active: number = 1): Observable<SaleItemResultsModel> {
         //console.log('SalesTranSvc getSaleItemListFromDB called')
         let url = GlobalConstants.CPOS_SVCS_URL + '/ltc/GetMenuItem?guid=' + GlobalConstants.GET_GUID +
-            '&uid=0&pLocationUID=' + locationId + '&pContractUID=' + contractid + '&pFacilityUID=0&pBusinessFunctionUID=0&pSalesCatUID=0&pDepartmentUID=0&pActive=' + active;
+            '&uid=0&pLocationUID=' + locationId + '&pContractUID=' + contractid + '&pFacilityUID=' + facilityid + '&pBusinessFunctionUID=' + businessFunctionId + '&pSalesCatUID=' + salesCategoryId + '&pDepartmentUID=' + departmentId + '&pActive=' + active;
             
         return this.httpClient.get<SaleItemResultsModel>(url, { headers: this.headerObjs });
     }

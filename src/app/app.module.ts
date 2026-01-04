@@ -1,5 +1,6 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA, Directive  } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LogonModule } from './logon/logon.module';
@@ -31,6 +32,7 @@ import { PosCurrencyDirective } from './directives/pos-currency.directive';
 import { PosCurrency3Directive } from './directives/pos-currency.directive.3';
 import { SalesTranModule } from './longterm/saletran/saletran.module';
 import { ConfirmDialogComponent } from './shared/confirm-dialog';
+import { ToastComponent } from "./shared/toast/toast.component";
 
  
 @NgModule({
@@ -54,25 +56,27 @@ import { ConfirmDialogComponent } from './shared/confirm-dialog';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     ReactiveFormsModule,
     ModuleRouting,
-    FormsModule, 
+    FormsModule,
     AlertMessageModule,
     LogonModule,
-    SalesTranModule,  
-    SharedSubjectModule,  
+    SalesTranModule,
+    SharedSubjectModule,
     NgbModalModule,
     HttpClientModule,
     EffectsModule.forRoot([]),
     StoreModule.forRoot({}),
     StoreDevtoolsModule.instrument({
-      maxAge: 25,
-      logOnly: environment.production,
-      autoPause: true
-    , connectInZone: true}),
-    RcptModule
-    
-  ],
+        maxAge: 25,
+        logOnly: environment.production,
+        autoPause: true,
+        connectInZone: true
+    }),
+    RcptModule,
+    ToastComponent
+],
   providers: [{provide: LogonDataService}, {
         provide: HTTP_INTERCEPTORS,
         useClass: AuthInterceptor,
