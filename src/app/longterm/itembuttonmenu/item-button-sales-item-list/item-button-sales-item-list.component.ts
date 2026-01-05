@@ -36,18 +36,6 @@ export class ItemButtonSalesItemListComponent implements OnInit, OnChanges, CanC
   saleItemForm: FormGroup;
   activeId: number = 0;
 
-  deleteItem(_t14: SaleItemButton) {
-    throw new Error('Method not implemented.');
-  }
-  moveItemDown(_t15: number) {
-    throw new Error('Method not implemented.');
-  }
-  moveItemUp(_t15: number) {
-    throw new Error('Method not implemented.');
-  }
-  setDefaultTax(_t14: SaleItemButton) {
-    throw new Error('Method not implemented.');
-  }
 
   
 
@@ -161,6 +149,74 @@ export class ItemButtonSalesItemListComponent implements OnInit, OnChanges, CanC
     });
 
     return changedItems;
+  }
+  deleteItem(index: number) {
+    const control = this.saleItemListArray.at(index);
+    const itemId = control.get('id')?.value;
+
+    // Find the full item object
+    const deletedItem = this.saleItemList.find(item => item.id === itemId);
+
+    if (deletedItem) {
+      let saleItemToDelete = new SaleItem();
+      saleItemToDelete.salesItemID = deletedItem.id;
+      saleItemToDelete.salesItemDescription = deletedItem.description;
+      saleItemToDelete.price = deletedItem.price;
+      saleItemToDelete.salesTax = deletedItem.salesTax;
+      saleItemToDelete.departmentUID = deletedItem.departmentUID;
+      saleItemToDelete.salesCategoryID = deletedItem.salesCategoryID;
+      // Emit the full item object to parent
+      this.itemDeleted.emit(saleItemToDelete);
+
+      // Optional: also remove from local array for immediate UI update
+      this.saleItemListArray.removeAt(index);
+      this.saleItemList = this.saleItemList.filter(i => i.id !== itemId);
+    }
+  }
+  moveItemDown(index: number) {
+    let atIndexItem = this.saleItemListArray.at(index);
+    let belowIndexItem = this.saleItemListArray.at(index + 1);
+
+    if (atIndexItem && belowIndexItem) {
+      const atIndexDisplayOrder = atIndexItem.get('displayOrder')?.value;
+      const belowIndexDisplayOrder = belowIndexItem.get('displayOrder')?.value;
+      atIndexItem.get('displayOrder')?.setValue(belowIndexDisplayOrder);
+      belowIndexItem.get('displayOrder')?.setValue(atIndexDisplayOrder);
+
+      this.saleItemListArray.setControl(index, belowIndexItem);
+      this.saleItemListArray.setControl(index + 1, atIndexItem);
+      atIndexItem.markAsDirty();
+      belowIndexItem.markAsDirty();
+
+      this.itemUpdated.emit();
+    }
+    
+  }
+  moveItemUp(index: number) {
+    let atIndexItem = this.saleItemListArray.at(index);
+    let aboveIndexItem = this.saleItemListArray.at(index - 1);
+
+    if (atIndexItem && aboveIndexItem) {
+      const atIndexDisplayOrder = atIndexItem.get('displayOrder')?.value;
+      const aboveIndexDisplayOrder = aboveIndexItem.get('displayOrder')?.value;
+      atIndexItem.get('displayOrder')?.setValue(aboveIndexDisplayOrder);
+      aboveIndexItem.get('displayOrder')?.setValue(atIndexDisplayOrder);
+
+      this.saleItemListArray.setControl(index, aboveIndexItem);
+      this.saleItemListArray.setControl(index - 1, atIndexItem);
+      atIndexItem.markAsDirty();
+      aboveIndexItem.markAsDirty();
+      this.itemUpdated.emit();
+    }
+  }
+  setDefaultTax(_t14: SaleItemButton) {
+    this.saleItemListArray.controls.forEach((control: any, index: number) => {
+      if (index !== 0) { // Skip the first item
+        control.get('salesTax')?.setValue(_t14);
+        control.markAsDirty();
+      }
+    });
+    this.itemUpdated.emit();
   }
 
 }

@@ -11,6 +11,7 @@ export class SaleItemButton {
         this.id = this.saleItem.salesItemID;
         this.departmentUID = this.saleItem.departmentUID;
         this.salesCategoryID = this.saleItem.salesCategoryID;
+        this.active = this.saleItem.saleItemActive;
     }
 
     description: string = ''; 
@@ -20,5 +21,6 @@ export class SaleItemButton {
     id: number = 0;
     departmentUID: number = 0;
     salesCategoryID: number = 0;
+    active: boolean = true;
 
 }

@@ -27,7 +27,7 @@
                         <input type="hidden" formControlName="id">
                         <input type="hidden" formControlName="salesCategoryUID">
                         <input type="hidden" formControlName="departmentUID">
-                        <input type="hidden" formControlName="displayOrder" value="{{i}}">
+                        <input type="hidden" formControlName="displayOrder">
                     </td>
         
                     <!-- Price -->
@@ -39,15 +39,22 @@
         
                     <!-- Sales Tax + Default Tax Button -->
                     <td>
+                        <table style="width:100%;">
+                            <tr>
+                                <td style="width:90%;">
                         <div class="input-group">
                             <input type="text" class="form-control text-center" 
                                 appPosCurrency3 name="saleTax_{{i}}"
                                 placeholder="Tax %" formControlName="salesTax">
-                            <button class="btn btn-outline-success btn-sm" type="button" title="Set Default Sales Tax"
+                        </div></td>
+                                <td style="width:10%; padding-left:5px;">
+
+                            <button *ngIf="i==0" class="btn btn-outline-success btn-sm" type="button" title="Set Default Sales Tax"
                                 (click)="setDefaultTax(itemCtrl.get('salesTax')?.value)">
                                 <i class="bi bi-check-lg"></i>
                             </button>
-                        </div>
+                            </td>
+                            </tr></table>
                     </td>
         
                     <!-- Reorder Buttons -->
@@ -66,22 +73,12 @@
         
                     <!-- Delete Action -->
                     <td class="text-center">
-                        <button type="button" class="btn btn-danger btn-sm" (click)="deleteItem(itemCtrl.get('id')?.value)" title="Delete Item">
+                        <button type="button" class="btn btn-danger btn-sm" (click)="deleteItem(i)" title="Delete Item">
                             <i class="bi bi-trash"></i> Delete
                         </button>
                     </td>
                 </tr>
             </tbody>
         </table></div></form>
-        <!-- <div class="row bkgray">
-            <div class="col-md-6" *ngFor="let itm of saleItemList; let index=index">
-                <button type="button"
-                    [ngClass]="[activeId === itm.salesItemID ? 'dpt btn btn-block btn-primary' : 'dpt btn btn-block btn-secondary']"
-                    style="margin-top: 10px;margin-bottom: 10px;" id="{{itm.salesItemID}}"
-                    (click)="salesItemClick($event, itm.salesItemID)">
-                    {{itm.salesItemDescription}}
-                </button>
-            </div>
-        </div> -->
     </div>
 </div>
