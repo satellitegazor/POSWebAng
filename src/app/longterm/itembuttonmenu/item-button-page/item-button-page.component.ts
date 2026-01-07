@@ -19,6 +19,7 @@ import { ThisReceiver } from '@angular/compiler';
 import { SaleItemButton } from '../../models/sale.item.button';
 import { LTC_SalesItems, LTC_SaveSalesItemModelParameters } from '../../models/long-term-sale-item';
 import { ToastService } from 'src/app/services/toast.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-item-button-page',
@@ -31,6 +32,7 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
   listInitialized: boolean = false;  
   // In your component.ts
   defaultCurrency: string = 'EUR'; // or 'USD'
+  canChangeCurrency: boolean = true;
   allowTaxExemption: boolean = true;
   concessionDiscountAfterTax: boolean = false;
   exchangeCouponAfterTax: boolean = false;
@@ -53,7 +55,8 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
     private _store: Store<saleTranDataInterface>,
     private _locConfigStore: Store<LocationConfigState>, 
     private _utilSvc: UtilService,
-    private _toastSvc: ToastService ) {
+    private _toastSvc: ToastService,
+    private _router: Router ) {
     //console.log('SalesCart constructor')
   }
 
@@ -88,6 +91,11 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
     this.vendorLoginResult = this._logonDataSvc.getLTVendorLogonData();
 
     this.getAllSaleItems(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0, 0, 0, 0);
+
+    const saleTranCountStr = sessionStorage.getItem('SaleTranCount');
+    const saleTranCount = saleTranCountStr ? parseInt(saleTranCountStr, 10) : 0;
+    // Disable currency change if any transactions exist
+    this.canChangeCurrency = saleTranCount === 0;
     
 
     this.salesItemAddedInSC.subscribe(data => {
@@ -141,7 +149,7 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
   public getSalesCategoryList(deptId: number): void {
 
     this.saleCatList = [];
-    let allDeptList = this.allItemButtonMenuList.filter(item => item.departmentUID == deptId);
+    let allDeptList = this.allItemButtonMenuList.filter(item => item.departmentUID == deptId && item.salesCatActive);
     allDeptList.forEach(itm => {
       let k = this.saleCatList.filter(ct => ct.salesCategoryUID == itm.salesCategoryID);
 
@@ -173,9 +181,9 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
   public getSaleItemList(categoryId: number): void {
 
     this.saleItemList = [];
-    let allCatList = this.allItemButtonMenuList.filter(item => item.salesCategoryID == categoryId);
+    let allCatList = this.allItemButtonMenuList.filter(item => item.salesCategoryID == categoryId && item.saleItemActive);
     allCatList.forEach(itm => {
-      let k = this.saleItemList.filter(si => si.id == itm.salesItemID && itm.displayOrder > 0);
+      let k = this.saleItemList.filter(si => si.id == itm.salesItemID);
       if (k.length == 0) {
         this.saleItemList.push(new SaleItemButton(itm));
       }
@@ -240,7 +248,7 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
   }
 
   btnSalesTranClick($event: PointerEvent) {
-    throw new Error('Method not implemented.');
+    this._router.navigate(['/salestran']);
   }
 
   btnSaveClick() {
@@ -335,16 +343,13 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
   }
 
   addItem($event: SaleItem) {
-    throw new Error('Method not implemented.');
+    this.getAllSaleItems(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0, 0, 0, 0);
   }
   updateCategory($event: Event) {
-    throw new Error('Method not implemented.');
+    this.getAllSaleItems(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0, 0, 0, 0);
   }
   addCategory($event: Event) {
-    throw new Error('Method not implemented.');
-  }
-  selectCategory($event: Event) {
-    throw new Error('Method not implemented.');
+    this.getAllSaleItems(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0, 0, 0, 0);
   }
 
 }

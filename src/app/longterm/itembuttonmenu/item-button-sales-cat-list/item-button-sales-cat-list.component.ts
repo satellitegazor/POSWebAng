@@ -71,6 +71,7 @@ export class ItemButtonSalesCatListComponent {
             cat.salesCategoryUID = data.category.salesCategoryUID;
 
           }
+          this.salesCategoryListRefreshEvent.next(true);
           //console.log('Sales Category Updated: ' + data.salesCategoryDescription);
         })
       },
@@ -79,6 +80,7 @@ export class ItemButtonSalesCatListComponent {
       }
     });
   }
+
   addNewSalesCategory() {
     const newCat = new SalesCat();
     newCat.description = 'New Category';

@@ -18,13 +18,15 @@
             <div *ngIf="rgnCode !== 'CON'" class="col-lg-4 col-md-12 col-12 mt-3 mt-md-0">
                 <div class="btn-group w-100" role="group">
                     <input type="radio" class="btn-check" name="defaultCurrency" id="dvCurUSD"
-                        [checked]="defaultCurrency === 'USD'" (change)="defaultCurrency = 'USD'">
+                        [checked]="defaultCurrency === 'USD'" (change)="defaultCurrency = 'USD'"
+                        [disabled]="!canChangeCurrency">
                     <label class="btn btn-outline-primary flex-fill" for="dvCurUSD">
                         USD ($)
                     </label>
 
                     <input type="radio" class="btn-check" name="defaultCurrency" id="dvCurLocal"
-                        [checked]="defaultCurrency !== 'USD'" (change)="defaultCurrency = currCode">
+                        [checked]="defaultCurrency !== 'USD'" (change)="defaultCurrency = currCode"
+                        [disabled]="!canChangeCurrency">
                     <label class="btn btn-outline-primary flex-fill" for="dvCurLocal">
                         {{ currCode }} ({{ currCodeSymbl }})
                     </label>
@@ -104,8 +106,8 @@
     <app-item-button-sales-cat-list [saleCatList]="saleCatList" (saleCatClicked)="saleCatClicked($event)"
         [salesCategoryListRefreshEvent]="salesCategoryListRefreshEvent.asObservable()" 
         (salesCategoryListRefreshEvent)="onSalesCategoryListRefresh()"
-        (categorySelected)="selectCategory($event)"
-        (categoryAdded)="addCategory($event)" (categoryUpdated)="updateCategory($event)">
+        (categoryAdded)="addCategory($event)" 
+        (categoryUpdated)="updateCategory($event)">
     </app-item-button-sales-cat-list>
 </div>
 <div class="container-fluid row" style="width:100%">
@@ -116,7 +118,7 @@
 </div>
 
 
-<app-child [salesItemAddedInSCEvent]="salesItemAddedInSC.asObservable()"></app-child>
+
 
 <div class="footer fixed-bottom cncsnFooter">
     <div id="stButtonBottomBar" class="row">

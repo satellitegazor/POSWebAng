@@ -7,7 +7,7 @@ export class SaleItemButton {
         this.description = this.saleItem.salesItemDescription;
         this.price = this.saleItem.price;
         this.salesTax = this.saleItem.salesTax;
-        this.displayOrder = this.saleItem.displayOrder;
+        this.displayOrder = this.saleItem.displayOrderItem;
         this.id = this.saleItem.salesItemID;
         this.departmentUID = this.saleItem.departmentUID;
         this.salesCategoryID = this.saleItem.salesCategoryID;
