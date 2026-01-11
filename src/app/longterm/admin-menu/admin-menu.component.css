@@ -1,0 +1,43 @@
+.cncsn-footer {
+    height: 90px;
+    z-index: 1030;
+
+    a {
+        transition: all 0.2s ease;
+        color: inherit;
+
+        &:hover,
+        &:focus {
+            background-color: rgba(0, 0, 0, 0.05);
+            transform: translateY(-3px);
+        }
+
+        i {
+            transition: transform 0.2s;
+        }
+
+        &:active i {
+            transform: scale(1.15);
+        }
+    }
+}
+
+.list-group-item {
+    transition: all 0.25s ease;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+    &:hover {
+        background-color: #f8f9fa;
+        transform: translateX(10px);
+    }
+
+    img {
+        filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.1));
+    }
+}
+
+.card-header {
+    font-weight: 600;
+    letter-spacing: 0.8px;
+}

@@ -14,6 +14,8 @@ import { CreditCardTndrComponent } from './tender/credit-card-tndr/credit-card-t
 import { EgConcTndrComponent } from './tender/eg-conc-tndr/eg-conc-tndr.component';
 import { CashTndrComponent } from './tender/cash-tndr/cash-tndr.component';
 import { ItemButtonPageComponent } from '../itembuttonmenu/item-button-page/item-button-page.component';
+import { AdminMenuComponent } from '../admin-menu/admin-menu.component';
+import { CanDeactivateGuard } from 'src/app/shared/can-component-deactivate';
 
 const routes: Routes = [
     { path: 'salestran', component: SalesCartComponent },
@@ -25,7 +27,8 @@ const routes: Routes = [
     { path: 'pinpadtran', component: CreditCardTndrComponent},
     { path: 'eaglecash', component:EgConcTndrComponent},
     { path: 'cashcheck', component:CashTndrComponent},
-    { path: 'itembtnmenu', component: ItemButtonPageComponent, canDeactivate: ['CanDeactivateGuard'] },
+    { path: 'itembtnmenu', component: ItemButtonPageComponent, canDeactivate: [CanDeactivateGuard]},
+    { path: 'adminmenu', component: AdminMenuComponent }
 ];
 
 /*export const routing: ModuleWithProviders = RouterModule.forChild(routes)*/

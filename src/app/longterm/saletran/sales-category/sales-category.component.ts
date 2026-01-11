@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges, Input, Output, EventEmitter } from '@angular/core';
 //import { EventEmitter } from 'events';
 import { SalesCat } from '../../models/sale.item';
 import { SalesTranService } from '../services/sales-tran.service';
@@ -10,13 +10,13 @@ import { Observable, Subject } from 'rxjs';
     styleUrls: ['./sales-category.component.css'],
     standalone: false
 })
-export class SalesCategoryComponent implements OnInit {
+export class SalesCategoryComponent implements OnInit, OnChanges {
 
     constructor() { 
         this.activeId = 0;
     }
     @Input() saleCatList: SalesCat[] = [];
-    @Input('') salesCatListRefreshEvent: Observable<boolean> = new Observable<boolean>();
+    @Input() salesCategoryListRefreshEvent: Observable<boolean> = new Observable<boolean>();
     @Output() saleCatClicked: EventEmitter<number> = new EventEmitter();
     activeId: number = 0
 
@@ -24,13 +24,15 @@ export class SalesCategoryComponent implements OnInit {
         if(this.saleCatList.length > 0) {
             this.activeId = this.saleCatList[0].salesCategoryUID;
         }
+    }
 
-        this.salesCatListRefreshEvent.subscribe(data => {
-            //console.log('subscription called salesCatListRefresh: ' + data);
-            if(data) {
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['saleCatList'] && !changes['saleCatList'].firstChange) {
+            // saleCatList was updated from parent
+            if (this.saleCatList.length > 0) {
                 this.activeId = this.saleCatList[0].salesCategoryUID;
             }
-        });
+        }
     }
 
     public salesCatgClick(event: Event, catgId: number): void {

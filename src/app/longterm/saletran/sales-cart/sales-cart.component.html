@@ -3,7 +3,9 @@
     </app-deptlist>
 </div>
 <div class="container-fluid" style="width:100%">
-    <app-sales-category [saleCatList]="saleCatList" (saleCatClicked)="saleCatClicked($event)"></app-sales-category>
+    <app-sales-category [saleCatList]="saleCatList" (saleCatClicked)="saleCatClicked($event)"
+            [salesCategoryListRefreshEvent]="salesCategoryListRefreshEvent.asObservable()" 
+    ></app-sales-category>
 </div>
 <div class="container-fluid row" style="width:100%">
     <div class="col-md-5 saleitems">
@@ -13,7 +15,7 @@
         <app-tkt-sale-item #tktSaleItemComponent></app-tkt-sale-item>
     </div>
 </div>
-<app-child [salesCategoryListRefreshEvent]="salesCategoryListRefresh.asObservable()"></app-child>
+<!-- <app-child [salesCategoryListRefreshEvent]="salesCategoryListRefresh.asObservable()"></app-child> -->
 <app-child [salesItemListRefreshEvent]="salesItemListRefresh.asObservable()"></app-child>
 <div class="footer fixed-bottom cncsnFooter">
     <div id="stButtonBottomBar" class="row">

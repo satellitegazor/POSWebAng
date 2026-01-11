@@ -34,11 +34,13 @@ import { Router } from '@angular/router';
 })
 export class SalesCartComponent implements OnInit, OnDestroy {
 
+
        modalOptions: NgbModalOptions = {
             backdrop: 'static',
             keyboard: false,
             centered: true
         };
+    salesCategoryListRefreshEvent: any;
         
     constructor(private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
         private _sharedSubSvc: SharedSubjectService, 
@@ -46,7 +48,9 @@ export class SalesCartComponent implements OnInit, OnDestroy {
         private _store: Store<saleTranDataInterface>,
         private router: Router,
         private _locConfigStore: Store<LocationConfigState>) {
+
         //console.log('SalesCart constructor')
+        this.salesCategoryListRefreshEvent = new Subject<boolean>();
     }
 
 
@@ -69,7 +73,7 @@ export class SalesCartComponent implements OnInit, OnDestroy {
 
     disableCheckoutBtn: boolean = true;
 
-    public salesCategoryListRefresh: Subject<boolean> = new Subject<boolean>();
+    //public salesCategoryListRefresh: Subject<boolean> = new Subject<boolean>();
     public salesItemListRefresh: Subject<boolean> = new Subject<boolean>();
 
     @ViewChild('tktSaleItemComponent')
@@ -142,11 +146,13 @@ export class SalesCartComponent implements OnInit, OnDestroy {
                 cat.description = itm.salesCategoryDescription;
                 cat.departmentName = itm.departmentName;
                 cat.departmentUID = itm.departmentUID;
+                cat.active = itm.salesCatActive;
+                cat.salesCatTypeUID = itm.salesCatTypeUID;
                 this.saleCatList.push(cat);
             }
         });
         //console.log('setting salesCategoryListRefresh to true');
-        this.salesCategoryListRefresh.next(true);
+        this.salesCategoryListRefreshEvent.next(true);
 
         this.getSaleItemList(this.saleCatList[0].salesCategoryUID);
     }

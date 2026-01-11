@@ -69,10 +69,7 @@ export class ItemButtonSalesCatListComponent {
         this.saleCatList.forEach(cat => {
           if (cat.description === data.category.description) {
             cat.salesCategoryUID = data.category.salesCategoryUID;
-
           }
-          this.salesCategoryListRefreshEvent.next(true);
-          //console.log('Sales Category Updated: ' + data.salesCategoryDescription);
         })
       },
       error: (err: any) => {

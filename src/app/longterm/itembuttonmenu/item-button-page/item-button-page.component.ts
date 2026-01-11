@@ -27,7 +27,7 @@ import { Router } from '@angular/router';
   styleUrl: './item-button-page.component.css',
   standalone: false
 })
-export class ItemButtonPageComponent implements OnInit, OnDestroy {
+  export class ItemButtonPageComponent implements OnInit, OnDestroy {
   
   listInitialized: boolean = false;  
   // In your component.ts
@@ -111,6 +111,7 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
   }
 
   private getAllSaleItems(locationId: number, contractId: number, facilityid: number, businessFunctionId: number, salesCategoryId: number, departmentId: number): void {
+
     this._saleTranSvc.getSaleItemListFromDB(locationId, contractId, facilityid, businessFunctionId, salesCategoryId, departmentId, 0).subscribe(data => {
 
       this.allItemButtonMenuList = data.itemButtonMenuResults; //.filter(item => (item.salesItemDescription !== 'Enter Item Description Here' && item.saleItemActive) || (item.salesItemDescription == 'Enter Item Description Here' && !item.saleItemActive));
@@ -125,12 +126,11 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    throw new Error('Method not implemented.');
+    this.salesItemAddedInSC.unsubscribe();
   }
 
 
   public getDeptList(): void {
-
 
     this.allItemButtonMenuList.forEach(item => {
       let dptCount = this.deptList.filter(d => d.departmentUID == item.departmentUID).length;
@@ -166,7 +166,6 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
         cat.active = itm.salesCatActive
         
         this.saleCatList.push(cat);
-        //this.saleCatList.push(itm);
       }
 
       this.salesCatIdSelected = (this.salesCatIdSelected > 0 && this.saleCatList.filter(cat => cat.salesCategoryUID == this.salesCatIdSelected).length == 0) ? 
@@ -351,5 +350,11 @@ export class ItemButtonPageComponent implements OnInit, OnDestroy {
   addCategory($event: Event) {
     this.getAllSaleItems(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0, 0, 0, 0);
   }
+
+  openAdminMenu() {
+    console.log('Navigating to Admin Menu');
+    this._router.navigate(['/adminmenu']);
+  }
+
 
 }

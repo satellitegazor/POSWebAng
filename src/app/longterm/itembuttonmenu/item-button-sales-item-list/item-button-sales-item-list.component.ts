@@ -54,24 +54,25 @@ export class ItemButtonSalesItemListComponent implements OnInit, OnChanges, CanC
 
   ngOnInit(): void {
 
-    this.loadSaleItems();
+    // this.loadSaleItems();
 
-    this.salesItemListRefreshEvent.subscribe(data => {
-      //console.log('subscription called salesitmListRefresh: ' + data);
-      if (data) {
-        if (this.saleItemList.length == 0 || typeof this.saleItemList[0].id == 'undefined') {
-            console.log('undefined sale item id');
-            return;
-        }
-        this.activeId = this.saleItemList[0].id;
-        this.loadSaleItems();
-      }
-    });
+    // this.salesItemListRefreshEvent.subscribe(data => {
+    //   //console.log('subscription called salesitmListRefresh: ' + data);
+    //   if (data) {
+    //     if (this.saleItemList.length == 0 || typeof this.saleItemList[0].id == 'undefined') {
+    //         console.log('undefined sale item id');
+    //         return;
+    //     }
+        
+    //     this.loadSaleItems();
+    //   }
+    // });
     
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes['saleItemList'] && !changes['saleItemList'].firstChange) {
+      this.activeId = this.saleItemList[0].id;
       this.loadSaleItems();
     }
   }

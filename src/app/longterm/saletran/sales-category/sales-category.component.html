@@ -3,10 +3,10 @@
     <div class="panel-body ms-2 me-2 mt-2 mb-2">
         <div class="row bkgray">
             <div class="col-md-2" *ngFor="let catg of saleCatList; let index = index">
-                <button type="button" [ngClass]="[ activeId === catg.salesCategoryID ? 'dpt btn btn-block btn-primary' : 'dpt btn btn-block btn-secondary' ]"
+                <button type="button" [ngClass]="[ activeId === catg.salesCategoryUID ? 'dpt btn btn-block btn-primary' : 'dpt btn btn-block btn-secondary']"
                         style="margin-top: 10px;margin-bottom: 10px;" 
-                        id="{{catg.salesCategoryID}}"
-                        (click)="salesCatgClick($event, catg.salesCategoryID);">{{catg.salesCategoryDescription}}</button>
+                        id="{{catg.salesCategoryUID}}"
+                        (click)="salesCatgClick($event, catg.salesCategoryUID);">{{catg.description}}</button>
             </div>
         </div>
     </div>
