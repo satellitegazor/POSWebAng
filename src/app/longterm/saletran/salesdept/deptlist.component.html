@@ -1,5 +1,6 @@
 <div class="panel" style="background-color: lightgrey;">
     <div class="panel-body ms-2 me-2 mt-2 mb-2">
+        <div style="display: none;">{{deptListRefreshEvent}}</div>
         <div class="row bkgray">
             <div class="col-md-3" *ngFor="let dept of deptList;">
                 <button type="button" [ngClass]="[ activeId === dept.departmentUID ? 'dpt btn btn-block btn-primary' : 'dpt btn btn-block btn-secondary' ]"

@@ -28,7 +28,7 @@ import { TktObjReducer } from './store/ticketstore/ticket.reducer';
 import { TicketObjectEffects } from './store/ticketstore/ticket.effects';
 import { CheckoutPageComponent } from './checkout/checkout-page/checkout-page.component';
 import { CheckoutItemsComponent } from './checkout/checkout-items/checkout-items.component';
-import { TenderPageComponent } from './tender/tender-page/tender-page.component';
+import { DeviceTndrPageComponent } from './tender/device-tndr-page/device-tndr-page.component';
 import { TipsModalDlgComponent } from './checkout/tips-modal-dlg/tips-modal-dlg.component';
 import { SaveTicketSuccessComponent } from './save-ticket-success/save-ticket-success.component';
 import { SplitPayComponent } from './tender/split-pay/split-pay.component';
@@ -51,7 +51,7 @@ import { CanDeactivateGuard } from 'src/app/shared/can-component-deactivate';
 @NgModule({
     declarations: [DeptListComponent, SalesCartComponent, SalesCategoryComponent, SaleItemComponent,
         TktSaleItemComponent, CouponsModalDlgComponent, PartPayComponent, BalanceDueComponent, 
-        SaleTotalsComponent, CheckoutPageComponent, CheckoutItemsComponent, TenderPageComponent, 
+        SaleTotalsComponent, CheckoutPageComponent, CheckoutItemsComponent, DeviceTndrPageComponent, 
         TipsModalDlgComponent, SaveTicketSuccessComponent, SplitPayComponent, PinValidateComponent, 
         ItemButtonPageComponent, ItemButtonDeptListComponent, ItemButtonSalesCatListComponent, 
         ItemButtonSalesItemListComponent],

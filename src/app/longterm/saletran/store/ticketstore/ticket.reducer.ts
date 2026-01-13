@@ -326,8 +326,11 @@ export const _tktObjReducer = createReducer(
          tndrObj.authNbr = action.tndrObj.authNbr;
          tndrObj.cardEndingNbr = action.tndrObj.cardEndingNbr;
          tndrObj.tndMaintTimestamp = new Date(Date.now());
-         tndrObj.tenderTypeDesc = "pinpad";
+         tndrObj.tenderTypeDesc = action.tndrObj.tenderTypeDesc;
          tndrObj.cardEntryMode = action.tndrObj.cardEntryMode;
+         tndrObj.tenderStatus = action.tndrObj.tenderStatus;
+         tndrObj.tenderAmount = action.tndrObj.tenderAmount;
+         tndrObj.fcTenderAmount = action.tndrObj.fcTenderAmount;
       }
       else {
          tenderListCopy.push(action.tndrObj);
@@ -379,7 +382,7 @@ export const _tktObjReducer = createReducer(
       let ExchCouponsAfterTax = action.logonDataSvc.getExchCouponAfterTax();
       let VendCouponsAfterTax = action.logonDataSvc.getVendorCouponAfterTax();
       let exchRateObj = action.logonDataSvc.getDailyExchRate()
-      let exchangeRate: number = Round2DecimalService.round(exchRateObj.dfltCurrCode == 'USD' ? exchRateObj.exchangeRate : 1 / exchRateObj.exchangeRate * 10000) / 10000;
+      let exchangeRate: number = Round2DecimalService.round(exchRateObj.dfltCurrCode == 'USD' ? exchRateObj.exchangeRate : 1 / exchRateObj.exchangeRate) * 10000 / 10000;
 
       var updatedTktList: SalesTransactionCheckoutItem[] = JSON.parse(JSON.stringify([...state.tktObj.tktList]));
       let totalSale: number = 0;

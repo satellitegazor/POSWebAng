@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap'
 import { select, Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { TicketTender } from 'src/app/models/ticket.tender';
+import { TenderStatusType, TicketTender } from 'src/app/models/ticket.tender';
 import { SharedSubjectService } from 'src/app/shared-subject/shared-subject.service';
 import { CustomerSearchComponent } from '../../../../shared/customer-search/customer-search.component';
 import { LocationConfig } from '../../../models/location-config';
@@ -59,7 +59,6 @@ export class CheckoutPageComponent implements OnInit {
 
   public ngOnInit(): void {
 
-
     //console.log('CheckoutPage component ngOnInit called');
     this.locationConfig = this._logonDataSvc.getLocationConfig();
     this.isOConus = this.locationConfig.rgnCode != "CON";
@@ -92,6 +91,7 @@ export class CheckoutPageComponent implements OnInit {
       this.router.navigate([this._utilSvc.tenderCodePageMap.get(tndrCode)], { queryParams: { code: tndrCode } })
     }
     else {
+
       this.displayCustSearchDlg = "display";
 
       let tndrObj: TicketTender = new TicketTender();
@@ -100,8 +100,9 @@ export class CheckoutPageComponent implements OnInit {
       tndrObj.fcTenderAmount = this.tenderAmount * this._logonDataSvc.getExchangeRate();
       tndrObj.tndMaintTimestamp = new Date(Date.now())
       tndrObj.rrn = this._utilSvc.getUniqueRRN();
-
+      tndrObj.tenderStatus = TenderStatusType.Complete;
       tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+
       this._store.dispatch(addTender({ tndrObj }));
 
       var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));

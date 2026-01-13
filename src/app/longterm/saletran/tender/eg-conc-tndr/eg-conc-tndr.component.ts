@@ -48,6 +48,7 @@ export class EgConcTndrComponent {
 
     this.activatedRoute.queryParams.subscribe(params => {
       this._tndrObj.tenderTypeCode = params['code'];
+      this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
     })
 
     this.dcCurrSymbl = this._logonDataSvc.getDfltCurrCode();
@@ -75,9 +76,9 @@ export class EgConcTndrComponent {
     //this._tndrObj = JSON.parse(JSON.stringify(this._tktObj.ticketTenderList.filter(tndr => tndr.rrn == this._tndrObj.rrn)[0]))
     //console.log("btnApproveClick Tender Object before update: ", this._tndrObj);
 
-    this._tndrObj.tenderStatus = TenderStatusType.InProgress;
+    this._tndrObj.tenderStatus = TenderStatusType.Complete;
     this._tndrObj.isAuthorized = true;
-    this._tndrObj.tenderTypeCode = "EG";
+    //this._tndrObj.tenderTypeCode = "EG";
     this._tndrObj.tndMaintTimestamp = new Date(Date.now());
     this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
     this._store.dispatch(addTender({ tndrObj: this._tndrObj }));

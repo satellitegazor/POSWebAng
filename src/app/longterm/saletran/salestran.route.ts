@@ -5,12 +5,12 @@ import { Routes, RouterModule } from '@angular/router';
 import { ModuleWithProviders } from '@angular/core';
 import { SalesCartComponent } from './sales-cart/sales-cart.component';
 import { CheckoutPageComponent } from './checkout/checkout-page/checkout-page.component';
-import { TenderPageComponent } from './tender/tender-page/tender-page.component';
+import { DeviceTndrPageComponent } from './tender/device-tndr-page/device-tndr-page.component';
 import { SaveTicketSuccessComponent } from './save-ticket-success/save-ticket-success.component';
 import { MiscModule } from '../../misc-module/misc.module';
 import { SplitPayComponent } from './tender/split-pay/split-pay.component';
 import { SplitTenderPageComponent } from './tender/split-tender-page/split-tender-page.component';
-import { CreditCardTndrComponent } from './tender/credit-card-tndr/credit-card-tndr.component';
+import { ConcessionCardTndrComponent } from './tender/concession-card-tndr/concession-card-tndr.component';
 import { EgConcTndrComponent } from './tender/eg-conc-tndr/eg-conc-tndr.component';
 import { CashTndrComponent } from './tender/cash-tndr/cash-tndr.component';
 import { ItemButtonPageComponent } from '../itembuttonmenu/item-button-page/item-button-page.component';
@@ -20,11 +20,11 @@ import { CanDeactivateGuard } from 'src/app/shared/can-component-deactivate';
 const routes: Routes = [
     { path: 'salestran', component: SalesCartComponent },
     { path: 'checkout', component: CheckoutPageComponent },
-    { path: 'tender', component: TenderPageComponent },
+    { path: 'cctender', component: ConcessionCardTndrComponent },
     { path: 'savetktsuccess', component: SaveTicketSuccessComponent },
     { path: 'splitpay', component: SplitPayComponent},
     { path: 'splittender', component: SplitTenderPageComponent},
-    { path: 'pinpadtran', component: CreditCardTndrComponent},
+    { path: 'pinpadtran', component: DeviceTndrPageComponent },
     { path: 'eaglecash', component:EgConcTndrComponent},
     { path: 'cashcheck', component:CashTndrComponent},
     { path: 'itembtnmenu', component: ItemButtonPageComponent, canDeactivate: [CanDeactivateGuard]},

@@ -27,7 +27,7 @@ export class UtilService {
     ['XC', 'pinpadtran'],
     ['XR', 'pinpadtran'],
     ['GC', 'pinpadtran'],
-    ['CC', 'tender'],
+    ['CC', 'cctender'],
     ['EG', 'eaglecash'],
     ['MS', 'pinpadtran']
   ]);

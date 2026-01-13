@@ -53,7 +53,7 @@ export class SalesCartComponent implements OnInit, OnDestroy {
         this.salesCategoryListRefreshEvent = new Subject<boolean>();
     }
 
-
+    public deptListRefreshEvent: Subject<boolean> = new Subject<boolean>();
     deptList: Dept[] = [];
     saleItemList: SaleItem[] = [];
     saleCatList: SalesCat[] = [];
@@ -128,14 +128,13 @@ export class SalesCartComponent implements OnInit, OnDestroy {
                 this.deptList.push(dpt);
             }
         });
+        this.deptListRefreshEvent.next(true);
 
         this.getSalesCategoryList(this.deptList[0].departmentUID);
     }
 
     public getSalesCategoryList(deptId: number): void {
 
-        
-        
         this.saleCatList = [];
         let allDeptList = this.allItemButtonMenuList.filter(item => item.departmentUID == deptId);
         allDeptList.forEach(itm => {

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CreditCardTndrComponent } from './credit-card-tndr.component';
+import { DeviceTndrPageComponent } from './device-tndr-page.component';
 
-describe('CreditCardTndrComponent', () => {
-  let component: CreditCardTndrComponent;
-  let fixture: ComponentFixture<CreditCardTndrComponent>;
+describe('TenderPageComponent', () => {
+  let component: DeviceTndrPageComponent;
+  let fixture: ComponentFixture<DeviceTndrPageComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CreditCardTndrComponent]
+      declarations: [ DeviceTndrPageComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CreditCardTndrComponent);
+    fixture = TestBed.createComponent(DeviceTndrPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -4,7 +4,7 @@ import { TicketSplit } from 'src/app/models/ticket.split';
 import { getBalanceDue, getBalanceDueFC, getTktObjSelector, getRemainingBal } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { TicketTender } from 'src/app/models/ticket.tender';
+import { TenderStatusType, TicketTender } from 'src/app/models/ticket.tender';
 import { addTender, saveCompleteTicketSplit, saveTicketForGuestCheck, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
 import { LocalStorageService } from 'src/app/global/local-storage.service';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
@@ -18,11 +18,11 @@ import { UtilService } from 'src/app/services/util.service';
 
 @Component({
   selector: 'app-tender-page',
-  templateUrl: './tender-page.component.html',
-  styleUrls: ['./tender-page.component.css'],
+  templateUrl: './device-tndr-page.component.html',
+  styleUrls: ['./device-tndr-page.component.css'],
   standalone: false
 })
-export class TenderPageComponent implements OnInit {
+export class DeviceTndrPageComponent implements OnInit {
 
   constructor(private _store: Store<saleTranDataInterface>,
     private activatedRoute: ActivatedRoute,
@@ -69,6 +69,10 @@ export class TenderPageComponent implements OnInit {
         if (data.rslt.IsSuccessful) {
           //console.log("Transaction Successful");
           let tndrObj: TicketTender = new TicketTender();
+          tndrObj.rrn = InvoiceId;
+          tndrObj.isAuthorized = true;
+          tndrObj.authNbr = '';
+          tndrObj.tenderStatus = TenderStatusType.Complete;
           tndrObj.tenderTypeCode = this._tenderTypeCode;
           tndrObj.tenderAmount = this.tenderAmount;
           tndrObj.fcTenderAmount = this.tenderAmountFC;
