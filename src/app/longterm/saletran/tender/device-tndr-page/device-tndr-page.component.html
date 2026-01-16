@@ -1,37 +1,43 @@
 <div class="panel">
     <div class="panel-body">
-        <table class="table">
-            <tr>
-                <td style="text-align: left;">
-                    Tender Amount:
-                </td>
-                <td style="text-align: right;">
-                    Tender Amount: 
-                </td>
-            </tr>
-            <tr>
-                <td style="text-align: left;">
-                {{tenderAmount}}
-                </td>
-                <td style="text-align: right;">
-                {{tenderAmountFC}}
-                </td>
-            </tr>
-        </table>
+        <div class="tender-amounts-container">
+            <div class="tender-amount-card">
+                <div class="tender-label">Tender Amount (Default Currency)</div>
+                <div class="tender-value dc-amount">{{dcCurrSymbl}}{{tenderAmount}}</div>
+            </div>
+            <div class="tender-amount-card">
+                <div class="tender-label">Tender Amount (Foreign Currency)</div>
+                <div class="tender-value fc-amount">{{ndcCurrSymbl}}{{tenderAmountFC}}</div>
+            </div>
+        </div>
+        <div *ngIf="isWaitingForPinpad" class="pinpad-waiting-section">
+            <div class="pinpad-waiting-container">
+                <div class="pinpad-message">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-credit-card"
+                        viewBox="0 0 16 16">
+                        <path
+                            d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2z" />
+                        <path d="M1 7v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7H1z" />
+                    </svg>
+                    <p class="pinpad-text">Please wait for the Customer to use their Card on the Pin Pad Device.</p>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
 <div class="footer fixed-bottom cncsnFooter">
     <div class="row">
-        <button class="border border-white btn btn-info btn-lg ftrbtn" id="btnApprove" aria-label="Left Align"
-            (click)="btnApprove($event)">
+        <button class="border border-white btn btn-info btn-lg ftrbtn" id="btnApprove" aria-label="Approve"
+            (click)="btnApprove($event)" disabled>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill"
                 viewBox="0 0 16 16">
                 <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
             </svg> Approve
         </button>
-        <button class="border border-white btn btn-info btn-lg ftrbtn" id="btnCancel" aria-label="Left Align"
-            (click)="btnDecline($event)">
+        <button class="border border-white btn btn-info btn-lg ftrbtn" id="btnCancel" aria-label="Decline"
+            (click)="btnDecline($event)" [disabled]="isWaitingForPinpad">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill"
                 viewBox="0 0 16 16">
                 <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>

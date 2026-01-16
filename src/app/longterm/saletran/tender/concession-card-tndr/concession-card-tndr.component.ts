@@ -86,6 +86,7 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
     this._tndrObj.tenderTypeDesc = "";
     this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
     this._tndrObj.ticketTenderId = 0;
+    this._tndrObj.authNbr = '';
 
     let tndrCopy = JSON.parse(JSON.stringify(this._tndrObj))
     this._store.dispatch(addTender({ tndrObj: tndrCopy }));
@@ -160,9 +161,6 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
 
   async btnApproveClick(evt: Event) {
     
-    new Promise(f => setTimeout(f, 500));
-    
-
     this._tndrObj = JSON.parse(JSON.stringify(this._tktObj.ticketTenderList.filter(tndr => tndr.rrn == this._tndrObj.rrn)[0]))
 
     console.log("btnApproveClick Tender Object before update: ", this._tndrObj);

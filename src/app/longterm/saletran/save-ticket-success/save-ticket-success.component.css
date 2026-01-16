@@ -1,13 +1,209 @@
-
-.printbtns {
-    font-weight: bolder;
-    font-size: larger;
-    width: 100%;
-    height: 100%;
+.save-ticket-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
 }
 
-.tktResultMessage {
-    font-weight: bolder;
-    font-size: larger;
+.ticket-success-panel {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 86, 179, 0.15);
+    padding: 40px;
+    max-width: 500px;
+    width: 100%;
+    animation: slideUp 0.5s ease-out;
+}
+
+.success-header {
     text-align: center;
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.success-header svg {
+    color: #28a745;
+    animation: scaleIn 0.5s ease-out;
+}
+
+.success-message {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+.ticket-number-section {
+    background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+    border-radius: 12px;
+    padding: 30px 20px;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.ticket-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 12px 0;
+}
+
+.ticket-number-display {
+    font-size: 48px;
+    font-weight: 900;
+    color: white;
+    letter-spacing: 2px;
+    font-family: 'Courier New', monospace;
+}
+
+.button-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.receipt-prompt {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    margin: 0 0 15px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.buttons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.btn-receipt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px 15px;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: white;
+    min-height: 100px;
+}
+
+.btn-receipt svg {
+    transition: transform 0.3s ease;
+}
+
+.btn-receipt:hover svg {
+    transform: scale(1.2);
+}
+
+.btn-receipt:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.btn-receipt:active {
+    transform: translateY(-1px);
+}
+
+.print-btn {
+    background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+    border-color: #0056b3;
+}
+
+.print-btn:hover {
+    background: linear-gradient(135deg, #004085 0%, #003366 100%);
+}
+
+.email-btn {
+    background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+    border-color: #28a745;
+}
+
+.email-btn:hover {
+    background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
+}
+
+.both-btn {
+    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+    border-color: #ffc107;
+    color: #333;
+}
+
+.both-btn:hover {
+    background: linear-gradient(135deg, #e0a800 0%, #d39e00 100%);
+}
+
+.none-btn {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    border-color: #6c757d;
+}
+
+.none-btn:hover {
+    background: linear-gradient(135deg, #5a6268 0%, #4e555b 100%);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@media (max-width: 600px) {
+    .ticket-success-panel {
+        padding: 25px;
+    }
+    
+    .ticket-number-section {
+        padding: 20px 15px;
+    }
+    
+    .ticket-number-display {
+        font-size: 36px;
+    }
+    
+    .success-message {
+        font-size: 20px;
+    }
+    
+    .buttons-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .btn-receipt {
+        flex-direction: row;
+        gap: 12px;
+        min-height: 60px;
+    }
 }

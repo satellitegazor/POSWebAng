@@ -1,27 +1,45 @@
-<div class="row">
-<div class="col-md-4"></div>
-<div class="col-md-4">
-    <div class="panel">
-        <div class="panel-title" class="tktResultMessage">
-            {{tktSaveResultMessage}}
+<div class="save-ticket-container">
+    <div class="ticket-success-panel">
+        <div class="success-header">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.061L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+            </svg>
+            <h2 class="success-message">{{tktSaveResultMessage}}</h2>
         </div>
-        <div class="panel-body">
-            <table class="table" style="height:300px;">
-                <tr>
-                    <td colspan="3" class="tktResultMessage">Ticket: {{saveTktRsltMdl.ticketNumber}}</td>
-                </tr>
-                <tr style="height:40%">
-                    <td ><button class="btn btn-info printbtns" (click)="ReceiptOption('p');">Print</button></td>
-                    <td></td>
-                    <td ><button class="btn btn-info printbtns" (click)="ReceiptOption('e');">Email</button></td>
-                </tr>
-                <tr style="height:40%">
-                    <td ><button class="btn btn-info printbtns" (click)="ReceiptOption('b');">Both</button></td>
-                    <td></td>
-                    <td ><button class="btn btn-info printbtns" (click)="ReceiptOption('n');">None</button></td>
-                </tr>
-            </table>
+        
+        <div class="ticket-number-section">
+            <p class="ticket-label">Ticket Number</p>
+            <div class="ticket-number-display">{{saveTktRsltMdl.ticketNumber}}</div>
+        </div>
+
+        <div class="button-section">
+            <p class="receipt-prompt">How would you like to receive the receipt?</p>
+            <div class="buttons-grid">
+                <button class="btn btn-receipt print-btn" (click)="ReceiptOption('p');">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-printer-fill" viewBox="0 0 16 16">
+                        <path d="M5 1a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h3V1zm0 5a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+                    </svg>
+                    <span>Print</span>
+                </button>
+                <button class="btn btn-receipt email-btn" (click)="ReceiptOption('e');">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-envelope-fill" viewBox="0 0 16 16">
+                        <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.756z"/>
+                    </svg>
+                    <span>Email</span>
+                </button>
+                <button class="btn btn-receipt both-btn" (click)="ReceiptOption('b');">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147-3.146a.5.5 0 1 1 .708-.708l-4 4a.5.5 0 0 1 0 .708l4 4a.5.5 0 0 1-.708-.708L2.707 5H14.5a.5.5 0 0 1 .5-.5z"/>
+                    </svg>
+                    <span>Both</span>
+                </button>
+                <button class="btn btn-receipt none-btn" (click)="ReceiptOption('n');">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.646-4.646a.5.5 0 0 0-.708 0L8 7.293 4.646 3.646a.5.5 0 0 0-.708.708L7.293 8l-3.647 3.354a.5.5 0 0 0 .708.708L8 8.707l3.354 3.647a.5.5 0 0 0 .708-.708L8.707 8l3.647-3.354a.5.5 0 0 0 0-.708z"/>
+                    </svg>
+                    <span>None</span>
+                </button>
+            </div>
         </div>
     </div>
 </div>
-<div class="col-md-4"></div></div>

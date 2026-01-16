@@ -7,6 +7,7 @@ import { updatePartPayData } from '../../store/ticketstore/ticket.action';
 import { getIsCustomerAddedToTicket, getTicketTotals } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { UtilService } from 'src/app/services/util.service';
+import { DailyExchRate } from 'src/app/models/exchange.rate';
 
 @Component({
   selector: 'app-part-pay',
@@ -22,6 +23,8 @@ export class PartPayComponent implements OnInit {
 
   partPayAmount: number = 0;
   partPayPercent: number = 0;
+  partPayAmountNDC: number = 0;
+
   showPartPay: boolean = false;
   disablePartPay: boolean = true;
   grandTotalDC: number = 0;
@@ -29,6 +32,7 @@ export class PartPayComponent implements OnInit {
   amtPaidDC: number = 0;
   amtPaidNDC: number = 0;
   defaultCurr: string = '$';
+  dailyExchRateObj: DailyExchRate = {} as DailyExchRate;
 
   ngOnInit(): void {
 
@@ -55,6 +59,7 @@ export class PartPayComponent implements OnInit {
     })
 
     this.defaultCurr = this.utilSvc.currencySymbols.get(this.logonSvc.getLocationConfig().defaultCurrency) ?? '$';
+    this.dailyExchRateObj = this.logonSvc.getDailyExchRate();
   }
 
   onPartPayPercent(event: any) {
@@ -63,7 +68,8 @@ export class PartPayComponent implements OnInit {
 
     if (this.partPayPercent > 0) {
       this.partPayAmount = Number(((this.grandTotalDC - this.amtPaidDC) * this.partPayPercent / 100).toFixed(2));
-      this._store.dispatch(updatePartPayData({ partPayFlag: true, partPayAmountDC: this.partPayAmount, partPayAmountNDC: this.partPayAmount }));
+      this.partPayAmountNDC = Number((this.partPayAmount * (this.dailyExchRateObj.isOneUSD ? this.dailyExchRateObj.oneUSDRate : (1 / this.dailyExchRateObj.oneUSDRate))).toFixed(2));
+      this._store.dispatch(updatePartPayData({ partPayFlag: true, partPayAmountDC: this.partPayAmount, partPayAmountNDC: this.partPayAmountNDC }));
     }
     else {
       this._store.dispatch(updatePartPayData({ partPayFlag: false, partPayAmountDC: 0, partPayAmountNDC: 0 }));

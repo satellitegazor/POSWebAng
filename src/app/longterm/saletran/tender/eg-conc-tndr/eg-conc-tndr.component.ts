@@ -20,6 +20,12 @@ import { addTender, markTendersComplete, markTicketComplete, saveCompleteTicketS
   styleUrl: './eg-conc-tndr.component.css'
 })
 export class EgConcTndrComponent {
+btnCancelClick($event: PointerEvent) {
+throw new Error('Method not implemented.');
+}
+btnDeclineClick($event: PointerEvent) {
+throw new Error('Method not implemented.');
+}
   @ViewChild('btnApprove') btnApprove!: ElementRef<HTMLButtonElement>;
   @ViewChild('btnDecline') btnDecline!: ElementRef<HTMLButtonElement>;
   @ViewChild('btnCancel') btnCancel!: ElementRef<HTMLButtonElement>;

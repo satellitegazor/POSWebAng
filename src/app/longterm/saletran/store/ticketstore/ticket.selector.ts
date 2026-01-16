@@ -70,11 +70,11 @@ export const getBalanceDueFC = createSelector(getTktObjState,
     let ticketTotalFC: number = 0;
     let tipTotalFC: number = 0;
 
-    state.tktObj.ticketTenderList.forEach(tndr => tenderTotal += parseFloat((tndr.tenderAmount).toFixed(2)));
+    state.tktObj.ticketTenderList.forEach(tndr => tenderTotal += parseFloat((tndr.tenderTypeCode != "SV" ? tndr.tenderAmount : 0).toFixed(2)));
     state.tktObj.tktList.forEach(itm => ticketTotal += parseFloat((itm.lineItemDollarDisplayAmount).toFixed(2)));
     state.tktObj.associateTips.forEach(tip => tipTotal += parseFloat((tip.tipAmount).toFixed(2)));
 
-    state.tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += parseFloat((tndr.fcTenderAmount).toFixed(2)));
+    state.tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += parseFloat((tndr.tenderTypeCode != "SV" ? tndr.fcTenderAmount : 0).toFixed(2)));
     state.tktObj.tktList.forEach(itm => ticketTotalFC += parseFloat((itm.dCLineItemDollarDisplayAmount).toFixed(2)));
     state.tktObj.associateTips.forEach(tip => tipTotalFC += parseFloat((tip.tipAmtLocCurr).toFixed(2)));
 

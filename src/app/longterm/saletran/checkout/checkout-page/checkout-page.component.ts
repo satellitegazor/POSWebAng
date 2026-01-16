@@ -88,6 +88,21 @@ export class CheckoutPageComponent implements OnInit {
 
     let tndrCode = (evt.target as Element).id
     if (this._logonDataSvc.getBusinessModel() != 5 || tndrCode == "CA") {
+
+      let tndrObj: TicketTender = new TicketTender();
+      tndrObj.tenderTypeCode = "SV";
+      tndrObj.tenderAmount = this.tenderAmount;
+      tndrObj.fcTenderAmount = this.tenderAmount * this._logonDataSvc.getExchangeRate();
+      tndrObj.tndMaintTimestamp = new Date(Date.now())
+      tndrObj.rrn = this._utilSvc.getUniqueRRN();
+      tndrObj.tenderStatus = TenderStatusType.Complete;
+      tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+      this._store.dispatch(addTender({ tndrObj }));
+      var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+      if (tktObjData) {
+        this._store.dispatch(saveTicketForGuestCheck({ tktObj: tktObjData }));
+      }
+
       this.router.navigate([this._utilSvc.tenderCodePageMap.get(tndrCode)], { queryParams: { code: tndrCode } })
     }
     else {

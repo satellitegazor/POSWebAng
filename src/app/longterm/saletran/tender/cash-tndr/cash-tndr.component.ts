@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { TenderStatusType, TicketTender } from 'src/app/models/ticket.tender';
 import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
@@ -20,7 +20,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './cash-tndr.component.html',
   styleUrl: './cash-tndr.component.css'
 })
-export class CashTndrComponent {
+export class CashTndrComponent implements OnInit {
 
   @ViewChild('btnApprove') btnApprove!: ElementRef<HTMLButtonElement>;
   @ViewChild('btnDecline') btnDecline!: ElementRef<HTMLButtonElement>;

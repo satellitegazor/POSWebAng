@@ -321,8 +321,10 @@ export const _tktObjReducer = createReducer(
    on(addTender, (state, action) => {
 
       let tenderListCopy: TicketTender[] = JSON.parse(JSON.stringify(state.tktObj.ticketTenderList));
+      tenderListCopy = tenderListCopy.filter(tndr => tndr.tenderTypeCode != "SV");
+      
       if(tenderListCopy.filter(tndr => (tndr.rrn == action.tndrObj.rrn || tndr.ticketTenderId == action.tndrObj.ticketTenderId )).length > 0) {
-         let tndrObj: TicketTender = tenderListCopy.filter(tndr => tndr.rrn == action.tndrObj.rrn)[0];
+         let tndrObj: TicketTender = tenderListCopy.filter(tndr => tndr.rrn == action.tndrObj.rrn || tndr.ticketTenderId == action.tndrObj.ticketTenderId)[0];
          tndrObj.authNbr = action.tndrObj.authNbr;
          tndrObj.cardEndingNbr = action.tndrObj.cardEndingNbr;
          tndrObj.tndMaintTimestamp = new Date(Date.now());
