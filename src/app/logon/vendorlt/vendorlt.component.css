@@ -1,1 +1,137 @@
- 
+.test-devices-section {
+    margin-top: 30px;
+    width: 80%;
+}
+
+.test-devices-container {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 90%;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.test-devices-title {
+    text-align: center;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.test-buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.btn-test {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 8px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: white;
+    width: 100%;
+    height: 100px;
+    aspect-ratio: 1;
+}
+
+.btn-test svg {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s ease;
+}
+
+.btn-test:hover svg {
+    transform: scale(1.15);
+}
+
+.btn-test:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-test:active {
+    transform: translateY(0);
+}
+
+.test-receipt-printer {
+    background: linear-gradient(135deg, #7a9cc9 0%, #6a8bb8 100%);
+    border-color: #7a9cc9;
+}
+
+.test-receipt-printer:hover {
+    background: linear-gradient(135deg, #6a8bb8 0%, #5a7ba8 100%);
+}
+
+.test-tag-printer {
+    background: linear-gradient(135deg, #7aae7a 0%, #6a9e6a 100%);
+    border-color: #7aae7a;
+}
+
+.test-tag-printer:hover {
+    background: linear-gradient(135deg, #6a9e6a 0%, #5a8e5a 100%);
+}
+
+.test-pinpad {
+    background: linear-gradient(135deg, #b8a857 0%, #a89847 100%);
+    border-color: #b8a857;
+    color: #fff;
+}
+
+.test-pinpad:hover {
+    background: linear-gradient(135deg, #a89847 0%, #988837 100%);
+}
+
+.test-signature-pad {
+    background: linear-gradient(135deg, #a87878 0%, #986868 100%);
+    border-color: #a87878;
+}
+
+.test-signature-pad:hover {
+    background: linear-gradient(135deg, #986868 0%, #885858 100%);
+}
+
+@media (max-width: 768px) {
+    .test-buttons-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .btn-test {
+        padding: 10px 5px;
+        min-height: 80px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .test-devices-container {
+        padding: 15px;
+    }
+    
+    .test-buttons-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .btn-test {
+        flex-direction: row;
+        gap: 10px;
+        min-height: 50px;
+    }
+} 

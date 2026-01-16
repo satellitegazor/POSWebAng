@@ -15,6 +15,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ResetPinDlgComponent } from './reset-pin-dlg/reset-pin-dlg.component';
 import { MandateTrainingComponent } from './mandate-training/mandate-training.component';
 import { ToastService } from 'src/app/services/toast.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
     selector: 'app-logon-vendorlt',
@@ -32,6 +33,8 @@ export class VendorLTComponent implements OnInit {
     LocationList: AbbrLocationsModel[] = [];
     successMsgDisplay: string = 'none';
     errorMsgDisplay: string = 'none';
+    receiptPrinterName: string = 'Star Micronics Printer';
+    verifoneAPIUrl: string = 'http://localhost:8000/cposwebsvc/pinpad/';
     
 
     constructor(private logonSvc: LogonSvc, 
@@ -41,7 +44,8 @@ export class VendorLTComponent implements OnInit {
         private _saleTranSvc: SalesTranService,
         private _toastSvc: ToastService,
         private _locConfigStore: Store<LocationConfigState>,
-        private _modalService: NgbModal ) { }
+        private _modalService: NgbModal,
+        private _httpClient: HttpClient ) { }
     cookieVal = '';
     ngOnInit() {
 
@@ -202,5 +206,201 @@ export class VendorLTComponent implements OnInit {
 
     onLocationChange(event: any, val: string) {
         this.selectedLocationId = +val;
+    }
+
+    testReceiptPrinter() {
+        this._toastSvc.info('Testing Receipt Printer...');
+        console.log('Testing Receipt Printer');
+        
+        // Create test receipt output
+        const receiptContent = this.createTestReceiptOutput();
+        
+        // Prepare the request model
+        const printerModel = {
+            printer: this.receiptPrinterName,
+            receipt: receiptContent
+        };
+        
+        const serviceUrl = 'https://localhost/MobileTheaterPrintUtility/ReceiptPrinterService.svc/PrintReceipt';
+        
+        // Call the receipt printer service
+        this._httpClient.post<any>(serviceUrl, printerModel).subscribe({
+            next: (response) => {
+                if (response && response.Success) {
+                    this._toastSvc.success('Receipt Printer test successful.');
+                    console.log('Receipt Printer test successful');
+                    
+                    // Update printer name if returned from service
+                    if (response.PrinterName && response.PrinterName.length > 0) {
+                        this.receiptPrinterName = response.PrinterName;
+                    }
+                    
+                    if (response.OutOfPaper) {
+                        setTimeout(() => {
+                            this._toastSvc.error('Receipt printer is out of paper.');
+                        }, 1000);
+                    } else if (response.NearlyOutOfPaper) {
+                        setTimeout(() => {
+                            this._toastSvc.warning('Receipt printer is nearly out of paper.');
+                        }, 1000);
+                    }
+                } else {
+                    this._toastSvc.error('Receipt Printer test failed. Please verify if the Receipt Printer is connected to the docking station.');
+                    console.log('Receipt Printer test failed');
+                }
+            },
+            error: (error) => {
+                this._toastSvc.error('Receipt Printer test failed. Please verify if the Receipt Printer is connected to the docking station.');
+                console.error('Receipt Printer error:', error);
+            }
+        });
+    }
+
+    private createTestReceiptOutput(): string {
+        const lines: string[] = [];
+        const width = 40;
+        
+        // Header
+        lines.push(this.centerText('*** Sample Receipt ***', width));
+        lines.push(this.repeatChar('-', width));
+        
+        // Content
+        lines.push(this.padRight('Item 1', width));
+        lines.push(this.padRight('Qty: 1  Price: $10.00', width));
+        lines.push('');
+        lines.push(this.padRight('Item 2', width));
+        lines.push(this.padRight('Qty: 2  Price: $20.00', width));
+        lines.push('');
+        
+        // Total
+        lines.push(this.repeatChar('-', width));
+        lines.push(this.alignRight('Subtotal: $30.00', width));
+        lines.push(this.alignRight('Tax: $2.40', width));
+        lines.push(this.alignRight('Total: $32.40', width));
+        lines.push(this.repeatChar('-', width));
+        lines.push(this.centerText('Thank You!', width));
+        
+        return lines.join('\n') + '\n<cr>';
+    }
+
+    private centerText(text: string, width: number): string {
+        const padding = Math.floor((width - text.length) / 2);
+        return Array(Math.max(0, padding)).join(' ') + text;
+    }
+
+    private padRight(text: string, width: number): string {
+        return text + Array(Math.max(0, width - text.length + 1)).join(' ');
+    }
+
+    private alignRight(text: string, width: number): string {
+        const padding = Math.max(0, width - text.length);
+        return Array(padding).join(' ') + text;
+    }
+
+    private repeatChar(char: string, count: number): string {
+        return Array(Math.max(0, count + 1)).join(char);
+    }
+
+    testTagPrinter() {
+        this._toastSvc.info('Testing Tag Printer...');
+        console.log('Testing Tag Printer');
+        
+        // Create test tag output
+        const tagWidth = 42;
+        const tagContent = this.createTestTagOutput(tagWidth);
+        
+        // Prepare the request model
+        const printerModel = {
+            printer: "Star SP700 Cutter (SP742)",
+            tagCount: 2,
+            receipt: tagContent
+        };
+        
+        const serviceUrl = 'https://localhost/MobileTheaterPrintUtility/ReceiptPrinterService.svc/PrintTagAll';
+        
+        // Call the tag printer service
+        this._httpClient.post<any>(serviceUrl, printerModel).subscribe({
+            next: (response) => {
+                if (response && response.Success) {
+                    this._toastSvc.success('Tag Printer test successful.');
+                    console.log('Tag Printer test successful');
+                    
+                    if (response.OutOfPaper) {
+                        setTimeout(() => {
+                            this._toastSvc.error('Tag printer is out of paper.');
+                        }, 1000);
+                    } else if (response.NearlyOutOfPaper) {
+                        setTimeout(() => {
+                            this._toastSvc.warning('Tag printer is nearly out of paper.');
+                        }, 1000);
+                    }
+                } else {
+                    this._toastSvc.error('Tag Printer test failed. Please verify if the Tag Printer is connected to the docking station.');
+                    console.log('Tag Printer test failed');
+                }
+            },
+            error: (error) => {
+                this._toastSvc.error('Tag Printer test failed. Unable to connect to the printing service.');
+                console.error('Tag Printer error:', error);
+            }
+        });
+    }
+
+    private createTestTagOutput(tagWidth: number): string {
+        const part = '*** Sample Tag ***';
+        const padding = Math.floor((tagWidth - part.length) / 2);
+        const line = Array(padding).join(' ') + part + Array(tagWidth - padding - part.length).join(' ');
+        return line + '<cr>';
+    }
+
+    testPinpad() {
+        this._toastSvc.info('Testing Pinpad...');
+        console.log('Testing Pinpad');
+        this.pingVerifone(true);
+    }
+
+    testSignaturePad() {
+        this._toastSvc.info('Testing Signature Pad...');
+        console.log('Testing Signature Pad');
+        // Add signature pad test logic here
+    }
+
+    private pingVerifone(displayResult: boolean = false) {
+        setTimeout(() => {
+            const heartbeatUrl = this.verifoneAPIUrl + 'HeartBeat?val=hello';
+            
+            this._httpClient.get<any>(heartbeatUrl).subscribe({
+                next: (response) => {
+                    if (!response.IsSuccess) {
+                        this._toastSvc.error(response.ResultData);
+                        console.error('Pinpad error:', response.ResultData);
+                    } else {
+                        if (displayResult) {
+                            this._toastSvc.success(
+                                'Connection Test to Pin Pad successful. Pin Pad Serial Number: ' + response.ResultData
+                            );
+                            console.log('Pinpad connection successful. Serial:', response.ResultData);
+                        }
+                        
+                        // End Verifone session after 500ms
+                        setTimeout(() => {
+                            this.endVerifoneSession();
+                        }, 500);
+                    }
+                },
+                error: (error) => {
+                    this._toastSvc.error(
+                        'Pin Pad device cannot connect, please try again. If the issue continues contact the local SBM or call the helpdesk. [E56]'
+                    );
+                    console.error('Pinpad connection error:', error);
+                }
+            });
+        }, 1000);
+    }
+
+    private endVerifoneSession() {
+        // End the Verifone session
+        // This method can be used to clean up pinpad resources
+        console.log('Verifone session ended');
     }
 }
