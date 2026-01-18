@@ -48,6 +48,8 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit {
   private _captureTranResponse: ExchCardTndr = new ExchCardTndr();
   private tndrObj: TicketTender = new TicketTender();
   public isWaitingForPinpad: boolean = false;
+  private InvoiceId: string = '';
+  private _ticketTenderId: number = 0; // Store the generated tender ID from DB
 
   private subscription: Subscription = {} as Subscription;
 
@@ -73,92 +75,96 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit {
         // fallback or retry
       }
 
-      this._tenderTypeCode = queryParams['code'];
-      this.getAuthorization();
-    }).unsubscribe();    
+      this._tenderTypeCode = queryParams ['code'];
+      const isRefund = queryParams["IsRefund"] === "true";
+
+      this.InvoiceId = this._utilSvc.getUniqueRRN();
+      this.tndrObj.rrn = this.InvoiceId
+      this.tndrObj.isAuthorized = false;
+      this.tndrObj.tenderTypeDesc = "pinpad";
+      this.tndrObj.traceId = "false";
+      this.tndrObj.tenderStatus = TenderStatusType.InProgress;
+      this.tndrObj.tndMaintTimestamp = new Date(Date.now());
+      this.tndrObj.tndMaintUserId = this._logonDataSvc.getLTVendorLogonData().individualUID
+      this.tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+      this.tndrObj.tenderTypeCode = this._tenderTypeCode;
+      this.tndrObj.tenderAmount = this.tenderAmount;
+      this.tndrObj.fcTenderAmount = this.tenderAmountFC;
+
+      this.getTransactionId(isRefund);
+
+  });
+
   }
 
-  async getRemainingBalance() {
-    const state: RootObject = await firstValueFrom(this._store.pipe(take(1))).then(state => state as RootObject);
-    const tktObj = state.TktObjState.tktObj;
+  private async getTransactionId(isRefund: boolean): Promise<number> {
 
-    let tenderTotal: number = 0;
-    let tipTotal: number = 0;
-    let tenderTotalFC: number = 0;
-    let ticketTotal: number = 0;
-    let ticketTotalFC: number = 0;
-    let tipTotalFC: number = 0;
+    var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+    if (tktObjData != null) {
+      this.tndrObj.tenderTransactionId = tktObjData.transactionID;
+      this._store.dispatch(addTender({ tndrObj: this.tndrObj }));
+      this._store.dispatch(saveTenderObj({ tndrObj: this.tndrObj }));
 
-    tktObj.ticketTenderList.forEach(tndr => tenderTotal += parseFloat((tndr.tenderAmount).toFixed(2)));
-    tktObj.tktList.forEach(itm => ticketTotal += parseFloat((itm.lineItemDollarDisplayAmount).toFixed(2)));
-    tktObj.associateTips.forEach(tip => tipTotal += parseFloat((tip.tipAmount).toFixed(2)));
-
-    tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += parseFloat((tndr.fcTenderAmount).toFixed(2)));
-    tktObj.tktList.forEach(itm => ticketTotalFC += parseFloat((itm.dCLineItemDollarDisplayAmount).toFixed(2)));
-    tktObj.associateTips.forEach(tip => tipTotalFC += parseFloat((tip.tipAmtLocCurr).toFixed(2)));
-
-    if (tktObj.isPartialPay) {
-      ticketTotal = tktObj.partialAmount;
-      ticketTotalFC = tktObj.partialAmountFC;
+      // Subscribe to saveTenderObjSuccess to capture the generated ticketTenderId
+      this.subscription = this.actions$.pipe(
+        ofType(saveTenderObjSuccess),
+        take(1),
+        map(action => action.data.data.ticketTenderId)
+      ).subscribe((tenderId) => {
+        this._ticketTenderId = tenderId;
+        console.log('Tender ID saved:', this._ticketTenderId);
+        this.getAuthorization(isRefund);
+      });    
+      return tktObjData.transactionID;
     }
-
-    this.tenderAmount = Round2DecimalService.round(ticketTotal + tipTotal - tenderTotal);
-    this.tenderAmountFC = Round2DecimalService.round(ticketTotalFC + tipTotalFC - tenderTotalFC);
-    return;
+    return 0;
   }
 
-  private async getAuthorization() {
-
-    let InvoiceId = this._utilSvc.getUniqueRRN();
-    let exchNum = this._utilSvc.getUniqueRRN();
-    let tranAmt = this.tenderAmount;
-    let isRefund = false;
+  private async getAuthorization(isRefund: boolean) {
 
     this.isWaitingForPinpad = true;
 
-    this._cposWebSvc.captureCardTran(InvoiceId, exchNum, tranAmt, isRefund).subscribe({
+    this._cposWebSvc.captureCardTran(this.tndrObj.rrn, this.tndrObj.rrn, this.tenderAmount, isRefund).subscribe({
       next: async (data) => {
         this.isWaitingForPinpad = false;
         //console.log("Capture Card Transaction Response: ", data);
         if (data.rslt.IsSuccessful) {
-          //console.log("Transaction Successful");
-          this.tndrObj.rrn = InvoiceId;
-          this.tndrObj.isAuthorized = true;
-          this.tndrObj.authNbr = data.AUTH_CODE;
-          this.tndrObj.cardEndingNbr = data.FIRST6_LAST4;
-          this.tndrObj.traceId = "false";
-          this.tndrObj.tenderTypeDesc = "pinpad";
-          this.tndrObj.inStoreCardNbrTmp = data.ACCT_NUM;
-          this.tndrObj.tenderStatus = TenderStatusType.Complete;
-          this.tndrObj.tenderTypeCode = this._tenderTypeCode;
-          this.tndrObj.tenderAmount = this.tenderAmount;
-          this.tndrObj.fcTenderAmount = this.tenderAmountFC;
-          this.tndrObj.tndMaintTimestamp = new Date(Date.now());
-          //tndrObj. = this._logonDataSvc.getLocationConfig().defaultCurrency;
-          this.tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
-          this.tndrObj.tenderTypeCode = this._tenderTypeCode;
 
+          var tndrCopy = this.copyTenderObj(this.tndrObj)
+
+          tndrCopy.rrn = this.InvoiceId;
+          tndrCopy.isAuthorized = true;
+          tndrCopy.authNbr = data.AUTH_CODE;
+          tndrCopy.cardEndingNbr = data.FIRST6_LAST4;
+          tndrCopy.traceId = "false";
+          tndrCopy.tenderTypeDesc = "pinpad";
+          tndrCopy.inStoreCardNbrTmp = data.ACCT_NUM;
+          tndrCopy.tenderStatus = TenderStatusType.Complete;
+          tndrCopy.tenderTypeCode = this._tenderTypeCode;
+          tndrCopy.tenderAmount = this.tenderAmount;
+          tndrCopy.fcTenderAmount = this.tenderAmountFC;
+          tndrCopy.tndMaintTimestamp = new Date(Date.now());
+          //tndrObj. = this._logonDataSvc.getLocationConfig().defaultCurrency;
+          tndrCopy.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+          tndrCopy.tenderTypeCode = this._tenderTypeCode;
+          tndrCopy.ticketTenderId = this._ticketTenderId;
+          
           this._captureTranResponse.copyFrom(data);
+          this._captureTranResponse.ticketTenderId = this._ticketTenderId; // Use the stored tender ID
 
           var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
           if (tktObjData != null) {
-            this.tndrObj.tenderTransactionId = tktObjData.transactionID;
+
             this._captureTranResponse.transactionId = tktObjData.transactionID;
 
-            this._store.dispatch(addTender({ tndrObj: this.tndrObj }));
-            this._store.dispatch(saveTenderObj({ tndrObj: this.tndrObj }));
+            this._store.dispatch(addTender({ tndrObj: tndrCopy }));
+            
+            // Use the stored tender ID from the initial save
+            
+            this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
 
-            let ticketTenderId = 0;
-            this.actions$.pipe(ofType(saveTenderObjSuccess), 
-              take(1),
-              map(action => action.data.data.ticketTenderId)).subscribe((tenderId) => {
-                ticketTenderId = tenderId;
-                //this.tndrObj.ticketTenderId = tenderId;
-
-              });
-
-            this._captureTranResponse.ticketTenderId = ticketTenderId;
-
+            // Use the pre-stored tender ID for the pinpad response
+            this._captureTranResponse.ticketTenderId = this._ticketTenderId;
             this._store.dispatch(addPinpadResp({ respObj: this._captureTranResponse }));
             
             var tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
@@ -188,7 +194,67 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit {
     });
   }
 
+  /**
+     * Creates a deep copy of the TicketTender object
+     * @returns A new TicketTender instance with all properties copied
+     */
+  copyTenderObj(srcTndr: TicketTender): TicketTender {
+    let tndrCopy = new TicketTender();
 
+    tndrCopy.ticketTenderId = srcTndr.ticketTenderId;
+    tndrCopy.tenderTypeId = srcTndr.tenderTypeId;
+    tndrCopy.tenderTransactionId = srcTndr.tenderTransactionId;
+    tndrCopy.tenderTypeCode = srcTndr.tenderTypeCode;
+    tndrCopy.tenderTypeDesc = srcTndr.tenderTypeDesc;
+    tndrCopy.isRefundType = srcTndr.isRefundType;
+    tndrCopy.isSignature = srcTndr.isSignature;
+    tndrCopy.displayOrder = srcTndr.displayOrder;
+    tndrCopy.cardEndingNbr = srcTndr.cardEndingNbr;
+    tndrCopy.tracking = srcTndr.tracking;
+    tndrCopy.traceId = srcTndr.traceId;
+    tndrCopy.authNbr = srcTndr.authNbr;
+    tndrCopy.rrn = srcTndr.rrn;
+
+    tndrCopy.tenderAmount = srcTndr.tenderAmount;
+    tndrCopy.changeDue = srcTndr.changeDue;
+    tndrCopy.fcChangeDue = srcTndr.fcChangeDue;
+    tndrCopy.cardBalance = srcTndr.cardBalance;
+    tndrCopy.fcTenderAmount = srcTndr.fcTenderAmount;
+    tndrCopy.fcCurrCode = srcTndr.fcCurrCode;
+
+    tndrCopy.transactionNumber = srcTndr.transactionNumber;
+    tndrCopy.tndMaintTimestamp = srcTndr.tndMaintTimestamp ? new Date(srcTndr.tndMaintTimestamp.getTime()) : {} as Date;
+    tndrCopy.tndMaintUserId = srcTndr.tndMaintUserId;
+    tndrCopy.tipAmount = srcTndr.tipAmount;
+    tndrCopy.fcTipAmount = srcTndr.fcTipAmount;
+
+    tndrCopy.exchCardType = srcTndr.exchCardType;
+    tndrCopy.exchCardPymntType = srcTndr.exchCardPymntType;
+    tndrCopy.cardEntryMode = srcTndr.cardEntryMode;
+
+    tndrCopy.signatureType = srcTndr.signatureType;
+    tndrCopy.milstarPlanNum = srcTndr.milstarPlanNum;
+    tndrCopy.checkNumber = srcTndr.checkNumber;
+
+    tndrCopy.isAuthorized = srcTndr.isAuthorized;
+    tndrCopy.ctroutd = srcTndr.ctroutd;
+    tndrCopy.tenderStatus = srcTndr.tenderStatus;
+    tndrCopy.cliTimeVar = srcTndr.cliTimeVar;
+    tndrCopy.refundAuthNbr = srcTndr.refundAuthNbr;
+    tndrCopy.inStoreCardNbrTmp = srcTndr.inStoreCardNbrTmp;
+    tndrCopy.voidRRN = srcTndr.voidRRN;
+    tndrCopy.tndrTimeStamp = srcTndr.tndrTimeStamp ? new Date(srcTndr.tndrTimeStamp.getTime()) : {} as Date;
+    tndrCopy.refundCardNbr = srcTndr.refundCardNbr;
+    tndrCopy.refundCardType = srcTndr.refundCardType;
+    tndrCopy.refundCardEntryMode = srcTndr.refundCardEntryMode;
+    tndrCopy.refundEmvCvm = srcTndr.refundEmvCvm;
+    tndrCopy.isDiscoverMilstar = srcTndr.isDiscoverMilstar;
+    tndrCopy.partPayId = srcTndr.partPayId;
+    tndrCopy.partPayAmount = srcTndr.partPayAmount;
+    tndrCopy.partPayAmountFC = srcTndr.partPayAmountFC;
+
+    return tndrCopy;
+  }
   async btnApprove(evt: Event) {
     //console.log("btnApprove clicked");
 
@@ -253,6 +319,35 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit {
     else {
       return false;
     }
+  }
+  async getRemainingBalance() {
+
+    const state: RootObject = await firstValueFrom(this._store.pipe(take(1))).then(state => state as RootObject);
+    const tktObj = state.TktObjState.tktObj;
+
+    let tenderTotal: number = 0;
+    let tipTotal: number = 0;
+    let tenderTotalFC: number = 0;
+    let ticketTotal: number = 0;
+    let ticketTotalFC: number = 0;
+    let tipTotalFC: number = 0;
+
+    tktObj.ticketTenderList.forEach(tndr => tenderTotal += parseFloat((tndr.tenderAmount).toFixed(2)));
+    tktObj.tktList.forEach(itm => ticketTotal += parseFloat((itm.lineItemDollarDisplayAmount).toFixed(2)));
+    tktObj.associateTips.forEach(tip => tipTotal += parseFloat((tip.tipAmount).toFixed(2)));
+
+    tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += parseFloat((tndr.fcTenderAmount).toFixed(2)));
+    tktObj.tktList.forEach(itm => ticketTotalFC += parseFloat((itm.dCLineItemDollarDisplayAmount).toFixed(2)));
+    tktObj.associateTips.forEach(tip => tipTotalFC += parseFloat((tip.tipAmtLocCurr).toFixed(2)));
+
+    if (tktObj.isPartialPay) {
+      ticketTotal = tktObj.partialAmount;
+      ticketTotalFC = tktObj.partialAmountFC;
+    }
+
+    this.tenderAmount = Round2DecimalService.round(ticketTotal + tipTotal - tenderTotal);
+    this.tenderAmountFC = Round2DecimalService.round(ticketTotalFC + tipTotalFC - tenderTotalFC);
+    return;
   }
 
 }

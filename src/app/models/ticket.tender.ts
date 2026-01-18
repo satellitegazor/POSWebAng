@@ -52,6 +52,8 @@ export class TicketTender {
     partPayId: number = 0;
     partPayAmount: number = 0;
     partPayAmountFC: number = 0;
+
+ 
 }
 
 export class SaveTenderResult {

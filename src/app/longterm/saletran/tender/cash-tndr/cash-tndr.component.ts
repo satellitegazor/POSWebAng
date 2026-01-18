@@ -75,11 +75,8 @@ export class CashTndrComponent implements OnInit {
       this.tenderAmount = data.amountDC || 0.0;
       this.tenderAmountFC = data.amountNDC || 0.0;
 
-      this._tndrObj = {
-        ...this._tndrObj,
-        tenderAmount: this.tenderAmount,
-        fcTenderAmount: this.tenderAmountFC
-      };
+      this._tndrObj.tenderAmount = this.tenderAmount;
+      this._tndrObj.fcTenderAmount = this.tenderAmountFC;
     })
 
     this.loadFastCashButtons();
