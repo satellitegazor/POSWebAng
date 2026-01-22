@@ -5,45 +5,55 @@ import { ExchCardTndr } from "./exch.card.tndr";
 import { MobileBase } from "./mobile.base";
 import { TicketTender } from "./ticket.tender";
  
-export class TicketSplit {
+    export class TicketSplit {
 
-    public individualUID: number = 0;
-    public eventId: number = 0;
-    public associateTips: AssociateSaleTips[] = [] as AssociateSaleTips[] ;
-    public balanceDue: number = 0;
-    public cancelTransactionID: number = 0;
-    public cliTimeVar: number = 0;
-    public customerId: number = 0;
-    public customer: LTC_Customer = {} as LTC_Customer;
-    public instructions: string = '';
-    public isPartialPay: boolean = false;
-    public isRefund: boolean = false;
-    public locationUID: number = 0;
-    public partialAmount: number = 0;
-    public partialAmountFC: number = 0;
-    public refundCode: string = '';
-    public refundReason: string = '';
-    public taxExempted: boolean = false;
-    public tCouponAmt: number = 0;
-    public tDCouponAmt: number = 0;
-    public tCouponPerc: number = 0;
-    public tktList: SalesTransactionCheckoutItem[] = [];
-    public ticketTenderList: TicketTender[] = [];
-    public totalSale: number = 0;
-    public totalSaleFC: number = 0;
-    public transactionDate: Date = {} as Date;
-    public transactionID: number = 0;
-    public updateCustomer: boolean = false;
-    public updateCoupons: boolean = false;
-    public orderFormNum: string = '';
-    public shipHandling: number = 0;
-    public shipHandlingTaxAmt: number = 0;
-    public shipHandlingFC: number = 0;
-    public shipHandlingTaxAmtFC: number = 0;
-    public ticketRRN: string = '';
-    public VMTndr: ExchCardTndr = new ExchCardTndr();
-    public tipAmountDC: number = 0;
-    public tipAmountNDC: number = 0;
+        ticketRRN: string = '';
+        transactionDate: Date = new Date(); // or string if you prefer ISO strings
+        individualUID: number = 0;
+        locationUID: number = 0;
+        taxExempted: boolean = false;
+        transactionID: number = 0;
+        cancelTransactionID: number = 0;
+        isRefund: boolean = false;
+        balanceDue: number = 0;
+        instructions: string = '';
+        ticketTenderList: TicketTender[] = [];
+        updateCustomer: boolean = false;
+        customerId: number = 0;
+        customer: LTC_Customer = new LTC_Customer();
+        totalSale: number = 0;
+        totalSaleFC: number = 0;
+        tktList: SalesTransactionCheckoutItem[] = [];
+        refundReason: string = '';
+        refundCode: string = '';
+        isPartialPay: boolean = false;
+        partPayId: number = 0;           // long → number
+        partialAmount: number = 0;
+        partialAmountFC: number = 0;
+        updateCoupons: boolean = false;
+        associateTips: AssociateSaleTips[] = [];
+        tCouponPerc: number = 0;
+        tCouponAmt: number = 0;
+        tDCouponAmt: number = 0;
+        cliTimeVar: number = 0;
+        shipHandling: number = 0;
+        shipHandlingTaxAmt: number = 0;
+        shipHandlingFC: number = 0;
+        shipHandlingTaxAmtFC: number = 0;
+        vMTndr: ExchCardTndr[] = [];     // changed from single object to array as per your code
+        tranStatus: number = 0;
+        voidType: string = '';
+        voidTypeDesc: string = '';
+        tabSerialNum: string = '';
+        ipAddress: string = '';
+        isSplitPayR5: boolean = false;
+        fromLinuxTab: boolean = false;
+        tipAmountDC: number = 0;
+        tipAmountNDC: number = 0;
+        // Optional constructor for partial initialization (very common in TS)
+        constructor(init?: Partial<TicketSplit>) {
+            Object.assign(this, init);
+        }
     }
 
     export class SaveTicketResultsModel {

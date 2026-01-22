@@ -72,8 +72,8 @@ export class TicketObjectEffects {
             ofType(savePinpadResponse),
             withLatestFrom(this.store.pipe(select(getTktObjSelector))),
             exhaustMap(([action, tktObj]) => {
-                if (tktObj && tktObj.VMTndr) {
-                    return this.saleTranSvc.saveFDMSTenderObj(tktObj.VMTndr, tktObj.transactionID, CPOSAppType.LongTerm, tktObj.individualUID).pipe(
+                if (tktObj && tktObj.vMTndr) {
+                    return this.saleTranSvc.saveFDMSTenderObj(tktObj.vMTndr[0], tktObj.transactionID, CPOSAppType.LongTerm, tktObj.individualUID).pipe(
                         map(resp => {
                             console.log("savePinpadResponse success ");
                             return savePinpadResponseSuccess({respObj: resp.data});

@@ -13,6 +13,7 @@ import { firstValueFrom, Subscription, take } from 'rxjs';
 import { TipsModalDlgComponent } from '../../checkout/tips-modal-dlg/tips-modal-dlg.component';
 import { updateCheckoutTotals, addTender, saveTicketForGuestCheck, removeTndrWithSaveCode } from '../../store/ticketstore/ticket.action';
 import { AlertModalComponent } from 'src/app/alert-modal/alert-modal.component';
+import { UtilService } from 'src/app/services/util.service';
 
 @Component({
   selector: 'app-split-pay',
@@ -38,7 +39,8 @@ export class SplitPayComponent implements OnInit {
     private modalService: NgbModal,
     private _store: Store<saleTranDataInterface>,
     private router: Router,
-    private activRoute: ActivatedRoute) { }
+    private activRoute: ActivatedRoute,
+    private _utlSvc: UtilService) { }
 
   tndrs: TicketTender[] = [];
   ticketTotalDC: number = 0;
@@ -46,11 +48,15 @@ export class SplitPayComponent implements OnInit {
   defaultCurrCode: string = 'USD';
   nonDefaultCurrCode: string = 'EUR';
   private routeSubscription: Subscription = {} as Subscription;
+  dcCurrSymbl: string | undefined;
+  ndcCurrSymbl: string | undefined;
 
   ngOnInit(): void {
 
     //console.log('SplitPay component ngOnInit called');
     this._tenderTypesModel = this._logonDataSvc.getTenderTypes();
+    this.dcCurrSymbl = this._utlSvc.currencySymbols.get(this._logonDataSvc.getDfltCurrCode());
+    this.ndcCurrSymbl = this._utlSvc.currencySymbols.get(this._logonDataSvc.getNonDfltCurrCode());
 
     this.tenderButtonUIDisplay();
 
@@ -77,7 +83,7 @@ export class SplitPayComponent implements OnInit {
     this._store.select(getTicketTendersSelector).subscribe(data => {
       ////console.log('SplitPay component getTicketTendersSelector data:', data);
       if (data) {
-        this.tndrs = data;
+        this.tndrs = data.filter(t => t.tenderTypeCode != 'SV');
         let totalPaidDC: number = 0;
         let totalPaidNDC: number = 0;
 

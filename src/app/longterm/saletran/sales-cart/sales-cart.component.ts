@@ -20,11 +20,13 @@ import { getLocationConfigStart, setLocationConfig } from '../store/locationconf
 import { getAuthLoginSelector } from 'src/app/authstate/auth.selector';
 import { LocationConfig, LocationIndividual } from '../../models/location-config';
 import { saleTranDataInterface } from '../store/ticketstore/ticket.state';
-import { initTktObj } from '../store/ticketstore/ticket.action';
+import { addTabSerialToTktObj, initTktObj } from '../store/ticketstore/ticket.action';
 import { TicketLookupComponent } from '../../../shared/ticket-lookup/ticket-lookup.component';
 import { getCheckoutItemsCount } from '../store/ticketstore/ticket.selector';
 import {initialLocationConfigState, LocationConfigState} from '../store/locationconfigstore/locationconfig.state';
 import { Router } from '@angular/router';
+import { CPOSWebSvcService } from '../services/cposweb-svc.service';
+import { VerifoneCommStatus } from '../../models/general-classes';
 
 @Component({
     selector: 'app-sales-cart',
@@ -42,12 +44,14 @@ export class SalesCartComponent implements OnInit, OnDestroy {
         };
     salesCategoryListRefreshEvent: any;
         
-    constructor(private _saleTranSvc: SalesTranService, private _logonDataSvc: LogonDataService,
+    constructor(private _saleTranSvc: SalesTranService, 
+        private _logonDataSvc: LogonDataService,
         private _sharedSubSvc: SharedSubjectService, 
         private modalService: NgbModal, 
         private _store: Store<saleTranDataInterface>,
         private router: Router,
-        private _locConfigStore: Store<LocationConfigState>) {
+        private _locConfigStore: Store<LocationConfigState>,
+        private _cposWebSvc: CPOSWebSvcService) {
 
         //console.log('SalesCart constructor')
         this.salesCategoryListRefreshEvent = new Subject<boolean>();
@@ -83,6 +87,7 @@ export class SalesCartComponent implements OnInit, OnDestroy {
 
         //console.log('SalesCart ngOnInit')
         this.vendorLoginResult = this._logonDataSvc.getLTVendorLogonData();
+        let pinpadStatus: VerifoneCommStatus = new VerifoneCommStatus();
 
         this._buildTktObj();
         this._saleTranSvc.getSaleItemListFromDB(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0, 0, 0, 0).subscribe(data => {
@@ -94,12 +99,22 @@ export class SalesCartComponent implements OnInit, OnDestroy {
             this.getDeptList();
         });
 
+        
+
         this._saleTranSvc.getLocationConfig(+this.vendorLoginResult.locationUID, +this.vendorLoginResult.individualUID).subscribe(data => {
 
             this.locationConfig = data.configs[0];
             this.locationIndividuals = data.individuals;
 
-            this._store.dispatch(initTktObj({ locConfig: this.locationConfig, individualUID: +this.vendorLoginResult.individualUID }));
+            this._store.dispatch(initTktObj({ locConfig: this.locationConfig, individualUID: +this.vendorLoginResult.individualUID}));
+        });
+
+        this._cposWebSvc.pinpadHeartbeat("PING").subscribe(data => {
+            if (data.IsSuccess) {
+                pinpadStatus = data;
+                console.log("Pinpad Heartbeat Success: ", pinpadStatus);
+                this._store.dispatch(addTabSerialToTktObj({ tabSerialNum: pinpadStatus.TabMachineName, ipAddress: pinpadStatus.IpAddress }));
+            }
         });
 
         let today = new Date();
@@ -111,6 +126,7 @@ export class SalesCartComponent implements OnInit, OnDestroy {
         this._store.select(getCheckoutItemsCount).subscribe(itemCount => {
             this.disableCheckoutBtn = (itemCount == 0);
         })
+
     }
 
     ngOnDestroy(): void {

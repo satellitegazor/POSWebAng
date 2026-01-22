@@ -13,6 +13,7 @@ export const ADD_SALE_ITEM = 'addSaleItem';
 export const INC_SALE_ITEM_QTY = 'incSaleItemQty';
 export const DEC_SALE_ITEM_QTY = 'decSaleItemQty';
 export const INIT_TKT_OBJ = 'initTktObj';
+export const ADD_TAB_SERIAL_TO_TKT_OBJ = 'addTabSerialToTktObj';
 export const RESET_TKT_OBJ = 'resetTktObj';
 export const SAVE_TICKET_SPLIT = '[SaveTicket] Start'
 export const SAVE_TICKET_SPLIT_SUCCESS = '[SaveTicket] Success'
@@ -52,6 +53,7 @@ export const UPDATE_PARTPAY_DATA = 'updatePartpayData';
 export const UPDATE_LOCATION_CONFIG = 'updateLocationConfig';
 export const REMOVE_TNDR_SAVE_CODE = "removeTenderWithSaveCode";
 export const UPDATE_TENDER_RRN = 'updateTenderRRN';
+export const IS_SPLIT_PAY_R5 = 'isSplitPayR5';
 
 export const addSaleItem = createAction(ADD_SALE_ITEM,
     props<{saleItem: SalesTransactionCheckoutItem}>());
@@ -67,6 +69,9 @@ export const delSaleitemZeroQty = createAction(DELETE_SALE_ITEM,
 
 export const initTktObj = createAction(INIT_TKT_OBJ, 
     props<{locConfig: LocationConfig, individualUID: number}>());
+
+export const addTabSerialToTktObj = createAction(ADD_TAB_SERIAL_TO_TKT_OBJ,
+    props<{ tabSerialNum: string, ipAddress: string }>());
 
 export const resetTktObj = createAction(RESET_TKT_OBJ, 
     props<{dummyNumber: number}>());
@@ -146,6 +151,6 @@ export const upsertTranExchCpn = createAction(UPSERT_TRAN_EXCH_CPN, props<{logon
 
 export const updatePartPayData = createAction(UPDATE_PARTPAY_DATA, props<{partPayFlag: boolean, partPayAmountDC: number, partPayAmountNDC: number}>());
 
-
+export const isSplitPayR5 = createAction(IS_SPLIT_PAY_R5, props<{isSplitPayR5: boolean}>());
 
 //export const updateLocationConfig = createAction(UPDATE_LOCATION_CONFIG, props<{}>)

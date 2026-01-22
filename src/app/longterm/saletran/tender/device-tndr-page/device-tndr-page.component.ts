@@ -1,18 +1,18 @@
-import { AfterContentInit, Component, OnInit } from '@angular/core';
+import { AfterContentInit, Component, OnInit, OnDestroy } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { TicketSplit } from 'src/app/models/ticket.split';
-import { getBalanceDue, getBalanceDueFC, getTktObjSelector, getRemainingBal, AmountDCNDC } from '../../store/ticketstore/ticket.selector';
+import { getBalanceDue, getBalanceDueFC, getTktObjSelector, getRemainingBal, AmountDCNDC, getIsSplitPayR5 } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { TenderStatusType, TicketTender } from 'src/app/models/ticket.tender';
-import { addPinpadResp, addTender, saveCompleteTicketSplit, savePinpadResponse, saveTenderObj, saveTenderObjSuccess, saveTicketForGuestCheck, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
+import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
+import { addPinpadResp, addTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, savePinpadResponse, saveTenderObj, saveTenderObjSuccess, saveTicketForGuestCheck, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
 import { LocalStorageService } from 'src/app/global/local-storage.service';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { TenderType, TenderTypeModel } from '../../../models/tender.type';
 import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCheckoutItem';
 import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
 import { getLocCnfgIsAllowTipsSelector } from '../../store/locationconfigstore/locationconfig.selector';
-import { combineLatest, filter, firstValueFrom, forkJoin, map, Observable, Subscription, take } from 'rxjs';
+import { combineLatest, filter, firstValueFrom, forkJoin, map, Observable, Subscription, take, Subject, takeUntil } from 'rxjs';
 import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
 import { UtilService } from 'src/app/services/util.service';
 import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
@@ -27,7 +27,7 @@ import { ToastService } from 'src/app/services/toast.service';
   styleUrls: ['./device-tndr-page.component.css'],
   standalone: false
 })
-export class DeviceTndrPageComponent implements OnInit, AfterContentInit {
+export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDestroy {
 
   constructor(private _store: Store,
     private activatedRoute: ActivatedRoute,
@@ -52,8 +52,24 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit {
   private _ticketTenderId: number = 0; // Store the generated tender ID from DB
 
   private subscription: Subscription = {} as Subscription;
+  private destroy$ = new Subject<void>(); // Subject to manage subscription cleanup
+  private authorizationInProgress: boolean = false; // Flag to prevent multiple authorization calls
+  private isSplitPay: boolean = false;
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this._store.select(getIsSplitPayR5).subscribe(flag => {
+      this.isSplitPay = flag;
+    }).unsubscribe();
+  }
+
+  ngOnDestroy(): void {
+    // Clean up all subscriptions
+    this.destroy$.next();
+    this.destroy$.complete();
+    if (this.subscription && !this.subscription.closed) {
+      this.subscription.unsubscribe();
+    }
+  }
 
   ngAfterContentInit(): void {
 
@@ -75,7 +91,7 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit {
         // fallback or retry
       }
 
-      this._tenderTypeCode = queryParams ['code'];
+      this._tenderTypeCode = queryParams['code'];
       const isRefund = queryParams["IsRefund"] === "true";
 
       this.InvoiceId = this._utilSvc.getUniqueRRN();
@@ -93,7 +109,7 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit {
 
       this.getTransactionId(isRefund);
 
-  });
+    });
 
   }
 
@@ -112,9 +128,11 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit {
         map(action => action.data.data.ticketTenderId)
       ).subscribe((tenderId) => {
         this._ticketTenderId = tenderId;
-        console.log('Tender ID saved:', this._ticketTenderId);
+        // Update the original tender object with the ticketTenderId so it's available for all subsequent operations
+        //this.tndrObj.ticketTenderId = tenderId;
+        //console.log('Tender ID saved:', this._ticketTenderId);
         this.getAuthorization(isRefund);
-      });    
+      });
       return tktObjData.transactionID;
     }
     return 0;
@@ -122,76 +140,107 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit {
 
   private async getAuthorization(isRefund: boolean) {
 
+    // Prevent multiple authorization calls
+    if (this.authorizationInProgress) {
+      console.warn('Authorization already in progress. Ignoring duplicate call.');
+      return;
+    }
+
+    this.authorizationInProgress = true;
     this.isWaitingForPinpad = true;
 
-    this._cposWebSvc.captureCardTran(this.tndrObj.rrn, this.tndrObj.rrn, this.tenderAmount, isRefund).subscribe({
-      next: async (data) => {
-        this.isWaitingForPinpad = false;
-        //console.log("Capture Card Transaction Response: ", data);
-        if (data.rslt.IsSuccessful) {
+    this._cposWebSvc.captureCardTran(this.tndrObj.rrn, this.tndrObj.rrn, this.tenderAmount, isRefund)
+      .pipe(
+        take(1), // Ensure only one response is processed
+        takeUntil(this.destroy$) // Automatically unsubscribe when component is destroyed
+      )
+      .subscribe({
+        next: async (data) => {
+          this.isWaitingForPinpad = false;
+          //console.log("Capture Card Transaction Response: ", data);
+          if (data.rslt.IsSuccessful) {
 
-          var tndrCopy = this.copyTenderObj(this.tndrObj)
+            // Fetch the updated tender from store state that has ticketTenderId from DB
+            var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+            if (tktObjData == null) {
+              console.error('Unable to fetch ticket object');
+              this.authorizationInProgress = false;
+              return;
+            }
 
-          tndrCopy.rrn = this.InvoiceId;
-          tndrCopy.isAuthorized = true;
-          tndrCopy.authNbr = data.AUTH_CODE;
-          tndrCopy.cardEndingNbr = data.FIRST6_LAST4;
-          tndrCopy.traceId = "false";
-          tndrCopy.tenderTypeDesc = "pinpad";
-          tndrCopy.inStoreCardNbrTmp = data.ACCT_NUM;
-          tndrCopy.tenderStatus = TenderStatusType.Complete;
-          tndrCopy.tenderTypeCode = this._tenderTypeCode;
-          tndrCopy.tenderAmount = this.tenderAmount;
-          tndrCopy.fcTenderAmount = this.tenderAmountFC;
-          tndrCopy.tndMaintTimestamp = new Date(Date.now());
-          //tndrObj. = this._logonDataSvc.getLocationConfig().defaultCurrency;
-          tndrCopy.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
-          tndrCopy.tenderTypeCode = this._tenderTypeCode;
-          tndrCopy.ticketTenderId = this._ticketTenderId;
-          
-          this._captureTranResponse.copyFrom(data);
-          this._captureTranResponse.ticketTenderId = this._ticketTenderId; // Use the stored tender ID
+            // Get the saved tender from the ticket's tender list (it has ticketTenderId from DB)
+            const savedTender = tktObjData.ticketTenderList.find(tndr => tndr.rrn === this.InvoiceId);
+            if (!savedTender) {
+              console.error('Tender not found in state');
+              this.authorizationInProgress = false;
+              return;
+            }
 
-          var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
-          if (tktObjData != null) {
+            // Copy the saved tender which already has ticketTenderId
+            var tndrCopy = this.copyTenderObj(savedTender);
 
+            tndrCopy.rrn = this.InvoiceId;
+            tndrCopy.isAuthorized = true;
+            tndrCopy.authNbr = data.AUTH_CODE;
+            tndrCopy.cardEndingNbr = data.FIRST6_LAST4;
+            tndrCopy.traceId = "false";
+            tndrCopy.tenderTypeDesc = "pinpad";
+            tndrCopy.inStoreCardNbrTmp = data.ACCT_NUM;
+            tndrCopy.tenderStatus = TenderStatusType.InProgress;
+            tndrCopy.tenderTypeCode = this._tenderTypeCode;
+            tndrCopy.tenderAmount = this.tenderAmount;
+            tndrCopy.fcTenderAmount = this.tenderAmountFC;
+            tndrCopy.tndMaintTimestamp = new Date(Date.now());
+            tndrCopy.tndrTimeStamp = new Date(Date.now());
+            tndrCopy.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+            tndrCopy.tenderTypeCode = this._tenderTypeCode;
+            // ticketTenderId is already set from the saved tender
+
+            this._captureTranResponse.copyFrom(data);
+            this._captureTranResponse.RRN = this.InvoiceId;
+            this._captureTranResponse.ticketTenderId = tndrCopy.ticketTenderId; // Use the tender's ID from state
             this._captureTranResponse.transactionId = tktObjData.transactionID;
 
             this._store.dispatch(addTender({ tndrObj: tndrCopy }));
-            
-            // Use the stored tender ID from the initial save
-            
             this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
 
             // Use the pre-stored tender ID for the pinpad response
-            this._captureTranResponse.ticketTenderId = this._ticketTenderId;
             this._store.dispatch(addPinpadResp({ respObj: this._captureTranResponse }));
-            
+
             var tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
 
             if (this.IsTicketComplete(tktObjData1)) {
-              this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData1 }));
+
+              this._store.dispatch(markTendersComplete({ status: TenderStatusType.Complete }));
+              this._store.dispatch(markTicketComplete({ status: TranStatusType.Complete }));
+
+              // Fetch the updated ticket object after marking status as complete
+              var tktObjDataUpdated = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+
+              this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjDataUpdated }));
               this.route.navigate(['/savetktsuccess']);
             }
             else {
               this.route.navigate(['/splitpay']);
             }
+          } else {
+            // Transaction was declined
+            this._toastSvc.error('Card transaction was declined. Please try again or use another payment method.');
+            this.btnDecline(new Event('auto-decline'));
           }
-        } else {
-          // Transaction was declined
-          this._toastSvc.error('Card transaction was declined. Please try again or use another payment method.');
+
+          this.authorizationInProgress = false;
+
+        },
+        error: (error) => {
+          this.isWaitingForPinpad = false;
+          this.authorizationInProgress = false;
+          // Error occurred during pinpad interaction
+          const errorMessage = error?.message || 'An error occurred during pinpad interaction. Please try again.';
+          this._toastSvc.error(errorMessage);
           this.btnDecline(new Event('auto-decline'));
         }
-
-      },
-      error: (error) => {
-        this.isWaitingForPinpad = false;
-        // Error occurred during pinpad interaction
-        const errorMessage = error?.message || 'An error occurred during pinpad interaction. Please try again.';
-        this._toastSvc.error(errorMessage);
-        this.btnDecline(new Event('auto-decline'));
-      }
-    });
+      });
   }
 
   /**
@@ -279,12 +328,13 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit {
     if (tktObjData != null) {
       this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData }));
     }
+    
     this.route.navigate(['/savetktsuccess']);
 
   }
 
   btnDecline(evt: Event) {
-    this.route.navigate(['/checkout']);
+    this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
   }
 
   private IsTicketComplete(tktObj: TicketSplit): boolean {

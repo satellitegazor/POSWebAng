@@ -7,3 +7,363 @@
     width: 25%;
     text-align: right;
 }
+
+/* Two-Column Section Layout */
+.payment-section,
+.split-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+    align-items: start;
+}
+
+.section-left {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.section-right {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+/* Payment Section */
+.payment-amounts-display {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    width: 100%;
+    max-width: 500px;
+}
+
+.payment-display-item {
+    flex: 1;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 2px solid #0056b3;
+    border-radius: 8px;
+    padding: 18px 20px;
+    box-shadow: 0 2px 8px rgba(0, 86, 179, 0.1);
+    transition: all 0.3s ease;
+}
+
+.payment-display-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 86, 179, 0.15);
+    transform: translateY(-1px);
+}
+
+.payment-display-value {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.dc-amount {
+    color: #0056b3;
+}
+
+.fc-amount {
+    color: #28a745;
+}
+
+/* Split Amount Display */
+.split-amount-display {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    width: 100%;
+    max-width: 500px;
+}
+
+.split-amount-item {
+    flex: 1;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: 2px solid #d0d0d0;
+    border-radius: 8px;
+    padding: 18px 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.split-amount-item:hover {
+    border-color: #0056b3;
+    box-shadow: 0 4px 12px rgba(0, 86, 179, 0.15);
+}
+
+.split-amount-item:focus-within {
+    border-color: #0056b3;
+    box-shadow: 0 4px 12px rgba(0, 86, 179, 0.15);
+}
+
+.amount-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+/* Section Title */
+.section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    padding-left: 5px;
+    border-left: 4px solid #0056b3;
+}
+
+/* Payment Info Cards - Legacy */
+.payment-info-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.payment-info-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 2px solid #0056b3;
+    border-radius: 12px;
+    padding: 25px 20px;
+    box-shadow: 0 4px 12px rgba(0, 86, 179, 0.15);
+    transition: all 0.3s ease;
+}
+
+.payment-info-card:hover {
+    box-shadow: 0 6px 16px rgba(0, 86, 179, 0.25);
+    transform: translateY(-2px);
+}
+
+.payment-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.payment-value {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+/* Instruction Message */
+.instruction-message-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.instruction-message {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background-color: #e7f3ff;
+    border-left: 4px solid #0056b3;
+    border-radius: 8px;
+    padding: 18px 20px;
+    font-size: 14px;
+    color: #333;
+    width: 85%;
+    box-shadow: 0 2px 8px rgba(0, 86, 179, 0.1);
+}
+
+.instruction-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+    line-height: 1.2;
+}
+
+.instruction-text {
+    line-height: 1.6;
+    font-size: 18px;
+    margin: 0;
+}
+
+.instruction-text strong {
+    color: #0056b3;
+    display: block;
+    margin-bottom: 6px;
+}
+
+/* Horizontal layout for currency symbol and input */
+.currency-input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-start;
+}
+
+.currency-symbol {
+    font-weight: 700;
+    font-size: 16px;
+    white-space: nowrap;
+    color: #0056b3;
+}
+
+.currency-input {
+    flex: 1;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.currency-input:focus {
+    border-color: #0056b3;
+    box-shadow: 0 0 0 0.2rem rgba(0, 86, 179, 0.25);
+}
+
+/* Applied Tenders Section */
+.applied-tenders-section {
+    margin-bottom: 30px;
+}
+
+.tenders-section {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 30px;
+    align-items: start;
+}
+
+.tenders-list {
+    background: #ffffff;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.tender-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 15px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
+    padding: 15px 20px;
+    border-bottom: 2px solid #0056b3;
+    font-weight: 700;
+    color: #0056b3;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tender-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 15px;
+    padding: 18px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.tender-row:hover {
+    background-color: #f9f9f9;
+}
+
+.tender-row:last-child {
+    border-bottom: none;
+}
+
+.tender-col {
+    font-size: 14px;
+    color: #333;
+}
+
+.tender-desc {
+    font-weight: 600;
+    color: #0056b3;
+}
+
+.tender-amount {
+    text-align: right;
+    font-weight: 600;
+}
+
+.tender-col.tender-amount:first-child {
+    color: #0056b3;
+}
+
+.tender-col.tender-amount:last-child {
+    color: #28a745;
+}
+
+/* Tender Buttons */
+.tender-buttons-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    width: 100%;
+}
+
+.tender-btn {
+    transition: all 0.3s ease;
+    font-weight: 600;
+    border-radius: 8px;
+    margin: 0 5px;
+}
+
+.tender-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 86, 179, 0.25);
+}
+
+.tender-btn:active {
+    transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .payment-section,
+    .split-section {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .section-left {
+        justify-content: flex-start;
+    }
+    
+    .section-right {
+        justify-content: flex-start;
+    }
+    
+    .payment-value {
+        font-size: 28px;
+    }
+    
+    .instruction-message {
+        width: 95%;
+    }
+    
+    .tender-header,
+    .tender-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .tender-col {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .tender-col::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: #0056b3;
+        min-width: 120px;
+    }
+}

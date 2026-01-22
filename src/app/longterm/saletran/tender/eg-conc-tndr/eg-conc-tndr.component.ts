@@ -8,8 +8,8 @@ import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { UtilService } from 'src/app/services/util.service';
 import { TicketSplit } from 'src/app/models/ticket.split';
 import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
-import { firstValueFrom, Subscription, take } from 'rxjs';
-import { getRemainingBal, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
+import { firstValueFrom, forkJoin, Subscription, take } from 'rxjs';
+import { getIsSplitPayR5, getRemainingBal, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { TenderUtil } from '../tender-util';
 import { addTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj } from '../../store/ticketstore/ticket.action';
 
@@ -20,20 +20,23 @@ import { addTender, markTendersComplete, markTicketComplete, saveCompleteTicketS
   styleUrl: './eg-conc-tndr.component.css'
 })
 export class EgConcTndrComponent {
-btnCancelClick($event: PointerEvent) {
-throw new Error('Method not implemented.');
-}
-btnDeclineClick($event: PointerEvent) {
-throw new Error('Method not implemented.');
-}
+
+  private isSplitPay: boolean = false;
+
+  btnCancelClick($event: PointerEvent) {
+    throw new Error('Method not implemented.');
+  }
+  btnDeclineClick($event: PointerEvent) {
+    throw new Error('Method not implemented.');
+  }
   @ViewChild('btnApprove') btnApprove!: ElementRef<HTMLButtonElement>;
   @ViewChild('btnDecline') btnDecline!: ElementRef<HTMLButtonElement>;
   @ViewChild('btnCancel') btnCancel!: ElementRef<HTMLButtonElement>;
 
   dcCurrSymbl: string | undefined;
   ndcCurrSymbl: string | undefined;
-  tenderAmountFC: number | undefined;
-  tenderAmount: number | undefined;
+  tenderAmountNDC: number | undefined;
+  tenderAmountDC: number | undefined;
 
   constructor(private _cposWebSvc: CPOSWebSvcService,
     private _store: Store<saleTranDataInterface>,
@@ -53,36 +56,49 @@ throw new Error('Method not implemented.');
   ngOnInit(): void {
 
     this.activatedRoute.queryParams.subscribe(params => {
-      this._tndrObj.tenderTypeCode = params['code'];
+
+      this._tndrObj.tenderTypeCode = params['code'] || 'CA';
+      const hasQueryTenderAmount = params['tenderAmount'] !== undefined && params['tenderAmount'] !== null;
+
+      if (hasQueryTenderAmount) {
+        this._tndrObj.tenderAmount = parseFloat(params['tenderAmount']);
+      }
+      if (params['tenderAmountFC']) {
+        this._tndrObj.fcTenderAmount = parseFloat(params['tenderAmountFC']);
+      }
       this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
-    })
 
-    this.dcCurrSymbl = this._logonDataSvc.getDfltCurrCode();
-    this.ndcCurrSymbl = this._logonDataSvc.getNonDfltCurrCode();
+    }).unsubscribe();
 
-    this._store.select(getRemainingBal).subscribe(data => {
-      this._tndrObj.tenderAmount = data.amountDC
-      this._tndrObj.fcTenderAmount = data.amountNDC;
-      this.tenderAmount = data.amountDC;
-      this.tenderAmountFC = data.amountNDC;
-      //console.log("selector getRemainingBal Tender Amount: ", this._tndrObj.tenderAmount);
-    })
+    this.dcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getDfltCurrCode());
+    this.ndcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getNonDfltCurrCode());
+
+    forkJoin([
+      this._store.select(getRemainingBal).pipe(take(1)),
+      this._store.select(getIsSplitPayR5).pipe(take(1))
+    ]).subscribe(([tenderBal, isSplitPay]) => {
+
+      this.isSplitPay = isSplitPay;
+      if (!isSplitPay) {
+        this._tndrObj.tenderAmount = tenderBal.amountDC
+        this._tndrObj.fcTenderAmount = tenderBal.amountNDC;
+
+        this.tenderAmountDC = tenderBal.amountDC;
+        this.tenderAmountNDC = tenderBal.amountNDC;
+      }
+    }).unsubscribe();
 
     this._store.select(getTktObjSelector).subscribe(data => {
       if (data == null)
         return;
       //console.log("getTktObjSelector data: ", data);
       this._tktObj = data;
-    })
-
+    }).unsubscribe()
   }
 
   async btnApproveClick(evt: Event) {
 
-    //this._tndrObj = JSON.parse(JSON.stringify(this._tktObj.ticketTenderList.filter(tndr => tndr.rrn == this._tndrObj.rrn)[0]))
-    //console.log("btnApproveClick Tender Object before update: ", this._tndrObj);
-
-    this._tndrObj.tenderStatus = TenderStatusType.Complete;
+    this._tndrObj.tenderStatus = TenderStatusType.InProgress;
     this._tndrObj.isAuthorized = true;
     //this._tndrObj.tenderTypeCode = "EG";
     this._tndrObj.tndMaintTimestamp = new Date(Date.now());
@@ -98,7 +114,7 @@ throw new Error('Method not implemented.');
       this.route.navigate(['/savetktsuccess']);
     }
     else {
-      this.route.navigate(['/checkout']);
+      this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
     }
 
   }

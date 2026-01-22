@@ -1,4 +1,7 @@
 <div class="panel">
+    <!-- Transparent blocking overlay while waiting for pinpad -->
+    <div *ngIf="isWaitingForPinpad" class="pinpad-blocking-overlay"></div>
+    
     <div class="panel-body">
         <div class="tender-amounts-container">
             <div class="tender-amount-card">

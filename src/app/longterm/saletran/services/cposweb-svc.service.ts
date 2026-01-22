@@ -5,6 +5,7 @@ import { PinPadResult } from './models/pinpad-result';
 import { MSRSwipeData } from './models/msr-swipe-data';
 import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
 import { SigCapture } from './models/capture-signature.model';
+import { VerifoneCommStatus } from '../../models/general-classes';
 
 @Injectable({
   providedIn: 'root'
@@ -50,4 +51,10 @@ export class CPOSWebSvcService {
     {headers: this.headerObjs});
   }
 
+  pinpadHeartbeat(val: string): Observable<VerifoneCommStatus> {
+    return this.httpClient.get<VerifoneCommStatus>(this.cposWebSvcUrl + 'pinpad/HeartBeat?val=' + val,
+      { headers: this.headerObjs });
+  }
+
+  
 }

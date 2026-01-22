@@ -105,3 +105,16 @@
         opacity: 0.7;
     }
 }
+
+/* Transparent blocking overlay to prevent user interaction while processing pinpad */
+.pinpad-blocking-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.1); /* Very light transparent overlay */
+    z-index: 9998; /* High z-index to be on top of all panel content */
+    cursor: not-allowed;
+    pointer-events: auto; /* Intercept all pointer events */
+}

@@ -8,8 +8,8 @@ import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { UtilService } from 'src/app/services/util.service';
 import { TicketSplit } from 'src/app/models/ticket.split';
 import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
-import { firstValueFrom, Subscription, take } from 'rxjs';
-import { getRemainingBal, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
+import { firstValueFrom, forkJoin, Subscription, take } from 'rxjs';
+import { getIsSplitPayR5, getRemainingBal, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { TenderUtil } from '../tender-util';
 import { addTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj } from '../../store/ticketstore/ticket.action';
 import { CommonModule } from '@angular/common';
@@ -58,12 +58,28 @@ export class CashTndrComponent implements OnInit {
 
   usdFastCashButtons: number[] = [];
   foreignFastCashButtons: number[] = [];
+  isSplitPay: boolean = false;
 
   ngOnInit(): void {
 
+    this._store.select(getIsSplitPayR5).subscribe(flag => {
+      this.isSplitPay = flag;
+    });
+
     this.activatedRoute.queryParams.subscribe(params => {
+
       this._tndrObj.tenderTypeCode = params['code'] || 'CA';
-    })
+      const hasQueryTenderAmount = params['tenderAmount'] !== undefined && params['tenderAmount'] !== null;
+      
+      if (hasQueryTenderAmount) {
+        this._tndrObj.tenderAmount = parseFloat(params['tenderAmount']);
+      }
+      if(params['tenderAmountFC']) {
+        this._tndrObj.fcTenderAmount = parseFloat(params['tenderAmountFC']);
+      }
+      this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
+
+    }).unsubscribe();
 
     this.dcCurrencyCode = this._logonDataSvc.getDfltCurrCode();
     this.ndcCurrencyCode = this._logonDataSvc.getNonDfltCurrCode();
@@ -71,13 +87,18 @@ export class CashTndrComponent implements OnInit {
     this.dcCurrSymbl =  this._utilSvc.currencySymbols.get(this.dcCurrencyCode);
     this.ndcCurrSymbl = this._utilSvc.currencySymbols.get(this.ndcCurrencyCode);
 
-    this._store.select(getRemainingBal).subscribe(data => {
-      this.tenderAmount = data.amountDC || 0.0;
-      this.tenderAmountFC = data.amountNDC || 0.0;
+    // Only fetch remaining balance if tenderAmount was not provided in queryParams
+    forkJoin([
+      this._store.select(getRemainingBal).pipe(take(1)),
+      this._store.select(getIsSplitPayR5).pipe(take(1))
+    ]).subscribe(([tenderBal, isSplitPay]) => {
 
-      this._tndrObj.tenderAmount = this.tenderAmount;
-      this._tndrObj.fcTenderAmount = this.tenderAmountFC;
-    })
+      this.isSplitPay = isSplitPay;
+      if (!isSplitPay) {
+        this._tndrObj.tenderAmount = tenderBal.amountDC
+        this._tndrObj.fcTenderAmount = tenderBal.amountNDC;
+      }
+    });
 
     this.loadFastCashButtons();
 
@@ -93,8 +114,7 @@ export class CashTndrComponent implements OnInit {
 
   private loadFastCashButtons(): void {
     // USD Fast Cash
-    let usdFastCash = this._logonDataSvc.getLocationConfig().usdFastcash;
-    
+    let usdFastCash = this._logonDataSvc.getLocationConfig().usdFastcash;    
     let frgnFastCash = this._logonDataSvc.getLocationConfig().frgnFastcash;
 
     if (usdFastCash) {
@@ -133,9 +153,6 @@ export class CashTndrComponent implements OnInit {
 
   async btnApproveClick(evt: Event) {
 
-    //this._tndrObj = JSON.parse(JSON.stringify(this._tktObj.ticketTenderList.filter(tndr => tndr.rrn == this._tndrObj.rrn)[0]))
-    //console.log("btnApproveClick Tender Object before update: ", this._tndrObj);
-
     this._tndrObj.tenderStatus = TenderStatusType.InProgress;
     this._tndrObj.isAuthorized = true;
     this._tndrObj.tenderTypeCode = "CA";
@@ -152,14 +169,14 @@ export class CashTndrComponent implements OnInit {
       this.route.navigate(['/savetktsuccess']);
     }
     else {
-      this.route.navigate(['/checkout']);
+      this.route.navigate([this.isSplitPay ? '/splitpay': '/checkout']);
     }
   }
 
   btnCancelClick($event: PointerEvent) {
-    this.route.navigate(['/checkout']);
+    this.route.navigate([this.isSplitPay ? '/splitpay' : '/checkout']);
   }
   btnDeclineClick($event: PointerEvent) {
-    this.route.navigate(['/checkout']);
+    this.route.navigate([this.isSplitPay ? '/splitpay' : '/checkout']);
   }
 }

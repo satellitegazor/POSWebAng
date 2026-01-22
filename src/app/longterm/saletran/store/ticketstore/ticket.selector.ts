@@ -111,7 +111,7 @@ export const getAssocTipList = createSelector(getTktObjState,
 
 export const getIsCustomerAddedToTicket = createSelector(getTktObjState,
   (state) => {
-    return state.tktObj.customerId > 0 || state.tktObj.updateCustomer || (state.tktObj.customer.cLastName != undefined);
+    return state.tktObj.customerId > 0 || state.tktObj.updateCustomer || (state.tktObj.customer?.cLastName != undefined);
 
   })
 
@@ -134,4 +134,9 @@ export const getIsCustomerAddedToTicket = createSelector(getTktObjState,
        
         return Round2DecimalService.round(ticketTotalFC + state.tktObj.tipAmountNDC);
       });
+
+  export const getIsSplitPayR5 = createSelector(getTktObjState,
+    (state) => {
+      return state.tktObj.isSplitPayR5;
+    }); 
     

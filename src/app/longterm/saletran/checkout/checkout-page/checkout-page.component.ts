@@ -85,11 +85,10 @@ export class CheckoutPageComponent implements OnInit {
     const modalRef = this.modalService.open(CustomerSearchComponent, this.modalOptions);
   }
 
-  async btnTndrClick(evt: Event) {
-
+  private async genericTenderClickProcessing(tndrCode: string): Promise<void> {
     this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
 
-    let tndrCode = (evt.target as Element).id
+    //let tndrCode = (evt.target as Element).id
     if (this._logonDataSvc.getBusinessModel() != 5 || tndrCode == "CA") {
 
       let tndrObj: TicketTender = new TicketTender();
@@ -104,7 +103,7 @@ export class CheckoutPageComponent implements OnInit {
       var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
       if (tktObjData) {
         this._store.dispatch(saveTicketForGuestCheck({ tktObj: tktObjData }));
-        
+
         // Listen for saveTicketForGuestCheckSuccess to capture transaction ID
         this.actions$.pipe(
           ofType(saveTicketForGuestCheckSuccess),
@@ -113,11 +112,11 @@ export class CheckoutPageComponent implements OnInit {
         ).subscribe((transactionId) => {
           this._transactionId = transactionId;
           console.log('Transaction ID saved:', this._transactionId);
-          
+
           // Update tender with transaction ID
-         
+
           this._store.dispatch(addTender({ tndrObj }));
-          
+
           this.router.navigate([this._utilSvc.tenderCodePageMap.get(tndrCode)], { queryParams: { code: tndrCode } })
         });
       }
@@ -140,7 +139,7 @@ export class CheckoutPageComponent implements OnInit {
       var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
       if (tktObjData) {
         this._store.dispatch(saveTicketForGuestCheck({ tktObj: tktObjData }));
-        
+
         // Listen for saveTicketForGuestCheckSuccess to capture transaction ID
         this.actions$.pipe(
           ofType(saveTicketForGuestCheckSuccess),
@@ -149,11 +148,11 @@ export class CheckoutPageComponent implements OnInit {
         ).subscribe((transactionId) => {
           this._transactionId = transactionId;
           console.log('Transaction ID saved:', this._transactionId);
-          
+
           // Update tender with transaction ID
           tndrObj.tenderTransactionId = this._transactionId;
           this._store.dispatch(addTender({ tndrObj }));
-          
+
           if (tktObjData?.tipAmountDC == 0) {
             const modalRef = this.modalService.open(TipsModalDlgComponent, this.modalOptions);
             modalRef.componentInstance.tndrCode = tndrCode;
@@ -166,52 +165,138 @@ export class CheckoutPageComponent implements OnInit {
     }
   }
 
+  async btnTndrClick(evt: Event) {
+    
+    let tndrCode = (evt.target as Element).id
+    await this.genericTenderClickProcessing(tndrCode);
+
+    // this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
+    // if (this._logonDataSvc.getBusinessModel() != 5 || tndrCode == "CA") {
+
+    //   let tndrObj: TicketTender = new TicketTender();
+    //   tndrObj.tenderTypeCode = "SV";
+    //   tndrObj.tenderAmount = this.tenderAmount;
+    //   tndrObj.fcTenderAmount = this.tenderAmount * this._logonDataSvc.getExchangeRate();
+    //   tndrObj.tndMaintTimestamp = new Date(Date.now())
+    //   tndrObj.rrn = this._utilSvc.getUniqueRRN();
+    //   tndrObj.tenderStatus = TenderStatusType.Complete;
+    //   tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+    //   this._store.dispatch(addTender({ tndrObj }));
+    //   var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    //   if (tktObjData) {
+    //     this._store.dispatch(saveTicketForGuestCheck({ tktObj: tktObjData }));
+        
+    //     // Listen for saveTicketForGuestCheckSuccess to capture transaction ID
+    //     this.actions$.pipe(
+    //       ofType(saveTicketForGuestCheckSuccess),
+    //       take(1),
+    //       map(action => action.rslt.transactionId)
+    //     ).subscribe((transactionId) => {
+    //       this._transactionId = transactionId;
+    //       console.log('Transaction ID saved:', this._transactionId);
+          
+    //       // Update tender with transaction ID
+         
+    //       this._store.dispatch(addTender({ tndrObj }));
+          
+    //       this.router.navigate([this._utilSvc.tenderCodePageMap.get(tndrCode)], { queryParams: { code: tndrCode } })
+    //     });
+    //   }
+    // }
+    // else {
+
+    //   this.displayCustSearchDlg = "display";
+
+    //   let tndrObj: TicketTender = new TicketTender();
+    //   tndrObj.tenderTypeCode = "SV";
+    //   tndrObj.tenderAmount = this.tenderAmount;
+    //   tndrObj.fcTenderAmount = this.tenderAmount * this._logonDataSvc.getExchangeRate();
+    //   tndrObj.tndMaintTimestamp = new Date(Date.now())
+    //   tndrObj.rrn = this._utilSvc.getUniqueRRN();
+    //   tndrObj.tenderStatus = TenderStatusType.Complete;
+    //   tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+
+    //   //this._store.dispatch(addTender({ tndrObj }));
+
+    //   var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    //   if (tktObjData) {
+    //     this._store.dispatch(saveTicketForGuestCheck({ tktObj: tktObjData }));
+        
+    //     // Listen for saveTicketForGuestCheckSuccess to capture transaction ID
+    //     this.actions$.pipe(
+    //       ofType(saveTicketForGuestCheckSuccess),
+    //       take(1),
+    //       map(action => action.rslt.transactionId)
+    //     ).subscribe((transactionId) => {
+    //       this._transactionId = transactionId;
+    //       console.log('Transaction ID saved:', this._transactionId);
+          
+    //       // Update tender with transaction ID
+    //       tndrObj.tenderTransactionId = this._transactionId;
+    //       this._store.dispatch(addTender({ tndrObj }));
+          
+    //       if (tktObjData?.tipAmountDC == 0) {
+    //         const modalRef = this.modalService.open(TipsModalDlgComponent, this.modalOptions);
+    //         modalRef.componentInstance.tndrCode = tndrCode;
+    //       }
+    //       else {
+    //         this.router.navigate([this._utilSvc.tenderCodePageMap.get(tndrCode)], { queryParams: { code: tndrCode } })
+    //       }
+    //     });
+    //   }
+    // }
+  }
+
   async btnSplitPayClick(evt: Event) {
-    this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
 
     let tndrCode = (evt.target as Element).id
-    if (this._logonDataSvc.getBusinessModel() != 5) {
-      this.router.navigate(['splitpay'], { queryParams: { code: tndrCode } })
-    }
-    else {
-      //this.displayCustSearchDlg = "display";
+    await this.genericTenderClickProcessing(tndrCode);
 
-      let tndrObj: TicketTender = new TicketTender();
-      tndrObj.tenderTypeCode = "SV";
-      tndrObj.tenderAmount = this.tenderAmount;
-      tndrObj.fcTenderAmount = this.tenderAmount * this._logonDataSvc.getExchangeRate();
-      tndrObj.tndMaintTimestamp = new Date(Date.now())
-      //tndrObj.currCode = this._logonDataSvc.getLocationConfig().defaultCurrency;
-      tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
-      this._store.dispatch(addTender({ tndrObj }));
+    // this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
 
-      var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
-      if (tktObjData) {
-        this._store.dispatch(saveTicketForGuestCheck({ tktObj: tktObjData }));
+    // let tndrCode = (evt.target as Element).id
+    // if (this._logonDataSvc.getBusinessModel() != 5) {
+    //   this.router.navigate(['splitpay'], { queryParams: { code: tndrCode } })
+    // }
+    // else {
+    //   //this.displayCustSearchDlg = "display";
+
+    //   let tndrObj: TicketTender = new TicketTender();
+    //   tndrObj.tenderTypeCode = "SV";
+    //   tndrObj.tenderAmount = this.tenderAmount;
+    //   tndrObj.fcTenderAmount = this.tenderAmount * this._logonDataSvc.getExchangeRate();
+    //   tndrObj.tndMaintTimestamp = new Date(Date.now())
+    //   //tndrObj.currCode = this._logonDataSvc.getLocationConfig().defaultCurrency;
+    //   tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+    //   this._store.dispatch(addTender({ tndrObj }));
+
+    //   var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    //   if (tktObjData) {
+    //     this._store.dispatch(saveTicketForGuestCheck({ tktObj: tktObjData }));
         
-        // Listen for saveTicketForGuestCheckSuccess to capture transaction ID
-        this.actions$.pipe(
-          ofType(saveTicketForGuestCheckSuccess),
-          take(1),
-          map(action => action.rslt.transactionId)
-        ).subscribe((transactionId) => {
-          this._transactionId = transactionId;
-          console.log('Transaction ID saved:', this._transactionId);
+    //     // Listen for saveTicketForGuestCheckSuccess to capture transaction ID
+    //     this.actions$.pipe(
+    //       ofType(saveTicketForGuestCheckSuccess),
+    //       take(1),
+    //       map(action => action.rslt.transactionId)
+    //     ).subscribe((transactionId) => {
+    //       this._transactionId = transactionId;
+    //       console.log('Transaction ID saved:', this._transactionId);
           
-          // Update tender with transaction ID
-          this._store.dispatch(addTender({ tndrObj }));
-          this._store.dispatch(removeTndrWithSaveCode({ tndrCode: "SV" }));
+    //       // Update tender with transaction ID
+    //       this._store.dispatch(addTender({ tndrObj }));
+    //       this._store.dispatch(removeTndrWithSaveCode({ tndrCode: "SV" }));
           
-          if (tktObjData?.tipAmountDC == 0) {
-            const modalRef = this.modalService.open(TipsModalDlgComponent, this.modalOptions);
-            modalRef.componentInstance.tndrCode = tndrCode;
-          }
-          else {
-            this.router.navigate(['splitpay'], { queryParams: { code: tndrCode } })
-          }
-        });
-      }      
-    }
+    //       if (tktObjData?.tipAmountDC == 0) {
+    //         const modalRef = this.modalService.open(TipsModalDlgComponent, this.modalOptions);
+    //         modalRef.componentInstance.tndrCode = tndrCode;
+    //       }
+    //       else {
+    //         this.router.navigate(['splitpay'], { queryParams: { code: tndrCode } })
+    //       }
+    //     });
+    //   }      
+    // }
   }
 
   public tenderButtonUIDisplay(): void {

@@ -80,6 +80,13 @@ export class TenderStatusType {
     public static readonly SystemVoided: number = 8;
 }
 
+export class TranStatusType {
+    public static readonly InProgress: number = 1;
+    public static readonly Complete: number = 2;
+    public static readonly Void: number = 3;
+
+}
+
 // export class TicketTender {
 //     public ticketTenderId: number = 0;
 //     public tenderTypeId: number = 0;
