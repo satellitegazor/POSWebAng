@@ -1,7 +1,7 @@
 <div class="panel">
     <div class="panel-body">
         <table class="table table-striped">
-            <tr>
+            <tr class="total-payment-section">
                 <td class="firstcolumn">
                     <h5 class="section-title">Total Payment Amount</h5>
                 </td>
@@ -20,19 +20,14 @@
                     </div>
                 </td>
             </tr>
-            <tr>
+            <tr class="applied-tender-section">
                 <td class="firstcolumn">
                     <h5 class="section-title">{{tndrs.length > 0 ? "Applied Tender Payments" : "No Tenders applied yet"}}</h5>
                 </td>
                 <td class="secondcolumn"></td>
                 <td class="thirdcolumn"></td>
             </tr>
-            <tr>
-                <th class="col-left firstcolumn">Payment Method</th>
-                <!-- <th class="col-middle secondcolumn">{{dcCurrSymbl}} Amount</th>
-                <th class="col-right thirdcolumn">{{ndcCurrSymbl}} Amount</th> -->
-            </tr>
-            <tr *ngFor="let tndr of tndrs">
+            <tr *ngFor="let tndr of tndrs" class="applied-tender-section">
                 <td class="firstcolumn">
                     <div class="tender-desc">{{tndr.tenderTypeDesc == 'pinpad' ? 'Credit Card' : tndr.tenderTypeDesc}}
                         {{(tndr.tenderTypeDesc == 'pinpad') ? tndr.cardEndingNbr : ''}}
@@ -45,7 +40,7 @@
                     <div class="tender-amount payment-display-value">{{ndcCurrSymbl}} {{tndr.fcTenderAmount | number:'1.2-2'}}</div>
                 </td>
             </tr>
-            <tr>
+            <tr class="split-payment-section">
                 <td class="firstcolumn">
                     <h5 class="section-title">Enter Split Payment Amount</h5>
                 </td>

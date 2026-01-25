@@ -5,7 +5,7 @@ import { getBalanceDue, getBalanceDueFC, getTktObjSelector, getRemainingBal, Amo
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
-import { addPinpadResp, addTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, savePinpadResponse, saveTenderObj, saveTenderObjSuccess, saveTicketForGuestCheck, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
+import { addPinpadResp, addTender, deleteDeclinedTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, savePinpadResponse, saveTenderObj, saveTenderObjSuccess, saveTicketForGuestCheck, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
 import { LocalStorageService } from 'src/app/global/local-storage.service';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { TenderType, TenderTypeModel } from '../../../models/tender.type';
@@ -240,7 +240,7 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
             }
           } else {
             // Transaction was declined
-            this._toastSvc.error('Card transaction was declined. Please try again or use another payment method.');
+            this._toastSvc.error(data.rslt.ReturnMsg || 'Transaction was declined. Please try again or use a different payment method.');
             this.btnDecline(new Event('auto-decline'));
           }
 
@@ -348,7 +348,31 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
 
   }
 
-  btnDecline(evt: Event) {
+  async btnDecline(evt: Event) {
+
+    var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+    if (tktObjData == null) {
+      console.error('Unable to fetch ticket object');
+      this.authorizationInProgress = false;
+      return;
+    }
+
+    // Get the saved tender from the ticket's tender list (it has ticketTenderId from DB)
+    const savedTender = tktObjData.ticketTenderList.find(tndr => tndr.rrn === this.InvoiceId);
+    if (!savedTender) {
+      console.error('Tender not found in state');
+      this.authorizationInProgress = false;
+      return;
+    }
+
+    // Copy the saved tender which already has ticketTenderId
+    var tndrCopy = this.copyTenderObj(savedTender);
+
+    tndrCopy.tenderStatus = TenderStatusType.Declined;
+    this._store.dispatch(addTender({ tndrObj: tndrCopy }));
+    this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
+    this._store.dispatch(deleteDeclinedTender({ rrn: this.InvoiceId }));
+
     this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
   }
 

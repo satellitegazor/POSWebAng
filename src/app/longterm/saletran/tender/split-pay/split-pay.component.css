@@ -15,10 +15,42 @@
 
 .secondcolumn {
     width: 20%;
+    text-align: right;
 }
 
 .thirdcolumn {
     width: 20%;
+    text-align: right;
+}
+
+/* Section Row Styling */
+.total-payment-section {
+    background-color: #e8f4f8 !important;
+}
+
+.total-payment-section td {
+    padding: 10px;
+    vertical-align: middle;
+}
+
+.applied-tender-section {
+    background-color: transparent !important;
+}
+
+.applied-tender-section td {
+    padding: 4px 10px;
+    vertical-align: middle;
+    background-color: #f0f5e8 !important;
+}
+
+.split-payment-section {
+    background-color: #fff4e6 !important;
+    box-shadow: inset 0 0 10px rgba(255, 159, 64, 0.2);
+}
+
+.split-payment-section td {
+    padding: 10px;
+    vertical-align: middle;
 }/* Two-Column Section Layout */
 .payment-section,
 .split-section {
@@ -118,6 +150,7 @@
     margin: 0;
     padding-left: 5px;
     border-left: 4px solid #0056b3;
+    background-color: transparent;
 }
 
 /* Payment Info Cards - Legacy */
@@ -283,7 +316,9 @@
 
 .tender-desc {
     font-weight: 600;
+    font-size: large;
     color: #0056b3;
+    background-color: transparent;
 }
 
 .tender-amount {

@@ -39,6 +39,8 @@ export const SAVE_TENDER_OBJ = 'saveTenderObj';
 export const SAVE_TENDER_OBJ_SUCCESS = 'saveTenderObjSuccess';
 export const SAVE_TENDER_OBJ_FAILED = 'saveTenderObjFailed';
 
+export const DELETE_DECLINED_TNDR = 'deleteDeclinedTender';
+
 export const SAVE_PINPAD_RESP = 'savePinpadResponse';
 export const SAVE_PINPAD_RESP_SUCCESS = 'savePinpadResponseSuccess';
 export const SAVE_PINPAD_RESP_FAILED = 'savePinpadResponseFailed';
@@ -100,6 +102,8 @@ export const saveTenderObjSuccess = createAction(SAVE_TENDER_OBJ_SUCCESS,
     props<{data: SaveTenderResultModel}>());
 export const saveTenderObjFailed = createAction(SAVE_TENDER_OBJ_FAILED,
     props<{data: SaveTenderResultModel}>());
+
+export const deleteDeclinedTender = createAction(DELETE_DECLINED_TNDR, props<{rrn: string}>());
 
 export const savePinpadResponse = createAction(SAVE_PINPAD_RESP,
     props<{respObj: ExchCardTndr}>());
