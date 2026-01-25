@@ -54,28 +54,30 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
       this._tndrObj = {} as TicketTender;
     }
 
-    this.activatedRoute.queryParams.subscribe(params => {
-
-      this._tndrObj.tenderTypeCode = params['code'] || 'CC';
-      const hasQueryTenderAmount = params['tenderAmount'] !== undefined && params['tenderAmount'] !== null;
-
-      if (hasQueryTenderAmount) {
-        this._tndrObj.tenderAmount = parseFloat(params['tenderAmount']);
-      }
-      if (params['tenderAmountFC']) {
-        this._tndrObj.fcTenderAmount = parseFloat(params['tenderAmountFC']);
-      }
-      this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
-
-    }).unsubscribe();
-
     this.dcCurrSymbl = this._logonDataSvc.getLocationConfig().defaultCurrency;
     this.ndcCurrSymbl = this._logonDataSvc.getLocationConfig().currCode;
 
     forkJoin([
       this._store.select(getRemainingBal).pipe(take(1)),
-      this._store.select(getIsSplitPayR5).pipe(take(1))
-    ]).subscribe(([tenderBal, isSplitPay]) => {
+      this._store.select(getIsSplitPayR5).pipe(take(1)),
+      this.activatedRoute.queryParams.pipe(take(1))
+    ]).subscribe(([tenderBal, isSplitPay, params]) => {
+
+      this._tndrObj.tenderTypeCode = params['code'] || 'CC';
+      this._tndrObj.tenderTypeDesc = this._utilSvc.tenderCodeDescMap.get(this._tndrObj.tenderTypeCode) || 'Concession Credit Card';
+      const hasQueryTenderAmount = params['tenderAmount'] !== undefined && params['tenderAmount'] !== null;
+
+      if (hasQueryTenderAmount) {
+        this._tndrObj.tenderAmount = parseFloat(params['tenderAmount']);
+        this._tndrObj.fcTenderAmount = parseFloat(params['tenderAmountFC']);
+        this.tenderAmountDC = this._tndrObj.tenderAmount;
+        this.tenderAmountNDC = this._tndrObj.fcTenderAmount;
+      }
+      else {
+
+      }
+      this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
+
 
       this.isSplitPay = isSplitPay;
       if (!isSplitPay) {
@@ -99,7 +101,6 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
     this._tndrObj.tenderStatus = TenderStatusType.InProgress; // Assuming 1 is the
     this._tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
     this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
-    this._tndrObj.tenderTypeDesc = "";
     this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
     this._tndrObj.ticketTenderId = 0;
     this._tndrObj.authNbr = '';
@@ -115,7 +116,13 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
 
   async btnApproveClick(evt: Event) {
 
-    this._tndrObj = JSON.parse(JSON.stringify(this._tktObj.ticketTenderList.filter(tndr => tndr.rrn == this._tndrObj.rrn)[0]))
+    var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+    if (tktObjData == null) {
+      console.error('Unable to fetch ticket object');
+      return;
+    }
+
+    this._tndrObj = JSON.parse(JSON.stringify(tktObjData.ticketTenderList.filter(tndr => tndr.rrn == this._tndrObj.rrn)[0]))
 
     console.log("btnApproveClick Tender Object before update: ", this._tndrObj);
 
@@ -127,12 +134,12 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
 
     let tndrCopy = JSON.parse(JSON.stringify(this._tndrObj))
     this._store.dispatch(addTender({ tndrObj: tndrCopy }));
-    this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
+    //this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
 
-    var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    var tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
 
-    if (tktObjData != null &&
-      TenderUtil.IsTicketComplete(tktObjData, this._logonDataSvc.getAllowPartPay())) {
+    if (tktObjData1 != null &&
+      TenderUtil.IsTicketComplete(tktObjData1, this._logonDataSvc.getAllowPartPay())) {
 
       this._store.dispatch(markTendersComplete({ status: 4 }));
       this._store.dispatch(markTicketComplete({ status: 2 }));

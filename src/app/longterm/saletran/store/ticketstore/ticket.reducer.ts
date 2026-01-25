@@ -368,6 +368,10 @@ export const _tktObjReducer = createReducer(
          tndrObj.tenderStatus = action.tndrObj.tenderStatus;
          tndrObj.tenderAmount = action.tndrObj.tenderAmount;
          tndrObj.fcTenderAmount = action.tndrObj.fcTenderAmount;
+         tndrObj.ticketTenderId = tndrObj.ticketTenderId > 0 ? tndrObj.ticketTenderId : -1 * (tenderListCopy.length + 1);
+         tndrObj.isAuthorized = action.tndrObj.isAuthorized;
+         tndrObj.exchCardPymntType = action.tndrObj.exchCardPymntType !== null ? action.tndrObj.exchCardPymntType : '';
+
       }
       else {
          tenderListCopy.push(action.tndrObj);

@@ -74,6 +74,8 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
   ngAfterContentInit(): void {
 
     this._logonDataSvc.getLocationConfig().defaultCurrency;
+    this.InvoiceId = this._utilSvc.getUniqueRRN();
+
     this.dcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getDfltCurrCode()) || '';
     if (this._logonDataSvc.getIsForeignCurr()) {
       this.ndcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getNonDfltCurrCode()) || '';
@@ -81,20 +83,32 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
 
     combineLatest([
       this._store.select(getRemainingBal).pipe(take(1)),
+      this._store.select(getIsSplitPayR5).pipe(take(1)),
       this.activatedRoute.queryParams.pipe(take(1))
-    ]).subscribe(([tenderBal, queryParams]) => {
-      if (tenderBal) {
+    ]).subscribe(([tenderBal, isSplitPay, queryParams]) => {
+
+      if (!isSplitPay && tenderBal) {
         this.tenderAmount = tenderBal.amountDC;
         this.tenderAmountFC = tenderBal.amountNDC;
+        this.tndrObj.tenderAmount = tenderBal.amountDC;
+        this.tndrObj.fcTenderAmount = tenderBal.amountNDC;
       } else {
         console.warn('Remaining balance not available yet');
         // fallback or retry
       }
 
       this._tenderTypeCode = queryParams['code'];
+
+      const hasQueryTenderAmount = queryParams['tenderAmount'] !== undefined && queryParams['tenderAmount'] !== null;
+      if (isSplitPay && hasQueryTenderAmount) {
+        this.tndrObj.tenderAmount = parseFloat(queryParams['tenderAmount']);
+        this.tndrObj.fcTenderAmount = parseFloat(queryParams['tenderAmountFC']);
+        this.tenderAmount = parseFloat(queryParams['tenderAmount']);
+        this.tenderAmountFC = parseFloat(queryParams['tenderAmountFC']);
+
+      }
       const isRefund = queryParams["IsRefund"] === "true";
 
-      this.InvoiceId = this._utilSvc.getUniqueRRN();
       this.tndrObj.rrn = this.InvoiceId
       this.tndrObj.isAuthorized = false;
       this.tndrObj.tenderTypeDesc = "pinpad";
@@ -187,7 +201,7 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
             tndrCopy.tenderTypeDesc = "pinpad";
             tndrCopy.inStoreCardNbrTmp = data.ACCT_NUM;
             tndrCopy.tenderStatus = TenderStatusType.InProgress;
-            tndrCopy.tenderTypeCode = this._tenderTypeCode;
+            tndrCopy.tenderTypeCode = this.isDiscoverMilstarCard(data.FIRST6_LAST4) ? (isRefund? 'MR' : 'MS') : (isRefund? 'XR': 'XC');
             tndrCopy.tenderAmount = this.tenderAmount;
             tndrCopy.fcTenderAmount = this.tenderAmountFC;
             tndrCopy.tndMaintTimestamp = new Date(Date.now());
@@ -221,6 +235,7 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
               this.route.navigate(['/savetktsuccess']);
             }
             else {
+              this._toastSvc.success('Split pay of ' + this.dcCurrSymbl + this.tenderAmount + ' Card transaction approved. Please select next tender method.');
               this.route.navigate(['/splitpay']);
             }
           } else {
@@ -398,6 +413,17 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
     this.tenderAmount = Round2DecimalService.round(ticketTotal + tipTotal - tenderTotal);
     this.tenderAmountFC = Round2DecimalService.round(ticketTotalFC + tipTotalFC - tenderTotalFC);
     return;
+  }
+
+  private isDiscoverMilstarCard(FIRST6_LAST4: string): boolean {
+    if (!FIRST6_LAST4 || FIRST6_LAST4.length < 6) {
+      return false;
+    }
+    const firstSixDigits = FIRST6_LAST4.substring(0, 6);
+    if(firstSixDigits == '650155') {
+      return true;
+    }
+    return false;
   }
 
 }

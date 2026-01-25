@@ -4,11 +4,22 @@
 }
 
 .tender-amount {
-    width: 25%;
+    
     text-align: right;
 }
 
-/* Two-Column Section Layout */
+/* Table Column Width Classes */
+.firstcolumn {
+    width: 60%;
+}
+
+.secondcolumn {
+    width: 20%;
+}
+
+.thirdcolumn {
+    width: 20%;
+}/* Two-Column Section Layout */
 .payment-section,
 .split-section {
     display: grid;
@@ -29,15 +40,6 @@
     align-items: flex-start;
     justify-content: flex-end;
     width: 100%;
-}
-
-/* Payment Section */
-.payment-amounts-display {
-    display: flex;
-    flex-direction: row;
-    gap: 15px;
-    width: 100%;
-    max-width: 500px;
 }
 
 .payment-display-item {
@@ -225,16 +227,13 @@
     box-shadow: 0 0 0 0.2rem rgba(0, 86, 179, 0.25);
 }
 
-/* Applied Tenders Section */
-.applied-tenders-section {
-    margin-bottom: 30px;
-}
 
 .tenders-section {
     display: grid;
     grid-template-columns: 1fr 2fr;
     gap: 30px;
     align-items: start;
+    
 }
 
 .tenders-list {
@@ -365,5 +364,11 @@
         font-weight: 700;
         color: #0056b3;
         min-width: 120px;
+    }
+    .firstcolumn {
+        width: 60%;
+    }
+    .secondcolumn, .thirdcolumn {
+        width: 20%;
     }
 }

@@ -1,88 +1,80 @@
 <div class="panel">
     <div class="panel-body">
-        <!-- Instruction Message -->
-
-        <!-- Total Payment Amount Section -->
-        <div class="payment-section">
-            <div class="section-left">
-                <h5 class="section-title">Total Payment Amount</h5>
-            </div>
-            <div class="section-right">
-                <div class="payment-amounts-display">
+        <table class="table table-striped">
+            <tr>
+                <td class="firstcolumn">
+                    <h5 class="section-title">Total Payment Amount</h5>
+                </td>
+                <td class="secondcolumn">
                     <div class="payment-display-item">
                         <div class="payment-display-value dc-amount">
                             {{dcCurrSymbl}} {{ticketTotalDC | number:'1.2-2'}}
                         </div>
                     </div>
+                </td>
+                <td class="thirdcolumn">
                     <div class="payment-display-item">
                         <div class="payment-display-value fc-amount">
                             {{ndcCurrSymbl}} {{ticketTotalNDC | number:'1.2-2'}}
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="firstcolumn">
+                    <h5 class="section-title">{{tndrs.length > 0 ? "Applied Tender Payments" : "No Tenders applied yet"}}</h5>
+                </td>
+                <td class="secondcolumn"></td>
+                <td class="thirdcolumn"></td>
+            </tr>
+            <tr>
+                <th class="col-left firstcolumn">Payment Method</th>
+                <!-- <th class="col-middle secondcolumn">{{dcCurrSymbl}} Amount</th>
+                <th class="col-right thirdcolumn">{{ndcCurrSymbl}} Amount</th> -->
+            </tr>
+            <tr *ngFor="let tndr of tndrs">
+                <td class="firstcolumn">
+                    <div class="tender-desc">{{tndr.tenderTypeDesc == 'pinpad' ? 'Credit Card' : tndr.tenderTypeDesc}}
+                        {{(tndr.tenderTypeDesc == 'pinpad') ? tndr.cardEndingNbr : ''}}
+                    </div>
+                </td>
+                <td class="secondcolumn">
+                    <div class="tender-amount payment-display-value">{{dcCurrSymbl}} {{tndr.tenderAmount | number:'1.2-2'}}</div>
+                </td>
+                <td class="thirdcolumn">
+                    <div class="tender-amount payment-display-value">{{ndcCurrSymbl}} {{tndr.fcTenderAmount | number:'1.2-2'}}</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="firstcolumn">
+                    <h5 class="section-title">Enter Split Payment Amount</h5>
+                </td>
+                <td class="secondcolumn">
+                    <div class="currency-input-group">
+                        <span class="currency-symbol">{{dcCurrSymbl}}</span>
+                        <input type="text" #dcTndrAmt id="dcTndrAmt" autocomplete="off" class="form-control currency-input"
+                            [(ngModel)]="tenderAmountDC" (change)="PaymentAmountChanged($event)" appPosCurrency
+                            placeholder="0.00" />
+                    </div>
+                </td>
+                <td class="thirdcolumn">
+                    <div class="currency-input-group">
+                        <span class="currency-symbol">{{ndcCurrSymbl}}</span>
+                        <input type="text" id="ndcTndrAmt" autocomplete="off" class="form-control currency-input"
+                            [(ngModel)]="tenderAmountNDC" appPosCurrency placeholder="0.00" />
+                    </div>
+                </td>
+            </tr>
+            <tr></tr>
+        </table>
 
-        <!-- Applied Tenders Section -->
-        <div *ngIf="tndrs.length > 0" class="applied-tenders-section">
-            <div class="tenders-section">
-                <div class="section-left">
-                    <h5 class="section-title">Applied Tender Payments</h5>
-                </div>
-                <div class="section-right">
-                    <div class="tenders-list">
-                        <div class="tender-header">
-                            <div class="tender-col tender-desc">Payment Method</div>
-                            <div class="tender-col tender-amount">{{dcCurrSymbl}} Amount</div>
-                            <div class="tender-col tender-amount">{{ndcCurrSymbl}} Amount</div>
-                        </div>
-                        <div *ngFor="let tndr of tndrs" class="tender-row">
-                            <div class="tender-col tender-desc">
-                                {{tndr.tenderTypeCode}}
-                            </div>
-                            <div class="tender-col tender-amount">
-                                {{dcCurrSymbl}} {{tndr.tenderAmount | number:'1.2-2'}}
-                            </div>
-                            <div class="tender-col tender-amount">
-                                {{ndcCurrSymbl}} {{tndr.fcTenderAmount | number:'1.2-2'}}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Split Amount Input Section -->
-        <div class="split-section">
-            <div class="section-left">
-                <h5 class="section-title">Enter Split Payment Amount</h5>
-            </div>
-            <div class="section-right">
-                <div class="split-amount-display">
-                    <div class="split-amount-item">
-                        <label class="amount-label">{{dcCurrSymbl}} Amount</label>
-                        <div class="currency-input-group">
-                            <span class="currency-symbol">{{dcCurrSymbl}}</span>
-                            <input type="text" id="dcTndrAmt" autocomplete="off" class="form-control currency-input" [(ngModel)]="tenderAmountDC" (change)="PaymentAmountChanged($event)" appPosCurrency placeholder="0.00"/>
-                        </div>
-                    </div>
-                    <div class="split-amount-item">
-                        <label class="amount-label">{{ndcCurrSymbl}} Amount</label>
-                        <div class="currency-input-group">
-                            <span class="currency-symbol">{{ndcCurrSymbl}}</span>
-                            <input type="text" id="ndcTndrAmt" autocomplete="off" class="form-control currency-input" [(ngModel)]="tenderAmountNDC" appPosCurrency placeholder="0.00"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="instruction-message-container">
             <div class="instruction-message">
                 <div class="instruction-icon">ℹ️</div>
                 <div class="instruction-text">
-                    <strong>Split Payment Instructions:</strong> Enter the amount you want to pay in the input fields below. You
-                    can enter any amount less than or equal to the total payment amount. After entering the split amount, select
-                    the appropriate payment method button to proceed.
+                    <strong>Split Payment Instructions:</strong> Enter the amount you want to pay in the input fields
+                    below. You can enter any amount less than or equal to the total payment amount. After entering the split
+                    amount, select the appropriate payment method button to proceed.
                 </div>
             </div>
         </div>
@@ -93,11 +85,15 @@
 <div class="footer fixed-bottom cncsnFooter">
     <div class="row">
         <div class="tender-buttons-container">
-            <button *ngFor="let tndr of _displayTenders" class="border border-white btn btn-info btn-lg tender-btn" id="{{tndr.tenderTypeCode}}" [ngStyle]="{width: tenderButtonWidthPercent + '%'}" aria-label="{{tndr.tenderTypeDesc}}" (click)="btnTndrClick($event)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-wallet2" viewBox="0 0 16 16">
-                    <path d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5z"/>
+            <button *ngFor="let tndr of _displayTenders" class="border border-white btn btn-info btn-lg tender-btn"
+                id="{{tndr.tenderTypeCode}}" [ngStyle]="{width: tenderButtonWidthPercent + '%'}"
+                aria-label="{{tndr.tenderTypeDesc}}" (click)="btnTndrClick($event)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-wallet2"
+                    viewBox="0 0 16 16">
+                    <path
+                        d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5z" />
                 </svg> {{tndr.tenderTypeDesc}}
             </button>
         </div>
     </div>
-</div>   
+</div>

@@ -30,8 +30,8 @@ export class CashTndrComponent implements OnInit {
   ndcCurrSymbl: string | undefined;
   dcCurrencyCode: string = '';
   ndcCurrencyCode: string = '';
-  tenderAmountFC: number | undefined;
-  tenderAmount: number | undefined;
+  tenderAmountNDC: number | undefined;
+  tenderAmountDC: number | undefined;
 
   constructor(private _cposWebSvc: CPOSWebSvcService,
     private _store: Store<saleTranDataInterface>,
@@ -40,7 +40,7 @@ export class CashTndrComponent implements OnInit {
     private _logonDataSvc: LogonDataService,
     private _utilSvc: UtilService) {
     // Initialization logic can go here if needed
-    
+
   }
 
   private _tktObj: TicketSplit = {} as TicketSplit;
@@ -62,66 +62,64 @@ export class CashTndrComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this._store.select(getIsSplitPayR5).subscribe(flag => {
-      this.isSplitPay = flag;
-    });
-
-    this.activatedRoute.queryParams.subscribe(params => {
-
-      this._tndrObj.tenderTypeCode = params['code'] || 'CA';
-      const hasQueryTenderAmount = params['tenderAmount'] !== undefined && params['tenderAmount'] !== null;
-      
-      if (hasQueryTenderAmount) {
-        this._tndrObj.tenderAmount = parseFloat(params['tenderAmount']);
-      }
-      if(params['tenderAmountFC']) {
-        this._tndrObj.fcTenderAmount = parseFloat(params['tenderAmountFC']);
-      }
-      this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
-
-    }).unsubscribe();
-
     this.dcCurrencyCode = this._logonDataSvc.getDfltCurrCode();
     this.ndcCurrencyCode = this._logonDataSvc.getNonDfltCurrCode();
 
-    this.dcCurrSymbl =  this._utilSvc.currencySymbols.get(this.dcCurrencyCode);
+    this.dcCurrSymbl = this._utilSvc.currencySymbols.get(this.dcCurrencyCode);
     this.ndcCurrSymbl = this._utilSvc.currencySymbols.get(this.ndcCurrencyCode);
 
     // Only fetch remaining balance if tenderAmount was not provided in queryParams
     forkJoin([
       this._store.select(getRemainingBal).pipe(take(1)),
-      this._store.select(getIsSplitPayR5).pipe(take(1))
-    ]).subscribe(([tenderBal, isSplitPay]) => {
+      this._store.select(getIsSplitPayR5).pipe(take(1)),
+      this.activatedRoute.queryParams.pipe(take(1))
+    ]).subscribe(([tenderBal, isSplitPay, params]) => {
+
+      this._tndrObj.tenderTypeCode = params['code'] || 'CA';
+      const hasQueryTenderAmount = params['tenderAmount'] !== undefined && params['tenderAmount'] !== null;
+
+      if (hasQueryTenderAmount) {
+        this._tndrObj.tenderAmount = parseFloat(params['tenderAmount']);
+        this._tndrObj.fcTenderAmount = parseFloat(params['tenderAmountFC']);
+        this.tenderAmountDC = this._tndrObj.tenderAmount;
+        this.tenderAmountNDC = this._tndrObj.fcTenderAmount;
+      }
+
+      this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
+      this._tndrObj.ticketTenderId = 0; // Will be set when added to store
+      this._tndrObj.tenderTypeDesc = this._utilSvc.tenderCodeDescMap.get(this._tndrObj.tenderTypeCode) || 'Cash';
 
       this.isSplitPay = isSplitPay;
       if (!isSplitPay) {
         this._tndrObj.tenderAmount = tenderBal.amountDC
         this._tndrObj.fcTenderAmount = tenderBal.amountNDC;
+        this.tenderAmountDC = tenderBal.amountDC;
+        this.tenderAmountNDC = tenderBal.amountNDC;
       }
-    });
+    }).unsubscribe();
 
-    this.loadFastCashButtons();
 
     this._store.select(getTktObjSelector).subscribe(data => {
       if (data == null)
         return;
       //console.log("getTktObjSelector data: ", data);
       this._tktObj = data;
-    })
+    }).unsubscribe();
 
+    this.loadFastCashButtons();
 
   }
 
   private loadFastCashButtons(): void {
     // USD Fast Cash
-    let usdFastCash = this._logonDataSvc.getLocationConfig().usdFastcash;    
+    let usdFastCash = this._logonDataSvc.getLocationConfig().usdFastcash;
     let frgnFastCash = this._logonDataSvc.getLocationConfig().frgnFastcash;
 
     if (usdFastCash) {
       this.usdFastCashButtons = usdFastCash
         .split(',')
-        .map((val:string) => parseFloat(val.trim()))
-        .filter((val: number) => (!isNaN(val) && val >= this._tndrObj.tenderAmount!)) 
+        .map((val: string) => parseFloat(val.trim()))
+        .filter((val: number) => (!isNaN(val) && val >= this._tndrObj.tenderAmount!))
         .sort((a: number, b: number) => a - b);
     }
 
@@ -136,13 +134,13 @@ export class CashTndrComponent implements OnInit {
   }
   // Handler for USD fast cash button click
   onUsdFastCashClick(amount: number): void {
-    this._tndrObj.changeDue = amount - (this.tenderAmount || 0);
+    this._tndrObj.changeDue = amount - (this.tenderAmountDC || 0);
     this.btnApproveClick(new Event('click'));
   }
 
   // Handler for Foreign fast cash button click
   onForeignFastCashClick(amount: number): void {
-    this._tndrObj.fcChangeDue = amount - (this.tenderAmountFC || 0);
+    this._tndrObj.fcChangeDue = amount - (this.tenderAmountNDC || 0);
     this.btnApproveClick(new Event('click'));
   }
 
@@ -169,7 +167,7 @@ export class CashTndrComponent implements OnInit {
       this.route.navigate(['/savetktsuccess']);
     }
     else {
-      this.route.navigate([this.isSplitPay ? '/splitpay': '/checkout']);
+      this.route.navigate([this.isSplitPay ? '/splitpay' : '/checkout']);
     }
   }
 

@@ -11,7 +11,7 @@ import { CustomerSearchComponent } from '../../../../shared/customer-search/cust
 import { LocationConfig } from '../../../models/location-config';
 import { TenderType, TenderTypeModel } from '../../../models/tender.type';
 import { SalesTranService } from '../../services/sales-tran.service';
-import { addTender, removeTndrWithSaveCode, saveTicketForGuestCheck, updateCheckoutTotals, saveTicketForGuestCheckSuccess } from '../../store/ticketstore/ticket.action';
+import { addTender, removeTndrWithSaveCode, saveTicketForGuestCheck, updateCheckoutTotals, saveTicketForGuestCheckSuccess, isSplitPayR5 } from '../../store/ticketstore/ticket.action';
 import { getCheckoutItemsSelector, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { TipsModalDlgComponent } from '../tips-modal-dlg/tips-modal-dlg.component';
@@ -87,6 +87,7 @@ export class CheckoutPageComponent implements OnInit {
 
   private async genericTenderClickProcessing(tndrCode: string): Promise<void> {
     this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
+    this._store.dispatch(isSplitPayR5({ isSplitPayR5: true }));
 
     //let tndrCode = (evt.target as Element).id
     if (this._logonDataSvc.getBusinessModel() != 5 || tndrCode == "CA") {

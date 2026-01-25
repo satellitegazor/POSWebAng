@@ -55,28 +55,14 @@ export class EgConcTndrComponent {
 
   ngOnInit(): void {
 
-    this.activatedRoute.queryParams.subscribe(params => {
-
-      this._tndrObj.tenderTypeCode = params['code'] || 'CA';
-      const hasQueryTenderAmount = params['tenderAmount'] !== undefined && params['tenderAmount'] !== null;
-
-      if (hasQueryTenderAmount) {
-        this._tndrObj.tenderAmount = parseFloat(params['tenderAmount']);
-      }
-      if (params['tenderAmountFC']) {
-        this._tndrObj.fcTenderAmount = parseFloat(params['tenderAmountFC']);
-      }
-      this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
-
-    }).unsubscribe();
-
     this.dcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getDfltCurrCode());
     this.ndcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getNonDfltCurrCode());
 
     forkJoin([
       this._store.select(getRemainingBal).pipe(take(1)),
-      this._store.select(getIsSplitPayR5).pipe(take(1))
-    ]).subscribe(([tenderBal, isSplitPay]) => {
+      this._store.select(getIsSplitPayR5).pipe(take(1)),
+      this.activatedRoute.queryParams.pipe(take(1))
+    ]).subscribe(([tenderBal, isSplitPay, params]) => {
 
       this.isSplitPay = isSplitPay;
       if (!isSplitPay) {
@@ -86,12 +72,25 @@ export class EgConcTndrComponent {
         this.tenderAmountDC = tenderBal.amountDC;
         this.tenderAmountNDC = tenderBal.amountNDC;
       }
+      else {
+        this._tndrObj.tenderTypeCode = params['code'] || 'EG';
+        const hasQueryTenderAmount = params['tenderAmount'] !== undefined && params['tenderAmount'] !== null;
+
+        if (hasQueryTenderAmount) {
+          this._tndrObj.tenderAmount = parseFloat(params['tenderAmount']);
+        }
+        if (params['tenderAmountFC']) {
+          this._tndrObj.fcTenderAmount = parseFloat(params['tenderAmountFC']);
+        }
+      }
+      this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
+
     }).unsubscribe();
 
     this._store.select(getTktObjSelector).subscribe(data => {
       if (data == null)
         return;
-      //console.log("getTktObjSelector data: ", data);
+      
       this._tktObj = data;
     }).unsubscribe()
   }
@@ -103,6 +102,7 @@ export class EgConcTndrComponent {
     //this._tndrObj.tenderTypeCode = "EG";
     this._tndrObj.tndMaintTimestamp = new Date(Date.now());
     this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
+    this._tndrObj.tenderTypeDesc = this._utilSvc.tenderCodeDescMap.get(this._tndrObj.tenderTypeCode) || 'Eagle Cash';
     this._store.dispatch(addTender({ tndrObj: this._tndrObj }));
 
     var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));

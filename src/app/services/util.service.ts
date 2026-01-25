@@ -41,6 +41,27 @@ export class UtilService {
     ['TRY', '₺'],
     ['PLN', 'zł'],
   ]);
+
+  public tenderCodeDescMap = new Map<string, string>([
+    ['CK', 'Check'],
+    ['CA', 'Cash'],
+    ['XC', 'Credit Card'],
+    ['XR', 'Credit Card Refund'],
+    ['GC', 'Exchange Gift Card'],
+    ['CC', 'Concession Credit Card'],
+    ['EG', 'Eagle Cash'],
+    ['MS', 'Military Star Card'],
+  ]);
+
+  public cardBinRanges = new Map<string, string[]>([
+    ['Visa', ['4']],
+    ['MasterCard', ['51', '52', '53', '54', '55', '22', '23', '24', '25', '26', '27']],
+    ['American Express', ['34', '37']],
+    ['650155', ['Military Star']],
+    ['Discover', ['6011', '622126', '622925', '644', '645', '646', '647', '648', '649', '65']],
+    ['JCB', ['3528', '3589']],
+    ['Diners Club', ['300', '301', '302', '303', '304', '305', '36', '38']],
+  ]);
 }
 
 export class CPOSAppType {

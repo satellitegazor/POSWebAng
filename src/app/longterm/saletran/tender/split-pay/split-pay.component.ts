@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { TicketTender } from 'src/app/models/ticket.tender';
 import { getBalanceDue, getTktObjSelector, getTicketTendersSelector, getBalanceDueFC, getTicketTotalToPayDC, getTicketTotalToPayNDC } from '../../store/ticketstore/ticket.selector';
@@ -21,7 +21,9 @@ import { UtilService } from 'src/app/services/util.service';
   styleUrls: ['./split-pay.component.css'],
   standalone: false
 })
-export class SplitPayComponent implements OnInit {
+export class SplitPayComponent implements OnInit, AfterViewInit {
+   @ViewChild('dcTndrAmt') dcTndrAmtInput!: ElementRef;
+
    modalOptions: NgbModalOptions = {
         backdrop: 'static',
         keyboard: false
@@ -62,12 +64,10 @@ export class SplitPayComponent implements OnInit {
 
     this.routeSubscription = this.activRoute.paramMap.subscribe(params => {
       const id = params.get('id');
-      ////console.log('SplitPay component activatedRoute param id:', id);
-      // Perform actions based on the new ID
     });
 
     this._store.select(getTicketTotalToPayDC).subscribe(data => {
-      ////console.log('SplitPay component getRemainingBalanceDC data:', data);
+
       if (data) {
         this.ticketTotalDC = data;
       }
@@ -84,6 +84,7 @@ export class SplitPayComponent implements OnInit {
       ////console.log('SplitPay component getTicketTendersSelector data:', data);
       if (data) {
         this.tndrs = data.filter(t => t.tenderTypeCode != 'SV');
+
         let totalPaidDC: number = 0;
         let totalPaidNDC: number = 0;
 
@@ -100,6 +101,13 @@ export class SplitPayComponent implements OnInit {
     this.defaultCurrCode = this._logonDataSvc.getDfltCurrCode();
     this.nonDefaultCurrCode = this._logonDataSvc.getNonDfltCurrCode()
 
+  }
+
+  ngAfterViewInit(): void {
+    // Focus on dcTndrAmt input after component rendering is complete
+    if (this.dcTndrAmtInput) {
+      this.dcTndrAmtInput.nativeElement.focus();
+    }
   }
 
   public tenderButtonUIDisplay(): void {
@@ -138,8 +146,10 @@ export class SplitPayComponent implements OnInit {
 
     let tndrCompRoute = '';
     switch (tndrCode) {
-      case 'EG' :
       case 'CC' :
+        tndrCompRoute = 'cctender';
+        break;
+      case 'EG' :
       case 'RC' :
         tndrCompRoute = 'eaglecash';
         break;

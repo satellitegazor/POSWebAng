@@ -13,10 +13,10 @@
             <tr>
                 <td style="width:50%;"></td>
                 <td style="text-align: left;">
-                    {{dcCurrSymbl}}{{tenderAmount}}
+                    {{dcCurrSymbl}}{{tenderAmountDC}}
                 </td>
                 <td style="text-align: right;">
-                    {{ndcCurrSymbl}}{{tenderAmountFC}}
+                    {{ndcCurrSymbl}}{{tenderAmountNDC}}
                 </td>
             </tr>
         </table>
@@ -55,7 +55,7 @@
     <!-- Optional: Exact Amount Button (outside grid for prominence) -->
     <div class="exact-amount-wrapper">
         <button class="exact-btn" (click)="onExactCash()">
-            Exact Amount: {{dcCurrSymbl}}{{ tenderAmount!.toFixed(2) }}
+            Exact Amount: {{dcCurrSymbl}}{{ tenderAmountDC!.toFixed(2) }}
         </button>
     </div>
 </div>
