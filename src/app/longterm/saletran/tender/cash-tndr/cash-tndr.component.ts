@@ -76,18 +76,17 @@ export class CashTndrComponent implements OnInit {
     ]).subscribe(([tenderBal, isSplitPay, params]) => {
 
       this._tndrObj.tenderTypeCode = params['code'] || 'CA';
-      const hasQueryTenderAmount = params['tenderAmount'] !== undefined && params['tenderAmount'] !== null;
+      this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
+      this._tndrObj.ticketTenderId = 0; // Will be set when added to store
+      this._tndrObj.tenderTypeDesc = this._utilSvc.tenderCodeDescMap.get(this._tndrObj.tenderTypeCode) || 'Cash';
 
+      const hasQueryTenderAmount = params['tenderAmount'] !== undefined && params['tenderAmount'] !== null;
       if (hasQueryTenderAmount) {
         this._tndrObj.tenderAmount = parseFloat(params['tenderAmount']);
         this._tndrObj.fcTenderAmount = parseFloat(params['tenderAmountFC']);
         this.tenderAmountDC = this._tndrObj.tenderAmount;
         this.tenderAmountNDC = this._tndrObj.fcTenderAmount;
       }
-
-      this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
-      this._tndrObj.ticketTenderId = 0; // Will be set when added to store
-      this._tndrObj.tenderTypeDesc = this._utilSvc.tenderCodeDescMap.get(this._tndrObj.tenderTypeCode) || 'Cash';
 
       this.isSplitPay = isSplitPay;
       if (!isSplitPay) {
@@ -96,6 +95,7 @@ export class CashTndrComponent implements OnInit {
         this.tenderAmountDC = tenderBal.amountDC;
         this.tenderAmountNDC = tenderBal.amountNDC;
       }
+      this.loadFastCashButtons();
     }).unsubscribe();
 
 
@@ -106,7 +106,7 @@ export class CashTndrComponent implements OnInit {
       this._tktObj = data;
     }).unsubscribe();
 
-    this.loadFastCashButtons();
+    
 
   }
 
@@ -163,8 +163,17 @@ export class CashTndrComponent implements OnInit {
     if (tktObjData != null && TenderUtil.IsTicketComplete(tktObjData, this._logonDataSvc.getAllowPartPay())) {
       this._store.dispatch(markTendersComplete({ status: 4 }));
       this._store.dispatch(markTicketComplete({ status: 2 }));
-      this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData }));
-      this.route.navigate(['/savetktsuccess']);
+      
+      // Fetch the updated ticket object after marking complete
+      tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+
+      if(tktObjData != null) {
+        this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData }));
+        this.route.navigate(['/savetktsuccess']);
+      }
+      else {
+        this.route.navigate(['/checkout']);
+      }
     }
     else {
       this.route.navigate([this.isSplitPay ? '/splitpay' : '/checkout']);

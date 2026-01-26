@@ -86,8 +86,9 @@ export class CheckoutPageComponent implements OnInit {
   }
 
   private async genericTenderClickProcessing(tndrCode: string): Promise<void> {
+    
     this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
-    this._store.dispatch(isSplitPayR5({ isSplitPayR5: true }));
+    this._store.dispatch(isSplitPayR5({ isSplitPayR5: (tndrCode == 'btnSplitPay') }));
 
     //let tndrCode = (evt.target as Element).id
     if (this._logonDataSvc.getBusinessModel() != 5 || tndrCode == "CA") {

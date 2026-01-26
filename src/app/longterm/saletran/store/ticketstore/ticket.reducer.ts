@@ -93,7 +93,11 @@ export const _tktObjReducer = createReducer(
             updateCustomer: false,
             tipAmountDC: 0,
             tipAmountNDC: 0,
-            ticketRRN: _utilSvc.getUniqueRRN()
+            ticketRRN: _utilSvc.getUniqueRRN(),
+            tranStatus: TranStatusType.InProgress,
+            voidType: '',
+            voidTypeDesc: '',
+            vMTndr: [] as ExchCardTndr[]
          },
          tktTotals: {
             ...state.tktTotals,

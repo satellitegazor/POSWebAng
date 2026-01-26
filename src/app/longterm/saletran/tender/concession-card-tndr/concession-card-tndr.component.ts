@@ -63,7 +63,6 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
       this.activatedRoute.queryParams.pipe(take(1))
     ]).subscribe(([tenderBal, isSplitPay, params]) => {
 
-      this._tndrObj.tenderTypeCode = params['code'] || 'CC';
       this._tndrObj.tenderTypeDesc = this._utilSvc.tenderCodeDescMap.get(this._tndrObj.tenderTypeCode) || 'Concession Credit Card';
       const hasQueryTenderAmount = params['tenderAmount'] !== undefined && params['tenderAmount'] !== null;
 
@@ -73,11 +72,6 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
         this.tenderAmountDC = this._tndrObj.tenderAmount;
         this.tenderAmountNDC = this._tndrObj.fcTenderAmount;
       }
-      else {
-
-      }
-      this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
-
 
       this.isSplitPay = isSplitPay;
       if (!isSplitPay) {
@@ -88,6 +82,8 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
         this.tenderAmountNDC = tenderBal.amountNDC;
       }
     });
+    this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
+    this._tndrObj.tenderTypeCode = 'CC';
 
     this._store.select(getTktObjSelector).subscribe(data => {
       if (data == null)
@@ -143,8 +139,16 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
 
       this._store.dispatch(markTendersComplete({ status: 4 }));
       this._store.dispatch(markTicketComplete({ status: 2 }));
-      this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData }));
-      this.route.navigate(['/savetktsuccess']);
+
+      // Fetch the updated ticket object after marking complete
+      const tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+      if (tktObjData != null) {
+        this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData }));
+        this.route.navigate(['/savetktsuccess']);
+      }
+      else {
+        this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
+      }
     }
     else {
       this.route.navigate([this.isSplitPay ? '/splitpay' : '/checkout']);

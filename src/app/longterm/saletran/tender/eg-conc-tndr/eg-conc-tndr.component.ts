@@ -23,12 +23,7 @@ export class EgConcTndrComponent {
 
   private isSplitPay: boolean = false;
 
-  btnCancelClick($event: PointerEvent) {
-    throw new Error('Method not implemented.');
-  }
-  btnDeclineClick($event: PointerEvent) {
-    throw new Error('Method not implemented.');
-  }
+
   @ViewChild('btnApprove') btnApprove!: ElementRef<HTMLButtonElement>;
   @ViewChild('btnDecline') btnDecline!: ElementRef<HTMLButtonElement>;
   @ViewChild('btnCancel') btnCancel!: ElementRef<HTMLButtonElement>;
@@ -73,16 +68,19 @@ export class EgConcTndrComponent {
         this.tenderAmountNDC = tenderBal.amountNDC;
       }
       else {
-        this._tndrObj.tenderTypeCode = params['code'] || 'EG';
+        
         const hasQueryTenderAmount = params['tenderAmount'] !== undefined && params['tenderAmount'] !== null;
 
         if (hasQueryTenderAmount) {
           this._tndrObj.tenderAmount = parseFloat(params['tenderAmount']);
+          this.tenderAmountDC = this._tndrObj.tenderAmount;
         }
         if (params['tenderAmountFC']) {
           this._tndrObj.fcTenderAmount = parseFloat(params['tenderAmountFC']);
+          this.tenderAmountNDC = this._tndrObj.fcTenderAmount;
         }
       }
+      this._tndrObj.tenderTypeCode = params['code'] || 'EG';
       this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
 
     }).unsubscribe();
@@ -110,13 +108,28 @@ export class EgConcTndrComponent {
     if (tktObjData != null && TenderUtil.IsTicketComplete(tktObjData, this._logonDataSvc.getAllowPartPay())) {
       this._store.dispatch(markTendersComplete({ status: 4 }));
       this._store.dispatch(markTicketComplete({ status: 2 }));
-      this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData }));
-      this.route.navigate(['/savetktsuccess']);
+      // Fetch the updated ticket object after marking complete
+      const tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+      if (tktObjData != null) {
+        this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData }));
+        this.route.navigate(['/savetktsuccess']);
+      }
+      else {
+        this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
+      }
     }
     else {
       this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
     }
 
+  }
+
+  async btnDeclineClick(evt: Event) {
+    this.route.navigate([this.isSplitPay ? '/splitpay' : '/checkout']);
+  }
+
+  async btnCancelClick(evt: Event) {
+    this.route.navigate([this.isSplitPay ? '/splitpay' : '/checkout']);
   }
 
 }
