@@ -20,6 +20,7 @@ import { Actions, ofType } from '@ngrx/effects';
 import { Round2DecimalService } from 'src/app/services/round2-decimal.service';
 import { RootObject } from 'src/app/app.state';
 import { ToastService } from 'src/app/services/toast.service';
+import { TenderUtil } from '../tender-util';
 
 @Component({
   selector: 'app-tender-page',
@@ -191,7 +192,7 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
             }
 
             // Copy the saved tender which already has ticketTenderId
-            var tndrCopy = this.copyTenderObj(savedTender);
+            var tndrCopy = TenderUtil.copyTenderObj(savedTender);
 
             tndrCopy.rrn = this.InvoiceId;
             tndrCopy.isAuthorized = true;
@@ -200,14 +201,14 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
             tndrCopy.traceId = "false";
             tndrCopy.tenderTypeDesc = "pinpad";
             tndrCopy.inStoreCardNbrTmp = data.ACCT_NUM;
-            tndrCopy.tenderStatus = TenderStatusType.InProgress;
+            
             tndrCopy.tenderTypeCode = this.isDiscoverMilstarCard(data.FIRST6_LAST4) ? (isRefund? 'MR' : 'MS') : (isRefund? 'XR': 'XC');
             tndrCopy.tenderAmount = this.tenderAmount;
             tndrCopy.fcTenderAmount = this.tenderAmountFC;
             tndrCopy.tndMaintTimestamp = new Date(Date.now());
             tndrCopy.tndrTimeStamp = new Date(Date.now());
             tndrCopy.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
-            tndrCopy.tenderTypeCode = this._tenderTypeCode;
+
             // ticketTenderId is already set from the saved tender
 
             this._captureTranResponse.copyFrom(data);
@@ -215,15 +216,38 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
             this._captureTranResponse.ticketTenderId = tndrCopy.ticketTenderId; // Use the tender's ID from state
             this._captureTranResponse.transactionId = tktObjData.transactionID;
 
+            let defCurrCode = this._logonDataSvc.getDfltCurrCode();
+            let dailyExchRate = this._logonDataSvc.getDailyExchRate();
+            let isPaymentApproved = false;
+
+            if (this._captureTranResponse.ResponseText.toUpperCase().includes("APPROVED") || this._captureTranResponse.ResponseText.toUpperCase().includes("APPROVAL")
+              && this._captureTranResponse.APPROVED_AMOUNT > 0 ) {
+              isPaymentApproved = true;
+              tndrCopy.tenderStatus = TenderStatusType.InProgress;  
+              tndrCopy.tenderAmount = this._captureTranResponse.APPROVED_AMOUNT;
+              tndrCopy.fcTenderAmount = Number(Number(tndrCopy.tenderAmount * dailyExchRate.exchangeRate).toFixed(2));
+            }
+            else {
+              tndrCopy.tenderStatus = TenderStatusType.Declined;
+            }
+
             this._store.dispatch(addTender({ tndrObj: tndrCopy }));
             this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
+
+            if(!isPaymentApproved) {
+              this._toastSvc.error('Payment was declined. Please try again or use a different payment method.');
+              this.btnDecline(new Event('auto-decline'));
+              this.authorizationInProgress = false;
+              return;
+            }
+
 
             // Use the pre-stored tender ID for the pinpad response
             this._store.dispatch(addPinpadResp({ respObj: this._captureTranResponse }));
 
             var tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
 
-            if (this.IsTicketComplete(tktObjData1)) {
+            if (TenderUtil.IsTicketComplete(tktObjData1, this._logonDataSvc.getAllowPartPay())) {
 
               this._store.dispatch(markTendersComplete({ status: TenderStatusType.Complete }));
               this._store.dispatch(markTicketComplete({ status: TranStatusType.Complete }));
@@ -262,63 +286,6 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
      * Creates a deep copy of the TicketTender object
      * @returns A new TicketTender instance with all properties copied
      */
-  copyTenderObj(srcTndr: TicketTender): TicketTender {
-    let tndrCopy = new TicketTender();
-
-    tndrCopy.ticketTenderId = srcTndr.ticketTenderId;
-    tndrCopy.tenderTypeId = srcTndr.tenderTypeId;
-    tndrCopy.tenderTransactionId = srcTndr.tenderTransactionId;
-    tndrCopy.tenderTypeCode = srcTndr.tenderTypeCode;
-    tndrCopy.tenderTypeDesc = srcTndr.tenderTypeDesc;
-    tndrCopy.isRefundType = srcTndr.isRefundType;
-    tndrCopy.isSignature = srcTndr.isSignature;
-    tndrCopy.displayOrder = srcTndr.displayOrder;
-    tndrCopy.cardEndingNbr = srcTndr.cardEndingNbr;
-    tndrCopy.tracking = srcTndr.tracking;
-    tndrCopy.traceId = srcTndr.traceId;
-    tndrCopy.authNbr = srcTndr.authNbr;
-    tndrCopy.rrn = srcTndr.rrn;
-
-    tndrCopy.tenderAmount = srcTndr.tenderAmount;
-    tndrCopy.changeDue = srcTndr.changeDue;
-    tndrCopy.fcChangeDue = srcTndr.fcChangeDue;
-    tndrCopy.cardBalance = srcTndr.cardBalance;
-    tndrCopy.fcTenderAmount = srcTndr.fcTenderAmount;
-    tndrCopy.fcCurrCode = srcTndr.fcCurrCode;
-
-    tndrCopy.transactionNumber = srcTndr.transactionNumber;
-    tndrCopy.tndMaintTimestamp = srcTndr.tndMaintTimestamp ? new Date(srcTndr.tndMaintTimestamp.getTime()) : {} as Date;
-    tndrCopy.tndMaintUserId = srcTndr.tndMaintUserId;
-    tndrCopy.tipAmount = srcTndr.tipAmount;
-    tndrCopy.fcTipAmount = srcTndr.fcTipAmount;
-
-    tndrCopy.exchCardType = srcTndr.exchCardType;
-    tndrCopy.exchCardPymntType = srcTndr.exchCardPymntType;
-    tndrCopy.cardEntryMode = srcTndr.cardEntryMode;
-
-    tndrCopy.signatureType = srcTndr.signatureType;
-    tndrCopy.milstarPlanNum = srcTndr.milstarPlanNum;
-    tndrCopy.checkNumber = srcTndr.checkNumber;
-
-    tndrCopy.isAuthorized = srcTndr.isAuthorized;
-    tndrCopy.ctroutd = srcTndr.ctroutd;
-    tndrCopy.tenderStatus = srcTndr.tenderStatus;
-    tndrCopy.cliTimeVar = srcTndr.cliTimeVar;
-    tndrCopy.refundAuthNbr = srcTndr.refundAuthNbr;
-    tndrCopy.inStoreCardNbrTmp = srcTndr.inStoreCardNbrTmp;
-    tndrCopy.voidRRN = srcTndr.voidRRN;
-    tndrCopy.tndrTimeStamp = srcTndr.tndrTimeStamp ? new Date(srcTndr.tndrTimeStamp.getTime()) : {} as Date;
-    tndrCopy.refundCardNbr = srcTndr.refundCardNbr;
-    tndrCopy.refundCardType = srcTndr.refundCardType;
-    tndrCopy.refundCardEntryMode = srcTndr.refundCardEntryMode;
-    tndrCopy.refundEmvCvm = srcTndr.refundEmvCvm;
-    tndrCopy.isDiscoverMilstar = srcTndr.isDiscoverMilstar;
-    tndrCopy.partPayId = srcTndr.partPayId;
-    tndrCopy.partPayAmount = srcTndr.partPayAmount;
-    tndrCopy.partPayAmountFC = srcTndr.partPayAmountFC;
-
-    return tndrCopy;
-  }
   async btnApprove(evt: Event) {
     //console.log("btnApprove clicked");
 
@@ -366,7 +333,7 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
     }
 
     // Copy the saved tender which already has ticketTenderId
-    var tndrCopy = this.copyTenderObj(savedTender);
+    var tndrCopy = TenderUtil.copyTenderObj(savedTender);
 
     tndrCopy.tenderStatus = TenderStatusType.Declined;
     this._store.dispatch(addTender({ tndrObj: tndrCopy }));
@@ -376,39 +343,6 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
     this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
   }
 
-  private IsTicketComplete(tktObj: TicketSplit): boolean {
-
-    if (tktObj.tktList.length == 0)
-      return false;
-
-    if (tktObj.ticketTenderList.length == 0)
-      return false;
-
-    let ticketTotal = 0;
-
-    for (const key in tktObj.tktList) {
-      ticketTotal += tktObj.tktList[key].lineItemDollarDisplayAmount;
-    }
-
-    for (const key in tktObj.associateTips) {
-      ticketTotal += tktObj.associateTips[key].tipAmount;
-    }
-
-    let allowPartPay = this._logonDataSvc.getAllowPartPay();
-
-    let tenderTotals = 0;
-
-    for (const key in tktObj.ticketTenderList) {
-      tenderTotals += tktObj.ticketTenderList[key].tenderAmount;
-    }
-
-    if (allowPartPay && tktObj.partialAmount > 0 && tktObj.partialAmount == tenderTotals || Number(Number(ticketTotal).toFixed(2)) == Number(Number(tenderTotals).toFixed(2))) {
-      return true;
-    }
-    else {
-      return false;
-    }
-  }
   async getRemainingBalance() {
 
     const state: RootObject = await firstValueFrom(this._store.pipe(take(1))).then(state => state as RootObject);

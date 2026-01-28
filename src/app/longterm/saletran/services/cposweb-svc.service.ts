@@ -8,6 +8,8 @@ import { MSRSwipeData } from './models/msr-swipe-data';
 import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
 import { SigCapture } from './models/capture-signature.model';
 import { VerifoneCommStatus } from '../../models/general-classes';
+import { AurusGiftCardInquiryResp } from './models/gift-card-enquiry-response';
+import { AurusGiftCardRedeemResp } from './models/aurus-gift-card-redeem-resp';
 
 @Injectable({
   providedIn: 'root'
@@ -124,5 +126,37 @@ export class CPOSWebSvcService {
       { headers: this.headerObjs }).pipe(
       catchError(error => this.handleVerifoneCommStatusError(error))
     );
+  }
+
+  giftCardInquiry(TranId: number, TndrId: number, IndivId: number, sDisplayMsg: string, manualCardNbr: string): Observable<AurusGiftCardInquiryResp> {
+    return this.httpClient.get<AurusGiftCardInquiryResp>(this.cposWebSvcUrl + 'pinpad/GiftBalInquiry?TranId=' + TranId + '&TndrId=' + TndrId + '&IndivId=' + IndivId + '&DisplayMsg=' + sDisplayMsg + '&ManualCardNbr=' + manualCardNbr,
+      { headers: this.headerObjs }).pipe(
+      catchError(error => this.handleGiftcardInquiryError(error))
+    );
+  }
+
+  private handleGiftcardInquiryError(error: any): Observable<AurusGiftCardInquiryResp> {
+    const { msg, statusCode } = this.getErrorMessage(error);
+    const errorResult = new AurusGiftCardInquiryResp();
+    errorResult.rslt.IsSuccessful = false;
+    errorResult.rslt.ReturnMsg = `Error (${statusCode}): ${msg}`;
+    errorResult.rslt.VersionNum = '';
+    return of(errorResult);
+  }
+
+  GiftCardRedeem(TranId: number, TndrId: number, IndivId: number, EncCardNbr: string, TranAmt: number): Observable<AurusGiftCardRedeemResp> {
+    return this.httpClient.get<AurusGiftCardRedeemResp>(this.cposWebSvcUrl + 'pinpad/GiftCardRedeem?TranId=' + TranId + '&TndrId=' + TndrId + '&IndivId=' + IndivId + '&EncCardNbr=' + EncCardNbr + '&TranAmt=' + TranAmt,
+      { headers: this.headerObjs }).pipe(
+      catchError(error => this.handleGiftcardRedeemError(error))
+    );
+  }
+
+  private handleGiftcardRedeemError(error: any): Observable<AurusGiftCardRedeemResp> {
+    const { msg, statusCode } = this.getErrorMessage(error);
+    const errorResult = new AurusGiftCardRedeemResp();
+    errorResult.rslt.IsSuccessful = false;
+    errorResult.rslt.ReturnMsg = `Error (${statusCode}): ${msg}`;
+    errorResult.rslt.VersionNum = '';
+    return of(errorResult);
   }
 }

@@ -16,6 +16,7 @@ import { CashTndrComponent } from './tender/cash-tndr/cash-tndr.component';
 import { ItemButtonPageComponent } from '../itembuttonmenu/item-button-page/item-button-page.component';
 import { AdminMenuComponent } from '../admin-menu/admin-menu.component';
 import { CanDeactivateGuard } from 'src/app/shared/can-component-deactivate';
+import { GiftCardInquiryComponent } from './tender/gift-card-inquiry/gift-card-inquiry.component';
 
 const routes: Routes = [
     { path: 'salestran', component: SalesCartComponent },
@@ -28,11 +29,11 @@ const routes: Routes = [
     { path: 'eaglecash', component:EgConcTndrComponent},
     { path: 'cashcheck', component:CashTndrComponent},
     { path: 'itembtnmenu', component: ItemButtonPageComponent, canDeactivate: [CanDeactivateGuard]},
-    { path: 'adminmenu', component: AdminMenuComponent }
+    { path: 'adminmenu', component: AdminMenuComponent },
+    { path: 'gcinquiry', component: GiftCardInquiryComponent}
 ];
 
 /*export const routing: ModuleWithProviders = RouterModule.forChild(routes)*/
-
 
 //const routes: Routes = [
 //    { path: '', loadChildren: './logon/logon.module#LogonModule' },

@@ -367,6 +367,7 @@ export const _tktObjReducer = createReducer(
          tndrObj.authNbr = action.tndrObj.authNbr;
          tndrObj.cardEndingNbr = action.tndrObj.cardEndingNbr;
          tndrObj.tndMaintTimestamp = new Date(Date.now());
+         tndrObj.tenderTypeCode = action.tndrObj.tenderTypeCode;
          tndrObj.tenderTypeDesc = action.tndrObj.tenderTypeDesc;
          tndrObj.cardEntryMode = action.tndrObj.cardEntryMode;
          tndrObj.tenderStatus = action.tndrObj.tenderStatus;

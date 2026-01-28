@@ -53,7 +53,69 @@ export class TicketTender {
     partPayAmount: number = 0;
     partPayAmountFC: number = 0;
 
- 
+    // public deepCopy(src: TicketTender): void {
+    //     if (!src) {
+    //         return;
+    //     }
+
+    //     this.ticketTenderId = src.ticketTenderId;
+    //     this.tenderTypeId = src.tenderTypeId;
+    //     this.tenderTransactionId = src.tenderTransactionId;
+    //     this.tenderTypeCode = src.tenderTypeCode;
+    //     this.tenderTypeDesc = src.tenderTypeDesc;
+    //     this.isRefundType = src.isRefundType;
+    //     this.isSignature = src.isSignature;
+    //     this.displayOrder = src.displayOrder;
+    //     this.cardEndingNbr = src.cardEndingNbr;
+    //     this.tracking = src.tracking;
+    //     this.traceId = src.traceId;
+    //     this.authNbr = src.authNbr;
+    //     this.rrn = src.rrn;
+
+    //     this.tenderAmount = src.tenderAmount;
+    //     this.changeDue = src.changeDue;
+    //     this.fcChangeDue = src.fcChangeDue;
+    //     this.cardBalance = src.cardBalance;
+    //     this.fcTenderAmount = src.fcTenderAmount;
+    //     this.fcCurrCode = src.fcCurrCode;
+
+    //     this.transactionNumber = src.transactionNumber;
+    //     this.tndMaintTimestamp = src.tndMaintTimestamp
+    //         ? new Date(src.tndMaintTimestamp)
+    //         : src.tndMaintTimestamp;
+    //     this.tndMaintUserId = src.tndMaintUserId;
+    //     this.tipAmount = src.tipAmount;
+    //     this.fcTipAmount = src.fcTipAmount;
+
+    //     this.exchCardType = src.exchCardType;
+    //     this.exchCardPymntType = src.exchCardPymntType;
+    //     this.cardEntryMode = src.cardEntryMode;
+
+    //     this.signatureType = src.signatureType;
+    //     this.milstarPlanNum = src.milstarPlanNum;
+    //     this.checkNumber = src.checkNumber;
+
+    //     this.isAuthorized = src.isAuthorized;
+    //     this.ctroutd = src.ctroutd;
+    //     this.tenderStatus = src.tenderStatus;
+    //     this.cliTimeVar = src.cliTimeVar;
+    //     this.refundAuthNbr = src.refundAuthNbr;
+    //     this.inStoreCardNbrTmp = src.inStoreCardNbrTmp;
+    //     this.voidRRN = src.voidRRN;
+    //     this.tndrTimeStamp = src.tndrTimeStamp
+    //         ? new Date(src.tndrTimeStamp)
+    //         : src.tndrTimeStamp;
+
+    //     this.refundCardNbr = src.refundCardNbr;
+    //     this.refundCardType = src.refundCardType;
+    //     this.refundCardEntryMode = src.refundCardEntryMode;
+    //     this.refundEmvCvm = src.refundEmvCvm;
+    //     this.isDiscoverMilstar = src.isDiscoverMilstar;
+    //     this.partPayId = src.partPayId;
+    //     this.partPayAmount = src.partPayAmount;
+    //     this.partPayAmountFC = src.partPayAmountFC;
+    // }
+
 }
 
 export class SaveTenderResult {
