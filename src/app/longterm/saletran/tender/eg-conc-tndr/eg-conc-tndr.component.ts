@@ -12,6 +12,8 @@ import { firstValueFrom, forkJoin, Subscription, take } from 'rxjs';
 import { getIsSplitPayR5, getRemainingBal, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { TenderUtil } from '../tender-util';
 import { addTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj } from '../../store/ticketstore/ticket.action';
+import { RedeemGiftCardTenders } from '../redeem-gift-card-tenders';
+import { ToastService } from 'src/app/services/toast.service';
 
 @Component({
   selector: 'app-eg-conc-tndr',
@@ -38,7 +40,8 @@ export class EgConcTndrComponent {
     private activatedRoute: ActivatedRoute,
     private route: Router,
     private _logonDataSvc: LogonDataService,
-    private _utilSvc: UtilService) {
+    private _utilSvc: UtilService,
+    private _toastSvc: ToastService) {
     // Initialization logic can go here if needed
   }
 
@@ -103,15 +106,21 @@ export class EgConcTndrComponent {
     this._tndrObj.tenderTypeDesc = this._utilSvc.tenderCodeDescMap.get(this._tndrObj.tenderTypeCode) || 'Eagle Cash';
     this._store.dispatch(addTender({ tndrObj: this._tndrObj }));
 
-    var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;;
 
     if (tktObjData != null && TenderUtil.IsTicketComplete(tktObjData, this._logonDataSvc.getAllowPartPay())) {
+
+      if(tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0){
+        // Redeem Gift Card Tenders
+        RedeemGiftCardTenders.redeem(this._store, this._cposWebSvc, this._logonDataSvc, this._toastSvc);
+      }              
+
       this._store.dispatch(markTendersComplete({ status: 4 }));
       this._store.dispatch(markTicketComplete({ status: 2 }));
       // Fetch the updated ticket object after marking complete
-      const tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
-      if (tktObjData != null) {
-        this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData }));
+      const tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+      if (tktObjData1 != null) {
+        this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData1 }));
         this.route.navigate(['/savetktsuccess']);
       }
       else {

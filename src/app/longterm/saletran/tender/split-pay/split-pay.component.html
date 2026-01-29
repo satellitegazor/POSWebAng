@@ -8,14 +8,14 @@
                 <td class="secondcolumn">
                     <div class="payment-display-item">
                         <div class="payment-display-value dc-amount">
-                            {{dcCurrSymbl}} {{ticketTotalDC | number:'1.2-2'}}
+                            {{dcCurrSymbl}} {{totalToPayDC | number:'1.2-2'}}
                         </div>
                     </div>
                 </td>
                 <td class="thirdcolumn">
                     <div class="payment-display-item">
                         <div class="payment-display-value fc-amount">
-                            {{ndcCurrSymbl}} {{ticketTotalNDC | number:'1.2-2'}}
+                            {{ndcCurrSymbl}} {{totalToPayNDC | number:'1.2-2'}}
                         </div>
                     </div>
                 </td>
@@ -48,7 +48,7 @@
                     <div class="currency-input-group">
                         <span class="currency-symbol">{{dcCurrSymbl}}</span>
                         <input type="text" #dcTndrAmt id="dcTndrAmt" autocomplete="off" class="form-control currency-input"
-                            [(ngModel)]="tenderAmountDC" (change)="PaymentAmountChanged($event)" appPosCurrency
+                            [(ngModel)]="yetToPayDC" (change)="PaymentAmountChanged($event)" appPosCurrency
                             placeholder="0.00" />
                     </div>
                 </td>
@@ -56,7 +56,7 @@
                     <div class="currency-input-group">
                         <span class="currency-symbol">{{ndcCurrSymbl}}</span>
                         <input type="text" id="ndcTndrAmt" autocomplete="off" class="form-control currency-input"
-                            [(ngModel)]="tenderAmountNDC" appPosCurrency placeholder="0.00" />
+                            [(ngModel)]="yetToPayNDC" appPosCurrency placeholder="0.00" />
                     </div>
                 </td>
             </tr>

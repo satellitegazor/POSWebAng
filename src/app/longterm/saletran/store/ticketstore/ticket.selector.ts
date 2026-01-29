@@ -117,6 +117,9 @@ export const getIsCustomerAddedToTicket = createSelector(getTktObjState,
 
   export const getTicketTotalToPayDC = createSelector(getTktObjState,
     (state) => {
+      if(state.tktObj.isPartialPay) {
+        return Round2DecimalService.round(state.tktObj.partialAmount);
+      }
       let ticketTotal: number = 0;
       state.tktObj.tktList.forEach(itm => ticketTotal += itm.lineItemDollarDisplayAmount);
       let tipTotal: number = 0;
@@ -127,6 +130,9 @@ export const getIsCustomerAddedToTicket = createSelector(getTktObjState,
 
     export const getTicketTotalToPayNDC = createSelector(getTktObjState,
       (state) => {
+        if(state.tktObj.isPartialPay) {
+          return Round2DecimalService.round(state.tktObj.partialAmountFC);
+        }
         let ticketTotalFC: number = 0;
         state.tktObj.tktList.forEach(itm => ticketTotalFC += itm.dCLineItemDollarDisplayAmount);
         let tipTotalFC: number = 0;

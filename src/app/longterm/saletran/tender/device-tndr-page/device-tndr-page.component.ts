@@ -21,6 +21,7 @@ import { Round2DecimalService } from 'src/app/services/round2-decimal.service';
 import { RootObject } from 'src/app/app.state';
 import { ToastService } from 'src/app/services/toast.service';
 import { TenderUtil } from '../tender-util';
+import { RedeemGiftCardTenders } from '../redeem-gift-card-tenders';
 
 @Component({
   selector: 'app-tender-page',
@@ -30,7 +31,7 @@ import { TenderUtil } from '../tender-util';
 })
 export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDestroy {
 
-  constructor(private _store: Store,
+  constructor(private _store: Store<saleTranDataInterface>,
     private activatedRoute: ActivatedRoute,
     private route: Router,
     private _logonDataSvc: LogonDataService,
@@ -241,13 +242,16 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
               return;
             }
 
-
             // Use the pre-stored tender ID for the pinpad response
             this._store.dispatch(addPinpadResp({ respObj: this._captureTranResponse }));
-
             var tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
 
             if (TenderUtil.IsTicketComplete(tktObjData1, this._logonDataSvc.getAllowPartPay())) {
+
+              if(tktObjData1.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0){
+                // Redeem Gift Card Tenders
+                RedeemGiftCardTenders.redeem(this._store, this._cposWebSvc, this._logonDataSvc, this._toastSvc);
+              }              
 
               this._store.dispatch(markTendersComplete({ status: TenderStatusType.Complete }));
               this._store.dispatch(markTicketComplete({ status: TranStatusType.Complete }));
@@ -343,35 +347,35 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
     this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
   }
 
-  async getRemainingBalance() {
+  // async getRemainingBalance() {
 
-    const state: RootObject = await firstValueFrom(this._store.pipe(take(1))).then(state => state as RootObject);
-    const tktObj = state.TktObjState.tktObj;
+  //   const state: RootObject = await firstValueFrom(this._store.pipe(take(1))).then(state => state as RootObject);
+  //   const tktObj = state.TktObjState.tktObj;
 
-    let tenderTotal: number = 0;
-    let tipTotal: number = 0;
-    let tenderTotalFC: number = 0;
-    let ticketTotal: number = 0;
-    let ticketTotalFC: number = 0;
-    let tipTotalFC: number = 0;
+  //   let tenderTotal: number = 0;
+  //   let tipTotal: number = 0;
+  //   let tenderTotalFC: number = 0;
+  //   let ticketTotal: number = 0;
+  //   let ticketTotalFC: number = 0;
+  //   let tipTotalFC: number = 0;
 
-    tktObj.ticketTenderList.forEach(tndr => tenderTotal += parseFloat((tndr.tenderAmount).toFixed(2)));
-    tktObj.tktList.forEach(itm => ticketTotal += parseFloat((itm.lineItemDollarDisplayAmount).toFixed(2)));
-    tktObj.associateTips.forEach(tip => tipTotal += parseFloat((tip.tipAmount).toFixed(2)));
+  //   tktObj.ticketTenderList.forEach(tndr => tenderTotal += parseFloat((tndr.tenderAmount).toFixed(2)));
+  //   tktObj.tktList.forEach(itm => ticketTotal += parseFloat((itm.lineItemDollarDisplayAmount).toFixed(2)));
+  //   tktObj.associateTips.forEach(tip => tipTotal += parseFloat((tip.tipAmount).toFixed(2)));
 
-    tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += parseFloat((tndr.fcTenderAmount).toFixed(2)));
-    tktObj.tktList.forEach(itm => ticketTotalFC += parseFloat((itm.dCLineItemDollarDisplayAmount).toFixed(2)));
-    tktObj.associateTips.forEach(tip => tipTotalFC += parseFloat((tip.tipAmtLocCurr).toFixed(2)));
+  //   tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += parseFloat((tndr.fcTenderAmount).toFixed(2)));
+  //   tktObj.tktList.forEach(itm => ticketTotalFC += parseFloat((itm.dCLineItemDollarDisplayAmount).toFixed(2)));
+  //   tktObj.associateTips.forEach(tip => tipTotalFC += parseFloat((tip.tipAmtLocCurr).toFixed(2)));
 
-    if (tktObj.isPartialPay) {
-      ticketTotal = tktObj.partialAmount;
-      ticketTotalFC = tktObj.partialAmountFC;
-    }
+  //   if (tktObj.isPartialPay) {
+  //     ticketTotal = tktObj.partialAmount;
+  //     ticketTotalFC = tktObj.partialAmountFC;
+  //   }
 
-    this.tenderAmount = Round2DecimalService.round(ticketTotal + tipTotal - tenderTotal);
-    this.tenderAmountFC = Round2DecimalService.round(ticketTotalFC + tipTotalFC - tenderTotalFC);
-    return;
-  }
+  //   this.tenderAmount = Round2DecimalService.round(ticketTotal + tipTotal - tenderTotal);
+  //   this.tenderAmountFC = Round2DecimalService.round(ticketTotalFC + tipTotalFC - tenderTotalFC);
+  //   return;
+  // }
 
   private isDiscoverMilstarCard(FIRST6_LAST4: string): boolean {
     if (!FIRST6_LAST4 || FIRST6_LAST4.length < 6) {

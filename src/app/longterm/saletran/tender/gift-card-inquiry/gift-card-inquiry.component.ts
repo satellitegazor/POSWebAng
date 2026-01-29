@@ -254,6 +254,10 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
                 if(data.AuthorizedAmount < gcTndr.tenderAmount) {
                   this._toastSvc.warning('Gift Card Redeem Amount is less than Tender Amount. Please use another tender method for remaining balance.');
                   let tndrCopy = TenderUtil.copyTenderObj(gcTndr);
+                  tndrCopy.isAuthorized = true;
+                  tndrCopy.authNbr = data.ApprovalCode;
+                  tndrCopy.cardEndingNbr = data.CardEndingNbr;
+                  tndrCopy.traceId = "false";
                   tndrCopy.tenderAmount = data.AuthorizedAmount;
                   tndrCopy.fcTenderAmount = data.AuthorizedAmount * this._logonDataSvc.getExchangeRate();
                   this._store.dispatch(addTender({ tndrObj: tndrCopy }));

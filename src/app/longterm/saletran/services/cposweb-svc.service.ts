@@ -129,7 +129,7 @@ export class CPOSWebSvcService {
   }
 
   giftCardInquiry(TranId: number, TndrId: number, IndivId: number, sDisplayMsg: string, manualCardNbr: string): Observable<AurusGiftCardInquiryResp> {
-    return this.httpClient.get<AurusGiftCardInquiryResp>(this.cposWebSvcUrl + 'pinpad/GiftBalInquiry?TranId=' + TranId + '&TndrId=' + TndrId + '&IndivId=' + IndivId + '&DisplayMsg=' + sDisplayMsg + '&ManualCardNbr=' + manualCardNbr,
+    return this.httpClient.get<AurusGiftCardInquiryResp>(this.cposWebSvcUrl + 'pinpad/GiftBalInquiry?tranId=' + TranId + '&tndrId=' + TndrId + '&indivId=' + IndivId + '&displayMsg=' + sDisplayMsg + '&manualCardNbr=' + manualCardNbr,
       { headers: this.headerObjs }).pipe(
       catchError(error => this.handleGiftcardInquiryError(error))
     );

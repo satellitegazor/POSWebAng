@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { TenderStatusType, TicketTender } from 'src/app/models/ticket.tender';
+import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
 import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,6 +13,8 @@ import { getIsSplitPayR5, getRemainingBal, getTktObjSelector } from '../../store
 import { TenderUtil } from '../tender-util';
 import { addTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj } from '../../store/ticketstore/ticket.action';
 import { CommonModule } from '@angular/common';
+import { RedeemGiftCardTenders } from '../redeem-gift-card-tenders';
+import { ToastService } from 'src/app/services/toast.service';
 
 @Component({
   selector: 'app-cash-tndr',
@@ -38,7 +40,8 @@ export class CashTndrComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private route: Router,
     private _logonDataSvc: LogonDataService,
-    private _utilSvc: UtilService) {
+    private _utilSvc: UtilService,
+    private _toastSvc: ToastService) {
     // Initialization logic can go here if needed
 
   }
@@ -161,8 +164,14 @@ export class CashTndrComponent implements OnInit {
     var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
 
     if (tktObjData != null && TenderUtil.IsTicketComplete(tktObjData, this._logonDataSvc.getAllowPartPay())) {
-      this._store.dispatch(markTendersComplete({ status: 4 }));
-      this._store.dispatch(markTicketComplete({ status: 2 }));
+
+      if(tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0){
+        // Redeem Gift Card Tenders
+        RedeemGiftCardTenders.redeem(this._store, this._cposWebSvc, this._logonDataSvc, this._toastSvc);
+      }
+
+      this._store.dispatch(markTendersComplete({ status: TenderStatusType.Complete }));
+      this._store.dispatch(markTicketComplete({ status: TranStatusType.Complete }));
       
       // Fetch the updated ticket object after marking complete
       tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));

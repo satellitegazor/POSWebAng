@@ -2,6 +2,7 @@ import { TicketSplit } from "src/app/models/ticket.split";
 import { TicketTender } from "src/app/models/ticket.tender";
 
 export class TenderUtil {
+
     public static IsTicketComplete(tktObj: TicketSplit, allowPartPay: boolean): boolean {
 
         if (tktObj.tktList.length == 0) {
@@ -38,40 +39,6 @@ export class TenderUtil {
         }
         return true;
     }
-
-    public IsTicketComplete(tktObj: TicketSplit, allowPartPay: boolean): boolean {
-    
-        if (tktObj.tktList.length == 0)
-          return false;
-    
-        if (tktObj.ticketTenderList.length == 0)
-          return false;
-    
-        let ticketTotal = 0;
-    
-        for (const key in tktObj.tktList) {
-          ticketTotal += tktObj.tktList[key].lineItemDollarDisplayAmount;
-        }
-    
-        for (const key in tktObj.associateTips) {
-          ticketTotal += tktObj.associateTips[key].tipAmount;
-        }
-    
-        //let allowPartPay = this._logonDataSvc.getAllowPartPay();
-    
-        let tenderTotals = 0;
-    
-        for (const key in tktObj.ticketTenderList) {
-          tenderTotals += tktObj.ticketTenderList[key].tenderAmount;
-        }
-    
-        if (allowPartPay && tktObj.partialAmount > 0 && tktObj.partialAmount == tenderTotals || Number(Number(ticketTotal).toFixed(2)) == Number(Number(tenderTotals).toFixed(2))) {
-          return true;
-        }
-        else {
-          return false;
-        }
-      }
       
     public static copyTenderObj(srcTndr: TicketTender): TicketTender {
         let tndrCopy = new TicketTender();
@@ -98,7 +65,7 @@ export class TenderUtil {
         tndrCopy.fcCurrCode = srcTndr.fcCurrCode;
     
         tndrCopy.transactionNumber = srcTndr.transactionNumber;
-        tndrCopy.tndMaintTimestamp = srcTndr.tndMaintTimestamp ? new Date(srcTndr.tndMaintTimestamp.getTime()) : {} as Date;
+        tndrCopy.tndMaintTimestamp = srcTndr.tndMaintTimestamp;
         tndrCopy.tndMaintUserId = srcTndr.tndMaintUserId;
         tndrCopy.tipAmount = srcTndr.tipAmount;
         tndrCopy.fcTipAmount = srcTndr.fcTipAmount;
@@ -118,7 +85,7 @@ export class TenderUtil {
         tndrCopy.refundAuthNbr = srcTndr.refundAuthNbr;
         tndrCopy.inStoreCardNbrTmp = srcTndr.inStoreCardNbrTmp;
         tndrCopy.voidRRN = srcTndr.voidRRN;
-        tndrCopy.tndrTimeStamp = srcTndr.tndrTimeStamp ? new Date(srcTndr.tndrTimeStamp.getTime()) : {} as Date;
+        tndrCopy.tndrTimeStamp = srcTndr.tndrTimeStamp;
         tndrCopy.refundCardNbr = srcTndr.refundCardNbr;
         tndrCopy.refundCardType = srcTndr.refundCardType;
         tndrCopy.refundCardEntryMode = srcTndr.refundCardEntryMode;

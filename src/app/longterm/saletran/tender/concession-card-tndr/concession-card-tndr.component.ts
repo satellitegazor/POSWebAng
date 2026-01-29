@@ -15,6 +15,8 @@ import { UtilService } from 'src/app/services/util.service';
 import { forkJoin } from 'rxjs';
 import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
 import { TenderUtil } from '../tender-util';
+import { RedeemGiftCardTenders } from '../redeem-gift-card-tenders';
+import { ToastService } from 'src/app/services/toast.service';
 
 @Component({
   selector: 'app-concession-card-tndr',
@@ -37,7 +39,9 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
     private activatedRoute: ActivatedRoute,
     private route: Router,
     private _logonDataSvc: LogonDataService,
-    private _utilSvc: UtilService) {
+    private _utilSvc: UtilService,
+    private _cposWebSvc: CPOSWebSvcService,
+    private _toastSvc: ToastService) {
     // Initialization logic can go here if needed
   }
 
@@ -136,6 +140,11 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
 
     if (tktObjData1 != null &&
       TenderUtil.IsTicketComplete(tktObjData1, this._logonDataSvc.getAllowPartPay())) {
+
+      if(tktObjData1.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0){
+        // Redeem Gift Card Tenders
+        RedeemGiftCardTenders.redeem(this._store, this._cposWebSvc, this._logonDataSvc, this._toastSvc);
+      }
 
       this._store.dispatch(markTendersComplete({ status: 4 }));
       this._store.dispatch(markTicketComplete({ status: 2 }));
