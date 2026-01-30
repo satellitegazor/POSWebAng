@@ -14,10 +14,11 @@ import { TenderUtil } from '../tender-util';
 import { addTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj } from '../../store/ticketstore/ticket.action';
 import { RedeemGiftCardTenders } from '../redeem-gift-card-tenders';
 import { ToastService } from 'src/app/services/toast.service';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-eg-conc-tndr',
-  imports: [],
+  imports: [DecimalPipe],
   templateUrl: './eg-conc-tndr.component.html',
   styleUrl: './eg-conc-tndr.component.css'
 })

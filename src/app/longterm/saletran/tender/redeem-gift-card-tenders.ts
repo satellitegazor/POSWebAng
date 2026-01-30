@@ -72,7 +72,7 @@ export class RedeemGiftCardTenders {
                                     tndrCopy.traceId = "false";
                                     tndrCopy.tenderAmount = data.AuthorizedAmount;
                                     tndrCopy.fcTenderAmount =
-                                        data.AuthorizedAmount * _logonDataSvc.getExchangeRate();
+                                        Number(Number(data.AuthorizedAmount * _logonDataSvc.getExchangeRate()).toFixed(2));
 
                                     _store.dispatch({
                                         type: '[Ticket] Add Tender',

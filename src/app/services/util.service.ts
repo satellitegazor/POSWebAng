@@ -26,7 +26,7 @@ export class UtilService {
     ['CA', 'cashcheck'],
     ['XC', 'pinpadtran'],
     ['XR', 'pinpadtran'],
-    ['GC', 'pinpadtran'],
+    ['GC', 'gcinquiry'],
     ['CC', 'cctender'],
     ['EG', 'eaglecash'],
     ['MS', 'pinpadtran']

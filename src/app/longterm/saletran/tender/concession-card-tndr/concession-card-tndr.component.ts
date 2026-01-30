@@ -17,10 +17,10 @@ import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
 import { TenderUtil } from '../tender-util';
 import { RedeemGiftCardTenders } from '../redeem-gift-card-tenders';
 import { ToastService } from 'src/app/services/toast.service';
-
+import { DecimalPipe } from '@angular/common';
 @Component({
   selector: 'app-concession-card-tndr',
-  imports: [],
+  imports: [DecimalPipe],
   templateUrl: './concession-card-tndr.component.html',
   styleUrl: './concession-card-tndr.component.css'
 })

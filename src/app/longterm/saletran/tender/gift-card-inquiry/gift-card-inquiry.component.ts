@@ -11,14 +11,14 @@ import { combineLatest, firstValueFrom, map, Subject, Subscription, take, takeUn
 import { TicketSplit } from 'src/app/models/ticket.split';
 import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
 import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
-import { addTender, deleteDeclinedTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj, saveTenderObjSuccess } from '../../store/ticketstore/ticket.action';
+import { addTender, deleteDeclinedTender, isSplitPayR5, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj, saveTenderObjSuccess } from '../../store/ticketstore/ticket.action';
 import { AurusGiftCardInquiryResp } from '../../services/models/gift-card-enquiry-response';
 import { TenderUtil } from '../tender-util';
 import { AurusGiftCardRedeemResp } from '../../services/models/aurus-gift-card-redeem-resp';
-
+import { DecimalPipe } from '@angular/common';
 @Component({
   selector: 'app-gift-card-inquiry',
-  imports: [],
+  imports: [DecimalPipe],
   templateUrl: './gift-card-inquiry.component.html',
   styleUrl: './gift-card-inquiry.component.css'
 })
@@ -217,6 +217,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
             }, 100);
           }
           else {
+            this._store.dispatch(isSplitPayR5({ isSplitPayR5: true }));
             this.route.navigate(['/splitpay']);
           }
         }

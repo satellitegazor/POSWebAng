@@ -3,11 +3,11 @@
         <div class="tender-amounts-container">
             <div class="tender-amount-card">
                 <div class="tender-label">Tender Amount (Default Currency)</div>
-                <div class="tender-value dc-amount">{{dcCurrSymbl}}{{tenderAmountDC}}</div>
+                <div class="tender-value dc-amount">{{dcCurrSymbl}}{{tenderAmountDC | number:'1.2-2'}}</div>
             </div>
             <div class="tender-amount-card">
                 <div class="tender-label">Tender Amount (Foreign Currency)</div>
-                <div class="tender-value fc-amount">{{ndcCurrSymbl}}{{tenderAmountNDC}}</div>
+                <div class="tender-value fc-amount">{{ndcCurrSymbl}}{{tenderAmountNDC | number:'1.2-2'}}</div>
             </div>
         </div>
         <div class="pinpad-waiting-section">
