@@ -250,7 +250,7 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
 
               if(tktObjData1.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0){
                 // Redeem Gift Card Tenders
-                RedeemGiftCardTenders.redeem(this._store, this._cposWebSvc, this._logonDataSvc, this._toastSvc);
+                new RedeemGiftCardTenders().redeem(this._store, this._cposWebSvc, this._logonDataSvc, this._toastSvc);
               }              
 
               this._store.dispatch(markTendersComplete({ status: TenderStatusType.Complete }));

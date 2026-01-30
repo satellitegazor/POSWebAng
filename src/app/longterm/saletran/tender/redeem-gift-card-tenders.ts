@@ -9,9 +9,11 @@ import { LogonDataService } from "src/app/global/logon-data-service.service";
 import { from } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 import { ToastService } from "src/app/services/toast.service";
+import { ExchCardTndr } from "src/app/models/exch.card.tndr";
 
 export class RedeemGiftCardTenders {
-    public static redeem(_store: Store<saleTranDataInterface>, 
+    private pinPadResp: ExchCardTndr = {} as ExchCardTndr;
+    public redeem(_store: Store<saleTranDataInterface>, 
         _cposWebSvc: CPOSWebSvcService,
         _logonDataSvc: LogonDataService,
         _toastSvc: ToastService
@@ -70,9 +72,10 @@ export class RedeemGiftCardTenders {
                                     tndrCopy.authNbr = data.ApprovalCode;
                                     tndrCopy.cardEndingNbr = data.CardEndingNbr;
                                     tndrCopy.traceId = "false";
-                                    tndrCopy.tenderAmount = data.AuthorizedAmount;
+                                    tndrCopy.tenderAmount = data.TotalApprovedAmount;
+                                    tndrCopy.inStoreCardNbrTmp = data.ACCT_NUM;
                                     tndrCopy.fcTenderAmount =
-                                        Number(Number(data.AuthorizedAmount * _logonDataSvc.getExchangeRate()).toFixed(2));
+                                        Number(Number(data.TotalApprovedAmount * _logonDataSvc.getExchangeRate()).toFixed(2));
 
                                     _store.dispatch({
                                         type: '[Ticket] Add Tender',

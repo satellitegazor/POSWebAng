@@ -125,7 +125,7 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
     if (this.yetToPayDC <= 0) {
       if (this.tndrs.filter(t => t.tenderTypeCode == "GC" && t.isAuthorized == false).length > 0) {
         // Redeem Gift Card Tenders
-        return RedeemGiftCardTenders.redeem(this._store, this._cposWebSvc, this._logonDataSvc, this._toastSvc);
+        return new RedeemGiftCardTenders().redeem(this._store, this._cposWebSvc, this._logonDataSvc, this._toastSvc);
       }
       else {
         return true;

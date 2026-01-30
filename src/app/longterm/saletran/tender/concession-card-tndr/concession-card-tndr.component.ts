@@ -7,7 +7,7 @@ import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { TicketSplit } from 'src/app/models/ticket.split';
 import { filter, firstValueFrom, Subscription, take } from 'rxjs';
 import { getIsSplitPayR5, getRemainingBal, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
-import { TenderStatusType, TicketTender } from 'src/app/models/ticket.tender';
+import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
 import { TenderType } from '../../../models/tender.type';
 import { addPinpadResp, addTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, savePinpadResponse, saveTenderObj, updateTenderRRN } from '../../store/ticketstore/ticket.action';
 import { UtilService } from 'src/app/services/util.service';
@@ -142,11 +142,11 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
 
       if(tktObjData1.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0){
         // Redeem Gift Card Tenders
-        RedeemGiftCardTenders.redeem(this._store, this._cposWebSvc, this._logonDataSvc, this._toastSvc);
+        new RedeemGiftCardTenders().redeem(this._store, this._cposWebSvc, this._logonDataSvc, this._toastSvc);
       }
 
-      this._store.dispatch(markTendersComplete({ status: 4 }));
-      this._store.dispatch(markTicketComplete({ status: 2 }));
+      this._store.dispatch(markTendersComplete({ status: TenderStatusType.Complete }));
+      this._store.dispatch(markTicketComplete({ status: TranStatusType.Complete }));
 
       // Fetch the updated ticket object after marking complete
       const tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));

@@ -7,6 +7,7 @@ export class AurusGiftCardRedeemResp {
     public ResponseCode: string = '';
     public POSID: string = '';
     public APPID: string = '';
+    public ACCT_NUM: string = '';
     public CardNumber: string = '';
     public TotalApprovedAmount: number = 0;
     public ProcessorToken: string = '';
