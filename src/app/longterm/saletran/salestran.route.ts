@@ -9,7 +9,6 @@ import { DeviceTndrPageComponent } from './tender/device-tndr-page/device-tndr-p
 import { SaveTicketSuccessComponent } from './save-ticket-success/save-ticket-success.component';
 import { MiscModule } from '../../misc-module/misc.module';
 import { SplitPayComponent } from './tender/split-pay/split-pay.component';
-import { SplitTenderPageComponent } from './tender/split-tender-page/split-tender-page.component';
 import { ConcessionCardTndrComponent } from './tender/concession-card-tndr/concession-card-tndr.component';
 import { EgConcTndrComponent } from './tender/eg-conc-tndr/eg-conc-tndr.component';
 import { CashTndrComponent } from './tender/cash-tndr/cash-tndr.component';
@@ -24,7 +23,6 @@ const routes: Routes = [
     { path: 'cctender', component: ConcessionCardTndrComponent },
     { path: 'savetktsuccess', component: SaveTicketSuccessComponent },
     { path: 'splitpay', component: SplitPayComponent},
-    { path: 'splittender', component: SplitTenderPageComponent},
     { path: 'pinpadtran', component: DeviceTndrPageComponent },
     { path: 'eaglecash', component:EgConcTndrComponent},
     { path: 'cashcheck', component:CashTndrComponent},

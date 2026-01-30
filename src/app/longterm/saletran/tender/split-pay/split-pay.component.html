@@ -29,7 +29,7 @@
             </tr>
             <tr *ngFor="let tndr of tndrs" class="applied-tender-section">
                 <td class="firstcolumn">
-                    <div class="tender-desc">{{tndr.tenderTypeDesc == 'pinpad' ? 'Credit Card' : tndr.tenderTypeDesc}}
+                    <div class="tender-desc">{{tenderDescrition(tndr.tenderTypeCode)}}
                         {{(tndr.tenderTypeDesc == 'pinpad') ? tndr.cardEndingNbr : ''}}
                     </div>
                 </td>

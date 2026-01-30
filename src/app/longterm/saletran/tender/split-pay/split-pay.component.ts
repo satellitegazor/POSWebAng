@@ -60,6 +60,10 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
   dcCurrSymbl: string | undefined;
   ndcCurrSymbl: string | undefined;
 
+  tenderDescrition (tndrCode: string): string {
+    return this._utlSvc.tenderCodeDescMap.get(tndrCode) || '';
+  }
+
   async ngOnInit(): Promise<void> {
 
     //console.log('SplitPay component ngOnInit called');

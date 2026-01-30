@@ -969,14 +969,14 @@ export const _tktObjReducer = createReducer(
    }),
    on(saveTenderObjSuccess, (state, action) => {
 
-      //console.log("saveTenderObjSuccess", action.data);
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
             ticketTenderList: state.tktObj.ticketTenderList.map(tndr => {
-               console.log("tender rrn:", tndr.rrn, " data rrn:", action.data.data.rrn);
-               if (tndr.rrn == action.data.data.rrn) {
+               
+               if (action.data != null && action.data.data != null 
+                     && action.data.data.rrn != null && tndr.rrn == action.data.data.rrn) {
                   console.log("Updating tender with RRN:", tndr.rrn, "with ticketTenderId:", action.data.data.ticketTenderId);
                   return {
                      ...tndr,
@@ -992,7 +992,7 @@ export const _tktObjReducer = createReducer(
       }
    }),
    on(saveCompleteTicketSplitSuccess, (state, action) => {
-      //console.log("saveCompleteTicketSplitSuccess", action.rslt);
+      
       return {
          ...state,
          tktObj: {

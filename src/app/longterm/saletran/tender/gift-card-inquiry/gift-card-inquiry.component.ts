@@ -16,6 +16,7 @@ import { AurusGiftCardInquiryResp } from '../../services/models/gift-card-enquir
 import { TenderUtil } from '../tender-util';
 import { AurusGiftCardRedeemResp } from '../../services/models/aurus-gift-card-redeem-resp';
 import { DecimalPipe } from '@angular/common';
+import { HTTP_TRANSFER_CACHE_ORIGIN_MAP } from '@angular/common/http';
 @Component({
   selector: 'app-gift-card-inquiry',
   imports: [DecimalPipe],
@@ -196,7 +197,8 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
           tndrCopy.cardEndingNbr = data.CardNbrF6L4;
           tndrCopy.traceId = "false";
           tndrCopy.tenderTypeDesc = "pinpad";
-          tndrCopy.inStoreCardNbrTmp = data.CardNumber;
+          tndrCopy.inStoreCardNbrTmp = data.ACCT_NUM;
+          tndrCopy.tracking = data.CardNbrF6L4;
 
           tndrCopy.tenderTypeCode = "GC";
           tndrCopy.tenderAmount = data.BalanceAmount >= this.tenderAmountDC ? this.tenderAmountDC : data.BalanceAmount;

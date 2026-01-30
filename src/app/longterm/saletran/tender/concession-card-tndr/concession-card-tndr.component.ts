@@ -58,8 +58,8 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
       this._tndrObj = {} as TicketTender;
     }
 
-    this.dcCurrSymbl = this._logonDataSvc.getLocationConfig().defaultCurrency;
-    this.ndcCurrSymbl = this._logonDataSvc.getLocationConfig().currCode;
+    this.dcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getLocationConfig().defaultCurrency);
+    this.ndcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getLocationConfig().currCode);
 
     forkJoin([
       this._store.select(getRemainingBal).pipe(take(1)),
@@ -100,7 +100,6 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
     this._tndrObj.tndMaintTimestamp = new Date(Date.now());
     this._tndrObj.tenderStatus = TenderStatusType.InProgress; // Assuming 1 is the
     this._tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
-    this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
     this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
     this._tndrObj.ticketTenderId = 0;
     this._tndrObj.authNbr = '';
