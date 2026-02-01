@@ -197,7 +197,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
           tndrCopy.cardEndingNbr = data.CardNbrF6L4;
           tndrCopy.traceId = "false";
           tndrCopy.tenderTypeDesc = "pinpad";
-          tndrCopy.inStoreCardNbrTmp = data.ACCT_NUM;
+          tndrCopy.inStoreCardNbrTmp = encodeURIComponent(data.ACCT_NUM);
           tndrCopy.tracking = data.CardNbrF6L4;
 
           tndrCopy.tenderTypeCode = "GC";

@@ -15,6 +15,7 @@ import { addTender, markTendersComplete, markTicketComplete, saveCompleteTicketS
 import { RedeemGiftCardTenders } from '../redeem-gift-card-tenders';
 import { ToastService } from 'src/app/services/toast.service';
 import { DecimalPipe } from '@angular/common';
+import { RedeeemGiftCardTndrsService } from '../redeeem-gift-card-tndrs.service';
 
 @Component({
   selector: 'app-eg-conc-tndr',
@@ -42,7 +43,8 @@ export class EgConcTndrComponent {
     private route: Router,
     private _logonDataSvc: LogonDataService,
     private _utilSvc: UtilService,
-    private _toastSvc: ToastService) {
+    private _toastSvc: ToastService,
+    private _redeemGiftCardTndrsSvc: RedeeemGiftCardTndrsService) {
     // Initialization logic can go here if needed
   }
 
@@ -112,7 +114,15 @@ export class EgConcTndrComponent {
 
       if(tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0) {
         // Redeem Gift Card Tenders
-        new RedeemGiftCardTenders().redeem(this._store, this._cposWebSvc, this._logonDataSvc, this._toastSvc);
+        this._redeemGiftCardTndrsSvc.redeem(tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false)).subscribe({
+          next: () => {
+            return true;
+          },
+          error: (error) => {
+            console.error('Error during gift card redemption: ', error);
+            return false;
+          }
+        });
       }
 
       this._store.dispatch(markTendersComplete({ status: 4 }));

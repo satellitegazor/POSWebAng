@@ -19,6 +19,7 @@ import { TenderUtil } from '../tender-util';
 import { RedeemGiftCardTenders } from '../redeem-gift-card-tenders';
 import { ToastService } from 'src/app/services/toast.service';
 import { TicketSplit } from 'src/app/models/ticket.split';
+import { RedeeemGiftCardTndrsService } from '../redeeem-gift-card-tndrs.service';
 
 @Component({
   selector: 'app-split-pay',
@@ -49,7 +50,8 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
     private activRoute: ActivatedRoute,
     private _utlSvc: UtilService,
     private _cposWebSvc: CPOSWebSvcService,
-    private _toastSvc: ToastService) { }
+    private _toastSvc: ToastService,
+    private _redeemGiftCardTndrsSvc: RedeeemGiftCardTndrsService) { }
 
   tndrs: TicketTender[] = [];
   totalToPayDC: number = 0;
@@ -124,8 +126,20 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
 
     if (this.yetToPayDC <= 0) {
       if (this.tndrs.filter(t => t.tenderTypeCode == "GC" && t.isAuthorized == false).length > 0) {
+
+        let unRedemedGCTndrs = this.tndrs.filter(t => t.tenderTypeCode == "GC" && t.isAuthorized == false);
         // Redeem Gift Card Tenders
-        return new RedeemGiftCardTenders().redeem(this._store, this._cposWebSvc, this._logonDataSvc, this._toastSvc);
+        this._redeemGiftCardTndrsSvc.redeem(unRedemedGCTndrs).subscribe({
+ 
+          next: () => {
+            return true;
+          },
+          error: (error) => {
+            console.error('Error during gift card redemption: ', error);
+            return false;
+          }
+        });
+        return true;
       }
       else {
         return true;

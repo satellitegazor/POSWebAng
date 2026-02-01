@@ -22,6 +22,7 @@ import { RootObject } from 'src/app/app.state';
 import { ToastService } from 'src/app/services/toast.service';
 import { TenderUtil } from '../tender-util';
 import { RedeemGiftCardTenders } from '../redeem-gift-card-tenders';
+import { RedeeemGiftCardTndrsService } from '../redeeem-gift-card-tndrs.service';
 
 @Component({
   selector: 'app-tender-page',
@@ -38,7 +39,8 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
     private _cposWebSvc: CPOSWebSvcService,
     private _utilSvc: UtilService,
     private actions$: Actions,
-    private _toastSvc: ToastService) {
+    private _toastSvc: ToastService,
+    private _redeemGiftCardTndrsSvc: RedeeemGiftCardTndrsService) {
   }
 
   private _tktObj: TicketSplit = {} as TicketSplit;
@@ -250,7 +252,15 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
 
               if(tktObjData1.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0){
                 // Redeem Gift Card Tenders
-                new RedeemGiftCardTenders().redeem(this._store, this._cposWebSvc, this._logonDataSvc, this._toastSvc);
+                this._redeemGiftCardTndrsSvc.redeem(tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false)).subscribe({
+                  next: () => {
+                    return true;
+                  },
+                  error: (error) => {
+                    console.error('Error during gift card redemption: ', error);
+                    return false;
+                  }
+                });
               }              
 
               this._store.dispatch(markTendersComplete({ status: TenderStatusType.Complete }));

@@ -1,5 +1,6 @@
 import { Store } from "@ngrx/store";
-import { forkJoin, take } from "rxjs";
+import { forkJoin, Observable, of, take } from "rxjs";
+import { catchError, tap, map } from "rxjs/operators";
 import { saleTranDataInterface } from "../store/ticketstore/ticket.state";
 import { CPOSWebSvcService } from "../services/cposweb-svc.service";
 import { getTicketTendersSelector, getTicketTotalToPayDC, getTicketTotalToPayNDC } from "../store/ticketstore/ticket.selector";
@@ -12,8 +13,40 @@ import { ToastService } from "src/app/services/toast.service";
 import { ExchCardTndr } from "src/app/models/exch.card.tndr";
 
 export class RedeemGiftCardTenders {
+
+    public redeem(giftCardTenders: TicketTender[], _cposWebSvc: CPOSWebSvcService, _logonDataSvc: LogonDataService): Observable<void> {
+        const redemptionOps = giftCardTenders.map(tender => 
+            _cposWebSvc.GiftCardRedeem(tender.tenderTransactionId, tender.ticketTenderId, 0, tender.inStoreCardNbrTmp, tender.tenderAmount)
+            .pipe(
+                tap(response => {
+                tender.isAuthorized = true;
+                tender.authNbr = response.ApprovalCode;
+                tender.cardEndingNbr = response.CardEndingNbr;
+                tender.traceId = "false";
+                tender.tenderAmount = response.TotalApprovedAmount;
+                tender.inStoreCardNbrTmp = response.ACCT_NUM;
+                tender.fcTenderAmount = Number(Number(response.TotalApprovedAmount * _logonDataSvc.getExchangeRate()).toFixed(2));
+            }),
+            catchError(error => {
+                console.error(`Error redeeming gift card for tender ID ${tender.ticketTenderId}:`, error);
+                return of(null); // Continue with other redemptions even if one fails
+            })
+        ));
+
+        return forkJoin(redemptionOps).pipe(
+            map(() => void 0),   
+            catchError(error => {
+                console.error('Error during gift card redemptions:', error);
+                return of(void 0); // Return void observable on error
+                
+            })
+        );
+    }
+
+
+
     private pinPadResp: ExchCardTndr = {} as ExchCardTndr;
-    public redeem(_store: Store<saleTranDataInterface>, 
+    public redeemOld(_store: Store<saleTranDataInterface>, 
         _cposWebSvc: CPOSWebSvcService,
         _logonDataSvc: LogonDataService,
         _toastSvc: ToastService
@@ -51,7 +84,7 @@ export class RedeemGiftCardTenders {
             //     });
             // });
 
-            from(tndrs).pipe(
+            return from(tndrs).pipe(
                 concatMap(t => {
                     const tndrCopy = TenderUtil.copyTenderObj(t);
                     _toastSvc.info(`Redeeming Gift Card : ${t.cardEndingNbr} for amount ${t.tenderAmount}... Please wait.`);
