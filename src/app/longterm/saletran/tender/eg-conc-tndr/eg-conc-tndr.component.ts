@@ -116,6 +116,7 @@ export class EgConcTndrComponent {
         // Redeem Gift Card Tenders
         this._redeemGiftCardTndrsSvc.redeem(tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false)).subscribe({
           next: () => {
+            this.markTicketComplete();
             return true;
           },
           error: (error) => {
@@ -125,17 +126,7 @@ export class EgConcTndrComponent {
         });
       }
 
-      this._store.dispatch(markTendersComplete({ status: 4 }));
-      this._store.dispatch(markTicketComplete({ status: 2 }));
-      // Fetch the updated ticket object after marking complete
-      const tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
-      if (tktObjData1 != null) {
-        this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData1 }));
-        this.route.navigate(['/savetktsuccess']);
-      }
-      else {
-        this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
-      }
+
     }
     else {
       this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
@@ -148,6 +139,20 @@ export class EgConcTndrComponent {
 
   async btnCancelClick(evt: Event) {
     this.route.navigate([this.isSplitPay ? '/splitpay' : '/checkout']);
+  }
+
+  private async markTicketComplete() {
+    this._store.dispatch(markTendersComplete({ status: 4 }));
+    this._store.dispatch(markTicketComplete({ status: 2 }));
+    // Fetch the updated ticket object after marking complete
+    const tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    if (tktObjData1 != null) {
+      this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData1 }));
+      this.route.navigate(['/savetktsuccess']);
+    }
+    else {
+      this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
+    }
   }
 
 }

@@ -102,9 +102,9 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
 
       if (this.yetToPayDC < 0) {
         this.yetToPayDC = 0;        
-        if(this.checkIfTendersComplete()) {
-          this.saveCompleteTicketSplit();
-        }
+        this.checkIfTendersComplete();
+          
+        
       }
     });
 
@@ -132,6 +132,7 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
         this._redeemGiftCardTndrsSvc.redeem(unRedemedGCTndrs).subscribe({
  
           next: () => {
+            this.saveCompleteTicketSplit();
             return true;
           },
           error: (error) => {

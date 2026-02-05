@@ -9,7 +9,8 @@ import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
 import { SigCapture } from './models/capture-signature.model';
 import { VerifoneCommStatus } from '../../models/general-classes';
 import { AurusGiftCardInquiryResp } from './models/gift-card-enquiry-response';
-import { AurusGiftCardRedeemResp } from './models/aurus-gift-card-redeem-resp';
+import { AurusGiftCardRedeemResp, GCRedeemInput } from './models/aurus-gift-card-redeem-resp';
+import { ToastService } from 'src/app/services/toast.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ import { AurusGiftCardRedeemResp } from './models/aurus-gift-card-redeem-resp';
 export class CPOSWebSvcService {
   
   headerObjs: HttpHeaders;
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient, private _toastSvc: ToastService) {
     this.headerObjs = new HttpHeaders().set('Content-Type', 'application/json');
     this.headerObjs = this.headerObjs.append('Accept', '*/*');
   }
@@ -144,9 +145,23 @@ export class CPOSWebSvcService {
     return of(errorResult);
   }
 
-  GiftCardRedeem(TranId: number, TndrId: number, IndivId: number, EncCardNbr: string, TranAmt: number): Observable<AurusGiftCardRedeemResp> {
-    return this.httpClient.get<AurusGiftCardRedeemResp>(this.cposWebSvcUrl + 'pinpad/GiftCardRedeem?TranId=' + TranId + '&TndrId=' + TndrId + '&IndivId=' + IndivId + '&EncCardNbr=' + EncCardNbr + '&TranAmt=' + TranAmt,
-      { headers: this.headerObjs }).pipe(
+  GiftCardRedeem(dataVal: GCRedeemInput): Observable<AurusGiftCardRedeemResp> {
+    this._toastSvc.info(`Initiating Gift Card Redeem: CardEndingNbr=${dataVal.EncCardNbr}, TranAmt=${dataVal.TranAmt}`);
+
+    // Prepare body object for POST
+    const body = {
+      TranId: dataVal.TranId,
+      TndrId: dataVal.TndrId,
+      IndivId: 0,                    // kept as 0 per your original URL
+      EncCardNbr: dataVal.EncCardNbr,
+      TranAmt: dataVal.TranAmt
+    };
+
+    return this.httpClient.post<AurusGiftCardRedeemResp>(
+      this.cposWebSvcUrl + 'pinpad/GiftCardRedeem',   // URL without query params
+      body,                                            // Body sent as JSON
+      { headers: this.headerObjs }
+    ).pipe(
       catchError(error => this.handleGiftcardRedeemError(error))
     );
   }

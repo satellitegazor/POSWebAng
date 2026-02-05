@@ -11,12 +11,18 @@ import { from } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 import { ToastService } from "src/app/services/toast.service";
 import { ExchCardTndr } from "src/app/models/exch.card.tndr";
+import { GCRedeemInput } from "../services/models/aurus-gift-card-redeem-resp";
 
 export class RedeemGiftCardTenders {
 
     public redeem(giftCardTenders: TicketTender[], _cposWebSvc: CPOSWebSvcService, _logonDataSvc: LogonDataService): Observable<void> {
+
         const redemptionOps = giftCardTenders.map(tender => 
-            _cposWebSvc.GiftCardRedeem(tender.tenderTransactionId, tender.ticketTenderId, 0, tender.inStoreCardNbrTmp, tender.tenderAmount)
+        _cposWebSvc.GiftCardRedeem(new GCRedeemInput(tender.tenderTransactionId,
+            tender.ticketTenderId,
+            Number(tender.tndMaintUserId),
+            tender.inStoreCardNbrTmp,
+            tender.tenderAmount))
             .pipe(
                 tap(response => {
                 tender.isAuthorized = true;
@@ -88,14 +94,14 @@ export class RedeemGiftCardTenders {
                 concatMap(t => {
                     const tndrCopy = TenderUtil.copyTenderObj(t);
                     _toastSvc.info(`Redeeming Gift Card : ${t.cardEndingNbr} for amount ${t.tenderAmount}... Please wait.`);
+                    let dataVal = new GCRedeemInput(
+                        tndrCopy.tenderTransactionId,
+                        tndrCopy.ticketTenderId,
+                        Number(tndrCopy.tndMaintUserId),
+                        tndrCopy.inStoreCardNbrTmp,
+                        tndrCopy.tenderAmount);
                     return _cposWebSvc
-                        .GiftCardRedeem(
-                            t.tenderTransactionId,
-                            t.ticketTenderId,
-                            0,
-                            t.inStoreCardNbrTmp,
-                            t.tenderAmount
-                        )
+                        .GiftCardRedeem(dataVal)               
                         .pipe(
                             take(1),
                             // attach tender context to the response

@@ -14,7 +14,7 @@ import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/t
 import { addTender, deleteDeclinedTender, isSplitPayR5, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj, saveTenderObjSuccess } from '../../store/ticketstore/ticket.action';
 import { AurusGiftCardInquiryResp } from '../../services/models/gift-card-enquiry-response';
 import { TenderUtil } from '../tender-util';
-import { AurusGiftCardRedeemResp } from '../../services/models/aurus-gift-card-redeem-resp';
+import { AurusGiftCardRedeemResp, GCRedeemInput } from '../../services/models/aurus-gift-card-redeem-resp';
 import { DecimalPipe } from '@angular/common';
 import { HTTP_TRANSFER_CACHE_ORIGIN_MAP } from '@angular/common/http';
 @Component({
@@ -197,7 +197,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
           tndrCopy.cardEndingNbr = data.CardNbrF6L4;
           tndrCopy.traceId = "false";
           tndrCopy.tenderTypeDesc = "pinpad";
-          tndrCopy.inStoreCardNbrTmp = encodeURIComponent(data.ACCT_NUM);
+          tndrCopy.inStoreCardNbrTmp = data.ACCT_NUM;
           tndrCopy.tracking = data.CardNbrF6L4;
 
           tndrCopy.tenderTypeCode = "GC";
@@ -235,12 +235,11 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
 
   private async giftCardRedeem(gcTndr: TicketTender) {
 
-    this._cposWebSvc.GiftCardRedeem(
-      this.tndrObj.tenderTransactionId,
-      this._ticketTenderId,
-      Number(this._logonDataSvc.getLTVendorLogonData().individualUID),
-      gcTndr.inStoreCardNbrTmp,
-      gcTndr.tenderAmount)
+    this._cposWebSvc.GiftCardRedeem(new GCRedeemInput(gcTndr.tenderTransactionId,
+          gcTndr.ticketTenderId,
+          Number(gcTndr.tndMaintUserId),
+          gcTndr.inStoreCardNbrTmp,
+          gcTndr.tenderAmount))
       .pipe(
         take(1), // Ensure only one response is processed
         takeUntil(this.destroy$) // Automatically unsubscribe when component is destroyed
