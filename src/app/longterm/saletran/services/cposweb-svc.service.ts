@@ -146,7 +146,7 @@ export class CPOSWebSvcService {
   }
 
   GiftCardRedeem(dataVal: GCRedeemInput): Observable<AurusGiftCardRedeemResp> {
-    this._toastSvc.info(`Initiating Gift Card Redeem: CardEndingNbr=${dataVal.EncCardNbr}, TranAmt=${dataVal.TranAmt}`);
+    
 
     // Prepare body object for POST
     const body = {

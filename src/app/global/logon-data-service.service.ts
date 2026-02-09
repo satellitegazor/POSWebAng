@@ -198,6 +198,10 @@ export class LogonDataService {
         sessionStorage.setItem('eagleCashOptn', String(locConfig.configs[0].eagleCashOptn != null ? locConfig.configs[0].eagleCashOptn : false));
         sessionStorage.setItem('useShipHndlng', String(locConfig.configs[0].useShipHndlng != null ? locConfig.configs[0].useShipHndlng : false));
 
+        sessionStorage.setItem('inProgTranId', String(locConfig.configs[0].inProgTranId));
+        sessionStorage.setItem('inProgTranTabSerialNum', locConfig.configs[0].inProgTranTabSerialNum);
+        sessionStorage.setItem('tenderDateTime', String(locConfig.configs[0].tenderDateTime));
+
         if( typeof (this._ltLocationConfig.configs) == 'undefined' || this._ltLocationConfig.configs.length == 0) {
             this._ltLocationConfig = locConfig;
         }
@@ -290,6 +294,12 @@ export class LogonDataService {
         locConfig.postalCode = String(sessionStorage.getItem('postalCode') ? sessionStorage.getItem('postalCode') : '0');
         locConfig.eagleCashOptn = (sessionStorage.getItem('eagleCashOptn') ? sessionStorage.getItem('eagleCashOptn') : 'false') == 'true';
         locConfig.useShipHndlng = (sessionStorage.getItem('useShipHndlng') ? sessionStorage.getItem('useShipHndlng') : 'false') == 'true';
+        locConfig.inProgTranId = (sessionStorage.getItem('inProgTranid') ? Number(sessionStorage.getItem('inProgTranid')) : 0)
+        locConfig.inProgTranTabSerialNum = (sessionStorage.getItem('inProgTranTabSerialNum') ?? "")
+        locConfig.tenderDateTime = sessionStorage.getItem('tenderDateTime')
+            ? new Date(sessionStorage.getItem('tenderDateTime')!)
+            : new Date();
+        
 
         return locConfig;
     }

@@ -171,6 +171,7 @@ export class CashTndrComponent implements OnInit {
         // Redeem Gift Card Tenders
         this._redeemGiftCardTndrsSvc.redeem(tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false)).subscribe({
           next: () => {
+            this.markTicketComplete();
             return true;
           },
           error: (error) => {
@@ -182,22 +183,25 @@ export class CashTndrComponent implements OnInit {
         //new RedeemGiftCardTenders().redeem(this._store, this._cposWebSvc, this._logonDataSvc, this._toastSvc);
       }
 
-      this._store.dispatch(markTendersComplete({ status: TenderStatusType.Complete }));
-      this._store.dispatch(markTicketComplete({ status: TranStatusType.Complete }));
-      
-      // Fetch the updated ticket object after marking complete
-      tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
 
-      if(tktObjData != null) {
-        this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData }));
-        this.route.navigate(['/savetktsuccess']);
-      }
-      else {
-        this.route.navigate(['/checkout']);
-      }
     }
     else {
       this.route.navigate([this.isSplitPay ? '/splitpay' : '/checkout']);
+    }
+  }
+
+  private async markTicketComplete() {
+    this._store.dispatch(markTendersComplete({ status: TenderStatusType.Complete }));
+    this._store.dispatch(markTicketComplete({ status: TranStatusType.Complete }));
+
+    // Fetch the updated ticket object after marking complete
+    const tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    if (tktObjData != null) {
+      this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData }));
+      this.route.navigate(['/savetktsuccess']);
+    }
+    else {
+      this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
     }
   }
 

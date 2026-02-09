@@ -25,6 +25,7 @@ export class RedeeemGiftCardTndrsService {
             this._toastSvc.info('No gift card tenders to redeem.');
             return of(void 0);
         }
+        this._toastSvc.info("Initiating Gift Card Redeem, please wait...");
 
         return from(giftCardTenders).pipe(
             concatMap((tender, index) => 
@@ -45,6 +46,9 @@ export class RedeeemGiftCardTndrsService {
                     tndrCopy.tenderAmount = response.TotalApprovedAmount;
                     tndrCopy.inStoreCardNbrTmp = response.ACCT_NUM;
                     tndrCopy.fcTenderAmount = Number(Number(response.TotalApprovedAmount * this._logonDataSvc.getExchangeRate()).toFixed(2));
+
+                    this._toastSvc.success(`Gift Card Redeemed Successfully: Card Ending Nbr ${response.CardEndingNbr}, Approved Amount ${tndrCopy.tenderAmount}`);
+
                     this._store.dispatch(addTender({ tndrObj: tndrCopy }));
                     this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
                   }),

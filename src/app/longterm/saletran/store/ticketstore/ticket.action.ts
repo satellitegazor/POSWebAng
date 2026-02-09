@@ -8,6 +8,7 @@ import { LocationConfig } from '../../../models/location-config';
 import { LTC_Associates } from '../../../models/location.associates';
 import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCheckoutItem';
 import { ExchCardTndr, SaveExchCardTndrResult } from 'src/app/models/exch.card.tndr';
+import { LTC_Ticket } from 'src/app/longterm/models/ticket.list';
  
 export const ADD_SALE_ITEM = 'addSaleItem';
 export const INC_SALE_ITEM_QTY = 'incSaleItemQty';
@@ -56,6 +57,10 @@ export const UPDATE_LOCATION_CONFIG = 'updateLocationConfig';
 export const REMOVE_TNDR_SAVE_CODE = "removeTenderWithSaveCode";
 export const UPDATE_TENDER_RRN = 'updateTenderRRN';
 export const IS_SPLIT_PAY_R5 = 'isSplitPayR5';
+
+export const LOAD_TICKET = '[LocationConfig] Load Ticket'
+export const LOAD_TICKET_SUCCESS = '[LocationConfig] Load Ticket Success'
+export const LOAD_TICKET_FAIL = '[LocationConfig] Load Ticket Fail'
 
 export const addSaleItem = createAction(ADD_SALE_ITEM,
     props<{saleItem: SalesTransactionCheckoutItem}>());
@@ -156,5 +161,16 @@ export const upsertTranExchCpn = createAction(UPSERT_TRAN_EXCH_CPN, props<{logon
 export const updatePartPayData = createAction(UPDATE_PARTPAY_DATA, props<{partPayFlag: boolean, partPayAmountDC: number, partPayAmountNDC: number}>());
 
 export const isSplitPayR5 = createAction(IS_SPLIT_PAY_R5, props<{isSplitPayR5: boolean}>());
+
+export const loadTicket = createAction(LOAD_TICKET,
+    props<{ tranId: number, locationId: number, indivId: number }>());
+
+export const loadTicketSuccess = createAction(LOAD_TICKET_SUCCESS,
+    props<{ tktObj: LTC_Ticket }>());
+
+export const loadTicketFail = createAction(LOAD_TICKET_FAIL,
+    props<{ errMessage: String }>());
+
+
 
 //export const updateLocationConfig = createAction(UPDATE_LOCATION_CONFIG, props<{}>)

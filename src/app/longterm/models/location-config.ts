@@ -63,6 +63,9 @@ export class LocationConfig {
     public hoursOfOperations: LTC_HoursOfOperation[] = [];
     public eagleCashOptn: boolean = false;
     public useShipHndlng: boolean = false;
+    public inProgTranId: number = 0;
+    public tenderDateTime: Date = {} as Date;
+    public inProgTranTabSerialNum: string = '';
 }
 
 export class LocationIndividual 

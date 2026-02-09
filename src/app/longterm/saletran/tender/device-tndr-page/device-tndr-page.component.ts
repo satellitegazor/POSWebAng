@@ -263,14 +263,16 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
                 });
               }              
 
-              this._store.dispatch(markTendersComplete({ status: TenderStatusType.Complete }));
-              this._store.dispatch(markTicketComplete({ status: TranStatusType.Complete }));
+              this.markTicketComplete();
 
-              // Fetch the updated ticket object after marking status as complete
-              var tktObjDataUpdated = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+              // this._store.dispatch(markTendersComplete({ status: TenderStatusType.Complete }));
+              // this._store.dispatch(markTicketComplete({ status: TranStatusType.Complete }));
 
-              this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjDataUpdated }));
-              this.route.navigate(['/savetktsuccess']);
+              // // Fetch the updated ticket object after marking status as complete
+              // var tktObjDataUpdated = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+
+              // this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjDataUpdated }));
+              // this.route.navigate(['/savetktsuccess']);
             }
             else {
               this._toastSvc.success('Split pay of ' + this.dcCurrSymbl + this.tenderAmount + ' Card transaction approved. Please select next tender method.');
@@ -296,6 +298,20 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
       });
   }
 
+  private async markTicketComplete() {
+    this._store.dispatch(markTendersComplete({ status: TenderStatusType.Complete }));
+    this._store.dispatch(markTicketComplete({ status: TranStatusType.Complete }));
+
+    // Fetch the updated ticket object after marking complete
+    const tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    if (tktObjData != null) {
+      this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData }));
+      this.route.navigate(['/savetktsuccess']);
+    }
+    else {
+      this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
+    }
+  }
   /**
      * Creates a deep copy of the TicketTender object
      * @returns A new TicketTender instance with all properties copied

@@ -55,4 +55,74 @@ export class SalesTransactionCheckoutItem
     exchCpnAmountNDC = 0;
     vndCpnAmountNDC = 0;
 
+    public static deepCopy(source: SalesTransactionCheckoutItem): SalesTransactionCheckoutItem {
+        const copy = new SalesTransactionCheckoutItem();
+
+        // Simple value fields with null/undefined → safe defaults
+        copy.ticketDetailId = source.ticketDetailId ?? 0;
+        copy.tktTransactionID = source.tktTransactionID ?? 0;
+        copy.salesItemDesc = source.salesItemDesc ?? "";
+        copy.salesItemUID = source.salesItemUID ?? 0;
+        copy.salesCategoryUID = source.salesCategoryUID ?? 0;
+        copy.quantity = source.quantity ?? 0;
+        copy.unitPrice = source.unitPrice ?? 0;
+        copy.salesTaxPct = source.salesTaxPct ?? 0;
+        copy.envrnmtlTaxPct = source.envrnmtlTaxPct ?? 0;
+        copy.noOfTags = source.noOfTags ?? 0;
+        copy.vendorCouponDiscountPct = source.vendorCouponDiscountPct ?? 0;
+        copy.discountAmount = source.discountAmount ?? 0;
+        copy.exchangeCouponDiscountPct = source.exchangeCouponDiscountPct ?? 0;
+        copy.couponLineItemDollarAmount = source.couponLineItemDollarAmount ?? 0;
+        copy.fCCouponLineItemDollarAmount = source.fCCouponLineItemDollarAmount ?? 0;
+        copy.lineItemTaxAmount = source.lineItemTaxAmount ?? 0;
+        copy.lineItemEnvTaxAmount = source.lineItemEnvTaxAmount ?? 0;
+        copy.lineItemDollarDisplayAmount = source.lineItemDollarDisplayAmount ?? 0;
+        copy.dtlMaintUserId = source.dtlMaintUserId ?? "";
+        copy.isMiscellaneous = source.isMiscellaneous ?? false;
+        copy.contractUID = source.contractUID ?? 0;
+        copy.locationUID = source.locationUID ?? 0;
+        copy.facilityUID = source.facilityUID ?? 0;
+        copy.departmentUID = source.departmentUID ?? 0;
+        copy.businessFunctionUID = source.businessFunctionUID ?? 0;
+        copy.deptName = source.deptName ?? "";
+        copy.custInfoReq = source.custInfoReq ?? false;
+        copy.applyCouponsAfterTax = source.applyCouponsAfterTax ?? false;
+        copy.allowPartPay = source.allowPartPay ?? false;
+        copy.allowSaveTkt = source.allowSaveTkt ?? false;
+        copy.instruction = source.instruction ?? "";
+        copy.addlInstruction = source.addlInstruction ?? "";
+        copy.openCashDrwForTips = source.openCashDrwForTips ?? false;
+        copy.allowTips = source.allowTips ?? false;
+        copy.srvdByAssociateVal = source.srvdByAssociateVal ?? 0;
+        copy.srvdByAssociateText = source.srvdByAssociateText ?? "";
+        copy.businessFuncCode = source.businessFuncCode ?? "";
+        copy.splInstUID = source.splInstUID ?? 0;
+        copy.splInstDesc = source.splInstDesc ?? "";
+        copy.splInstOthRsn = source.splInstOthRsn ?? "";
+        copy.itemSaved = source.itemSaved ?? false;
+        copy.dCCouponLineItemDollarAmount = source.dCCouponLineItemDollarAmount ?? 0;
+        copy.dCDiscountAmount = source.dCDiscountAmount ?? 0;
+        copy.dCLineItemDollarDisplayAmount = source.dCLineItemDollarDisplayAmount ?? 0;
+        copy.dCLineItemTaxAmount = source.dCLineItemTaxAmount ?? 0;
+        copy.dCUnitPrice = source.dCUnitPrice ?? 0;
+        copy.lineItmKatsaCpnAmt = source.lineItmKatsaCpnAmt ?? 0;
+        copy.fCLineItmKatsaCpnAmt = source.fCLineItmKatsaCpnAmt ?? 0;
+        copy.fCLineItemEnvTaxAmount = source.fCLineItemEnvTaxAmount ?? 0;
+        copy.exchCpnAmountDC = source.exchCpnAmountDC ?? 0;
+        copy.vndCpnAmountDC = source.vndCpnAmountDC ?? 0;
+        copy.exchCpnAmountNDC = source.exchCpnAmountNDC ?? 0;
+        copy.vndCpnAmountNDC = source.vndCpnAmountNDC ?? 0;
+
+        // Special handling for Date (null/undefined → new Date())
+        copy.dtlMaintTimestamp = source.dtlMaintTimestamp instanceof Date
+            ? new Date(source.dtlMaintTimestamp)   // proper deep copy of Date
+            : (source.dtlMaintTimestamp ? new Date(source.dtlMaintTimestamp) : new Date());
+
+        // Arrays (deep copy)
+
+        // If you have more nested objects, copy them similarly
+
+        return copy;
+    }
+
 }

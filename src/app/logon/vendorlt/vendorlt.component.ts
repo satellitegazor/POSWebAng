@@ -16,6 +16,7 @@ import { ResetPinDlgComponent } from './reset-pin-dlg/reset-pin-dlg.component';
 import { MandateTrainingComponent } from './mandate-training/mandate-training.component';
 import { ToastService } from 'src/app/services/toast.service';
 import { HttpClient } from '@angular/common/http';
+import { loadTicket, updateCheckoutTotals } from 'src/app/longterm/saletran/store/ticketstore/ticket.action';
 
 @Component({
     selector: 'app-logon-vendorlt',
@@ -85,6 +86,8 @@ export class VendorLTComponent implements OnInit {
             }
             //debugger;
 
+            let inProgTranId = 0;
+
             if (!data.results.success) {
                 this.errorMsgDisplay = 'block';
                 this.successMsgDisplay = 'none';
@@ -118,12 +121,6 @@ export class VendorLTComponent implements OnInit {
             this._saleTranSvc.getTenderTypes(1, 100).subscribe(data => {
                 this._logonDataSvc.setTenderTypes(data);
             });
-            this._saleTranSvc.getLocationConfig(+data.locationUID, +data.individualUID).subscribe(data => {
-
-                this._logonDataSvc.setLocationConfig(data);
-                this._locConfigStore.dispatch(setLocationConfig({ locationConfig: data }));
-
-            });
             locModel.individualUID = +data.individualUID;
 
             if(data.resetPIN == 1) {
@@ -137,7 +134,8 @@ export class VendorLTComponent implements OnInit {
                         setTimeout(() => {
                             this.logonSvc.saveAssociatePIN(locModel).subscribe(pinData => {   
                                 //console.log('vendorlt navigating to SalesCart');
-                                this.router.navigate(['/salestran']);
+                                
+                                this.router.navigate([inProgTranId > 0 ? '/checkout' : '/salestran']);
                             });
                         }, 500);
                     }
@@ -154,7 +152,7 @@ export class VendorLTComponent implements OnInit {
                     locModel.pageID  = 2;
                     locModel.privActConfmComplete = true;
                     this.logonSvc.logonUser(locModel).subscribe(() => {   
-                        this.router.navigate(['/salestran']);
+                        this.router.navigate([inProgTranId > 0 ? '/checkout' : '/salestran']);
                     });
                     
                     //console.log('vendorlt mandate training dialog closed');
@@ -163,10 +161,25 @@ export class VendorLTComponent implements OnInit {
                 });
                 return;
             }
-            //console.log('vendorlt navigating to SalesCart');
-            this.router.navigate(['/salestran']);
 
+            this._saleTranSvc.getLocationConfig(+data.locationUID, +data.individualUID).subscribe(locCnfgData => {
 
+                this._logonDataSvc.setLocationConfig(locCnfgData);
+                this._locConfigStore.dispatch(setLocationConfig({ locationConfig: locCnfgData }));
+                inProgTranId = locCnfgData.configs[0].inProgTranId;
+                if(inProgTranId > 0) {
+                    this._toastSvc.info_wClick("An incomplete ticket has been found. Please complete it or void it!!");
+                    this._locConfigStore.dispatch(loadTicket({ tranId: inProgTranId, locationId: locModel.locationUID, indivId: locModel.individualUID }));
+
+                    setTimeout((logonDataSvc, locConfigStore, routr) => {                        
+                        //locConfigStore.dispatch(updateCheckoutTotals({logonDataSvc}))
+                        routr.navigate(['/checkout']);
+                    }, 1000, this._logonDataSvc, this._locConfigStore, this.router);                    
+                }
+                else {
+                    this.router.navigate(['/salestran']);
+                }              
+            });
         });
     }
 

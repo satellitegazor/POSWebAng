@@ -15,11 +15,11 @@ import { addTender, deleteDeclinedTender, isSplitPayR5, markTendersComplete, mar
 import { AurusGiftCardInquiryResp } from '../../services/models/gift-card-enquiry-response';
 import { TenderUtil } from '../tender-util';
 import { AurusGiftCardRedeemResp, GCRedeemInput } from '../../services/models/aurus-gift-card-redeem-resp';
-import { DecimalPipe } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { HTTP_TRANSFER_CACHE_ORIGIN_MAP } from '@angular/common/http';
 @Component({
   selector: 'app-gift-card-inquiry',
-  imports: [DecimalPipe],
+  imports: [DecimalPipe, CommonModule],
   templateUrl: './gift-card-inquiry.component.html',
   styleUrl: './gift-card-inquiry.component.css'
 })
@@ -210,7 +210,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
           this._store.dispatch(addTender({ tndrObj: tndrCopy }));
           this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
 
-          this._toastSvc.success('Gift Card Tender Added Successfully.');
+          //this._toastSvc.success('Gift Card Tender Added Successfully.');
           var tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
 
           if (TenderUtil.IsTicketComplete(tktObjData1, this._logonDataSvc.getAllowPartPay())) {
@@ -226,9 +226,8 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
         else {
           this._toastSvc.error('Gift Card Inquiry Failed: ' + data.rslt.ReturnMsg + '.<br/>Please use another tender method.');
           this.route.navigate(['/splitpay']);
-          this.btnDeclineClick(new PointerEvent('auto-decline'));
+          this.btnCancelClick(new PointerEvent('auto-decline'));
         }
-   
       }
     });
   }
@@ -300,14 +299,14 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
               this._store.dispatch(deleteDeclinedTender({ rrn: this.InvoiceId }));
 
               this.route.navigate(['/splitpay']);
-              this.btnDeclineClick(new PointerEvent('auto-decline'));
+              this.btnCancelClick(new PointerEvent('auto-decline'));
             }
           }
         }
       });
   }
 
-  async btnDeclineClick($event: PointerEvent) {
+  async btnCancelClick($event: PointerEvent) {
 
     var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
     if (tktObjData == null) {
@@ -336,10 +335,4 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
 
     this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
   }
-
-
-  btnApproveClick($event: PointerEvent) {
-    throw new Error('Method not implemented.');
-  }
-
 }

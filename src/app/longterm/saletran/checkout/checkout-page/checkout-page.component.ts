@@ -58,12 +58,14 @@ export class CheckoutPageComponent implements OnInit {
   _displayTenders: TenderType[] = [];
   tenderButtonWidthPercent: number = 0;
   isRefund: boolean = false;
+  isInCompleteTicket: boolean = false;
   private _transactionId: number = 0; // Store transaction ID from saveTicketForGuestCheck
 
   public ngOnInit(): void {
 
     //console.log('CheckoutPage component ngOnInit called');
     this.locationConfig = this._logonDataSvc.getLocationConfig();
+    this.isInCompleteTicket = this.locationConfig.inProgTranId > 0;
     this.isOConus = this.locationConfig.rgnCode != "CON";
 
     this._tenderTypesModel = this._logonDataSvc.getTenderTypes();
@@ -116,9 +118,7 @@ export class CheckoutPageComponent implements OnInit {
           console.log('Transaction ID saved:', this._transactionId);
 
           // Update tender with transaction ID
-
           this._store.dispatch(addTender({ tndrObj }));
-
           this.router.navigate([this._utilSvc.tenderCodePageMap.get(tndrCode)], { queryParams: { code: tndrCode } })
         });
       }

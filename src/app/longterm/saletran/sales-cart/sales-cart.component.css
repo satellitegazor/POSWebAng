@@ -1,1 +1,70 @@
- 
+ .sales-cart-container {
+     padding: 1.8rem 1rem;
+     max-width: 1300px;
+     margin: 0 auto;
+ }
+
+ .cart-header {
+     background: linear-gradient(135deg, #198754, #157347);
+     color: white;
+     padding: 1.4rem 1.8rem;
+     border-radius: 14px 14px 0 0;
+     font-size: 1.35rem;
+     font-weight: 600;
+ }
+
+ .cart-item {
+     padding: 1.2rem 0;
+     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+     &:last-child {
+         border-bottom: none;
+     }
+
+     .item-desc {
+         font-weight: 500;
+         color: #212529;
+         font-size: 1.05rem;
+     }
+
+     .item-qty {
+         color: #0d6efd;
+         font-weight: 600;
+     }
+
+     .item-price {
+         color: #198754;
+         font-weight: 700;
+         font-size: 1.15rem;
+     }
+ }
+
+ .cart-totals {
+     background: #f8f9fa;
+     border-radius: 12px;
+     padding: 1.4rem;
+     margin-top: 1.5rem;
+     border: 1px solid rgba(0, 0, 0, 0.05);
+
+     .total-label {
+         font-size: 1.15rem;
+         color: #495057;
+         font-weight: 500;
+     }
+
+     .grand-total {
+         font-size: 1.6rem;
+         font-weight: 700;
+         color: #198754;
+         padding-top: 1rem;
+         border-top: 2px solid #dee2e6;
+     }
+ }
+
+ .action-btn-group {
+     .btn-lg {
+         padding: 0.9rem 2.2rem;
+         font-size: 1.15rem;
+         min-width: 180px;
+     }
+ }

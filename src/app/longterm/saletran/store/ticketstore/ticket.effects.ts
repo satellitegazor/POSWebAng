@@ -4,7 +4,7 @@ import { select, State, Store } from "@ngrx/store";
 import { of } from "rxjs";
 import { catchError, concatMap, exhaustMap, map, mergeMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { SalesTranService } from "../../services/sales-tran.service";
-import { saveTicketForGuestCheck, saveTicketForGuestCheckSuccess, saveTicketForGuestCheckFailed, saveCompleteTicketSplit, saveCompleteTicketSplitSuccess, saveCompleteTicketSplitFailed, saveTenderObj, saveTenderObjSuccess, saveTenderObjFailed, savePinpadResponse, savePinpadResponseFailed, savePinpadResponseSuccess } from "./ticket.action";
+import { saveTicketForGuestCheck, saveTicketForGuestCheckSuccess, saveTicketForGuestCheckFailed, saveCompleteTicketSplit, saveCompleteTicketSplitSuccess, saveCompleteTicketSplitFailed, saveTenderObj, saveTenderObjSuccess, saveTenderObjFailed, savePinpadResponse, savePinpadResponseFailed, savePinpadResponseSuccess, loadTicket, loadTicketSuccess, loadTicketFail } from "./ticket.action";
 import { saleTranDataInterface } from "./ticket.state";
 import { getTktObjSelector } from './ticket.selector';
 import { CPOSAppType } from "src/app/services/util.service";
@@ -89,5 +89,16 @@ export class TicketObjectEffects {
             })
         );
     });
-
+    // Effect to trigger ticket load when inProgTranId > 0
+    loadTicketEffect$ = createEffect(() => {
+        return this.action$.pipe(
+            ofType(loadTicket),
+            mergeMap(action =>
+                this.saleTranSvc.getSingleTransaction(action.indivId, action.tranId, false, 0, "", 0, 0).pipe(
+                    map(singleTranObj => loadTicketSuccess({ tktObj: singleTranObj.ticket })),
+                    catchError(error => of(loadTicketFail({ errMessage: error.message || 'Unable to load in-progress ticket. Please logoff and logon again' })))
+                )
+            )
+        )
+    });
 }
