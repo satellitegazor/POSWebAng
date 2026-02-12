@@ -66,6 +66,7 @@ export class LocationConfig {
     public inProgTranId: number = 0;
     public tenderDateTime: Date = {} as Date;
     public inProgTranTabSerialNum: string = '';
+    public discMilstarBinRange: string = '650155';
 }
 
 export class LocationIndividual 

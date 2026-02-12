@@ -254,6 +254,7 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
                 // Redeem Gift Card Tenders
                 this._redeemGiftCardTndrsSvc.redeem(tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false)).subscribe({
                   next: () => {
+                    this.markTicketComplete();
                     return true;
                   },
                   error: (error) => {
@@ -261,9 +262,12 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
                     return false;
                   }
                 });
+              }
+              else {
+                this.markTicketComplete();
               }              
 
-              this.markTicketComplete();
+              
 
               // this._store.dispatch(markTendersComplete({ status: TenderStatusType.Complete }));
               // this._store.dispatch(markTicketComplete({ status: TranStatusType.Complete }));
@@ -408,7 +412,8 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
       return false;
     }
     const firstSixDigits = FIRST6_LAST4.substring(0, 6);
-    if(firstSixDigits == '650155') {
+    const discMilstarBinRange = this._logonDataSvc.getLocationConfig().discMilstarBinRange
+    if(firstSixDigits.includes(discMilstarBinRange)) {
       return true;
     }
     return false;

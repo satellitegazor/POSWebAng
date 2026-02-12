@@ -79,67 +79,9 @@ export function mapLtcTicketToTicketSplit(ltc: LTC_Ticket): TicketSplit {
     split.transactionDate = ltc.transactionDate ? new Date(ltc.transactionDate) : new Date();
     split.tranStatus = TranStatusType.InProgress;
 
-    if(ltc.tenders.length > 0) {
-        ltc.tenders.forEach(inCompleteTender => {
-
-            let tndr = new TicketTender()    
-            tndr.ticketTenderId = inCompleteTender.ticketTenderId;
-            tndr.tenderTypeId = inCompleteTender.tenderTypeId;
-            tndr.tenderTransactionId = inCompleteTender.tenderTransactionId;
-            tndr.tenderTypeCode = inCompleteTender.tenderTypeCode;
-            tndr.tenderTypeDesc = inCompleteTender.tenderTypeDesc;
-            tndr.isRefundType = inCompleteTender.isRefundType;
-            tndr.isSignature = inCompleteTender.isSignature;
-            tndr.displayOrder = inCompleteTender.displayOrder;
-            tndr.cardEndingNbr = inCompleteTender.cardEndingNbr;
-            tndr.tracking = inCompleteTender.tracking;
-            tndr.traceId = inCompleteTender.traceId;
-            tndr.authNbr = inCompleteTender.authNbr;
-            tndr.rrn = inCompleteTender.rrn;
-
-            tndr.tenderAmount = inCompleteTender.tenderAmount;
-            tndr.changeDue = inCompleteTender.changeDue;
-            tndr.fcChangeDue = inCompleteTender.fcChangeDue;
-            tndr.cardBalance = inCompleteTender.cardBalance;
-            tndr.fcTenderAmount = inCompleteTender.fcTenderAmount;
-            tndr.fcCurrCode = inCompleteTender.fcCurrCode;
-
-            tndr.transactionNumber = inCompleteTender.transactionNumber;
-            tndr.tndMaintTimestamp = inCompleteTender.tndMaintTimestamp
-                ? new Date(inCompleteTender.tndMaintTimestamp)
-                : inCompleteTender.tndMaintTimestamp;
-            tndr.tndMaintUserId = inCompleteTender.tndMaintUserId;
-            tndr.tipAmount = inCompleteTender.tipAmount;
-            tndr.fcTipAmount = inCompleteTender.fcTipAmount;
-
-            tndr.exchCardType = inCompleteTender.exchCardType;
-            tndr.exchCardPymntType = inCompleteTender.exchCardPymntType;
-            tndr.cardEntryMode = inCompleteTender.cardEntryMode;
-
-            tndr.signatureType = inCompleteTender.signatureType;
-            tndr.milstarPlanNum = inCompleteTender.milstarPlanNum;
-            tndr.checkNumber = inCompleteTender.checkNumber;
-
-            tndr.isAuthorized = inCompleteTender.isAuthorized;
-            tndr.ctroutd = inCompleteTender.ctroutd;
-            tndr.tenderStatus = inCompleteTender.tenderStatus;
-            tndr.cliTimeVar = inCompleteTender.cliTimeVar;
-            tndr.refundAuthNbr = inCompleteTender.refundAuthNbr;
-            tndr.inStoreCardNbrTmp = inCompleteTender.inStoreCardNbrTmp;
-            tndr.voidRRN = inCompleteTender.voidRRN;
-            tndr.tndrTimeStamp = inCompleteTender.tndrTimeStamp
-                ? new Date(inCompleteTender.tndrTimeStamp)
-                : inCompleteTender.tndrTimeStamp;
-
-            tndr.refundCardNbr = inCompleteTender.refundCardNbr;
-            tndr.refundCardType = inCompleteTender.refundCardType;
-            tndr.refundCardEntryMode = inCompleteTender.refundCardEntryMode;
-            tndr.refundEmvCvm = inCompleteTender.refundEmvCvm;
-            tndr.isDiscoverMilstar = inCompleteTender.isDiscoverMilstar;
-            tndr.partPayId = inCompleteTender.partPayId;
-            tndr.partPayAmount = inCompleteTender.partPayAmount;
-            tndr.partPayAmountFC = inCompleteTender.partPayAmountFC;
-            
+     if(ltc.tenders.length > 0) {
+         ltc.tenders.forEach(inCompleteTender => {
+            let tndr : TicketTender = TicketTender.deepCopy(inCompleteTender);
             split.ticketTenderList.push(tndr);
         });
     }

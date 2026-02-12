@@ -53,6 +53,86 @@ export class TicketTender {
     partPayAmount: number = 0;
     partPayAmountFC: number = 0;
 
+    public static deepCopyTenderList(sourceList: TicketTender[]) {
+        let destList: TicketTender[] = [];
+        sourceList.forEach(tndr => {
+            let destTender = TicketTender.deepCopy(tndr);
+            destList.push(destTender);            
+        });
+        return destList;
+    }
+
+    public static deepCopy(source: TicketTender | null | undefined): TicketTender {
+        const copy = new TicketTender();
+
+        if (!source) {
+            return copy; // return default instance if source is null/undefined
+        }
+
+        let pinPadTenderTypes = ['XC', 'XR', 'MS', 'MR', 'EG'];
+
+        // Numbers
+        copy.ticketTenderId = source.ticketTenderId ?? 0;
+        copy.tenderTypeId = source.tenderTypeId ?? 0;
+        copy.tenderTransactionId = source.tenderTransactionId ?? 0;
+        copy.displayOrder = source.displayOrder ?? 0;
+        copy.tenderAmount = source.tenderAmount ?? 0;
+        copy.changeDue = source.changeDue ?? 0;
+        copy.fcChangeDue = source.fcChangeDue ?? 0;
+        copy.cardBalance = source.cardBalance ?? 0;
+        copy.fcTenderAmount = source.fcTenderAmount ?? 0;
+        copy.tipAmount = source.tipAmount ?? 0;
+        copy.fcTipAmount = source.fcTipAmount ?? 0;
+        copy.tenderStatus = source.tenderStatus ?? 0;
+        copy.cliTimeVar = source.cliTimeVar ?? 0;
+        copy.partPayId = source.partPayId ?? 0;
+        copy.partPayAmount = source.partPayAmount ?? 0;
+        copy.partPayAmountFC = source.partPayAmountFC ?? 0;
+
+        // Strings
+        copy.tenderTypeCode = source.tenderTypeCode ?? '';
+        copy.tenderTypeDesc = (source.tenderTypeDesc == null || source.tenderTypeDesc == 'Credit Card') ? (pinPadTenderTypes.includes(source.tenderTypeCode) ? 'pinpad' : '' ) : '';
+        copy.cardEndingNbr = source.cardEndingNbr ?? '';
+        copy.tracking = source.tracking ?? '';
+        copy.traceId = source.traceId ?? '';
+        copy.authNbr = source.authNbr ?? '';
+        copy.rrn = source.rrn ?? '';
+        copy.fcCurrCode = source.fcCurrCode ?? '';
+        copy.transactionNumber = source.transactionNumber ?? '';
+        copy.tndMaintUserId = source.tndMaintUserId ?? '';
+        copy.exchCardType = source.exchCardType ?? '';
+        copy.exchCardPymntType = source.exchCardPymntType ?? '';
+        copy.cardEntryMode = source.cardEntryMode ?? '';
+        copy.signatureType = source.signatureType ?? '';
+        copy.milstarPlanNum = source.milstarPlanNum ?? '';
+        copy.checkNumber = source.checkNumber ?? '';
+        copy.ctroutd = source.ctroutd ?? '';
+        copy.refundAuthNbr = source.refundAuthNbr ?? '';
+        copy.inStoreCardNbrTmp = source.inStoreCardNbrTmp ?? '';
+        copy.voidRRN = source.voidRRN ?? '';
+        copy.refundCardNbr = source.refundCardNbr ?? '';
+        copy.refundCardType = source.refundCardType ?? '';
+        copy.refundCardEntryMode = source.refundCardEntryMode ?? '';
+        copy.refundEmvCvm = source.refundEmvCvm ?? '';
+
+        // Booleans
+        copy.isRefundType = source.isRefundType ?? false;
+        copy.isSignature = source.isSignature ?? false;
+        copy.isAuthorized = source.isAuthorized ?? false;
+        copy.isDiscoverMilstar = source.isDiscoverMilstar ?? false;
+
+        // Dates – safe cloning
+        copy.tndMaintTimestamp = source.tndMaintTimestamp
+            ? new Date(source.tndMaintTimestamp)
+            : new Date();
+
+        copy.tndrTimeStamp = source.tndrTimeStamp
+            ? new Date(source.tndrTimeStamp)
+            : new Date();
+
+        return copy;
+    }
+
     // public deepCopy(src: TicketTender): void {
     //     if (!src) {
     //         return;

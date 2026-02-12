@@ -1101,10 +1101,28 @@ export const _tktObjReducer = createReducer(
       }
    }),
 
-   on(loadTicketSuccess, (state, { tktObj: tktObj }) => {
-      const mappedTicket: TicketSplit = mapLtcTicketToTicketSplit(tktObj);
+   on(loadTicketSuccess, (state, { tktObj: loadedTktObj }) => {
+
       return {...state,
-         tktObj: mappedTicket
+         tktObj: {
+            ...state.tktObj,
+            transactionID: loadedTktObj.transactionID,
+            ticketNumber: loadedTktObj.ticketNumber,
+            cancelTransactionID: 0,
+            isRefund: false,
+            balanceDue: loadedTktObj.balanceDue,
+            customerId: loadedTktObj.customer != null ? loadedTktObj.customer.customerUID : 0,
+            shipHandling: loadedTktObj.shipHandling ?? 0,
+            shipHandlingFC: loadedTktObj.fCShipHandling,
+            shipHandlingTaxAmt: loadedTktObj.shipHandlingTaxAmt,
+            shipHandlingTaxAmtFC: loadedTktObj.fCShipHandlingTaxAmt,
+            taxExempted: loadedTktObj.taxExempted == 1,
+            transactionDate: loadedTktObj.transactionDate ? new Date(loadedTktObj.transactionDate) : new Date(),
+            tranStatus: TranStatusType.InProgress,
+            ticketTenderList: TicketTender.deepCopyTenderList(loadedTktObj.tenders),
+            tktList: SalesTransactionCheckoutItem.deepCopySaleItemList(loadedTktObj.items),
+            customer: loadedTktObj.customer ? { ...loadedTktObj.customer } : {} as LTC_Customer
+         }
       }
    })
 

@@ -182,7 +182,9 @@ export class CashTndrComponent implements OnInit {
             // After redeeming gift cards, mark tenders and ticket as complete
         //new RedeemGiftCardTenders().redeem(this._store, this._cposWebSvc, this._logonDataSvc, this._toastSvc);
       }
-
+      else {
+        this.markTicketComplete();
+      }
 
     }
     else {

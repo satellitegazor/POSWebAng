@@ -41,6 +41,21 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
   yetToPayDC: any;
   yetToPayNDC: any;
 
+  private _clickDebounceMs: number = 2000; // 2 second debounce window
+  private _lastClickTime: number = 0;
+
+  // ...existing code...
+
+  private _isClickAllowed(): boolean {
+    const now = Date.now();
+    if (now - this._lastClickTime >= this._clickDebounceMs) {
+      this._lastClickTime = now;
+      return true;
+    }
+    return false;
+  }
+
+
   constructor(private _saleTranSvc: SalesTranService,
     private _logonDataSvc: LogonDataService,
     private _sharedSubSvc: SharedSubjectService,
@@ -222,7 +237,10 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
   }
 
   async btnTndrClick(evt: Event) {
-
+    
+    if (!this._isClickAllowed()) {
+      return; // Ignore the click if within debounce window
+    }
     //console.log('SplitPay component btnTndrClick called with event:', evt);
     this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
 

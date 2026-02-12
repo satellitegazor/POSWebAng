@@ -125,6 +125,9 @@ export class EgConcTndrComponent {
           }
         });
       }
+      else {
+        this.markTicketComplete();
+      }
 
 
     }

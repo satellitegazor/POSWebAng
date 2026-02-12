@@ -16,7 +16,8 @@ import { ResetPinDlgComponent } from './reset-pin-dlg/reset-pin-dlg.component';
 import { MandateTrainingComponent } from './mandate-training/mandate-training.component';
 import { ToastService } from 'src/app/services/toast.service';
 import { HttpClient } from '@angular/common/http';
-import { loadTicket, updateCheckoutTotals } from 'src/app/longterm/saletran/store/ticketstore/ticket.action';
+import { initTktObj, loadTicket, updateCheckoutTotals } from 'src/app/longterm/saletran/store/ticketstore/ticket.action';
+import { TktObjState } from 'src/app/app.state';
 
 @Component({
     selector: 'app-logon-vendorlt',
@@ -46,7 +47,8 @@ export class VendorLTComponent implements OnInit {
         private _toastSvc: ToastService,
         private _locConfigStore: Store<LocationConfigState>,
         private _modalService: NgbModal,
-        private _httpClient: HttpClient ) { }
+        private _httpClient: HttpClient,
+        private _tktObjStore: Store<TktObjState>) { }
     cookieVal = '';
     ngOnInit() {
 
@@ -166,13 +168,22 @@ export class VendorLTComponent implements OnInit {
 
                 this._logonDataSvc.setLocationConfig(locCnfgData);
                 this._locConfigStore.dispatch(setLocationConfig({ locationConfig: locCnfgData }));
+                this._tktObjStore.dispatch(initTktObj({ locConfig: this._logonDataSvc.getLocationConfig(), individualUID: +data.individualUID}));
+
+                let today = new Date();
+                today.toDateString()
+                this._saleTranSvc.GetDailyExchRate(+data.locationUID, today.getMonth() + 1 + '-' + today.getDate() + '-' + today.getFullYear(), +data.individualUID).subscribe(data => {
+                    this._logonDataSvc.setDailyExchRate(data.data);
+                })
+
                 inProgTranId = locCnfgData.configs[0].inProgTranId;
                 if(inProgTranId > 0) {
+                    
                     this._toastSvc.info_wClick("An incomplete ticket has been found. Please complete it or void it!!");
                     this._locConfigStore.dispatch(loadTicket({ tranId: inProgTranId, locationId: locModel.locationUID, indivId: locModel.individualUID }));
+                    this._locConfigStore.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }))
 
-                    setTimeout((logonDataSvc, locConfigStore, routr) => {                        
-                        //locConfigStore.dispatch(updateCheckoutTotals({logonDataSvc}))
+                    setTimeout((logonDataSvc, locConfigStore, routr) => {
                         routr.navigate(['/checkout']);
                     }, 1000, this._logonDataSvc, this._locConfigStore, this.router);                    
                 }

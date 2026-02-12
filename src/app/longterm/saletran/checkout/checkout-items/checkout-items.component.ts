@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
@@ -20,7 +20,7 @@ import { UtilService } from 'src/app/services/util.service';
     styleUrls: ['./checkout-items.component.css'],
     standalone: false
 })
-export class CheckoutItemsComponent implements OnInit {
+export class CheckoutItemsComponent implements OnInit, OnChanges {
    
   modalOptions: NgbModalOptions = {
         backdrop: 'static',
@@ -73,18 +73,27 @@ export class CheckoutItemsComponent implements OnInit {
 
     this.exchRate = this._logonDataSvc.getExchangeRate();
     this.dfltCurrCode = this._logonDataSvc.getDfltCurrCode();
-    
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['tktDtlItems'] && !changes['tktDtlItems'].firstChange) {
+      this.calculateTotals();
+    }
+  }
+
+  private calculateTotals(): void {
+    if (!this.tktDtlItems || this.tktDtlItems.length === 0) {
+      return;
+    }
+
     this._store.select(getTicketTotals).subscribe(tktTotals => {
       this.subTotal = tktTotals.subTotalDC;
       this.exchCpnTotal = tktTotals.totalExchCpnAmtDC;
       this.grandTotal = tktTotals.grandTotalDC;
-      this.totalSavings = tktTotals.totalSavingsDC??0;
-      this.saleTaxTotal = tktTotals.totalTaxDC??0;
+      this.totalSavings = tktTotals.totalSavingsDC ?? 0;
+      this.saleTaxTotal = tktTotals.totalTaxDC ?? 0;
       this.tipsTotal = tktTotals.tipTotalDC;
     })
-
-
-
   }
 
   TaxExemptChanged() {

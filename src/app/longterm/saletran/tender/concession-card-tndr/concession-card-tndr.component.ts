@@ -141,7 +141,7 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
     if (tktObjData1 != null &&
       TenderUtil.IsTicketComplete(tktObjData1, this._logonDataSvc.getAllowPartPay())) {
 
-      if(tktObjData1.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0){
+      if(tktObjData1.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0) {
         // Redeem Gift Card Tenders
         //new RedeemGiftCardTenders().redeem(this._store, this._cposWebSvc, this._logonDataSvc, this._toastSvc);
         this._redeemGiftCardTndrsSvc.redeem(tktObjData1.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false)).subscribe({
@@ -154,6 +154,9 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
             return false;
           }
         });
+      }
+      else {
+        this.markTicketComplete();
       }
 
     }

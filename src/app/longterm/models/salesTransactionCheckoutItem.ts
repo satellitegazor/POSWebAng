@@ -55,6 +55,15 @@ export class SalesTransactionCheckoutItem
     exchCpnAmountNDC = 0;
     vndCpnAmountNDC = 0;
 
+    public static deepCopySaleItemList(sourceList: SalesTransactionCheckoutItem[]) {
+        let destList: SalesTransactionCheckoutItem[] = [];
+        sourceList.forEach(tndr => {
+            let destTender = SalesTransactionCheckoutItem.deepCopy(tndr);
+            destList.push(destTender);
+        });
+        return destList;
+    }
+
     public static deepCopy(source: SalesTransactionCheckoutItem): SalesTransactionCheckoutItem {
         const copy = new SalesTransactionCheckoutItem();
 
