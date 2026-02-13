@@ -15,6 +15,7 @@ import { addTender, deleteDeclinedTender, isSplitPayR5, markTendersComplete, mar
 import { AurusGiftCardInquiryResp } from '../../services/models/gift-card-enquiry-response';
 import { TenderUtil } from '../tender-util';
 import { AurusGiftCardRedeemResp, GCRedeemInput } from '../../services/models/aurus-gift-card-redeem-resp';
+import { RedeeemGiftCardTndrsService } from '../redeeem-gift-card-tndrs.service';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { HTTP_TRANSFER_CACHE_ORIGIN_MAP } from '@angular/common/http';
 @Component({
@@ -43,6 +44,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
   private InvoiceId: string = '';
   private _ticketTenderId: number = 0; // Store the generated tender ID from DB
 
+
   constructor(private _store: Store,
     private activatedRoute: ActivatedRoute,
     private route: Router,
@@ -50,7 +52,8 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
     private _cposWebSvc: CPOSWebSvcService,
     private _utilSvc: UtilService,
     private actions$: Actions,
-    private _toastSvc: ToastService) { }
+    private _toastSvc: ToastService,
+    private _redeemGiftCardTndrsSvc: RedeeemGiftCardTndrsService) { }
 
   ngOnInit(): void {
     this._store.select(getIsSplitPayR5).subscribe(flag => {
@@ -214,9 +217,22 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
           var tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
 
           if (TenderUtil.IsTicketComplete(tktObjData1, this._logonDataSvc.getAllowPartPay())) {
-            setTimeout(() => {
-              this.giftCardRedeem(tndrCopy)
-            }, 100);
+            if (tktObjData1.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0) {
+              // Redeem Gift Card Tenders
+              this._redeemGiftCardTndrsSvc.redeem(tktObjData1.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false)).subscribe({
+                next: () => {
+                  this.markTicketComplete();
+                  return true;
+                },
+                error: (error) => {
+                  console.error('Error during gift card redemption: ', error);
+                  return false;
+                }
+              });
+            }
+            else {
+              this.markTicketComplete();
+            }
           }
           else {
             this._store.dispatch(isSplitPayR5({ isSplitPayR5: true }));
@@ -230,6 +246,20 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
         }
       }
     });
+  }
+
+  private async markTicketComplete() {
+    this._store.dispatch(markTendersComplete({ status: 4 }));
+    this._store.dispatch(markTicketComplete({ status: 2 }));
+    // Fetch the updated ticket object after marking complete
+    const tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    if (tktObjData1 != null) {
+      this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData1 }));
+      this.route.navigate(['/savetktsuccess']);
+    }
+    else {
+      this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
+    }
   }
 
   private async giftCardRedeem(gcTndr: TicketTender) {

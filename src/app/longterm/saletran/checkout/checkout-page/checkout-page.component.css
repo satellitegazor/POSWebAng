@@ -79,7 +79,7 @@
     box-shadow: 0 4px 16px rgba(25, 135, 84, 0.25);
 
     &:hover {
-        background: linear-gradient(135deg, #157347, #0f5132);
+        background-color: linear-gradient(135deg, #157347, #0f5132);
         box-shadow: 0 8px 24px rgba(25, 135, 84, 0.35);
     }
 }

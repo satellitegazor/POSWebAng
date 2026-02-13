@@ -1,6 +1,21 @@
-
 .hyplink {
     color: blue !important;
     font-weight: bold;
   
+}
+
+.tax-exempt-switch {
+  transform: scale(1.15);
+  transform-origin: left center;
+}
+
+.tax-exempt-input {
+  width: 3.5rem;
+  height: 1.75rem;
+}
+
+.tax-exempt-label {
+  margin-left: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
 }

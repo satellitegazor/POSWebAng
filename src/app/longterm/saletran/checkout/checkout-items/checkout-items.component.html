@@ -1,128 +1,116 @@
 <div class="panel" style="width:100%;">
     <div class="panel-body ms-2 me-2 mt-2 mb-2">
         
-            <table class="table table-striped">
-                <thead>
+            <table class="table table-hover" id="tblCheckoutItems">
+                <thead class="table-dark">
                     <tr>
-                        <td><h4>Item Description</h4></td>
-                        <td *ngIf="!allowTips"><h4>Quantity</h4></td>
-                        <td *ngIf="allowTips"><h4>Serviced By</h4></td>
-                        <td class="rightjustfy"><h4>Unit Price</h4></td>
-                        <td class="rightjustfy"><h4>Discount</h4></td>
-                        <td class="rightjustfy"><h4>Exch Coupon</h4></td>
-                        <td class="rightjustfy"><h4>Sales Tax</h4></td>
-                        <td class="rightjustfy"><h4>Total</h4></td>
+                        <th scope="col">Item Description</th>
+                        <th scope="col" *ngIf="!allowTips">Quantity</th>
+                        <th scope="col" *ngIf="allowTips">Serviced By</th>
+                        <th scope="col" class="text-end">Unit Price</th>
+                        <th scope="col" class="text-end">Discount</th>
+                        <th scope="col" class="text-end">Exch Coupon</th>
+                        <th scope="col" class="text-end">Sales Tax</th>
+                        <th scope="col" class="text-end">Total</th>
                     </tr>
                 </thead>
-                <tr *ngFor="let itm of tktDtlItems; let i = index;">
-                    <td><label class="label label-default">{{itm.salesItemDesc}}</label></td>
-                    <td class="rightjustfy" *ngIf="!allowTips">
-                        <span class="label label-default">&nbsp; {{itm.quantity}} &nbsp;</span>
-                    </td>
-                    <td *ngIf="allowTips">
-                        <span class="label label-default">&nbsp; {{itm.srvdByAssociateText}} &nbsp;</span>
-                    </td>
-                    <td class="rightjustfy">
-                        <label class="label label-default">{{dcCurrSymbl}}{{itm.unitPrice  | number:'1.2-2' }}</label>
-                    </td>
-                    <td class="rightjustfy"> 
-                        <a class="hyplink" id="vndrDisc_{{itm.salesItemUID}}_{{itm.ticketDetailId}}" (click)="DisplayVendorDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc)" >{{dcCurrSymbl}}{{ itm.vndCpnAmountDC  | number:'1.2-2' }}</a>
-                    </td>
-                    <td class="rightjustfy">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
-                        <a class="hyplink" id="exchDisc_{{itm.salesItemUID}}_{{itm.ticketDetailId}}" (click)="DisplayExchDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc)" >{{dcCurrSymbl}}{{ itm.exchCpnAmountDC  | number:'1.2-2' }}</a>
-                        <!-- <label class="label label-default">{{(itm.unitPrice * itm.quantity) * itm.exchangeCouponDiscountPct * 0.01  | number:'1.2-2'}}</label> -->
-                    </td>
-                    <td class="rightjustfy">
-                        <label class="label label-default">{{dcCurrSymbl}}{{ itm.lineItemTaxAmount  | number:'1.2-2'}}</label>
-                    </td>
-                    <td class="rightjustfy">
-                        <label class="label label-default">{{dcCurrSymbl}}{{itm.lineItemDollarDisplayAmount  | number:'1.2-2' }}</label>
-                    </td>
-                </tr>
+                <tbody>
+                    <tr *ngFor="let itm of tktDtlItems; let i = index;">
+                        <td>{{itm.salesItemDesc}}</td>
+                        <td class="text-end" *ngIf="!allowTips">
+                            <span class="badge bg-secondary">{{itm.quantity}}</span>
+                        </td>
+                        <td *ngIf="allowTips">
+                            <span class="badge bg-info">{{itm.srvdByAssociateText}}</span>
+                        </td>
+                        <td class="text-end">
+                            {{dcCurrSymbl}}{{itm.unitPrice | number:'1.2-2'}}
+                        </td>
+                        <td class="text-end"> 
+                            <a class="text-primary text-decoration-none" 
+                               id="vndrDisc_{{itm.salesItemUID}}_{{itm.ticketDetailId}}" 
+                               (click)="DisplayVendorDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc)" 
+                               style="cursor: pointer;">
+                                {{dcCurrSymbl}}{{itm.vndCpnAmountDC | number:'1.2-2'}}
+                            </a>
+                        </td>
+                        <td class="text-end">
+                            <a class="text-primary text-decoration-none" 
+                               id="exchDisc_{{itm.salesItemUID}}_{{itm.ticketDetailId}}" 
+                               (click)="DisplayExchDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc)"
+                               style="cursor: pointer;">
+                                {{dcCurrSymbl}}{{itm.exchCpnAmountDC | number:'1.2-2'}}
+                            </a>
+                        </td>
+                        <td class="text-end">
+                            {{dcCurrSymbl}}{{itm.lineItemTaxAmount | number:'1.2-2'}}
+                        </td>
+                        <td class="text-end fw-bold">
+                            {{dcCurrSymbl}}{{itm.lineItemDollarDisplayAmount | number:'1.2-2'}}
+                        </td>
+                    </tr>
+                </tbody>
             </table>
-        
 
     </div>
 </div>
 
-<table class="table">
-    <td style="width:10%">
-        <button id="btnCancel" class="btn btn-primary" (click)="btnCancelClicked();">Cancel</button>
-    </td>
-    <td style="width:80%"></td>
-    <td style="width:10%;text-align: right;">
-        <button id="btnAddRemove" class="btn btn-primary" (click)="btnAddRemove();">Add/Remove</button>
-    </td>
-</table>
-<table class="table">
-    <tr>
-        <td style="width:70%;"></td>
-        <td style="width:15%;">
-            <table class="table">
+<div class="d-flex justify-content-between mb-3">
+    <button id="btnCancel" class="btn btn-danger" (click)="btnCancelClicked();">
+        <i class="bi bi-x-circle"></i> Cancel
+    </button>
+    <button id="btnAddRemove" class="btn btn-success" (click)="btnAddRemove();">
+        <i class="bi bi-plus-minus"></i> Add/Remove
+    </button>
+</div>
+
+<div class="row">
+    <div class="col-md-7"></div>
+    <div class="col-md-2">
+        <div class="form-check form-switch">
+            <input class="form-check-input tax-exempt-input" role="switch" type="checkbox" id="cbTaxExempt" 
+                   [(ngModel)]="taxExempt" name="cbTaxExempt1" (change)="TaxExemptChanged()"/>
+            <label class="form-check-label tax-exempt-label" for="cbTaxExempt">Tax Exempted</label>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <table class="table table-sm table-borderless">
+            <tbody>
                 <tr>
-                    <td style="width:66%" class="rightjustfy">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" role="switch" type="checkbox" value="no" unchecked id="cbTaxExempt" [(ngModel)]="taxExempt" name="cbTaxExempt1" (change)="TaxExemptChanged()"/>
-                            <label class="form-check-label" for="cbTaxExempt1">Tax Exempted</label>
-                          </div>                          
-                    </td>
-                </tr>
-            </table>
-        </td>
-        <td style="width:15%;">
-            <table>
-                <tr>
-                    <td style="width:66%" class="rightjustfy">
-                        <label>Item Subtotal</label>
-                    </td>
-                    <td style="width:33%" class="rightjustfy">
-                        {{dcCurrSymbl}}{{subTotal | number:'1.2-2'}}
-                    </td>
+                    <td class="text-end">Item Subtotal:</td>
+                    <td class="text-end fw-semibold">{{dcCurrSymbl}}{{subTotal | number:'1.2-2'}}</td>
                 </tr>
                 <tr>
-                    <td style="width:66%" class="rightjustfy">
-                        <label>Exchange Coupon</label>
-                    </td>
-                    <td style="width:33%" class="rightjustfy">
-                        
-                        <a class="hyplink" id="exchTranCoupon" (click)="DisplayExchTranDiscPopUp()" >{{dcCurrSymbl}}{{exchCpnTotal | number:'1.2-2'}}</a>
+                    <td class="text-end">Exchange Coupon:</td>
+                    <td class="text-end">
+                        <a class="text-primary text-decoration-none" id="exchTranCoupon" 
+                           (click)="DisplayExchTranDiscPopUp()" style="cursor: pointer;">
+                            {{dcCurrSymbl}}{{exchCpnTotal | number:'1.2-2'}}
+                        </a>
                     </td>
                 </tr>
                 <tr>
-                    <td style="width:66%" class="rightjustfy">
-                        <label>Sales Tax</label>
-                    </td>
-                    <td style="width:33%" class="rightjustfy">
-                        {{dcCurrSymbl}}{{saleTaxTotal | number:'1.2-2'}}
-                    </td>
+                    <td class="text-end">Sales Tax:</td>
+                    <td class="text-end fw-semibold">{{dcCurrSymbl}}{{saleTaxTotal | number:'1.2-2'}}</td>
                 </tr>
                 <tr *ngIf="allowTips">
-                    <td style="width:66%" class="rightjustfy">
-                        <label>Tips</label>
+                    <td class="text-end">Tips:</td>
+                    <td class="text-end">
+                        <a class="text-primary text-decoration-none" id="tipsTotal" 
+                           (click)="DisplayTipsPopUp()" style="cursor: pointer;">
+                            {{dcCurrSymbl}}{{tipsTotal | number:'1.2-2'}}
+                        </a>
                     </td>
-                    <td style="width:33%" class="rightjustfy">
-                        <a class="hyplink" id="tipsTotal" (click)="DisplayTipsPopUp()" >{{dcCurrSymbl}}{{tipsTotal | number:'1.2-2'}}</a>
-
-                    </td>
+                </tr>
+                <tr class="border-top border-2">
+                    <td class="text-end fw-bold fs-5">Grand Total:</td>
+                    <td class="text-end fw-bold fs-5 text-success">{{dcCurrSymbl}}{{grandTotal | number:'1.2-2'}}</td>
                 </tr>
                 <tr>
-                    <td style="width:66%" class="rightjustfy">
-                        <label>Grand Total</label>
-                    </td>
-                    <td style="width:33%" class="rightjustfy">
-                        {{dcCurrSymbl}}{{grandTotal | number:'1.2-2'}}
-                    </td>
+                    <td class="text-end text-success">Total Savings:</td>
+                    <td class="text-end text-success fw-semibold">{{dcCurrSymbl}}{{totalSavings | number:'1.2-2'}}</td>
                 </tr>
-                <tr>
-                    <td style="width:66%" class="rightjustfy">
-                        <label>Total Savings</label>
-                    </td>
-                    <td style="width:33%" class="rightjustfy">
-                        {{dcCurrSymbl}}{{totalSavings | number:'1.2-2'}}
-                    </td>
-                </tr>
-            </table>
-            
-        </td>
-    </tr>
-</table>
+            </tbody>
+        </table>
+    </div>
+</div>

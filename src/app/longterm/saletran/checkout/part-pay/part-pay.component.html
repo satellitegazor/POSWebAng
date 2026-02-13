@@ -1,16 +1,16 @@
 <div style="margin-left: 0.2in;">
     <table *ngIf="showPartPay">
         <tr>
-            <td>Part Pay&nbsp;</td>
+            <td><span class="part-pay-label">Part Pay</span>&nbsp;</td>
             <td></td>
-            <td>%</td>
+            <td><span class="part-pay-label">%</span></td>
             <td>
                 <input type="text" id="partPayPercent" [disabled]="disablePartPay" placeholder="Part Pay Percent %"
                     class="dc partpay form-control" [ngModel]="partPayPercent" (change)="onPartPayPercent($event)"
                     (keydown)="keyValidate($event)" />
             </td>
             <td></td>
-            <td>{{defaultCurr}}</td>
+            <td><span class="part-pay-label">{{defaultCurr}}</span></td>
             <td>
                 <input type="text" id="partPayAmount" [disabled]="disablePartPay" placeholder="Part Pay Amount"
                     class="ndc partpay form-control" [ngModel]="partPayAmount" (change)="onPartPayAmount($event)"
