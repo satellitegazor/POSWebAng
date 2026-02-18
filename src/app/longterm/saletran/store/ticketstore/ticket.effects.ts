@@ -1,13 +1,14 @@
 import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { select, State, Store } from "@ngrx/store";
-import { of } from "rxjs";
+import { EMPTY, from, of } from "rxjs";
 import { catchError, concatMap, exhaustMap, map, mergeMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { SalesTranService } from "../../services/sales-tran.service";
-import { saveTicketForGuestCheck, saveTicketForGuestCheckSuccess, saveTicketForGuestCheckFailed, saveCompleteTicketSplit, saveCompleteTicketSplitSuccess, saveCompleteTicketSplitFailed, saveTenderObj, saveTenderObjSuccess, saveTenderObjFailed, savePinpadResponse, savePinpadResponseFailed, savePinpadResponseSuccess, loadTicket, loadTicketSuccess, loadTicketFail } from "./ticket.action";
+import { saveTicketForGuestCheck, saveTicketForGuestCheckSuccess, saveTicketForGuestCheckFailed, saveCompleteTicketSplit, saveCompleteTicketSplitSuccess, saveCompleteTicketSplitFailed, saveTenderObj, saveTenderObjSuccess, saveTenderObjFailed, savePinpadResponse, savePinpadResponseFailed, savePinpadResponseSuccess, loadTicket, loadTicketSuccess, loadTicketFail, loadInProgressTenders, loadInProgressTendersSuccess, loadInProgressTendersFail } from "./ticket.action";
 import { saleTranDataInterface } from "./ticket.state";
 import { getTktObjSelector } from './ticket.selector';
 import { CPOSAppType } from "src/app/services/util.service";
+import { TenderStatusType, TranStatusType } from "src/app/models/ticket.tender";
 
 
 @Injectable()
@@ -100,5 +101,79 @@ export class TicketObjectEffects {
                 )
             )
         )
+    });
+
+    loadInProgressTendersAfterLoadTicket$ = createEffect(() => {
+        return this.action$.pipe(
+            ofType(loadTicketSuccess),
+            withLatestFrom(this.store.pipe(select(getTktObjSelector))),
+            mergeMap(([action, tktObj]) => {
+                const tranId = action.tktObj?.transactionID ?? 0;
+                const uid = tktObj?.individualUID ?? 0;
+                const tranStatus = tktObj?.tranStatus ?? 0;
+
+                if (!tranId || !uid || tranStatus !== TranStatusType.InProgress) {
+                    return EMPTY;
+                }
+
+                return this.saleTranSvc.getInProgressTenders(tranId, CPOSAppType.LongTerm, TenderStatusType.InProgress, uid).pipe(
+                    
+                    map(result => 
+                        loadInProgressTendersSuccess({ tenders: result?.tenders ?? result?.tenders ?? [] })),
+                    catchError(error => of(loadInProgressTendersFail({ errMessage: error.message || 'Unable to load in-progress tenders. Please logoff and logon again' })))
+                );
+            })
+        )
+    });
+
+    loadInProgressTendersEffect$ = createEffect(() => {
+        return this.action$.pipe(
+            ofType(loadInProgressTenders),
+            mergeMap(action => {
+                if (!action.tranId || !action.uid) {
+                    return EMPTY;
+                }
+
+                return this.saleTranSvc.getInProgressTenders(action.tranId, action.appType, action.tenderStatus, action.uid).pipe(
+                    map(result => loadInProgressTendersSuccess({ tenders: result?.tenders ?? result?.tenders ?? [] })),
+                    catchError(error => of(loadInProgressTendersFail({ errMessage: error.message || 'Unable to load in-progress tenders. Please logoff and logon again' })))
+                );
+            })
+        )
+    });
+
+    persistCancelledTendersOnLoad$ = createEffect(() => {
+        return this.action$.pipe(
+            ofType(loadInProgressTendersSuccess),
+            withLatestFrom(this.store.pipe(select(getTktObjSelector))),
+            mergeMap(([action, tktObj]) => {
+                const cancelledTenderTypeIds = new Set([10, 11, 1, 2]);
+                const normalizeAuthNbr = (authNbr?: string | null) => (authNbr ?? '').trim();
+
+                const tendersToCancel = (action.tenders ?? []).filter(tndr => {
+                    const isAuthMissing = normalizeAuthNbr(tndr.authNbr).length === 0;
+                    return tndr.tenderTypeId === 5 || (cancelledTenderTypeIds.has(tndr.tenderTypeId) && isAuthMissing);
+                });
+
+                if (tendersToCancel.length === 0) {
+                    return EMPTY;
+                }
+
+                const fallbackUserId = tktObj?.individualUID ? String(tktObj.individualUID) : '';
+
+                return from(
+                    tendersToCancel.map(tndr =>
+                        saveTenderObj({
+                            tndrObj: {
+                                ...tndr,
+                                tenderStatus: TenderStatusType.Cancelled,
+                                tndMaintUserId: (tndr.tndMaintUserId ?? '').toString() || fallbackUserId,
+                                tndMaintTimestamp: new Date(Date.now())
+                            }
+                        })
+                    )
+                );
+            })
+        );
     });
 }

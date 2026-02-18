@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { SalesTranModule } from './saletran.module';
 import { Routes, RouterModule } from '@angular/router';
 import { ModuleWithProviders } from '@angular/core';
-import { SalesCartComponent } from './sales-cart/sales-cart.component';
+import { SalesCartComponent } from './itemselectionpage/sales-cart/sales-cart.component';
 import { CheckoutPageComponent } from './checkout/checkout-page/checkout-page.component';
 import { DeviceTndrPageComponent } from './tender/device-tndr-page/device-tndr-page.component';
 import { SaveTicketSuccessComponent } from './save-ticket-success/save-ticket-success.component';

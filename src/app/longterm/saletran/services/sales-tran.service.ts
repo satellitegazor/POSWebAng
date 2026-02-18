@@ -17,6 +17,8 @@ import { LTC_SingleTransactionResultsModel, LTC_Ticket, LTC_TransactionDetailsMo
 import { TicketTender,  SaveTenderResult, SaveTenderResultModel } from 'src/app/models/ticket.tender';
 import { ExchCardTndr, SaveExchCardTndrResult, SaveExchCardTndrResultModel } from 'src/app/models/exch.card.tndr';
 import { LTC_SaveSalesItemModel, LTC_SaveSalesItemModelParameters } from '../../models/long-term-sale-item';
+import { MobileBase } from 'src/app/models/mobile.base';
+import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
 
 
 @Injectable({
@@ -123,6 +125,17 @@ export class SalesTranService {
             { headers: this.headerObjs });
     }
 
+    public getInProgressTenders(tranId: number, appType: number, tenderStatus: number, uid: number) {
+        return this.httpClient.get<InProgressTendersResultModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/GetInProgressTenders?guid=' + GlobalConstants.GET_GUID
+                + '&tranId=' + tranId.toString()
+                + '&appType=' + appType.toString()
+                + '&tenderStatus=' + tenderStatus.toString()
+                + '&uid=' + uid.toString(),
+            { headers: this.headerObjs }
+        );
+    }
+
     public saveFDMSTenderObj(fdmsTndr: ExchCardTndr, transactionId: number, appType: number, uid: number) {
         //console.log('SalesTranSvc saveFDMSenderObj called', transactionId)
         return this.httpClient.put<SaveExchCardTndrResultModel>(
@@ -198,5 +211,18 @@ export class SalesTranService {
             { headers: this.headerObjs });
     }
 
+}
+
+export interface InProgressTendersResultModel {
+    results: MobileBase;
+    tenders: TicketTender[];
+    partialPayments: PartPaymentInfo[];
+    associateTips: AssociateSaleTips[];
+}
+
+export interface PartPaymentInfo {
+    partPayId: number;
+    partPayAmount: number;
+    partPayAmountFC: number;
 }
   

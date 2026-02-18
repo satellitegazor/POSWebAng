@@ -7,7 +7,7 @@ import { AssociateSaleTips } from "src/app/models/associate.sale.tips";
 import { LTC_Customer } from "src/app/models/customer";
 import { TenderStatusType, TicketTender, TranStatusType } from "src/app/models/ticket.tender";
 import { SalesTransactionCheckoutItem } from "../../../models/salesTransactionCheckoutItem";
-import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketForGuestCheckSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData, removeTndrWithSaveCode, saveCompleteTicketSplitSuccess, addPinpadResp, saveTenderObjSuccess, savePinpadResponse, updateTenderRRN, markTendersComplete, markTicketComplete, addTabSerialToTktObj, isSplitPayR5, deleteDeclinedTender, loadTicketSuccess } from "./ticket.action";
+import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketForGuestCheckSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData, removeTndrWithSaveCode, saveCompleteTicketSplitSuccess, addPinpadResp, saveTenderObjSuccess, savePinpadResponse, updateTenderRRN, markTendersComplete, markTicketComplete, addTabSerialToTktObj, isSplitPayR5, deleteDeclinedTender, loadTicketSuccess, loadInProgressTendersSuccess } from "./ticket.action";
 import { Round2DecimalService } from "src/app/services/round2-decimal.service";
 import { tktObjInitialState, saleTranDataInterface } from "./ticket.state";
 import { ExchCardTndr } from "src/app/models/exch.card.tndr";
@@ -1103,6 +1103,22 @@ export const _tktObjReducer = createReducer(
 
    on(loadTicketSuccess, (state, { tktObj: loadedTktObj }) => {
 
+      const cancelledTenderTypeIds = new Set([10, 11, 1, 2]);
+      const normalizeAuthNbr = (authNbr?: string | null) => (authNbr ?? '').trim();
+
+      const tenderList = TicketTender.deepCopyTenderList(loadedTktObj.tenders).map(tndr => {
+         const isAuthMissing = normalizeAuthNbr(tndr.authNbr).length === 0;
+
+         if (tndr.tenderTypeId === 5 || (cancelledTenderTypeIds.has(tndr.tenderTypeId) && isAuthMissing)) {
+            return {
+               ...tndr,
+               tenderStatus: TenderStatusType.Cancelled
+            };
+         }
+
+         return tndr;
+      });
+
       return {...state,
          tktObj: {
             ...state.tktObj,
@@ -1119,9 +1135,21 @@ export const _tktObjReducer = createReducer(
             taxExempted: loadedTktObj.taxExempted == 1,
             transactionDate: loadedTktObj.transactionDate ? new Date(loadedTktObj.transactionDate) : new Date(),
             tranStatus: TranStatusType.InProgress,
-            ticketTenderList: TicketTender.deepCopyTenderList(loadedTktObj.tenders),
+            ticketTenderList: tenderList,
             tktList: SalesTransactionCheckoutItem.deepCopySaleItemList(loadedTktObj.items),
             customer: loadedTktObj.customer ? { ...loadedTktObj.customer } : {} as LTC_Customer
+         }
+      }
+   })
+
+   ,
+
+   on(loadInProgressTendersSuccess, (state, { tenders }) => {
+      return {
+         ...state,
+         tktObj: {
+            ...state.tktObj,
+            ticketTenderList: TicketTender.deepCopyTenderList(tenders)
          }
       }
    })

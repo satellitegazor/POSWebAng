@@ -1,13 +1,13 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { SharedSubjectService } from '../../../shared-subject/shared-subject.service';
-import { CheckoutItemsComponent } from '../checkout/checkout-items/checkout-items.component';
-import { SaleItem } from '../../models/sale.item';
-import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheckoutItem';
-import { addSaleItem, updateServedByAssociate } from '../store/ticketstore/ticket.action';
-import { getCheckoutItemsCount } from '../store/ticketstore/ticket.selector';
-import { saleTranDataInterface } from '../store/ticketstore/ticket.state';
+import { SharedSubjectService } from '../../../../shared-subject/shared-subject.service';
+import { CheckoutItemsComponent } from '../../checkout/checkout-items/checkout-items.component';
+import { SaleItem } from '../../../models/sale.item';
+import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCheckoutItem';
+import { addSaleItem, updateServedByAssociate } from '../../store/ticketstore/ticket.action';
+import { getCheckoutItemsCount } from '../../store/ticketstore/ticket.selector';
+import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Observable, Subject } from 'rxjs';
 
  

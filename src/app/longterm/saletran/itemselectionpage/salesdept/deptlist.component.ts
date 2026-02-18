@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, EventEmitter, Output, SimpleChanges } from '@angular/core';
-import { Dept } from '../../models/sale.item';
-import { SalesTranService } from '../services/sales-tran.service';
+import { Dept } from '../../../models/sale.item';
+import { SalesTranService } from '../../services/sales-tran.service';
 import { Subject } from 'rxjs';
  
 @Component({

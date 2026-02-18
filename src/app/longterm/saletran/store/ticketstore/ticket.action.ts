@@ -62,6 +62,10 @@ export const LOAD_TICKET = '[LocationConfig] Load Ticket'
 export const LOAD_TICKET_SUCCESS = '[LocationConfig] Load Ticket Success'
 export const LOAD_TICKET_FAIL = '[LocationConfig] Load Ticket Fail'
 
+export const LOAD_INPROGRESS_TENDERS = '[LocationConfig] Load InProgress Tenders'
+export const LOAD_INPROGRESS_TENDERS_SUCCESS = '[LocationConfig] Load InProgress Tenders Success'
+export const LOAD_INPROGRESS_TENDERS_FAIL = '[LocationConfig] Load InProgress Tenders Fail'
+
 export const addSaleItem = createAction(ADD_SALE_ITEM,
     props<{saleItem: SalesTransactionCheckoutItem}>());
 
@@ -169,6 +173,15 @@ export const loadTicketSuccess = createAction(LOAD_TICKET_SUCCESS,
     props<{ tktObj: LTC_Ticket }>());
 
 export const loadTicketFail = createAction(LOAD_TICKET_FAIL,
+    props<{ errMessage: String }>());
+
+export const loadInProgressTenders = createAction(LOAD_INPROGRESS_TENDERS,
+    props<{ tranId: number, appType: number, tenderStatus: number, uid: number }>());
+
+export const loadInProgressTendersSuccess = createAction(LOAD_INPROGRESS_TENDERS_SUCCESS,
+    props<{ tenders: TicketTender[] }>());
+
+export const loadInProgressTendersFail = createAction(LOAD_INPROGRESS_TENDERS_FAIL,
     props<{ errMessage: String }>());
 
 

@@ -130,9 +130,9 @@ export class CheckoutItemsComponent implements OnInit, OnChanges {
       this.vndDiscountTotal += vndDiscountTotal;
 
       var checkOutItem: SalesTransactionCheckoutItem = {...this.tktDtlItems[k]};
-      checkOutItem.lineItemDollarDisplayAmount = Number(Number(subTotal - exchCpnTotal - vndDiscountTotal + saleTaxTotal).toFixed(2));
-      checkOutItem.lineItemTaxAmount = Number(Number(saleTaxTotal).toFixed(2));
-      checkOutItem.discountAmount = Number(Number(exchCpnTotal + vndDiscountTotal).toFixed(2));
+      checkOutItem.lineItemDollarDisplayAmount = checkOutItem.quantity * Number(Number(subTotal - exchCpnTotal - vndDiscountTotal + saleTaxTotal).toFixed(2));
+      checkOutItem.lineItemTaxAmount = checkOutItem.quantity * Number(Number(saleTaxTotal).toFixed(2));
+      checkOutItem.discountAmount = checkOutItem.quantity * Number(Number(exchCpnTotal + vndDiscountTotal).toFixed(2));
 
     }
 

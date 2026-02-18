@@ -2,13 +2,13 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { authinterceptorProviders } from '../../auth/auth.interceptor';
-import { DeptListComponent } from './salesdept/deptlist.component';;
-import { SalesCartComponent } from './sales-cart/sales-cart.component'
+import { DeptListComponent } from './itemselectionpage/salesdept/deptlist.component';;
+import { SalesCartComponent } from './itemselectionpage/sales-cart/sales-cart.component'
 import { SalesTranRoutingModule } from './salestran.route';;
-import { SalesCategoryComponent } from './sales-category/sales-category.component'
+import { SalesCategoryComponent } from './itemselectionpage/sales-category/sales-category.component'
 import { SharedSubjectModule } from '../../shared-subject/shared-subject.module';
-import { SaleItemComponent } from './sale-item/sale-item.component';
-import { TktSaleItemComponent } from './tkt-sale-item/tkt-sale-item.component';
+import { SaleItemComponent } from './itemselectionpage/sale-item/sale-item.component';
+import { TktSaleItemComponent } from './itemselectionpage/tkt-sale-item/tkt-sale-item.component';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
