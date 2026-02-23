@@ -9,6 +9,7 @@ import { addSaleItem, updateServedByAssociate } from '../../store/ticketstore/ti
 import { getCheckoutItemsCount } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Observable, Subject } from 'rxjs';
+import { UtilService } from 'src/app/services/util.service';
 
  
 @Component({
@@ -19,11 +20,14 @@ import { Observable, Subject } from 'rxjs';
 })
 export class SaleItemComponent implements OnInit {
 
-    constructor(private _logonDataSvc: LogonDataService, private _store: Store<saleTranDataInterface>) { }
+    constructor(private _logonDataSvc: LogonDataService, private _store: Store<saleTranDataInterface>, private _utilSvc: UtilService) { }
     @Input() saleItemList: SaleItem[] = [];
     @Input() salesItemListRefreshEvent: Observable<boolean> = new Observable<boolean>();
     activeId: number = 0;
+    dcCurrSymbl: string = '';
     ngOnInit(): void {
+
+      this.dcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getDfltCurrCode()) || '';
       if(this.saleItemList.length > 0) {
         this.activeId = this.saleItemList[0].salesItemID;
       }
@@ -42,7 +46,7 @@ export class SaleItemComponent implements OnInit {
           this.saleItemList.filter(itm => itm.salesItemID == itemId)[0]);
 
         saleCheckoutItem.srvdByAssociateText = this._logonDataSvc.getLTVendorLogonData().associateName;
-        this._store.dispatch(addSaleItem({saleItem: saleCheckoutItem}));       
+        this._store.dispatch(addSaleItem({saleItem: saleCheckoutItem, defCurrSymbl: this.dcCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));       
         if(this._logonDataSvc.getAllowTips()) {
           
           this._store.dispatch(updateServedByAssociate({ saleItemId: saleCheckoutItem.salesItemUID, indx: 0, 

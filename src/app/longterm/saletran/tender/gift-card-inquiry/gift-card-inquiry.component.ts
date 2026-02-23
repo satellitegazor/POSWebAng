@@ -39,7 +39,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
   public ndcCurrSymbl: string = '';
   private _tenderTypeCode: string = '';
   private _gcInquiryResponse: AurusGiftCardInquiryResp = new AurusGiftCardInquiryResp();
-  private tndrObj: TicketTender = new TicketTender();
+  private _tndrObj: TicketTender = new TicketTender();
   public isWaitingForPinpad: boolean = false;
   private InvoiceId: string = '';
   private _ticketTenderId: number = 0; // Store the generated tender ID from DB
@@ -83,41 +83,38 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
       this._store.select(getRemainingBal).pipe(take(1)),
       this._store.select(getIsSplitPayR5).pipe(take(1)),
       this.activatedRoute.queryParams.pipe(take(1))
-    ]).subscribe(([tenderBal, isSplitPay, queryParams]) => {
+    ]).subscribe(([tenderBal, isSplitPay, params]) => {
 
       if (!isSplitPay && tenderBal) {
-        this.tenderAmountDC = tenderBal.amountDC;
-        this.tenderAmountNDC = tenderBal.amountNDC;
-        this.tndrObj.tenderAmount = tenderBal.amountDC;
-        this.tndrObj.fcTenderAmount = tenderBal.amountNDC;
+        this.tenderAmountDC = this.dcCurrSymbl == '$' ? tenderBal.amountUSD : tenderBal.amountFC;
+        this.tenderAmountNDC = this.dcCurrSymbl == '$' ? tenderBal.amountFC : tenderBal.amountUSD;
+        this._tndrObj.tenderAmount = this.dcCurrSymbl == '$' ? tenderBal.amountUSD : tenderBal.amountFC;
+        this._tndrObj.fcTenderAmount = this.dcCurrSymbl == '$' ? tenderBal.amountFC : tenderBal.amountUSD;
       } else {
         console.warn('Remaining balance not available yet');
         // fallback or retry
       }
 
-      this._tenderTypeCode = queryParams['code'];
+      this._tenderTypeCode = params['code'];
 
-      const hasQueryTenderAmount = queryParams['tenderAmount'] !== undefined && queryParams['tenderAmount'] !== null;
+      const hasQueryTenderAmount = params['tenderAmountDC'] !== undefined && params['tenderAmountDC'] !== null;
       if (isSplitPay && hasQueryTenderAmount) {
-        this.tndrObj.tenderAmount = parseFloat(queryParams['tenderAmount']);
-        this.tndrObj.fcTenderAmount = parseFloat(queryParams['tenderAmountFC']);
-        this.tenderAmountDC = parseFloat(queryParams['tenderAmount']);
-        this.tenderAmountNDC = parseFloat(queryParams['tenderAmountFC']);
-
+        this._tndrObj.tenderAmount = this.dcCurrSymbl == '$' ? parseFloat(params['tenderAmountDC']) : parseFloat(params['tenderAmountNDC']);
+        this._tndrObj.fcTenderAmount = this.dcCurrSymbl == '$' ? parseFloat(params['tenderAmountNDC']) : parseFloat(params['tenderAmountDC']);
+        this.tenderAmountDC = this.dcCurrSymbl == '$' ? this._tndrObj.tenderAmount : this._tndrObj.fcTenderAmount;
+        this.tenderAmountNDC = this.dcCurrSymbl == '$' ? this._tndrObj.fcTenderAmount : this._tndrObj.tenderAmount;
       }
-      const isRefund = queryParams["IsRefund"] === "true";
+      const isRefund = params["IsRefund"] === "true";
 
-      this.tndrObj.rrn = this.InvoiceId
-      this.tndrObj.isAuthorized = false;
-      this.tndrObj.tenderTypeDesc = "pinpad";
-      this.tndrObj.traceId = "false";
-      this.tndrObj.tenderStatus = TenderStatusType.InProgress;
-      this.tndrObj.tndMaintTimestamp = new Date(Date.now());
-      this.tndrObj.tndMaintUserId = this._logonDataSvc.getLTVendorLogonData().individualUID
-      this.tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
-      this.tndrObj.tenderTypeCode = this._tenderTypeCode;
-      this.tndrObj.tenderAmount = this.tenderAmountDC;
-      this.tndrObj.fcTenderAmount = this.tenderAmountNDC;
+      this._tndrObj.rrn = this.InvoiceId
+      this._tndrObj.isAuthorized = false;
+      this._tndrObj.tenderTypeDesc = "pinpad";
+      this._tndrObj.traceId = "false";
+      this._tndrObj.tenderStatus = TenderStatusType.InProgress;
+      this._tndrObj.tndMaintTimestamp = new Date(Date.now());
+      this._tndrObj.tndMaintUserId = this._logonDataSvc.getLTVendorLogonData().individualUID
+      this._tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+      this._tndrObj.tenderTypeCode = this._tenderTypeCode;
 
       this.getTransactionId(isRefund);
 
@@ -127,9 +124,9 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
   async getTransactionId(isRefund: boolean) {
     var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
     if (tktObjData != null) {
-      this.tndrObj.tenderTransactionId = tktObjData.transactionID;
-      this._store.dispatch(addTender({ tndrObj: this.tndrObj }));
-      this._store.dispatch(saveTenderObj({ tndrObj: this.tndrObj }));
+      this._tndrObj.tenderTransactionId = tktObjData.transactionID;
+      this._store.dispatch(addTender({ tndrObj: this._tndrObj }));
+      this._store.dispatch(saveTenderObj({ tndrObj: this._tndrObj }));
 
       // Subscribe to saveTenderObjSuccess to capture the generated ticketTenderId
       this.subscription = this.actions$.pipe(
@@ -159,7 +156,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
     this.isWaitingForPinpad = true;
 
     this._cposWebSvc.giftCardInquiry(
-      this.tndrObj.tenderTransactionId,
+      this._tndrObj.tenderTransactionId,
       this._ticketTenderId,
       Number(this._logonDataSvc.getLTVendorLogonData().individualUID),
       'Please swipe Gift Card',

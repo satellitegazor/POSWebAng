@@ -16,7 +16,9 @@
             <input type="text" class="form-control" [(ngModel)]="lastName"  name="lastName" />
         </div>
         <div class="customer-list-scrollbar">
-            <div class="btn-group-vertical form-control">
+            Results:
+             <div *ngIf="CustomerList.length === 0 && showErrMsg" class="no-results">No customers found. Please modify your search criteria.</div>
+             <div class="btn-group-vertical form-control" *ngIf="CustomerList.length > 0">
                 <button type="button" *ngFor="let cust of CustomerList" class="btn btn-info form-control border"
                      (click)="customerSelected(cust.customerUID)" >{{cust.cFirstName + ' ' + cust.cLastName}}</button>
             </div>

@@ -43,10 +43,10 @@
                             </a>
                         </td>
                         <td class="text-end">
-                            {{dcCurrSymbl}}{{itm.lineItemTaxAmount | number:'1.2-2'}}
+                            {{dcCurrSymbl}}{{dcCurrSymbl == '$' ? itm.lineItemTaxAmount : itm.dCLineItemTaxAmount | number:'1.2-2'}}
                         </td>
                         <td class="text-end fw-bold">
-                            {{dcCurrSymbl}}{{itm.lineItemDollarDisplayAmount | number:'1.2-2'}}
+                            {{dcCurrSymbl}}{{dcCurrSymbl == '$' ? itm.lineItemDollarDisplayAmount : itm.dCLineItemDollarDisplayAmount | number:'1.2-2'}}
                         </td>
                     </tr>
                 </tbody>

@@ -55,38 +55,39 @@ export const getBalanceDueFC = createSelector(getTktObjState,
 //     return Round2DecimalService.round(ticketTotalFC + state.tktObj.tipAmountNDC - tenderTotalFC);
 //   });
 
-  export interface AmountDCNDC{
-    amountDC: number;
-    amountNDC: number;
+export interface AmountUSDFC {
+    amountUSD: number;
+    amountFC: number;
   }
 
   export const getRemainingBal = createSelector(getTktObjState,
   (state) => {
     
-    let tenderTotal: number = 0;
-    let tipTotal: number = 0;
+    let tenderTotalUSD: number = 0;
+    let tipTotalUSD: number = 0;
+    let ticketTotalUSD: number = 0;
+
     let tenderTotalFC: number = 0;
-    let ticketTotal: number = 0;
     let ticketTotalFC: number = 0;
     let tipTotalFC: number = 0;
 
-    state.tktObj.ticketTenderList.forEach(tndr => tenderTotal += parseFloat((tndr.tenderTypeCode != "SV" ? tndr.tenderAmount : 0).toFixed(2)));
-    state.tktObj.tktList.forEach(itm => ticketTotal += parseFloat((itm.lineItemDollarDisplayAmount ?? 0).toFixed(2)));
-    state.tktObj.associateTips.forEach(tip => tipTotal += parseFloat((tip.tipAmount).toFixed(2)));
+    state.tktObj.ticketTenderList.forEach(tndr => tenderTotalUSD += parseFloat((tndr.tenderTypeCode != "SV" ? tndr.tenderAmount : 0).toFixed(2)));
+    state.tktObj.tktList.forEach(itm => ticketTotalUSD += parseFloat((itm.lineItemDollarDisplayAmount ?? 0).toFixed(2)));
+    state.tktObj.associateTips.forEach(tip => tipTotalUSD += parseFloat((tip.tipAmount).toFixed(2)));
 
     state.tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += parseFloat((tndr.tenderTypeCode != "SV" ? tndr.fcTenderAmount : 0).toFixed(2)));
     state.tktObj.tktList.forEach(itm => ticketTotalFC += parseFloat((itm.dCLineItemDollarDisplayAmount ?? 0).toFixed(2)));
     state.tktObj.associateTips.forEach(tip => tipTotalFC += parseFloat((tip.tipAmtLocCurr).toFixed(2)));
 
     if (state.tktObj.isPartialPay) {
-      ticketTotal = state.tktObj.partialAmount;
+      ticketTotalUSD = state.tktObj.partialAmount;
       ticketTotalFC = state.tktObj.partialAmountFC;
     }
 
     return {
-      amountDC: Round2DecimalService.round(ticketTotal + tipTotal  - tenderTotal),
-      amountNDC: Round2DecimalService.round(ticketTotalFC + tipTotalFC  - tenderTotalFC)
-    } as AmountDCNDC;
+      amountUSD: Round2DecimalService.round(ticketTotalUSD + tipTotalUSD  - tenderTotalUSD),
+      amountFC: Round2DecimalService.round(ticketTotalFC + tipTotalFC  - tenderTotalFC)
+    } as AmountUSDFC;
   });
 
 export const getCheckoutItemsCount = createSelector(getTktObjState,

@@ -85,20 +85,20 @@ export class CashTndrComponent implements OnInit {
       this._tndrObj.ticketTenderId = 0; // Will be set when added to store
       this._tndrObj.tenderTypeDesc = this._utilSvc.tenderCodeDescMap.get(this._tndrObj.tenderTypeCode) || 'Cash';
 
-      const hasQueryTenderAmount = params['tenderAmount'] !== undefined && params['tenderAmount'] !== null;
+      const hasQueryTenderAmount = params['tenderAmountDC'] !== undefined && params['tenderAmountDC'] !== null;
       if (hasQueryTenderAmount) {
-        this._tndrObj.tenderAmount = parseFloat(params['tenderAmount']);
-        this._tndrObj.fcTenderAmount = parseFloat(params['tenderAmountFC']);
-        this.tenderAmountDC = this._tndrObj.tenderAmount;
-        this.tenderAmountNDC = this._tndrObj.fcTenderAmount;
+        this._tndrObj.tenderAmount = this.dcCurrSymbl == '$' ? parseFloat(params['tenderAmountDC']) : parseFloat(params['tenderAmountNDC']);
+        this._tndrObj.fcTenderAmount = this.dcCurrSymbl == '$' ? parseFloat(params['tenderAmountNDC']) : parseFloat(params['tenderAmountDC']);
+        this.tenderAmountDC = this.dcCurrSymbl == '$' ? this._tndrObj.tenderAmount : this._tndrObj.fcTenderAmount;
+        this.tenderAmountNDC = this.dcCurrSymbl == '$' ? this._tndrObj.fcTenderAmount : this._tndrObj.tenderAmount;
       }
 
       this.isSplitPay = isSplitPay;
       if (!isSplitPay) {
-        this._tndrObj.tenderAmount = tenderBal.amountDC
-        this._tndrObj.fcTenderAmount = tenderBal.amountNDC;
-        this.tenderAmountDC = tenderBal.amountDC;
-        this.tenderAmountNDC = tenderBal.amountNDC;
+        this._tndrObj.tenderAmount = this.dcCurrSymbl == '$' ? tenderBal.amountUSD : tenderBal.amountFC;
+        this._tndrObj.fcTenderAmount = this.dcCurrSymbl == '$' ? tenderBal.amountFC : tenderBal.amountUSD;
+        this.tenderAmountDC = this.dcCurrSymbl == '$' ? tenderBal.amountUSD : tenderBal.amountFC;
+        this.tenderAmountNDC = this.dcCurrSymbl == '$' ? tenderBal.amountFC : tenderBal.amountUSD;
       }
       this.loadFastCashButtons();
     }).unsubscribe();

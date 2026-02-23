@@ -34,10 +34,10 @@
                     </div>
                 </td>
                 <td class="secondcolumn">
-                    <div class="tender-amount payment-display-value">{{dcCurrSymbl}} {{tndr.tenderAmount | number:'1.2-2'}}</div>
+                    <div class="tender-amount payment-display-value">{{dcCurrSymbl}} {{(dcCurrSymbl == '$' ? tndr.tenderAmount : tndr.fcTenderAmount) | number:'1.2-2'}}</div>
                 </td>
                 <td class="thirdcolumn">
-                    <div class="tender-amount payment-display-value">{{ndcCurrSymbl}} {{tndr.fcTenderAmount | number:'1.2-2'}}</div>
+                    <div class="tender-amount payment-display-value">{{ndcCurrSymbl}} {{(dcCurrSymbl != '$' ? tndr.tenderAmount : tndr.fcTenderAmount) | number:'1.2-2'}}</div>
                 </td>
             </tr>
             <tr class="split-payment-section">

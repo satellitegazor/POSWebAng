@@ -108,8 +108,8 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
       this.tndrs = tndrs?.filter(t => t.tenderTypeCode != 'SV') || [] as TicketTender[];
 
       this.tndrs.forEach(t => {
-        paidSoFarDC += t.tenderAmount;
-        paidSoFarNDC += t.fcTenderAmount;
+        paidSoFarDC += Number(Number(this.dcCurrSymbl == '$' ? t.tenderAmount : t.fcTenderAmount).toFixed(2));
+        paidSoFarNDC += Number(Number(this.dcCurrSymbl != '$' ? t.tenderAmount : t.fcTenderAmount).toFixed(2));
       });
 
       this.yetToPayDC = Number(Number(this.totalToPayDC - paidSoFarDC).toFixed(2));
@@ -117,8 +117,7 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
 
       if (this.yetToPayDC < 0) {
         this.yetToPayDC = 0;        
-        this.checkIfTendersComplete();
-          
+        this.checkIfTendersComplete();        
         
       }
     });
@@ -233,7 +232,9 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
       return;
     }
     this.yetToPayDC = evt.target.value;
-    this.yetToPayNDC = Number(Number(this.yetToPayDC * this._logonDataSvc.getExchangeRate()).toFixed(2));
+    this.dcCurrSymbl = this._utlSvc.currencySymbols.get(this._logonDataSvc.getDfltCurrCode());
+    this.yetToPayNDC = this.dcCurrSymbl == '$' ? Number(Number(this.yetToPayDC * this._logonDataSvc.getExchangeRate()).toFixed(2)) : 
+        Number(Number(this.yetToPayDC / this._logonDataSvc.getExchangeRate()).toFixed(2));
   }
 
   async btnTndrClick(evt: Event) {
@@ -272,7 +273,7 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
     }
 
 
-    this.router.navigate([tndrCompRoute], { queryParams: { code: tndrCode, tenderAmount: this.yetToPayDC, tenderAmountFC: this.yetToPayNDC } })
+    this.router.navigate([tndrCompRoute], { queryParams: { code: tndrCode, tenderAmountDC: this.yetToPayDC, tenderAmountNDC: this.yetToPayNDC } })
 
   }
 

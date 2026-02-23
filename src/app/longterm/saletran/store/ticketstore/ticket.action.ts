@@ -9,6 +9,7 @@ import { LTC_Associates } from '../../../models/location.associates';
 import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCheckoutItem';
 import { ExchCardTndr, SaveExchCardTndrResult } from 'src/app/models/exch.card.tndr';
 import { LTC_Ticket } from 'src/app/longterm/models/ticket.list';
+import { DailyExchRate } from 'src/app/models/exchange.rate';
  
 export const ADD_SALE_ITEM = 'addSaleItem';
 export const INC_SALE_ITEM_QTY = 'incSaleItemQty';
@@ -67,16 +68,16 @@ export const LOAD_INPROGRESS_TENDERS_SUCCESS = '[LocationConfig] Load InProgress
 export const LOAD_INPROGRESS_TENDERS_FAIL = '[LocationConfig] Load InProgress Tenders Fail'
 
 export const addSaleItem = createAction(ADD_SALE_ITEM,
-    props<{saleItem: SalesTransactionCheckoutItem}>());
+    props<{saleItem: SalesTransactionCheckoutItem, defCurrSymbl: string, dailyExchRateObj: DailyExchRate}>());
 
 export const incSaleitemQty = createAction(INC_SALE_ITEM_QTY,
-    props<{saleItemId: number, tktDtlId: number}>());
+    props<{ saleItemId: number, tktDtlId: number, defCurrSymbl: string, dailyExchRateObj: DailyExchRate }>());
  
 export const decSaleitemQty = createAction(DEC_SALE_ITEM_QTY,
-    props<{saleItemId: number, tktDtlId: number}>());
+    props<{ saleItemId: number, tktDtlId: number, defCurrSymbl: string, dailyExchRateObj: DailyExchRate }>());
 
 export const delSaleitemZeroQty = createAction(DELETE_SALE_ITEM,
-        props<{saleItemId: number, tktDtlId: number}>());    
+    props<{ saleItemId: number, tktDtlId: number, defCurrSymbl: string, dailyExchRateObj: DailyExchRate }>());    
 
 export const initTktObj = createAction(INIT_TKT_OBJ, 
     props<{locConfig: LocationConfig, individualUID: number}>());

@@ -1,7 +1,7 @@
 import { AfterContentInit, Component, OnInit, OnDestroy } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { TicketSplit } from 'src/app/models/ticket.split';
-import { getBalanceDue, getBalanceDueFC, getTktObjSelector, getRemainingBal, AmountDCNDC, getIsSplitPayR5 } from '../../store/ticketstore/ticket.selector';
+import { getBalanceDue, getBalanceDueFC, getTktObjSelector, getRemainingBal, AmountUSDFC, getIsSplitPayR5 } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
@@ -44,13 +44,13 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
   }
 
   private _tktObj: TicketSplit = {} as TicketSplit;
-  public tenderAmount: number = 0;
-  public tenderAmountFC: number = 0;
+  public tenderAmountDC: number = 0;
+  public tenderAmountNDC: number = 0;
   public dcCurrSymbl: string = '';
   public ndcCurrSymbl: string = '';
   private _tenderTypeCode: string = '';
   private _captureTranResponse: ExchCardTndr = new ExchCardTndr();
-  private tndrObj: TicketTender = new TicketTender();
+  private _tndrObj: TicketTender = new TicketTender();
   public isWaitingForPinpad: boolean = false;
   private InvoiceId: string = '';
   private _ticketTenderId: number = 0; // Store the generated tender ID from DB
@@ -89,41 +89,42 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
       this._store.select(getRemainingBal).pipe(take(1)),
       this._store.select(getIsSplitPayR5).pipe(take(1)),
       this.activatedRoute.queryParams.pipe(take(1))
-    ]).subscribe(([tenderBal, isSplitPay, queryParams]) => {
+    ]).subscribe(([tenderBal, isSplitPay, params]) => {
 
       if (!isSplitPay && tenderBal) {
-        this.tenderAmount = tenderBal.amountDC;
-        this.tenderAmountFC = tenderBal.amountNDC;
-        this.tndrObj.tenderAmount = tenderBal.amountDC;
-        this.tndrObj.fcTenderAmount = tenderBal.amountNDC;
+        this.tenderAmountDC = this.dcCurrSymbl == '$' ? tenderBal.amountUSD : tenderBal.amountFC;
+        this.tenderAmountNDC = this.dcCurrSymbl == '$' ? tenderBal.amountFC : tenderBal.amountUSD;
+        this._tndrObj.tenderAmount = this.dcCurrSymbl == '$' ? tenderBal.amountUSD : tenderBal.amountFC;
+        this._tndrObj.fcTenderAmount = this.dcCurrSymbl == '$' ? tenderBal.amountFC : tenderBal.amountUSD;
       } else {
         console.warn('Remaining balance not available yet');
         // fallback or retry
       }
 
-      this._tenderTypeCode = queryParams['code'];
+      this._tenderTypeCode = params['code'];
 
-      const hasQueryTenderAmount = queryParams['tenderAmount'] !== undefined && queryParams['tenderAmount'] !== null;
+      const hasQueryTenderAmount = params['tenderAmountDC'] !== undefined && params['tenderAmountDC'] !== null;
       if (isSplitPay && hasQueryTenderAmount) {
-        this.tndrObj.tenderAmount = parseFloat(queryParams['tenderAmount']);
-        this.tndrObj.fcTenderAmount = parseFloat(queryParams['tenderAmountFC']);
-        this.tenderAmount = parseFloat(queryParams['tenderAmount']);
-        this.tenderAmountFC = parseFloat(queryParams['tenderAmountFC']);
 
+        this._tndrObj.tenderAmount = this.dcCurrSymbl == '$' ? parseFloat(params['tenderAmountDC']) : parseFloat(params['tenderAmountNDC']);
+        this._tndrObj.fcTenderAmount = this.dcCurrSymbl == '$' ? parseFloat(params['tenderAmountNDC']) : parseFloat(params['tenderAmountDC']);
+        
+        this.tenderAmountDC = parseFloat(parseFloat(params['tenderAmountDC']).toFixed(2))
+        this.tenderAmountNDC = parseFloat(parseFloat(params['tenderAmountNDC']).toFixed(2));
       }
-      const isRefund = queryParams["IsRefund"] === "true";
+      const isRefund = params["IsRefund"] === "true";
 
-      this.tndrObj.rrn = this.InvoiceId
-      this.tndrObj.isAuthorized = false;
-      this.tndrObj.tenderTypeDesc = "pinpad";
-      this.tndrObj.traceId = "false";
-      this.tndrObj.tenderStatus = TenderStatusType.InProgress;
-      this.tndrObj.tndMaintTimestamp = new Date(Date.now());
-      this.tndrObj.tndMaintUserId = this._logonDataSvc.getLTVendorLogonData().individualUID
-      this.tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
-      this.tndrObj.tenderTypeCode = this._tenderTypeCode;
-      this.tndrObj.tenderAmount = this.tenderAmount;
-      this.tndrObj.fcTenderAmount = this.tenderAmountFC;
+      this._tndrObj.rrn = this.InvoiceId
+      this._tndrObj.isAuthorized = false;
+      this._tndrObj.tenderTypeDesc = "pinpad";
+      this._tndrObj.traceId = "false";
+      this._tndrObj.tenderStatus = TenderStatusType.InProgress;
+      this._tndrObj.tndMaintTimestamp = new Date(Date.now());
+      this._tndrObj.tndMaintUserId = this._logonDataSvc.getLTVendorLogonData().individualUID
+      this._tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+      this._tndrObj.tenderTypeCode = this._tenderTypeCode;
+      //this._tndrObj.tenderAmount = this.tenderAmountDC;
+      //this._tndrObj.fcTenderAmount = this.tenderAmountNDC;
 
       this.getTransactionId(isRefund);
 
@@ -135,9 +136,9 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
 
     var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
     if (tktObjData != null) {
-      this.tndrObj.tenderTransactionId = tktObjData.transactionID;
-      this._store.dispatch(addTender({ tndrObj: this.tndrObj }));
-      this._store.dispatch(saveTenderObj({ tndrObj: this.tndrObj }));
+      this._tndrObj.tenderTransactionId = tktObjData.transactionID;
+      this._store.dispatch(addTender({ tndrObj: this._tndrObj }));
+      this._store.dispatch(saveTenderObj({ tndrObj: this._tndrObj }));
 
       // Subscribe to saveTenderObjSuccess to capture the generated ticketTenderId
       this.subscription = this.actions$.pipe(
@@ -167,7 +168,7 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
     this.authorizationInProgress = true;
     this.isWaitingForPinpad = true;
 
-    this._cposWebSvc.captureCardTran(this.tndrObj.rrn, this.tndrObj.rrn, this.tenderAmount, isRefund)
+    this._cposWebSvc.captureCardTran(this._tndrObj.rrn, this._tndrObj.rrn, (this.dcCurrSymbl == '$' ? this.tenderAmountDC : this.tenderAmountNDC), isRefund)
       .pipe(
         take(1), // Ensure only one response is processed
         takeUntil(this.destroy$) // Automatically unsubscribe when component is destroyed
@@ -206,8 +207,8 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
             tndrCopy.inStoreCardNbrTmp = data.ACCT_NUM;
             
             tndrCopy.tenderTypeCode = this.isDiscoverMilstarCard(data.FIRST6_LAST4) ? (isRefund? 'MR' : 'MS') : (isRefund? 'XR': 'XC');
-            tndrCopy.tenderAmount = this.tenderAmount;
-            tndrCopy.fcTenderAmount = this.tenderAmountFC;
+            tndrCopy.tenderAmount = data.APPROVED_AMOUNT;
+            tndrCopy.fcTenderAmount = parseFloat((this._logonDataSvc.getExchangeRate() * data.APPROVED_AMOUNT).toFixed(2));
             tndrCopy.tndMaintTimestamp = new Date(Date.now());
             tndrCopy.tndrTimeStamp = new Date(Date.now());
             tndrCopy.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
@@ -279,7 +280,7 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
               // this.route.navigate(['/savetktsuccess']);
             }
             else {
-              this._toastSvc.success('Split pay of ' + this.dcCurrSymbl + this.tenderAmount + ' Card transaction approved. Please select next tender method.');
+              this._toastSvc.success('Split pay of ' + this.dcCurrSymbl + this.tenderAmountDC + ' Card transaction approved. Please select next tender method.');
               this.route.navigate(['/splitpay']);
             }
           } else {
@@ -325,8 +326,8 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
 
     let tndrObj: TicketTender = new TicketTender();
     tndrObj.tenderTypeCode = this._tenderTypeCode;
-    tndrObj.tenderAmount = this.tenderAmount;
-    tndrObj.fcTenderAmount = this.tenderAmountFC;
+    tndrObj.tenderAmount = this.tenderAmountDC;
+    tndrObj.fcTenderAmount = this.tenderAmountNDC;
     tndrObj.tndMaintTimestamp = new Date(Date.now())
     //tndrObj.currCode = this._logonDataSvc.getLocationConfig().defaultCurrency;
     tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;

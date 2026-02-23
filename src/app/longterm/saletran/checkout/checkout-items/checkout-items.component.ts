@@ -62,7 +62,7 @@ export class CheckoutItemsComponent implements OnInit, OnChanges {
     this.allowTips = this._logonDataSvc.getAllowTips();
 
     this._store.select(getCheckoutItemsSelector).subscribe(saleItems => {
-      this.tktDtlItems = saleItems == null ? [] : saleItems;
+      this.tktDtlItems = (saleItems ?? []); //.slice().reverse(); // Reverse to display in correct order
 
       this.calcCheckoutTotals();
     })

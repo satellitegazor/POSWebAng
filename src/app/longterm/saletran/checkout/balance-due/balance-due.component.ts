@@ -26,13 +26,16 @@ export class BalanceDueComponent implements OnInit {
   allowPartPay: boolean = false;
   balDue: number = 0;
   ngOnInit(): void {
-    this._store.select(getRemainingBal).subscribe(data => {
-      this.balDue = data.amountDC;
-    })
 
     this.dfltCurrSymbl = currSymbls.find(x => x.key == this._logonDataSvc.getDfltCurrCode())?.value ?? '$'; 
     this.exchRate = this._logonDataSvc.getExchangeRate();
     this.dfltCurrCode = this._logonDataSvc.getDfltCurrCode();
+
+
+    this._store.select(getRemainingBal).subscribe(data => {
+      this.balDue = this.dfltCurrCode == 'USD' ? data.amountUSD : data.amountFC;
+    })
+
   }
 
 }

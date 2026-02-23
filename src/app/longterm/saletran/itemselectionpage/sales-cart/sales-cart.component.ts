@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { GlobalConstants } from '../../../../global/global.constants';
+import { BusinessFunctionCode, GlobalConstants } from '../../../../global/global.constants';
 import { LogonDataService } from '../../../../global/logon-data-service.service';
 import { TicketSplit } from '../../../../models/ticket.split';
 import { VendorLoginResultsModel } from '../../../../models/vendor.login.results.model';
@@ -22,7 +22,7 @@ import { LocationConfig, LocationIndividual } from '../../../models/location-con
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { addTabSerialToTktObj, initTktObj } from '../../store/ticketstore/ticket.action';
 import { TicketLookupComponent } from '../../../../shared/ticket-lookup/ticket-lookup.component';
-import { getCheckoutItemsCount } from '../../store/ticketstore/ticket.selector';
+import { getCheckoutItemsCount, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import {initialLocationConfigState, LocationConfigState} from '../../store/locationconfigstore/locationconfig.state';
 import { Router } from '@angular/router';
 import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
@@ -76,6 +76,9 @@ export class SalesCartComponent implements OnInit, OnDestroy {
     locationIndividuals: LocationIndividual[] = [];
 
     disableCheckoutBtn: boolean = true;
+    tktCustomerId: number = 0;
+    tktCustomerLastName: string = '';
+    pendingCheckoutAfterCustomer: boolean = false;
 
     //public salesCategoryListRefresh: Subject<boolean> = new Subject<boolean>();
     public salesItemListRefresh: Subject<boolean> = new Subject<boolean>();
@@ -119,6 +122,17 @@ export class SalesCartComponent implements OnInit, OnDestroy {
 
         this._store.select(getCheckoutItemsCount).subscribe(itemCount => {
             this.disableCheckoutBtn = (itemCount == 0);
+        })
+
+        this._store.select(getTktObjSelector).subscribe(tktObj => {
+            this.tktCustomerId = tktObj?.customerId ?? 0;
+            this.tktCustomerLastName = tktObj?.customer?.cLastName ?? '';
+
+            const isCustomerMissing = this.tktCustomerId === 0 && (this.tktCustomerLastName ?? '').trim().length === 0;
+            if (this.pendingCheckoutAfterCustomer && !isCustomerMissing) {
+                this.pendingCheckoutAfterCustomer = false;
+                this.tktSaleItemComponent.btnCheckoutClicked();
+            }
         })
 
     }
@@ -197,14 +211,23 @@ export class SalesCartComponent implements OnInit, OnDestroy {
     }
 
     btnCheckoutClick(evt: Event) {
+        const isLaundry = this.locationConfig.busFuncCode == BusinessFunctionCode.BUSFNC_LNDRYCLN
+            || this.locationConfig.busFuncCode == BusinessFunctionCode.BUSFNC_LNDRYCLN_WALT;
+        const isCustomerMissing = this.tktCustomerId === 0 && (this.tktCustomerLastName ?? '').trim().length === 0;
+
+        if (isLaundry && isCustomerMissing) {
+            this.pendingCheckoutAfterCustomer = true;
+            this.btnCustDetailsClick(new Event('isLaundry'));
+            return;
+        }
+
         this.tktSaleItemComponent.btnCheckoutClicked();
     }
 
     btnCustDetailsClick(evt: Event) {
         this.displayCustSearchDlg = "display";
         const modalRef = this.modalService.open(CustomerSearchComponent, this.modalOptions);
-        modalRef.componentInstance.data = "search customer";
-        
+        modalRef.componentInstance.data = evt.type;
     }
 
     closeCustSearchDlg() {
