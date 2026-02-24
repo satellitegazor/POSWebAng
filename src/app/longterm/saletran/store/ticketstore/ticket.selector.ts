@@ -76,7 +76,7 @@ export interface AmountUSDFC {
     state.tktObj.associateTips.forEach(tip => tipTotalUSD += parseFloat((tip.tipAmount).toFixed(2)));
 
     state.tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += parseFloat((tndr.tenderTypeCode != "SV" ? tndr.fcTenderAmount : 0).toFixed(2)));
-    state.tktObj.tktList.forEach(itm => ticketTotalFC += parseFloat((itm.dCLineItemDollarDisplayAmount ?? 0).toFixed(2)));
+    state.tktObj.tktList.forEach(itm => ticketTotalFC += parseFloat((itm.dcLineItemDollarDisplayAmount ?? 0).toFixed(2)));
     state.tktObj.associateTips.forEach(tip => tipTotalFC += parseFloat((tip.tipAmtLocCurr).toFixed(2)));
 
     if (state.tktObj.isPartialPay) {
@@ -116,7 +116,7 @@ export const getIsCustomerAddedToTicket = createSelector(getTktObjState,
 
   })
 
-  export const getTicketTotalToPayDC = createSelector(getTktObjState,
+  export const getTicketTotalToPayUSD = createSelector(getTktObjState,
     (state) => {
       if(state.tktObj.isPartialPay) {
         return Round2DecimalService.round(state.tktObj.partialAmount);
@@ -129,13 +129,13 @@ export const getIsCustomerAddedToTicket = createSelector(getTktObjState,
       return Round2DecimalService.round(ticketTotal + state.tktObj.tipAmountDC);
     });
 
-    export const getTicketTotalToPayNDC = createSelector(getTktObjState,
+    export const getTicketTotalToPayFC = createSelector(getTktObjState,
       (state) => {
         if(state.tktObj.isPartialPay) {
           return Round2DecimalService.round(state.tktObj.partialAmountFC);
         }
         let ticketTotalFC: number = 0;
-        state.tktObj.tktList.forEach(itm => ticketTotalFC += itm.dCLineItemDollarDisplayAmount);
+        state.tktObj.tktList.forEach(itm => ticketTotalFC += itm.dcLineItemDollarDisplayAmount);
         let tipTotalFC: number = 0;
         state.tktObj.associateTips.forEach(tip => tipTotalFC += tip.tipAmtLocCurr);
        

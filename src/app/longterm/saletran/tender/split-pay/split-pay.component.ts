@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
-import { getBalanceDue, getTktObjSelector, getTicketTendersSelector, getBalanceDueFC, getTicketTotalToPayDC, getTicketTotalToPayNDC } from '../../store/ticketstore/ticket.selector';
+import { getBalanceDue, getTktObjSelector, getTicketTendersSelector, getBalanceDueFC, getTicketTotalToPayUSD, getTicketTotalToPayFC } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { SalesTranService } from '../../services/sales-tran.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -98,13 +98,13 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
     let paidSoFarNDC: number = 0;
 
     forkJoin([
-      this._store.select(getTicketTotalToPayDC).pipe(take(1)),
-      this._store.select(getTicketTotalToPayNDC).pipe(take(1)),
+      this._store.select(getTicketTotalToPayUSD).pipe(take(1)),
+      this._store.select(getTicketTotalToPayFC).pipe(take(1)),
       this._store.select(getTicketTendersSelector).pipe(take(1))
-    ]).subscribe(([totalDC, totalNDC, tndrs]) => {
+    ]).subscribe(([totalUSD, totalFC, tndrs]) => {
 
-      this.totalToPayDC = totalDC;
-      this.totalToPayNDC = totalNDC;
+      this.totalToPayDC = this.dcCurrSymbl == '$' ? totalUSD : totalFC;
+      this.totalToPayNDC = this.dcCurrSymbl == '$' ? totalFC : totalUSD;
       this.tndrs = tndrs?.filter(t => t.tenderTypeCode != 'SV') || [] as TicketTender[];
 
       this.tndrs.forEach(t => {

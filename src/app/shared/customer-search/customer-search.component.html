@@ -1,35 +1,63 @@
 
-    <div class="modal-header">
-        <h4>Customer Lookup</h4>
-    </div>
-    <div class="modal-content">
-        <div class="form-group">
-            <label for="telephone">Telephone</label>
-            <input type="text" class="form-control" [(ngModel)]="telephone"  name="telephone" />
-        </div>
-        <div class="form-group"> 
-            <label for="firstName">First Name</label>
-            <input type="text" class="form-control" [(ngModel)]="firstName"  name="firstName" />
-        </div>
-        <div class="form-group">
-            <label for="lastName">Last Name</label>
-            <input type="text" class="form-control" [(ngModel)]="lastName"  name="lastName" />
-        </div>
-        <div class="customer-list-scrollbar">
-            Results:
-             <div *ngIf="CustomerList.length === 0 && showErrMsg" class="no-results">No customers found. Please modify your search criteria.</div>
-             <div class="btn-group-vertical form-control" *ngIf="CustomerList.length > 0">
-                <button type="button" *ngFor="let cust of CustomerList" class="btn btn-info form-control border"
-                     (click)="customerSelected(cust.customerUID)" >{{cust.cFirstName + ' ' + cust.cLastName}}</button>
+    <div class="panel" style="width:100%;">
+        <div class="panel-body ms-2 me-2 mt-2 mb-2">
+            <table class="table table-borderless mb-2">
+                <thead class="table-dark">
+                    <tr>
+                        <th colspan="2">Customer Lookup</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="align-middle" style="width: 160px;">Customer Phone#</td>
+                        <td>
+                            <input type="text" class="form-control" [(ngModel)]="telephone" name="telephone" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="align-middle">First Name</td>
+                        <td>
+                            <input type="text" class="form-control" [(ngModel)]="firstName" name="firstName" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="align-middle">Last Name</td>
+                        <td>
+                            <input type="text" class="form-control" [(ngModel)]="lastName" name="lastName" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="customer-list-scrollbar">
+                <table class="table table-hover" id="tblCustomerResults">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">Results</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="CustomerList.length === 0 && showErrMsg">
+                            <td class="text-muted">No customers found. Please modify your search criteria.</td>
+                        </tr>
+                        <tr *ngFor="let cust of CustomerList">
+                            <td>
+                                <button type="button" class="dpt btn btn-block btn-primary w-100 text-start" (click)="customerSelected(cust.customerUID)">
+                                    {{cust.cFirstName + ' ' + cust.cLastName + (cust.cPhoneNumber ? ' ' + cust.cPhoneNumber : '')}}
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
-
     </div>
-    <div class="modal-footer">
-        <div class="row">
-            <button class="btn btn-info" (click)="search()">Search</button>&nbsp;
-            <button class="btn btn-info" (click)="cancel()">Cancel</button>&nbsp;
-            <button class="btn btn-info" (click)="newcust()">New Customer</button>&nbsp;
+
+    <div class="d-flex justify-content-center mb-2">
+        <div class="d-flex gap-2" style="width: 100%; max-width: 640px;">
+            <button class="dpt btn btn-block btn-primary flex-fill" (click)="search()">Search</button>
+            <button class="dpt btn btn-block btn-primary flex-fill" (click)="cancel()">Cancel</button>
+            <button class="dpt btn btn-block btn-primary flex-fill" (click)="newcust()">New Customer</button>
         </div>
     </div>
     <div *ngIf="showErrMsg">

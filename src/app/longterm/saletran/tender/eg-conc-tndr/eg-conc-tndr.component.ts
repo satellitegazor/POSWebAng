@@ -52,7 +52,7 @@ export class EgConcTndrComponent {
   private _captureTranResponse: ExchCardTndr = {} as ExchCardTndr;
   private subscription: Subscription = {} as Subscription;
 
-  private _tndrObj: TicketTender = {} as TicketTender;
+  private _tndrObj: TicketTender = new TicketTender();
 
   ngOnInit(): void {
 
@@ -99,12 +99,15 @@ export class EgConcTndrComponent {
 
   async btnApproveClick(evt: Event) {
 
+    this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
     this._tndrObj.tenderStatus = TenderStatusType.InProgress;
     this._tndrObj.isAuthorized = true;
     //this._tndrObj.tenderTypeCode = "EG";
     this._tndrObj.tndMaintTimestamp = new Date(Date.now());
     this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
     this._tndrObj.tenderTypeDesc = this._utilSvc.tenderCodeDescMap.get(this._tndrObj.tenderTypeCode) || 'Eagle Cash';
+    this._tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+    this._tndrObj.ticketTenderId = 0;
     this._store.dispatch(addTender({ tndrObj: this._tndrObj }));
 
     var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;

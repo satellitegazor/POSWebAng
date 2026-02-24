@@ -155,7 +155,7 @@ export const updateServedByAssociate = createAction(UPD_SRVD_BY_ASSOC, props<{sa
 
 export const updateAssocInAssocTips = createAction(UPDATE_ASSOC_IN_ASSOCTIPS, props<{saleItemId: number, indLocId: number}>());
 
-export const upsertAssocTips = createAction(UPSERT_ASSOC_TIPS, props<{assocTipsList: AssociateSaleTips[], totalTipAmtDC: number, totalTipAmtNDC: number}>());
+export const upsertAssocTips = createAction(UPSERT_ASSOC_TIPS, props<{ assocTipsList: AssociateSaleTips[], totalTipAmtDC: number, totalTipAmtNDC: number, logonDataSvc: LogonDataService }>());
 
 export const updateTaxExempt = createAction(UPDATE_TAX_EXEMPT, props<{taxExempt: boolean}>());
 

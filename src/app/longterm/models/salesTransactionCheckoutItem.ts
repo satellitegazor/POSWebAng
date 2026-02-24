@@ -14,7 +14,7 @@ export class SalesTransactionCheckoutItem
     discountAmount: number = 0;
     exchangeCouponDiscountPct: number = 0;
     couponLineItemDollarAmount: number = 0;
-    fCCouponLineItemDollarAmount: number = 0;
+    fcCouponLineItemDollarAmount: number = 0;
     lineItemTaxAmount: number = 0;
     lineItemEnvTaxAmount: number = 0;
     lineItemDollarDisplayAmount: number = 0;
@@ -42,14 +42,14 @@ export class SalesTransactionCheckoutItem
     splInstDesc: string = "";
     splInstOthRsn: string = "";
     itemSaved: boolean = false;
-    dCCouponLineItemDollarAmount: number = 0;
-    dCDiscountAmount: number = 0;
-    dCLineItemDollarDisplayAmount: number = 0;
-    dCLineItemTaxAmount: number = 0;
-    dCUnitPrice: number = 0;
+    dcCouponLineItemDollarAmount: number = 0;
+    dcDiscountAmount: number = 0;
+    dcLineItemDollarDisplayAmount: number = 0;
+    dcLineItemTaxAmount: number = 0;
+    dcUnitPrice: number = 0;
     lineItmKatsaCpnAmt: number = 0;
-    fCLineItmKatsaCpnAmt: number = 0;
-    fCLineItemEnvTaxAmount: number = 0;
+    fcLineItmKatsaCpnAmt: number = 0;
+    fcLineItemEnvTaxAmount: number = 0;
     exchCpnAmountDC = 0;
     vndCpnAmountDC = 0;
     exchCpnAmountNDC = 0;
@@ -57,9 +57,9 @@ export class SalesTransactionCheckoutItem
 
     public static deepCopySaleItemList(sourceList: SalesTransactionCheckoutItem[]) {
         let destList: SalesTransactionCheckoutItem[] = [];
-        sourceList.forEach(tndr => {
-            let destTender = SalesTransactionCheckoutItem.deepCopy(tndr);
-            destList.push(destTender);
+        sourceList.forEach(saleItem => {
+            let destSaleItem = SalesTransactionCheckoutItem.deepCopy(saleItem);
+            destList.push(destSaleItem);
         });
         return destList;
     }
@@ -82,7 +82,7 @@ export class SalesTransactionCheckoutItem
         copy.discountAmount = source.discountAmount ?? 0;
         copy.exchangeCouponDiscountPct = source.exchangeCouponDiscountPct ?? 0;
         copy.couponLineItemDollarAmount = source.couponLineItemDollarAmount ?? 0;
-        copy.fCCouponLineItemDollarAmount = source.fCCouponLineItemDollarAmount ?? 0;
+        copy.fcCouponLineItemDollarAmount = source.fcCouponLineItemDollarAmount ?? 0;
         copy.lineItemTaxAmount = source.lineItemTaxAmount ?? 0;
         copy.lineItemEnvTaxAmount = source.lineItemEnvTaxAmount ?? 0;
         copy.lineItemDollarDisplayAmount = source.lineItemDollarDisplayAmount ?? 0;
@@ -109,14 +109,14 @@ export class SalesTransactionCheckoutItem
         copy.splInstDesc = source.splInstDesc ?? "";
         copy.splInstOthRsn = source.splInstOthRsn ?? "";
         copy.itemSaved = source.itemSaved ?? false;
-        copy.dCCouponLineItemDollarAmount = source.dCCouponLineItemDollarAmount ?? 0;
-        copy.dCDiscountAmount = source.dCDiscountAmount ?? 0;
-        copy.dCLineItemDollarDisplayAmount = source.dCLineItemDollarDisplayAmount ?? 0;
-        copy.dCLineItemTaxAmount = source.dCLineItemTaxAmount ?? 0;
-        copy.dCUnitPrice = source.dCUnitPrice ?? 0;
+        copy.dcCouponLineItemDollarAmount = source.dcCouponLineItemDollarAmount ?? 0;
+        copy.dcDiscountAmount = source.dcDiscountAmount ?? 0;
+        copy.dcLineItemDollarDisplayAmount = source.dcLineItemDollarDisplayAmount ?? 0;
+        copy.dcLineItemTaxAmount = source.dcLineItemTaxAmount ?? 0;
+        copy.dcUnitPrice = source.dcUnitPrice ?? 0;
         copy.lineItmKatsaCpnAmt = source.lineItmKatsaCpnAmt ?? 0;
-        copy.fCLineItmKatsaCpnAmt = source.fCLineItmKatsaCpnAmt ?? 0;
-        copy.fCLineItemEnvTaxAmount = source.fCLineItemEnvTaxAmount ?? 0;
+        copy.fcLineItmKatsaCpnAmt = source.fcLineItmKatsaCpnAmt ?? 0;
+        copy.fcLineItemEnvTaxAmount = source.fcLineItemEnvTaxAmount ?? 0;
         copy.exchCpnAmountDC = source.exchCpnAmountDC ?? 0;
         copy.vndCpnAmountDC = source.vndCpnAmountDC ?? 0;
         copy.exchCpnAmountNDC = source.exchCpnAmountNDC ?? 0;

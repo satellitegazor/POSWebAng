@@ -3,7 +3,7 @@ import { forkJoin, Observable, of, take } from "rxjs";
 import { catchError, tap, map } from "rxjs/operators";
 import { saleTranDataInterface } from "../store/ticketstore/ticket.state";
 import { CPOSWebSvcService } from "../services/cposweb-svc.service";
-import { getTicketTendersSelector, getTicketTotalToPayDC, getTicketTotalToPayNDC } from "../store/ticketstore/ticket.selector";
+import { getTicketTendersSelector, getTicketTotalToPayUSD, getTicketTotalToPayFC } from "../store/ticketstore/ticket.selector";
 import { TicketTender } from "src/app/models/ticket.tender";
 import { TenderUtil } from "./tender-util";
 import { LogonDataService } from "src/app/global/logon-data-service.service";
@@ -59,8 +59,8 @@ export class RedeemGiftCardTenders {
         ): boolean {
 
         forkJoin([
-            _store.select(getTicketTotalToPayDC).pipe(take(1)),
-            _store.select(getTicketTotalToPayNDC).pipe(take(1)),
+            _store.select(getTicketTotalToPayUSD).pipe(take(1)),
+            _store.select(getTicketTotalToPayFC).pipe(take(1)),
             _store.select(getTicketTendersSelector).pipe(take(1))
         ]).subscribe(([totalDC, totalNDC, tndrs]) => {
     

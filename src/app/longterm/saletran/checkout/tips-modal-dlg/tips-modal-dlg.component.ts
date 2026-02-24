@@ -129,7 +129,7 @@ export class TipsModalDlgComponent implements OnInit {
 
     this.modal.dismissAll();
     
-    this._store.dispatch(upsertAssocTips({ assocTipsList: this.assocSaleTips, totalTipAmtDC:this.tipTotalDC, totalTipAmtNDC: this.tipTotalNDC }));
+    this._store.dispatch(upsertAssocTips({ assocTipsList: this.assocSaleTips, totalTipAmtDC:this.tipTotalDC, totalTipAmtNDC: this.tipTotalNDC, logonDataSvc: this._logonDataSvc }));
     
     //console.log('in Save Tip TenderCode: ' + this.tndrCode);
     if(this.tndrCode != "") {
