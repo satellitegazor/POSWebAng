@@ -76,4 +76,18 @@ export class CustomerSearchComponent implements OnInit {
     this._store.dispatch(addCustomerId({custId}));    
     this.cancel();
   }
+
+  maskPhone(phone: string): string {
+    if (!phone) return '';
+
+    // Remove non-digits just in case
+    const digits = phone.replace(/\D/g, '');
+
+    if (digits.length < 7) return phone; // not enough digits to mask properly
+
+    const firstThree = digits.substring(0, 3);
+    const lastFour = digits.substring(digits.length - 4);
+
+    return `${firstThree}-***-${lastFour}`;
+  }
 }

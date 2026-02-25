@@ -1,67 +1,101 @@
+<div class="container-fluid p-3">
 
-    <div class="panel" style="width:100%;">
-        <div class="panel-body ms-2 me-2 mt-2 mb-2">
-            <table class="table table-borderless mb-2">
-                <thead class="table-dark">
-                    <tr>
-                        <th colspan="2">Customer Lookup</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="align-middle" style="width: 160px;">Customer Phone#</td>
-                        <td>
-                            <input type="text" class="form-control" [(ngModel)]="telephone" name="telephone" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="align-middle">First Name</td>
-                        <td>
-                            <input type="text" class="form-control" [(ngModel)]="firstName" name="firstName" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="align-middle">Last Name</td>
-                        <td>
-                            <input type="text" class="form-control" [(ngModel)]="lastName" name="lastName" />
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body">
 
-            <div class="customer-list-scrollbar">
-                <table class="table table-hover" id="tblCustomerResults">
-                    <thead class="table-dark">
-                        <tr>
-                            <th scope="col">Results</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngIf="CustomerList.length === 0 && showErrMsg">
-                            <td class="text-muted">No customers found. Please modify your search criteria.</td>
-                        </tr>
-                        <tr *ngFor="let cust of CustomerList">
-                            <td>
-                                <button type="button" class="dpt btn btn-block btn-primary w-100 text-start" (click)="customerSelected(cust.customerUID)">
-                                    {{cust.cFirstName + ' ' + cust.cLastName + (cust.cPhoneNumber ? ' ' + cust.cPhoneNumber : '')}}
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Title -->
+            <div class="mb-4">
+                <h5 class="fw-semibold mb-0">Customer Lookup</h5>
+                <small class="text-muted">Search by phone or name</small>
             </div>
+
+            <!-- Search Fields -->
+            <div class="row align-items-center mb-3">
+
+                <div class="col-md-4">
+                    <label class="col-auto col-form-label fw-bold">
+                        Phone
+                    </label>
+                    <input name="telephone" class="form-control" [(ngModel)]="telephone" autocomplete="off"
+                        autocorrect="off" autocapitalize="off" spellcheck="false" />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="col-auto col-form-label fw-bold">
+                        First Name
+                    </label>
+                    <input name="firstName" class="form-control" [(ngModel)]="firstName" autocomplete="off"
+                        autocorrect="off" autocapitalize="off" spellcheck="false" />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="col-auto col-form-label fw-bold">
+                        Last Name
+                    </label>
+                    <input name="lastName" class="form-control" [(ngModel)]="lastName" autocomplete="off"
+                        autocorrect="off" autocapitalize="off" spellcheck="false" />
+                </div>
+                            <div class="d-flex justify-content-end gap-2 mt-4">
+                            
+                                <button type="button" class="btn btn-light" (click)="cancel()">
+                                    Cancel
+                                </button>
+                            
+                                <button type="button" class="btn btn-outline-primary" (click)="newcust()">
+                                    + New Customer
+                                </button>
+                            
+                                <button type="submit" class="btn btn-primary" (click)="search()">
+                                                Search
+                                            </button>
+                            
+                            </div>
+            </div>
+
+            <!-- Results -->
+            <div class="border rounded-3">
+
+                <div class="px-3 py-2 border-bottom bg-light">
+                    <span class="fw-semibold">Results</span>
+                </div>
+
+                <div class="customer-list-scrollbar">
+
+                    <div *ngIf="CustomerList.length === 0 && showErrMsg" class="text-muted text-center py-3">
+                        No customers found.
+                    </div>
+
+                    <div class="list-group list-group-flush">
+
+                        <button *ngFor="let cust of CustomerList" type="button"
+                            class="list-group-item list-group-item-action" (click)="customerSelected(cust.customerUID)">
+
+                            <div class="fw-semibold">
+                                {{cust.cFirstName}} {{cust.cLastName}}
+                            </div>
+
+                            <div class="text-muted small" *ngIf="cust.cPhoneNumber">
+                                {{maskPhone(cust.cPhoneNumber)}}
+                            </div>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Footer Buttons -->
+
+
+            <!-- Error -->
+            <div *ngIf="showErrMsg" class="alert alert-danger mt-3">
+                <strong>{{strongErrMessage}}</strong>
+                <div>{{errMessage}}</div>
+            </div>
+
         </div>
     </div>
 
-    <div class="d-flex justify-content-center mb-2">
-        <div class="d-flex gap-2" style="width: 100%; max-width: 640px;">
-            <button class="dpt btn btn-block btn-primary flex-fill" (click)="search()">Search</button>
-            <button class="dpt btn btn-block btn-primary flex-fill" (click)="cancel()">Cancel</button>
-            <button class="dpt btn btn-block btn-primary flex-fill" (click)="newcust()">New Customer</button>
-        </div>
-    </div>
-    <div *ngIf="showErrMsg">
-        <div class="strongmsg">{{strongErrMessage}}</div><div class="errmsg">{{errMessage}}</div>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-<!-- </modal> -->
+</div>
