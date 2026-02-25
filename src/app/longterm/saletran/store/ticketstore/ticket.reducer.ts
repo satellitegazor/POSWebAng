@@ -185,6 +185,14 @@ export const _tktObjReducer = createReducer(
       
       newCheckOutItem.lineItemEnvTaxAmount = Number(Number((((action.defCurrSymbl == '$' ? newCheckOutItem.unitPrice : (newCheckOutItem.unitPrice / action.dailyExchRateObj.exchangeRate))) * newCheckOutItem.quantity) * newCheckOutItem.envrnmtlTaxPct * 0.01).toFixed(2));
       newCheckOutItem.fcLineItemEnvTaxAmount = Number(Number((((action.defCurrSymbl != '$' ? newCheckOutItem.unitPrice : (newCheckOutItem.unitPrice * action.dailyExchRateObj.exchangeRate))) * newCheckOutItem.quantity) * newCheckOutItem.envrnmtlTaxPct * 0.01).toFixed(2));
+      newCheckOutItem.discountAmount = 0;
+      newCheckOutItem.dcDiscountAmount = 0;
+      newCheckOutItem.exchCpnAmountDC = 0;
+      newCheckOutItem.exchCpnAmountNDC = 0;
+      newCheckOutItem.couponLineItemDollarAmount = 0;
+      newCheckOutItem.lineItmKatsaCpnAmt = 0;
+      newCheckOutItem.fcLineItmKatsaCpnAmt = 0;
+
 
       if(saleAssocAry.filter(assoc => assoc.indivLocId == newCheckOutItem.srvdByAssociateVal).length > 0) {
          saleAssocAry.filter(assoc => assoc.indivLocId == newCheckOutItem.srvdByAssociateVal)[0]?.tipSaleItemIdList.push(newCheckOutItem.salesItemUID);
@@ -496,7 +504,7 @@ export const _tktObjReducer = createReducer(
          let saleTaxTotalNDC = ((unitPriceNDC * updatedTktList[k].quantity) * updatedTktList[k].salesTaxPct * 0.01 * 100) / 100;
          let vndDiscountTotalNDC = (updatedTktList[k].dcDiscountAmount | 0 * 100) / 100;
 
-         if (exchRateObj.dfltCurrCode == '$') {
+         if (exchRateObj.dfltCurrCode == 'USD') {
 
             updatedTktList[k].lineItemDollarDisplayAmount = Round2DecimalService.round(((subTotalDC - exchCpnTotalDC - vndDiscountTotalDC + (taxExepted ? 0 : saleTaxTotalDC)) * 100) / 100);
             updatedTktList[k].lineItemTaxAmount = saleTaxTotalDC;

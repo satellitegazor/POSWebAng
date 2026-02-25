@@ -126,7 +126,7 @@ export const getIsCustomerAddedToTicket = createSelector(getTktObjState,
       let tipTotal: number = 0;
       state.tktObj.associateTips.forEach(tip => tipTotal += tip.tipAmount);
       
-      return Round2DecimalService.round(ticketTotal + state.tktObj.tipAmountDC);
+      return Round2DecimalService.round(ticketTotal + tipTotal);
     });
 
     export const getTicketTotalToPayFC = createSelector(getTktObjState,
@@ -139,7 +139,7 @@ export const getIsCustomerAddedToTicket = createSelector(getTktObjState,
         let tipTotalFC: number = 0;
         state.tktObj.associateTips.forEach(tip => tipTotalFC += tip.tipAmtLocCurr);
        
-        return Round2DecimalService.round(ticketTotalFC + state.tktObj.tipAmountNDC);
+        return Round2DecimalService.round(ticketTotalFC + tipTotalFC);
       });
 
   export const getIsSplitPayR5 = createSelector(getTktObjState,
