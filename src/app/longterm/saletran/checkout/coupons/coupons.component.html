@@ -9,12 +9,12 @@
                 <tr>
                     <td>{{ItemName}}</td>
                     <td class="ra">%</td>
-                    <td><input class="form-control" type="text" appdecimal name="percentage" id="percentage"
-                            (change)="percentChanged()" [(ngModel)]="DiscountPct" /></td>
+                    <td><input class="form-control" type="text" name="percentage" id="percentage"
+                            (change)="percentChanged()" [(ngModel)]="DiscountPct" appPosCurrency/></td>
                     <td>&nbsp;</td>
                     <td class="ra">{{dfltCurrSymbl}}</td>
-                    <td><input class="form-control" type="text" appdecimal name="amount" id="amount"
-                            (change)="amountChanged()" [(ngModel)]="DiscountAmt" /></td>
+                    <td><input class="form-control" type="text" name="amount" id="amount"
+                            (change)="amountChanged()" [(ngModel)]="DiscountAmt" appPosCurrency/></td>
                 </tr>
                 <tr>
                 </tr>

@@ -158,10 +158,10 @@ export const _tktObjReducer = createReducer(
          lgrandTotalNDC += action.defCurrSymbl == '$' ? k.dcLineItemDollarDisplayAmount : k.lineItemDollarDisplayAmount;
          ltotalExchCpnAmtDC += k.exchCpnAmountDC;
          ltotalExchCpnAmtNDC += k.exchCpnAmountNDC;
-         ltotalSavingsDC += k.exchCpnAmountDC + (action.defCurrSymbl == '$' ? (k.discountAmount + k.lineItmKatsaCpnAmt) : (k.dcDiscountAmount + k.fcLineItmKatsaCpnAmt));
-         ltotalSavingsNDC += k.exchCpnAmountNDC + (action.defCurrSymbl == '$' ? (k.dcDiscountAmount + k.fcLineItmKatsaCpnAmt) : (k.discountAmount + k.lineItmKatsaCpnAmt));
-         ltotalTaxDC += (action.defCurrSymbl == '$' ? (k.lineItemTaxAmount + k.lineItemEnvTaxAmount) : (k.dcLineItemTaxAmount + k.fcLineItemEnvTaxAmount));
-         ltotalTaxNDC += (action.defCurrSymbl == '$' ? (k.dcLineItemTaxAmount + k.fcLineItemEnvTaxAmount) : (k.lineItemTaxAmount + k.lineItemEnvTaxAmount));
+         ltotalSavingsDC += parseFloat((k.exchCpnAmountDC + (action.defCurrSymbl == '$' ? (k.discountAmount + k.lineItmKatsaCpnAmt) : (k.dcDiscountAmount + k.fcLineItmKatsaCpnAmt))).toFixed(2));
+         ltotalSavingsNDC += parseFloat((k.exchCpnAmountNDC + (action.defCurrSymbl == '$' ? (k.dcDiscountAmount + k.fcLineItmKatsaCpnAmt) : (k.discountAmount + k.lineItmKatsaCpnAmt))).toFixed(2));
+         ltotalTaxDC += parseFloat((action.defCurrSymbl == '$' ? (k.lineItemTaxAmount + k.lineItemEnvTaxAmount) : (k.dcLineItemTaxAmount + k.fcLineItemEnvTaxAmount)).toFixed(2));
+         ltotalTaxNDC += parseFloat((action.defCurrSymbl == '$' ? (k.dcLineItemTaxAmount + k.fcLineItemEnvTaxAmount) : (k.lineItemTaxAmount + k.lineItemEnvTaxAmount)).toFixed(2));
 
          if(saleAssocAry.filter(assoc => assoc.indivLocId == k.srvdByAssociateVal).length > 0) {
             saleAssocAry.filter(assoc => assoc.indivLocId == k.srvdByAssociateVal)[0]?.tipSaleItemIdList.push(k.salesItemUID);
@@ -177,14 +177,14 @@ export const _tktObjReducer = createReducer(
 
 
       newCheckOutItem.ticketDetailId = -1 * (_tktObj.tktList.length + 1);
-      newCheckOutItem.lineItemTaxAmount = Number(Number(state.tktObj.taxExempted ? 0 : (action.defCurrSymbl == '$' ? newCheckOutItem.unitPrice : (newCheckOutItem.unitPrice / action.dailyExchRateObj.exchangeRate))  * newCheckOutItem.quantity * newCheckOutItem.salesTaxPct * 0.01).toFixed(2));
-      newCheckOutItem.dcLineItemTaxAmount = Number(Number(state.tktObj.taxExempted ? 0 : (action.defCurrSymbl != '$' ? newCheckOutItem.unitPrice : (newCheckOutItem.unitPrice * action.dailyExchRateObj.exchangeRate)) * newCheckOutItem.quantity * newCheckOutItem.salesTaxPct * 0.01).toFixed(2));
+      newCheckOutItem.lineItemTaxAmount = parseFloat((state.tktObj.taxExempted ? 0 : (action.defCurrSymbl == '$' ? newCheckOutItem.unitPrice : (newCheckOutItem.unitPrice / action.dailyExchRateObj.exchangeRate))  * newCheckOutItem.quantity * newCheckOutItem.salesTaxPct * 0.01).toFixed(2));
+      newCheckOutItem.dcLineItemTaxAmount = parseFloat((state.tktObj.taxExempted ? 0 : (action.defCurrSymbl != '$' ? newCheckOutItem.unitPrice : (newCheckOutItem.unitPrice * action.dailyExchRateObj.exchangeRate)) * newCheckOutItem.quantity * newCheckOutItem.salesTaxPct * 0.01).toFixed(2));
       
-      newCheckOutItem.lineItemDollarDisplayAmount = Number(Number((((action.defCurrSymbl == '$' ? newCheckOutItem.unitPrice : (newCheckOutItem.unitPrice / action.dailyExchRateObj.exchangeRate))) * newCheckOutItem.quantity) + newCheckOutItem.lineItemTaxAmount).toFixed(2));
-      newCheckOutItem.dcLineItemDollarDisplayAmount = Number(Number((((action.defCurrSymbl != '$' ? newCheckOutItem.unitPrice : (newCheckOutItem.unitPrice * action.dailyExchRateObj.exchangeRate))) * newCheckOutItem.quantity) + newCheckOutItem.dcLineItemTaxAmount).toFixed(2));
+      newCheckOutItem.lineItemDollarDisplayAmount = parseFloat(((((action.defCurrSymbl == '$' ? newCheckOutItem.unitPrice : (newCheckOutItem.unitPrice / action.dailyExchRateObj.exchangeRate))) * newCheckOutItem.quantity) + newCheckOutItem.lineItemTaxAmount).toFixed(2));
+      newCheckOutItem.dcLineItemDollarDisplayAmount = parseFloat(((((action.defCurrSymbl != '$' ? newCheckOutItem.unitPrice : (newCheckOutItem.unitPrice * action.dailyExchRateObj.exchangeRate))) * newCheckOutItem.quantity) + newCheckOutItem.dcLineItemTaxAmount).toFixed(2));
       
-      newCheckOutItem.lineItemEnvTaxAmount = Number(Number((((action.defCurrSymbl == '$' ? newCheckOutItem.unitPrice : (newCheckOutItem.unitPrice / action.dailyExchRateObj.exchangeRate))) * newCheckOutItem.quantity) * newCheckOutItem.envrnmtlTaxPct * 0.01).toFixed(2));
-      newCheckOutItem.fcLineItemEnvTaxAmount = Number(Number((((action.defCurrSymbl != '$' ? newCheckOutItem.unitPrice : (newCheckOutItem.unitPrice * action.dailyExchRateObj.exchangeRate))) * newCheckOutItem.quantity) * newCheckOutItem.envrnmtlTaxPct * 0.01).toFixed(2));
+      newCheckOutItem.lineItemEnvTaxAmount = parseFloat(((((action.defCurrSymbl == '$' ? newCheckOutItem.unitPrice : (newCheckOutItem.unitPrice / action.dailyExchRateObj.exchangeRate))) * newCheckOutItem.quantity) * newCheckOutItem.envrnmtlTaxPct * 0.01).toFixed(2));
+      newCheckOutItem.fcLineItemEnvTaxAmount = parseFloat(((((action.defCurrSymbl != '$' ? newCheckOutItem.unitPrice : (newCheckOutItem.unitPrice * action.dailyExchRateObj.exchangeRate))) * newCheckOutItem.quantity) * newCheckOutItem.envrnmtlTaxPct * 0.01).toFixed(2));
       newCheckOutItem.discountAmount = 0;
       newCheckOutItem.dcDiscountAmount = 0;
       newCheckOutItem.exchCpnAmountDC = 0;
@@ -208,13 +208,13 @@ export const _tktObjReducer = createReducer(
       lgrandTotalNDC += action.defCurrSymbl != '$' ? newCheckOutItem.lineItemDollarDisplayAmount : newCheckOutItem.dcLineItemDollarDisplayAmount;
       ltotalExchCpnAmtDC += newCheckOutItem.exchCpnAmountDC;
       ltotalExchCpnAmtNDC += newCheckOutItem.exchCpnAmountNDC;
-      ltotalSavingsDC += Number(Number(newCheckOutItem.exchCpnAmountDC + (action.defCurrSymbl == '$' ? (newCheckOutItem.discountAmount + newCheckOutItem.lineItmKatsaCpnAmt) : (newCheckOutItem.dcDiscountAmount + newCheckOutItem.fcLineItmKatsaCpnAmt))).toFixed(2));
-      ltotalSavingsNDC += Number(Number(newCheckOutItem.exchCpnAmountNDC + (action.defCurrSymbl != '$' ? (newCheckOutItem.discountAmount + newCheckOutItem.lineItmKatsaCpnAmt) : (newCheckOutItem.dcDiscountAmount + newCheckOutItem.fcLineItmKatsaCpnAmt))).toFixed(2));
-      ltotalTaxDC += Number(Number(action.defCurrSymbl == '$' ? (newCheckOutItem.lineItemTaxAmount + newCheckOutItem.lineItemEnvTaxAmount) : (newCheckOutItem.dcLineItemTaxAmount + newCheckOutItem.fcLineItemEnvTaxAmount)).toFixed(2));
-      ltotalTaxNDC += Number(Number(action.defCurrSymbl != '$' ? (newCheckOutItem.lineItemTaxAmount + newCheckOutItem.lineItemEnvTaxAmount) : (newCheckOutItem.dcLineItemTaxAmount + newCheckOutItem.fcLineItemEnvTaxAmount)).toFixed(2));
+      ltotalSavingsDC += parseFloat((newCheckOutItem.exchCpnAmountDC + (action.defCurrSymbl == '$' ? (newCheckOutItem.discountAmount + newCheckOutItem.lineItmKatsaCpnAmt) : (newCheckOutItem.dcDiscountAmount + newCheckOutItem.fcLineItmKatsaCpnAmt))).toFixed(2));
+      ltotalSavingsNDC += parseFloat((newCheckOutItem.exchCpnAmountNDC + (action.defCurrSymbl != '$' ? (newCheckOutItem.discountAmount + newCheckOutItem.lineItmKatsaCpnAmt) : (newCheckOutItem.dcDiscountAmount + newCheckOutItem.fcLineItmKatsaCpnAmt))).toFixed(2));
+      ltotalTaxDC += parseFloat((action.defCurrSymbl == '$' ? (newCheckOutItem.lineItemTaxAmount + newCheckOutItem.lineItemEnvTaxAmount) : (newCheckOutItem.dcLineItemTaxAmount + newCheckOutItem.fcLineItemEnvTaxAmount)).toFixed(2));
+      ltotalTaxNDC += parseFloat((action.defCurrSymbl != '$' ? (newCheckOutItem.lineItemTaxAmount + newCheckOutItem.lineItemEnvTaxAmount) : (newCheckOutItem.dcLineItemTaxAmount + newCheckOutItem.fcLineItemEnvTaxAmount)).toFixed(2));
 
-      lsubTotalDC = Number(Number(lgrandTotalDC - ltotalTaxDC).toFixed(2));
-      lsubTotalNDC = Number(Number(lgrandTotalNDC - ltotalTaxNDC).toFixed(2));
+      lsubTotalDC = parseFloat((lgrandTotalDC - ltotalTaxDC).toFixed(2));
+      lsubTotalNDC = parseFloat((lgrandTotalNDC - ltotalTaxNDC).toFixed(2));
 
       return {
          ...state,
@@ -307,17 +307,17 @@ export const _tktObjReducer = createReducer(
                   return {
                      ...itm,
                      quantity: itm.quantity + 1,
-                     lineItemDollarDisplayAmount: Number(Number(itm.lineItemDollarDisplayAmount / itm.quantity).toFixed(2)) * (itm.quantity + 1), //Number(Number(Number((itm.unitPrice * (itm.quantity + 1)) + (state.tktObj.taxExempted ? 0 : (itm.unitPrice * (itm.quantity + 1) * itm.salesTaxPct * 0.01)))).toFixed(2)),
-                     lineItemTaxAmount: Number(Number(itm.lineItemTaxAmount / itm.quantity).toFixed(2)) * (itm.quantity + 1),//Number(Number(Number(state.tktObj.taxExempted ? 0 : (itm.unitPrice * (itm.quantity + 1) * itm.salesTaxPct * 0.01))).toFixed(2)),
-                     couponLineItemDollarAmount: Number(Number(itm.couponLineItemDollarAmount * (itm.quantity + 1) / itm.quantity).toFixed(2)),
-                     exchCpnAmountDC: Number(Number(itm.exchCpnAmountDC * (itm.quantity + 1) / itm.quantity).toFixed(2)),
-                     exchCpnAmountNDC: Number(Number(itm.exchCpnAmountNDC * (itm.quantity + 1) / itm.quantity).toFixed(2)),
-                     discountAmount: Number(Number(itm.discountAmount * (itm.quantity + 1) / itm.quantity).toFixed(2)),
-                     dcDiscountAmount: Number(Number(itm.dcDiscountAmount * (itm.quantity + 1) / itm.quantity).toFixed(2)),
-                     fcLineItmKatsaCpnAmt: Number(Number(itm.fcLineItmKatsaCpnAmt * (itm.quantity + 1) / itm.quantity).toFixed(2)),
-                     lineItmKatsaCpnAmt: Number(Number(itm.lineItmKatsaCpnAmt * (itm.quantity + 1) / itm.quantity).toFixed(2)),
-                     dcLineItemTaxAmount: Number(Number(itm.dcLineItemTaxAmount / itm.quantity).toFixed(2)) * (itm.quantity + 1),//Number(Number(state.tktObj.taxExempted ? 0 : (unitPriceNDC * (itm.quantity + 1) * itm.salesTaxPct * 0.01)).toFixed(2)),
-                     dcLineItemDollarDisplayAmount: Number(Number(itm.dcLineItemDollarDisplayAmount / itm.quantity).toFixed(2)) * (itm.quantity + 1),//Number(Number((unitPriceNDC * (itm.quantity + 1)) + (state.tktObj.taxExempted ? 0 : (unitPriceNDC * (itm.quantity + 1) * itm.salesTaxPct * 0.01))).toFixed(2))
+                     lineItemDollarDisplayAmount: parseFloat(((itm.lineItemDollarDisplayAmount / itm.quantity) * (itm.quantity + 1)).toFixed(2)), //Number(Number(Number((itm.unitPrice * (itm.quantity + 1)) + (state.tktObj.taxExempted ? 0 : (itm.unitPrice * (itm.quantity + 1) * itm.salesTaxPct * 0.01)))).toFixed(2)),
+                     lineItemTaxAmount: parseFloat(((itm.lineItemTaxAmount / itm.quantity) * (itm.quantity + 1)).toFixed(2)),//Number(Number(Number(state.tktObj.taxExempted ? 0 : (itm.unitPrice * (itm.quantity + 1) * itm.salesTaxPct * 0.01))).toFixed(2)),
+                     couponLineItemDollarAmount: parseFloat(((itm.couponLineItemDollarAmount / itm.quantity) * (itm.quantity + 1)).toFixed(2)),
+                     exchCpnAmountDC: parseFloat(((itm.exchCpnAmountDC / itm.quantity) * (itm.quantity + 1)).toFixed(2)),
+                     exchCpnAmountNDC: parseFloat(((itm.exchCpnAmountNDC / itm.quantity) * (itm.quantity + 1)).toFixed(2)),
+                     discountAmount: parseFloat(((itm.discountAmount / itm.quantity) * (itm.quantity + 1)).toFixed(2)),
+                     dcDiscountAmount: parseFloat(((itm.dcDiscountAmount / itm.quantity) * (itm.quantity + 1)).toFixed(2)),
+                     fcLineItmKatsaCpnAmt: parseFloat(((itm.fcLineItmKatsaCpnAmt / itm.quantity) * (itm.quantity + 1)).toFixed(2)),
+                     lineItmKatsaCpnAmt: parseFloat(((itm.lineItmKatsaCpnAmt / itm.quantity) * (itm.quantity + 1)).toFixed(2)),
+                     dcLineItemTaxAmount: parseFloat(((itm.dcLineItemTaxAmount / itm.quantity) * (itm.quantity + 1)).toFixed(2)),//Number(Number(state.tktObj.taxExempted ? 0 : (unitPriceNDC * (itm.quantity + 1) * itm.salesTaxPct * 0.01)).toFixed(2)),
+                     dcLineItemDollarDisplayAmount: parseFloat(((itm.dcLineItemDollarDisplayAmount / itm.quantity) * (itm.quantity + 1)).toFixed(2)),//Number(Number((unitPriceNDC * (itm.quantity + 1)) + (state.tktObj.taxExempted ? 0 : (unitPriceNDC * (itm.quantity + 1) * itm.salesTaxPct * 0.01))).toFixed(2))
                      
                   }
                }
@@ -339,17 +339,17 @@ export const _tktObjReducer = createReducer(
                   return {
                      ...itm,
                      quantity: itm.quantity - 1,
-                     lineItemDollarDisplayAmount: Number(Number(itm.lineItemDollarDisplayAmount / itm.quantity).toFixed(2)) * (itm.quantity - 1), //Number(Number(Number((itm.unitPrice * (itm.quantity - 1)) + (state.tktObj.taxExempted ? 0 : (itm.unitPrice * (itm.quantity - 1) * itm.salesTaxPct * 0.01)))).toFixed(2)),
-                     lineItemTaxAmount: Number(Number(itm.lineItemTaxAmount / itm.quantity).toFixed(2)) * (itm.quantity - 1),//Number(Number(Number(state.tktObj.taxExempted ? 0 : (itm.unitPrice * (itm.quantity - 1) * itm.salesTaxPct * 0.01))).toFixed(2)),
-                     couponLineItemDollarAmount: Number(Number(itm.couponLineItemDollarAmount * (itm.quantity - 1) / itm.quantity).toFixed(2)),
-                     exchCpnAmountDC: Number(Number(itm.exchCpnAmountDC * (itm.quantity - 1) / itm.quantity).toFixed(2)),
-                     exchCpnAmountNDC: Number(Number(itm.exchCpnAmountNDC * (itm.quantity - 1) / itm.quantity).toFixed(2)),
-                     discountAmount: Number(Number(itm.discountAmount * (itm.quantity - 1) / itm.quantity).toFixed(2)),
-                     dcDiscountAmount: Number(Number(itm.dcDiscountAmount * (itm.quantity - 1) / itm.quantity).toFixed(2)),
-                     fcLineItmKatsaCpnAmt: Number(Number(itm.fcLineItmKatsaCpnAmt * (itm.quantity - 1) / itm.quantity).toFixed(2)),
-                     lineItmKatsaCpnAmt: Number(Number(itm.lineItmKatsaCpnAmt * (itm.quantity - 1) / itm.quantity).toFixed(2)),
-                     dcLineItemTaxAmount: Number(Number(itm.dcLineItemTaxAmount / itm.quantity).toFixed(2)) * (itm.quantity - 1),//Number(Number(state.tktObj.taxExempted ? 0 : (unitPriceNDC * (itm.quantity - 1) * itm.salesTaxPct * 0.01)).toFixed(2)),
-                     dcLineItemDollarDisplayAmount: Number(Number(itm.dcLineItemDollarDisplayAmount / itm.quantity).toFixed(2)) * (itm.quantity - 1),//Number(Number((unitPriceNDC * (itm.quantity - 1)) + (state.tktObj.taxExempted ? 0 : (unitPriceNDC * (itm.quantity - 1) * itm.salesTaxPct * 0.01))).toFixed(2))
+                     lineItemDollarDisplayAmount: parseFloat(((itm.lineItemDollarDisplayAmount / itm.quantity) * (itm.quantity - 1)).toFixed(2)), //Number(Number(Number((itm.unitPrice * (itm.quantity - 1)) + (state.tktObj.taxExempted ? 0 : (itm.unitPrice * (itm.quantity - 1) * itm.salesTaxPct * 0.01)))).toFixed(2)),
+                     lineItemTaxAmount: parseFloat(((itm.lineItemTaxAmount / itm.quantity) * (itm.quantity - 1)).toFixed(2)),//Number(Number(Number(state.tktObj.taxExempted ? 0 : (itm.unitPrice * (itm.quantity - 1) * itm.salesTaxPct * 0.01))).toFixed(2)),
+                     couponLineItemDollarAmount: parseFloat(((itm.couponLineItemDollarAmount / itm.quantity) * (itm.quantity - 1)).toFixed(2)),
+                     exchCpnAmountDC: parseFloat(((itm.exchCpnAmountDC / itm.quantity) * (itm.quantity - 1)).toFixed(2)),
+                     exchCpnAmountNDC: parseFloat(((itm.exchCpnAmountNDC / itm.quantity) * (itm.quantity - 1)).toFixed(2)),
+                     discountAmount: parseFloat(((itm.discountAmount / itm.quantity) * (itm.quantity - 1)).toFixed(2)),
+                     dcDiscountAmount: parseFloat(((itm.dcDiscountAmount / itm.quantity) * (itm.quantity - 1)).toFixed(2)),
+                     fcLineItmKatsaCpnAmt: parseFloat(((itm.fcLineItmKatsaCpnAmt / itm.quantity) * (itm.quantity - 1)).toFixed(2)),
+                     lineItmKatsaCpnAmt: parseFloat(((itm.lineItmKatsaCpnAmt / itm.quantity) * (itm.quantity - 1)).toFixed(2)),
+                     dcLineItemTaxAmount: parseFloat(((itm.dcLineItemTaxAmount / itm.quantity) * (itm.quantity - 1)).toFixed(2)),//Number(Number(state.tktObj.taxExempted ? 0 : (unitPriceNDC * (itm.quantity - 1) * itm.salesTaxPct * 0.01)).toFixed(2)),
+                     dcLineItemDollarDisplayAmount: parseFloat(((itm.dcLineItemDollarDisplayAmount / itm.quantity) * (itm.quantity - 1)).toFixed(2)),//Number(Number((unitPriceNDC * (itm.quantity - 1)) + (state.tktObj.taxExempted ? 0 : (unitPriceNDC * (itm.quantity - 1) * itm.salesTaxPct * 0.01))).toFixed(2))
                   }
                }
                else {
@@ -657,16 +657,16 @@ export const _tktObjReducer = createReducer(
          updateCpn = true;
       }
 
-      lineItemGrantTotal = tktItem.unitPrice * tktItem.quantity;
-      lineitemGrandTotalNDC = tktItem.dcUnitPrice * tktItem.quantity;
+      lineItemGrantTotal = parseFloat((tktItem.unitPrice * tktItem.quantity).toFixed(2));
+      lineitemGrandTotalNDC = parseFloat((tktItem.dcUnitPrice * tktItem.quantity).toFixed(2));
 
       if (action.cpnPct > 0) {
-         exchDiscAmtDC = lineItemGrantTotal * action.cpnPct / 100;
-         exchDiscAmtNDC = lineitemGrandTotalNDC * action.cpnPct / 100;
+         exchDiscAmtDC = parseFloat((lineItemGrantTotal * action.cpnPct / 100).toFixed(2));
+         exchDiscAmtNDC = parseFloat((lineitemGrandTotalNDC * action.cpnPct / 100).toFixed(2));
       }
       else {
-         exchDiscAmtDC = action.cpnAmt;
-         exchDiscAmtNDC = action.cpnAmt * exchRate;
+         exchDiscAmtDC = parseFloat((action.cpnAmt).toFixed(2));
+         exchDiscAmtNDC = parseFloat((action.cpnAmt * (dfltCurr == "USD" ? exchRate : (1 / exchRate))).toFixed(2));
       }
 
       if (state.tktObj.taxExempted) {
@@ -740,17 +740,17 @@ export const _tktObjReducer = createReducer(
                if (itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.tktDtlId) {
                   return {
                      ...itm,
-                     exchangeCouponDiscountPct: Math.round((itm.exchangeCouponDiscountPct > 0 ? action.cpnPct : itm.exchangeCouponDiscountPct) * 100)/100,
-                     lineItemDollarDisplayAmount: Math.round((lineItemDollarDisplayAmount + Number.EPSILON) * 100)/100,
-                     lineItemTaxAmount: Math.round((dcLineItemTaxAmount + Number.EPSILON) * 100)/100,
-                     lineItemEnvTaxAmount: Math.round((lineItemEnvTaxAmount + Number.EPSILON) * 100)/100,
+                     exchangeCouponDiscountPct: parseFloat((itm.exchangeCouponDiscountPct > 0 ? action.cpnPct : itm.exchangeCouponDiscountPct).toFixed(2)),
+                     lineItemDollarDisplayAmount: parseFloat((lineItemDollarDisplayAmount).toFixed(2)),
+                     lineItemTaxAmount: parseFloat((dcLineItemTaxAmount).toFixed(2)),
+                     lineItemEnvTaxAmount: parseFloat((lineItemEnvTaxAmount).toFixed(2)),
 
-                     dcLineItemTaxAmount: Math.round((dcLineItemTaxAmount + Number.EPSILON) * 100)/100,
-                     fCLineItemEnvTaxAmount: Math.round((fCLineItemEnvTaxAmount + Number.EPSILON) * 100)/100,
-                     dcCouponLineItemDollarAmount: Math.round((dcCouponLineItemDollarAmount + Number.EPSILON) * 100)/100,
+                     dcLineItemTaxAmount: parseFloat((dcLineItemTaxAmount).toFixed(2)),
+                     fCLineItemEnvTaxAmount: parseFloat((fCLineItemEnvTaxAmount).toFixed(2)),
+                     dcCouponLineItemDollarAmount: parseFloat((dcCouponLineItemDollarAmount).toFixed(2)),
 
-                     exchCpnAmountDC: Math.round((exchDiscAmtDC + Number.EPSILON) * 100)/100,
-                     exchCpnAmountNDC: Math.round((exchDiscAmtNDC + Number.EPSILON) * 100)/100,
+                     exchCpnAmountDC: parseFloat((exchDiscAmtDC).toFixed(2)),
+                     exchCpnAmountNDC: parseFloat((exchDiscAmtNDC).toFixed(2)),
                   }
                }
                else {
@@ -762,17 +762,17 @@ export const _tktObjReducer = createReducer(
          },
          tktTotals: {
             ...state.tktTotals,
-            grandTotalDC: Math.round((lineItemGrantTotal + Number.EPSILON) * 100)/100,
-            grandTotalNDC: Math.round((lineitemGrandTotalNDC + Number.EPSILON) * 100)/100,
+            grandTotalDC: parseFloat((lineItemGrantTotal).toFixed(2)),
+            grandTotalNDC: parseFloat((lineitemGrandTotalNDC).toFixed(2)),
 
-            totalSavingsDC: Math.round((totalSavingsDC + Number.EPSILON) * 100)/100,
-            totalExchCpnAmtNDC: Math.round((totalSavingsNDC + Number.EPSILON) * 100)/100,
+            totalSavingsDC: parseFloat((totalSavingsDC).toFixed(2)),
+            totalExchCpnAmtNDC: parseFloat((totalSavingsNDC).toFixed(2)),
 
-            subTotalDC: Math.round((subTotalDC + Number.EPSILON) * 100)/100,
-            subTotalNDC: Math.round((subTotalNDC + Number.EPSILON) * 100)/100,
+            subTotalDC: parseFloat((subTotalDC).toFixed(2)),
+            subTotalNDC: parseFloat((subTotalNDC).toFixed(2)),
 
-            totalTaxDC: Math.round((totalTaxDC + Number.EPSILON) * 100)/100,
-            totalTaxNDC: Math.round((totalTaxNDC + Number.EPSILON) * 100)/100
+            totalTaxDC: parseFloat((totalTaxDC).toFixed(2)),
+            totalTaxNDC: parseFloat((totalTaxNDC).toFixed(2))
 
          }
       }
@@ -783,9 +783,11 @@ export const _tktObjReducer = createReducer(
       let dfltCurr = action.logonDataSvc.getDfltCurrCode();
       let IsForeignCurr = action.logonDataSvc.getIsForeignCurr();
       let lineItemGrantTotal: number = 0, lineitemGrandTotalNDC: number = 0;
-      let cpnPct = 0, vndDiscAmtDC = 0, vndDiscAmtNDC = 0;
+      let vndDiscAmtDC = 0, vndDiscAmtNDC = 0;
       let tktItem: SalesTransactionCheckoutItem = state.tktObj.tktList.filter(item => item.salesItemUID == action.saleItemId && item.ticketDetailId == action.tktDtlId)[0];
       let updateCpn: boolean = false;
+      let cpnAmt  = Number(action.cpnAmt) || 0;
+      let cpnPct = Number(action.cpnPct) || 0;
 
       let subTotalDC = 0, subTotalNDC = 0, grandTotalDC = 0, grandTotalNDC = 0;
       let totalExchCpnAmtDC = 0, totalExchCpnAmtNDC = 0, totalSavingsDC = 0, totalSavingsNDC = 0;
@@ -794,84 +796,84 @@ export const _tktObjReducer = createReducer(
       let totalTaxNDC: number = 0;
 
       let dcLineItemTaxAmount: number = 0;
-      let fCLineItemTaxAmount: number = 0;
+      let ndcLineItemTaxAmount: number = 0;
 
       let dcLineItemEnvTaxAmount: number = 0;
-      let fCLineItemEnvTaxAmount: number = 0;
+      let ndcLineItemEnvTaxAmount: number = 0;
 
       let dcCouponLineItemDollarAmount: number = 0;
-      let fCCouponLineItemDollarAmount: number = 0;
+      let ndcCouponLineItemDollarAmount: number = 0;
 
       let dcLineItemDollarDisplayAmount: number = 0;
-      let fCLineItemDollarDisplayAmount: number = 0;
+      let ndcLineItemDollarDisplayAmount: number = 0;
 
       if (action.logonDataSvc.getLoadTicket() && state.tktTotals.amtPaidDC == 0) {
          updateCpn = true;
       }
 
       lineItemGrantTotal = tktItem.unitPrice * tktItem.quantity;
-      lineitemGrandTotalNDC = tktItem.unitPrice * tktItem.quantity * action.logonDataSvc.getExchangeRate();
+      lineitemGrandTotalNDC = parseFloat((tktItem.unitPrice * tktItem.quantity * (dfltCurr == "USD" ? action.logonDataSvc.getExchangeRate() : (1 / action.logonDataSvc.getExchangeRate()))).toFixed(2));
 
-      if (action.cpnPct > 0) {
-         vndDiscAmtDC = lineItemGrantTotal * action.cpnPct / 100;
-         vndDiscAmtNDC = lineitemGrandTotalNDC * action.cpnPct / 100;
+      if (cpnPct > 0) {
+         vndDiscAmtDC = parseFloat((lineItemGrantTotal * cpnPct / 100).toFixed(2));
+         vndDiscAmtNDC = parseFloat((lineitemGrandTotalNDC * cpnPct / 100).toFixed(2));
       }
-      else if (action.cpnAmt > 0) {
-         vndDiscAmtDC = action.cpnAmt;
-         vndDiscAmtNDC = action.cpnAmt * action.logonDataSvc.getExchangeRate();
+      else if (cpnAmt > 0) {
+         vndDiscAmtDC = parseFloat((cpnAmt).toFixed(2));
+         vndDiscAmtNDC = parseFloat((cpnAmt * (dfltCurr == "USD" ? action.logonDataSvc.getExchangeRate() : (1 / action.logonDataSvc.getExchangeRate()))).toFixed(2));
       }
 
       if (state.tktObj.taxExempted) {
          dcLineItemTaxAmount = 0;
-         fCLineItemTaxAmount = 0;
+         ndcLineItemTaxAmount = 0;
 
          dcLineItemEnvTaxAmount = 0;
-         fCLineItemEnvTaxAmount = 0;
+         ndcLineItemEnvTaxAmount = 0;
 
          dcLineItemDollarDisplayAmount = lineItemGrantTotal - (vndDiscAmtDC + tktItem.exchCpnAmountDC);
-         fCLineItemDollarDisplayAmount = lineitemGrandTotalNDC - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC);
+         ndcLineItemDollarDisplayAmount = lineitemGrandTotalNDC - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC);
 
          dcCouponLineItemDollarAmount = (vndDiscAmtDC + tktItem.exchCpnAmountDC);
-         fCCouponLineItemDollarAmount = (vndDiscAmtNDC + tktItem.exchCpnAmountNDC);
+         ndcCouponLineItemDollarAmount = (vndDiscAmtNDC + tktItem.exchCpnAmountNDC);
       }
       else {
 
          if (action.logonDataSvc.getVendorCouponAfterTax()) {
-            dcLineItemTaxAmount = (lineItemGrantTotal) * tktItem.salesTaxPct / 100;
-            fCLineItemTaxAmount = (lineitemGrandTotalNDC) * tktItem.salesTaxPct / 100;
+            dcLineItemTaxAmount = parseFloat((lineItemGrantTotal * (tktItem.salesTaxPct / 100)).toFixed(2));
+            ndcLineItemTaxAmount = parseFloat(((lineitemGrandTotalNDC) * tktItem.salesTaxPct / 100).toFixed(2));
 
-            dcLineItemEnvTaxAmount = (lineItemGrantTotal) * tktItem.envrnmtlTaxPct / 100;
-            fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC) * tktItem.envrnmtlTaxPct / 100;
+            dcLineItemEnvTaxAmount = parseFloat(((lineItemGrantTotal) * tktItem.envrnmtlTaxPct / 100).toFixed(2));
+            ndcLineItemEnvTaxAmount = parseFloat(((lineitemGrandTotalNDC) * tktItem.envrnmtlTaxPct / 100).toFixed(2));
 
-            dcLineItemDollarDisplayAmount = (lineItemGrantTotal + dcLineItemTaxAmount + dcLineItemEnvTaxAmount) - (vndDiscAmtDC + tktItem.exchCpnAmountDC);
-            fCLineItemDollarDisplayAmount = (lineitemGrandTotalNDC + fCLineItemTaxAmount + fCLineItemEnvTaxAmount) - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC);
+            dcLineItemDollarDisplayAmount = parseFloat(((lineItemGrantTotal + dcLineItemTaxAmount + dcLineItemEnvTaxAmount) - (vndDiscAmtDC + tktItem.exchCpnAmountDC)).toFixed(2));
+            ndcLineItemDollarDisplayAmount = parseFloat(((lineitemGrandTotalNDC + ndcLineItemTaxAmount + ndcLineItemEnvTaxAmount) - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC)).toFixed(2));
 
          } else {
 
-            dcLineItemTaxAmount = (lineItemGrantTotal - (vndDiscAmtDC + tktItem.exchCpnAmountDC)) * tktItem.salesTaxPct / 100;
-            fCLineItemTaxAmount = (lineitemGrandTotalNDC - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC)) * tktItem.salesTaxPct / 100;
+            dcLineItemTaxAmount = parseFloat(((lineItemGrantTotal - (vndDiscAmtDC + tktItem.exchCpnAmountDC)) * tktItem.salesTaxPct / 100).toFixed(2));
+            ndcLineItemTaxAmount = parseFloat(((lineitemGrandTotalNDC - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC)) * tktItem.salesTaxPct / 100).toFixed(2));
 
-            dcLineItemEnvTaxAmount = (lineItemGrantTotal - (vndDiscAmtDC + tktItem.exchCpnAmountDC)) * tktItem.envrnmtlTaxPct / 100;
-            fCLineItemEnvTaxAmount = (lineitemGrandTotalNDC - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC)) * tktItem.envrnmtlTaxPct / 100;
+            dcLineItemEnvTaxAmount = parseFloat(((lineItemGrantTotal - (vndDiscAmtDC + tktItem.exchCpnAmountDC)) * tktItem.envrnmtlTaxPct / 100).toFixed(2));
+            ndcLineItemEnvTaxAmount = parseFloat(((lineitemGrandTotalNDC - (vndDiscAmtNDC + tktItem.exchCpnAmountNDC)) * tktItem.envrnmtlTaxPct / 100).toFixed(2));
 
-            dcLineItemDollarDisplayAmount = (lineItemGrantTotal + dcLineItemTaxAmount + dcLineItemEnvTaxAmount);
-            fCLineItemDollarDisplayAmount = (lineitemGrandTotalNDC + fCLineItemEnvTaxAmount + fCLineItemEnvTaxAmount);
+            dcLineItemDollarDisplayAmount = parseFloat(((lineItemGrantTotal + dcLineItemTaxAmount + dcLineItemEnvTaxAmount)).toFixed(2));
+            ndcLineItemDollarDisplayAmount = parseFloat(((lineitemGrandTotalNDC + ndcLineItemTaxAmount + ndcLineItemEnvTaxAmount)).toFixed(2));
          }
 
-         dcCouponLineItemDollarAmount = (vndDiscAmtDC + tktItem.exchCpnAmountDC);
-         fCCouponLineItemDollarAmount = (vndDiscAmtNDC + tktItem.exchCpnAmountNDC);
+         dcCouponLineItemDollarAmount = parseFloat((vndDiscAmtDC + tktItem.exchCpnAmountDC).toFixed(2));
+         ndcCouponLineItemDollarAmount = parseFloat((vndDiscAmtNDC + tktItem.exchCpnAmountNDC).toFixed(2));
    
          totalSavingsDC = dcCouponLineItemDollarAmount;
-         totalSavingsNDC = fCCouponLineItemDollarAmount;
+         totalSavingsNDC = ndcCouponLineItemDollarAmount;
 
          state.tktObj.tktList.forEach(item => {
             if (item.salesItemUID != action.saleItemId && item.ticketDetailId != action.tktDtlId) {
 
-               lineItemGrantTotal += (item.unitPrice * item.quantity);
-               lineitemGrandTotalNDC += (item.unitPrice * item.quantity) * action.logonDataSvc.getExchangeRate();
+               lineItemGrantTotal += parseFloat((item.unitPrice * item.quantity).toFixed(2));
+               lineitemGrandTotalNDC += parseFloat(((item.unitPrice * item.quantity) * action.logonDataSvc.getExchangeRate()).toFixed(2));
 
-               totalSavingsDC += item.exchCpnAmountDC + item.vndCpnAmountDC
-               totalSavingsNDC += item.exchCpnAmountNDC + item.vndCpnAmountNDC
+               totalSavingsDC += parseFloat((item.exchCpnAmountDC + item.vndCpnAmountDC).toFixed(2));
+               totalSavingsNDC += parseFloat((item.exchCpnAmountNDC + item.vndCpnAmountNDC).toFixed(2));
 
                subTotalDC += lineItemGrantTotal;
                subTotalNDC += lineitemGrandTotalNDC;
@@ -893,17 +895,17 @@ export const _tktObjReducer = createReducer(
                   return {
                      ...itm,
                      exchangeCouponDiscountPct: itm.exchangeCouponDiscountPct > 0 ? action.cpnPct : itm.exchangeCouponDiscountPct,
-                     lineItemDollarDisplayAmount: dcLineItemDollarDisplayAmount,
-                     dcLineItemDollarDisplayAmount: fCLineItemDollarDisplayAmount,
+                     lineItemDollarDisplayAmount: dfltCurr == "USD" ? dcLineItemDollarDisplayAmount : ndcLineItemDollarDisplayAmount,
+                     dcLineItemDollarDisplayAmount: dfltCurr == "USD" ? dcLineItemDollarDisplayAmount : ndcLineItemDollarDisplayAmount,
 
-                     lineItemTaxAmount: dcLineItemTaxAmount,
-                     lineItemEnvTaxAmount: dcLineItemEnvTaxAmount,
+                     lineItemTaxAmount: dfltCurr == "USD" ? dcLineItemTaxAmount : ndcLineItemTaxAmount,
+                     lineItemEnvTaxAmount: dfltCurr == "USD" ? dcLineItemEnvTaxAmount : ndcLineItemEnvTaxAmount,
 
-                     fCLineItemTaxAmount: fCLineItemTaxAmount,
-                     fcLineItemEnvTaxAmount: fCLineItemEnvTaxAmount,
+                     fCLineItemTaxAmount: dfltCurr == "USD" ? ndcLineItemTaxAmount : dcLineItemTaxAmount,
+                     fcLineItemEnvTaxAmount: dfltCurr == "USD" ? ndcLineItemEnvTaxAmount : dcLineItemEnvTaxAmount,
 
-                     dcCouponLineItemDollarAmount: dcCouponLineItemDollarAmount,
-                     fCCouponLineItemDollarAmount: fCCouponLineItemDollarAmount,
+                     dcCouponLineItemDollarAmount: dfltCurr == "USD" ? dcCouponLineItemDollarAmount : ndcCouponLineItemDollarAmount,
+                     fCCouponLineItemDollarAmount: dfltCurr == "USD" ? ndcCouponLineItemDollarAmount : dcCouponLineItemDollarAmount,
 
                      vndCpnAmountDC: vndDiscAmtDC,
                      vndCpnAmountNDC: vndDiscAmtNDC,
@@ -955,19 +957,19 @@ export const _tktObjReducer = createReducer(
          item.exchCpnAmountDC = 0;
          item.exchCpnAmountNDC = 0;
 
-         lineItemGrantTotal = item.unitPrice * item.quantity;
-         lineitemGrandTotalNDC = item.dcUnitPrice * item.quantity;
+         lineItemGrantTotal = parseFloat((item.unitPrice * item.quantity).toFixed(2));
+         lineitemGrandTotalNDC = parseFloat((item.dcUnitPrice * item.quantity).toFixed(2));
 
          subTotalDC += lineItemGrantTotal;
          subTotalNDC += lineitemGrandTotalNDC;
 
          if (action.cpnPct > 0) {
-            exchDiscAmtDC = lineItemGrantTotal * action.cpnPct / 100;
-            exchDiscAmtNDC = lineitemGrandTotalNDC * action.cpnPct / 100;
+            exchDiscAmtDC = parseFloat((lineItemGrantTotal * action.cpnPct / 100).toFixed(2));
+            exchDiscAmtNDC = parseFloat((lineitemGrandTotalNDC * action.cpnPct / 100).toFixed(2));
          }
          else {
-            exchDiscAmtDC = action.cpnAmt;
-            exchDiscAmtNDC = action.cpnAmt * exchRate * 0.01;
+            exchDiscAmtDC = parseFloat(action.cpnAmt.toFixed(2));
+            exchDiscAmtNDC = parseFloat((action.cpnAmt * (dfltCurr == "USD" ? exchRate : (1 / exchRate))).toFixed(2));
          }
          item.exchCpnAmountDC = exchDiscAmtDC;
          item.exchCpnAmountNDC = exchDiscAmtNDC;
@@ -978,36 +980,36 @@ export const _tktObjReducer = createReducer(
          if (state.tktObj.taxExempted) {
             item.lineItemTaxAmount = 0;
             item.lineItemEnvTaxAmount = 0;
-            item.lineItemDollarDisplayAmount = (lineItemGrantTotal) - exchDiscAmtDC;
+            item.lineItemDollarDisplayAmount = parseFloat((lineItemGrantTotal - exchDiscAmtDC).toFixed(2));
 
             item.dcLineItemTaxAmount = 0;
             item.fcLineItemEnvTaxAmount = 0;
-            item.dcCouponLineItemDollarAmount = (lineitemGrandTotalNDC) - exchDiscAmtDC;
+            item.dcCouponLineItemDollarAmount = parseFloat((lineitemGrandTotalNDC - exchDiscAmtDC).toFixed(2));
          }
          else {
             if (action.logonDataSvc.getExchCouponAfterTax()) {
-               item.lineItemTaxAmount = (lineItemGrantTotal) * item.salesTaxPct / 100;
-               item.dcLineItemTaxAmount = (lineitemGrandTotalNDC) * item.salesTaxPct / 100;
+               item.lineItemTaxAmount = parseFloat(((lineItemGrantTotal) * item.salesTaxPct / 100).toFixed(2));
+               item.dcLineItemTaxAmount = parseFloat(((lineitemGrandTotalNDC) * item.salesTaxPct / 100).toFixed(2));
 
-               item.fcLineItemEnvTaxAmount = (lineitemGrandTotalNDC) * item.envrnmtlTaxPct / 100;
-               item.lineItemEnvTaxAmount = (lineItemGrantTotal) * item.envrnmtlTaxPct / 100;
+               item.fcLineItemEnvTaxAmount = parseFloat(((lineitemGrandTotalNDC) * item.envrnmtlTaxPct / 100).toFixed(2));
+               item.lineItemEnvTaxAmount = parseFloat(((lineItemGrantTotal) * item.envrnmtlTaxPct / 100).toFixed(2));
 
-               item.lineItemDollarDisplayAmount = (lineItemGrantTotal + item.lineItemTaxAmount + item.lineItemEnvTaxAmount) - exchDiscAmtDC;
-               item.dcLineItemDollarDisplayAmount = lineitemGrandTotalNDC + item.dcLineItemTaxAmount + item.fcLineItemEnvTaxAmount - exchDiscAmtNDC;
+               item.lineItemDollarDisplayAmount = parseFloat(((lineItemGrantTotal + item.lineItemTaxAmount + item.lineItemEnvTaxAmount) - exchDiscAmtDC).toFixed(2));
+               item.dcLineItemDollarDisplayAmount = parseFloat((lineitemGrandTotalNDC + item.dcLineItemTaxAmount + item.fcLineItemEnvTaxAmount - exchDiscAmtNDC).toFixed(2));
             }
             else {
-               item.lineItemTaxAmount = (lineItemGrantTotal - exchDiscAmtDC - item.vndCpnAmountDC) * item.salesTaxPct / 100;
-               item.dcLineItemTaxAmount = (lineitemGrandTotalNDC - (exchDiscAmtNDC + item.vndCpnAmountNDC)) * item.salesTaxPct / 100;
+               item.lineItemTaxAmount = parseFloat(((lineItemGrantTotal - exchDiscAmtDC - item.vndCpnAmountDC) * item.salesTaxPct / 100).toFixed(2));
+               item.dcLineItemTaxAmount = parseFloat(((lineitemGrandTotalNDC - (exchDiscAmtNDC + item.vndCpnAmountNDC)) * item.salesTaxPct / 100).toFixed(2));
 
-               item.fcLineItemEnvTaxAmount = (lineitemGrandTotalNDC - (exchDiscAmtNDC + item.vndCpnAmountNDC)) * item.envrnmtlTaxPct / 100;
-               item.lineItemEnvTaxAmount = (lineItemGrantTotal - exchDiscAmtDC - item.vndCpnAmountDC) * item.envrnmtlTaxPct / 100;
+               item.fcLineItemEnvTaxAmount = parseFloat(((lineitemGrandTotalNDC - (exchDiscAmtNDC + item.vndCpnAmountNDC)) * item.envrnmtlTaxPct / 100).toFixed(2));
+               item.lineItemEnvTaxAmount = parseFloat(((lineItemGrantTotal - exchDiscAmtDC - item.vndCpnAmountDC) * item.envrnmtlTaxPct / 100).toFixed(2));
 
-               item.lineItemDollarDisplayAmount = (lineItemGrantTotal + item.lineItemTaxAmount + item.lineItemEnvTaxAmount);
-               item.dcLineItemDollarDisplayAmount = lineitemGrandTotalNDC + item.dcLineItemTaxAmount + item.fcLineItemEnvTaxAmount;
+               item.lineItemDollarDisplayAmount = parseFloat((lineItemGrantTotal + item.lineItemTaxAmount + item.lineItemEnvTaxAmount).toFixed(2));
+               item.dcLineItemDollarDisplayAmount = parseFloat((lineitemGrandTotalNDC + item.dcLineItemTaxAmount + item.fcLineItemEnvTaxAmount).toFixed(2));
             }
 
-            item.dcCouponLineItemDollarAmount = (exchDiscAmtNDC + item.vndCpnAmountNDC)
-            item.couponLineItemDollarAmount = (exchDiscAmtDC + item.vndCpnAmountDC)
+            item.dcCouponLineItemDollarAmount = parseFloat((exchDiscAmtNDC + item.vndCpnAmountNDC).toFixed(2));
+            item.couponLineItemDollarAmount = parseFloat((exchDiscAmtDC + item.vndCpnAmountDC).toFixed(2));
 
             totalTaxDC += item.lineItemTaxAmount;
             totalTaxNDC += item.dcLineItemTaxAmount;

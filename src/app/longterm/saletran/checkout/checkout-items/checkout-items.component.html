@@ -39,14 +39,14 @@
                                id="exchDisc_{{itm.salesItemUID}}_{{itm.ticketDetailId}}" 
                                (click)="DisplayExchDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc)"
                                style="cursor: pointer;">
-                                {{dcCurrSymbl}}{{itm.exchCpnAmountDC | number:'1.2-2'}}
+                                ${{itm.exchCpnAmountDC | number:'1.2-2'}}
                             </a>
                         </td>
                         <td class="text-end">
-                            {{dcCurrSymbl}}{{dcCurrSymbl == '$' ? itm.lineItemTaxAmount : itm.dcLineItemTaxAmount | number:'1.2-2'}}
+                            {{dcCurrSymbl}}{{(dcCurrSymbl == '$' ? itm.lineItemTaxAmount : itm.dcLineItemTaxAmount) | number:'1.2-2'}}
                         </td>
                         <td class="text-end fw-bold">
-                            {{dcCurrSymbl}}{{dcCurrSymbl == '$' ? itm.lineItemDollarDisplayAmount : itm.dcLineItemDollarDisplayAmount | number:'1.2-2'}}
+                            {{dcCurrSymbl}}{{(dcCurrSymbl == '$' ? itm.lineItemDollarDisplayAmount : itm.dcLineItemDollarDisplayAmount) | number:'1.2-2'}}
                         </td>
                     </tr>
                 </tbody>
