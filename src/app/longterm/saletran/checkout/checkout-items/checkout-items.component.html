@@ -29,7 +29,7 @@
                         <td class="text-end"> 
                             <a class="text-primary text-decoration-none" 
                                id="vndrDisc_{{itm.salesItemUID}}_{{itm.ticketDetailId}}" 
-                               (click)="DisplayVendorDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc)" 
+                               (click)="DisplayVendorDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc, itm.vndCpnAmountDC, itm.vendorCouponDiscountPct)" 
                                style="cursor: pointer;">
                                 {{dcCurrSymbl}}{{itm.vndCpnAmountDC | number:'1.2-2'}}
                             </a>
@@ -37,9 +37,9 @@
                         <td class="text-end">
                             <a class="text-primary text-decoration-none" 
                                id="exchDisc_{{itm.salesItemUID}}_{{itm.ticketDetailId}}" 
-                               (click)="DisplayExchDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc)"
+                               (click)="DisplayExchDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc, (dcCurrSymbl == '$' ? itm.exchCpnAmountDC : itm.exchCpnAmountNDC), itm.exchangeCouponDiscountPct)"
                                style="cursor: pointer;">
-                                ${{itm.exchCpnAmountDC | number:'1.2-2'}}
+                                ${{(dcCurrSymbl == '$' ? itm.exchCpnAmountDC : itm.exchCpnAmountNDC) | number:'1.2-2'}}
                             </a>
                         </td>
                         <td class="text-end">

@@ -64,8 +64,9 @@ export class CheckoutItemsComponent implements OnInit, OnChanges {
     this._store.select(getCheckoutItemsSelector).subscribe(saleItems => {
       this.tktDtlItems = (saleItems ?? []); //.slice().reverse(); // Reverse to display in correct order
 
-      this.calcCheckoutTotals();
-    })
+      //this.calcCheckoutTotals();
+      this.calculateTotals();
+    });
 
     
     this.dcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getDfltCurrCode());
@@ -140,7 +141,7 @@ export class CheckoutItemsComponent implements OnInit, OnChanges {
     this.totalSavings = Number(Number(this.exchCpnTotal + this.vndDiscountTotal).toFixed(2));
   }
 
-  public DisplayVendorDiscPopUp(saleItemId: number, tktDetailId: number, itemName: string) {
+  public DisplayVendorDiscPopUp(saleItemId: number, tktDetailId: number, itemName: string, vndCpnAmountDC: number, vendorCouponDiscountPct: number) {
     const modalRef = this._modalService.open(CouponsModalDlgComponent, this.modalOptions);
     
       modalRef.componentInstance.SaleItemId = saleItemId;
@@ -149,10 +150,14 @@ export class CheckoutItemsComponent implements OnInit, OnChanges {
       modalRef.componentInstance.DiscountName = "Vendor Discount";
       modalRef.componentInstance.Title = "Vendor Coupon";
       modalRef.componentInstance.CpnType = CouponType.vndCpnItem;
+      modalRef.componentInstance.DiscountPct = vendorCouponDiscountPct;
+      modalRef.componentInstance.DiscountAmt = vndCpnAmountDC;
     
   }
 
-  public DisplayExchDiscPopUp(saleItemId: number, tktDetailId: number, itemName: string) {
+  public DisplayExchDiscPopUp(saleItemId: number, tktDetailId: number, itemName: string, 
+    exchCpnAmountUSD: number, exchangeCouponDiscountPct: number) {
+      
     const modalRef = this._modalService.open(CouponsModalDlgComponent, this.modalOptions);
     
     modalRef.componentInstance.SaleItemId = saleItemId;
@@ -161,6 +166,8 @@ export class CheckoutItemsComponent implements OnInit, OnChanges {
     modalRef.componentInstance.DiscountName = "Exchange Discount";
     modalRef.componentInstance.Title = "Exchange Coupon";
     modalRef.componentInstance.CpnType = CouponType.exchCpnItem;
+    modalRef.componentInstance.DiscountPct = exchangeCouponDiscountPct;
+    modalRef.componentInstance.DiscountAmt = exchCpnAmountUSD;
     
   }
   public DisplayExchTranDiscPopUp() {
