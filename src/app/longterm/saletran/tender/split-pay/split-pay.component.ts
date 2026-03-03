@@ -108,12 +108,12 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
       this.tndrs = tndrs?.filter(t => t.tenderTypeCode != 'SV') || [] as TicketTender[];
 
       this.tndrs.forEach(t => {
-        paidSoFarDC += Number(Number(this.dcCurrSymbl == '$' ? t.tenderAmount : t.fcTenderAmount).toFixed(2));
-        paidSoFarNDC += Number(Number(this.dcCurrSymbl != '$' ? t.tenderAmount : t.fcTenderAmount).toFixed(2));
+        paidSoFarDC += Number(Number(this.dcCurrSymbl == '$' ? t.tenderAmount : t.fcTenderAmount).toCPOSFixed(2));
+        paidSoFarNDC += Number(Number(this.dcCurrSymbl != '$' ? t.tenderAmount : t.fcTenderAmount).toCPOSFixed(2));
       });
 
-      this.yetToPayDC = Number(Number(this.totalToPayDC - paidSoFarDC).toFixed(2));
-      this.yetToPayNDC = Number(Number(this.totalToPayNDC - paidSoFarNDC).toFixed(2));
+      this.yetToPayDC = Number(Number(this.totalToPayDC - paidSoFarDC).toCPOSFixed(2));
+      this.yetToPayNDC = Number(Number(this.totalToPayNDC - paidSoFarNDC).toCPOSFixed(2));
 
       if (this.yetToPayDC < 0) {
         this.yetToPayDC = 0;        
@@ -218,8 +218,8 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
   PaymentAmountChanged(evt: any) {
 
     ////console.log('SplitPay component TipAmountChanged called with event:', evt);
-    if (Number(Number(evt.target.value).toFixed(2)) > this.totalToPayDC) {
-      evt.target.value = Number(Number(this.totalToPayDC).toFixed(2));
+    if (Number(Number(evt.target.value).toCPOSFixed(2)) > this.totalToPayDC) {
+      evt.target.value = Number(Number(this.totalToPayDC).toCPOSFixed(2));
       const modalRef = this.modalService.open(AlertModalComponent, this.modalOptions);
       modalRef.componentInstance.title = 'Tender Amount Exceeds Total';
       modalRef.componentInstance.message = 'The tender amount cannot exceed the total amount due.';
@@ -233,8 +233,8 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
     }
     this.yetToPayDC = evt.target.value;
     this.dcCurrSymbl = this._utlSvc.currencySymbols.get(this._logonDataSvc.getDfltCurrCode());
-    this.yetToPayNDC = this.dcCurrSymbl == '$' ? Number(Number(this.yetToPayDC * this._logonDataSvc.getExchangeRate()).toFixed(2)) : 
-        Number(Number(this.yetToPayDC / this._logonDataSvc.getExchangeRate()).toFixed(2));
+    this.yetToPayNDC = this.dcCurrSymbl == '$' ? Number(Number(this.yetToPayDC * this._logonDataSvc.getExchangeRate()).toCPOSFixed(2)) : 
+      Number(Number(this.yetToPayDC / this._logonDataSvc.getExchangeRate()).toCPOSFixed(2));
   }
 
   async btnTndrClick(evt: Event) {

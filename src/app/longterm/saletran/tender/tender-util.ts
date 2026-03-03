@@ -17,19 +17,19 @@ export class TenderUtil {
         let ticketTotal = 0;
 
         for (const key in tktObj.tktList) {
-            ticketTotal += parseFloat((tktObj.tktList[key].lineItemDollarDisplayAmount).toFixed(2));
+            ticketTotal += parseFloat((tktObj.tktList[key].lineItemDollarDisplayAmount).toCPOSFixed(2));
         }
 
         for (const key in tktObj.associateTips) {
-            ticketTotal += parseFloat((tktObj.associateTips[key].tipAmount).toFixed(2));
+            ticketTotal += parseFloat((tktObj.associateTips[key].tipAmount).toCPOSFixed(2));
         }
 
         let tenderTotals = 0;
         tktObj.ticketTenderList.forEach((tender) => {
-            tenderTotals += parseFloat((tender.tenderAmount).toFixed(2));
+            tenderTotals += parseFloat((tender.tenderAmount).toCPOSFixed(2));
         })
 
-        if ((allowPartPay && tktObj.partialAmount > 0 && tktObj.partialAmount == tenderTotals) || Number(Number(ticketTotal).toFixed(2)) == Number(Number(tenderTotals).toFixed(2))) {
+        if ((allowPartPay && tktObj.partialAmount > 0 && tktObj.partialAmount == tenderTotals) || Number(Number(ticketTotal).toCPOSFixed(2)) == Number(Number(tenderTotals).toCPOSFixed(2))) {
             //console.log("Ticket is complete with total: " + ticketTotal + " and tender total: " + tenderTotals);
             return true;
         }

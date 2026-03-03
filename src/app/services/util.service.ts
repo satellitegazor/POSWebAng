@@ -7,6 +7,16 @@ export class UtilService {
 
   constructor() { }
 
+  public static toCPOSFixed(value: number, d: number = 2): string {
+    const str = value.toString();
+    if (str.includes('e')) {
+      const fixed = value.toFixed(d);
+      return Object.is(fixed, "-0.00") ? "0.00" : fixed;
+    }
+    const factor = Math.pow(10, d);
+    return (Math.round((value + Number.EPSILON) * factor) / factor).toFixed(d);
+  }
+
   public getUniqueRRN(): string {  
     const date = new Date();
     const year = date.getFullYear().toString(); // Last two digits of the year
@@ -63,6 +73,16 @@ export class UtilService {
     ['Diners Club', ['300', '301', '302', '303', '304', '305', '36', '38']],
   ]);
 }
+
+declare global {
+  interface Number {
+    toCPOSFixed(d?: number): string;
+  }
+}
+
+Number.prototype.toCPOSFixed = function (d: number = 2): string {
+  return UtilService.toCPOSFixed(Number(this), d);
+};
 
 export class CPOSAppType {
   static readonly LongTerm = 2; // Example value, adjust as needed

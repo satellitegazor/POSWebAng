@@ -31,7 +31,7 @@ export class RedeemGiftCardTenders {
                 tender.traceId = "false";
                 tender.tenderAmount = response.TotalApprovedAmount;
                 tender.inStoreCardNbrTmp = response.ACCT_NUM;
-                tender.fcTenderAmount = Number(Number(response.TotalApprovedAmount * _logonDataSvc.getExchangeRate()).toFixed(2));
+                tender.fcTenderAmount = Number(Number(response.TotalApprovedAmount * _logonDataSvc.getExchangeRate()).toCPOSFixed(2));
             }),
             catchError(error => {
                 console.error(`Error redeeming gift card for tender ID ${tender.ticketTenderId}:`, error);
@@ -114,7 +114,7 @@ export class RedeemGiftCardTenders {
                                     tndrCopy.tenderAmount = data.TotalApprovedAmount;
                                     tndrCopy.inStoreCardNbrTmp = data.ACCT_NUM;
                                     tndrCopy.fcTenderAmount =
-                                        Number(Number(data.TotalApprovedAmount * _logonDataSvc.getExchangeRate()).toFixed(2));
+                                        Number(Number(data.TotalApprovedAmount * _logonDataSvc.getExchangeRate()).toCPOSFixed(2));
 
                                     _store.dispatch({
                                         type: '[Ticket] Add Tender',

@@ -147,10 +147,10 @@ export class CheckoutItemsComponent implements OnInit, OnChanges {
 
     for (let k = 0; k < this.tktDtlItems.length; k++) {
 
-      let exchCpnTotal = Number(Number((this.tktDtlItems[k].unitPrice * this.tktDtlItems[k].quantity) * this.tktDtlItems[k].exchangeCouponDiscountPct * 0.01).toFixed(2));
-      let saleTaxTotal = Number(Number((this.tktDtlItems[k].unitPrice * this.tktDtlItems[k].quantity) * this.tktDtlItems[k].salesTaxPct * 0.01).toFixed(2));
+      let exchCpnTotal = Number(Number((this.tktDtlItems[k].unitPrice * this.tktDtlItems[k].quantity) * this.tktDtlItems[k].exchangeCouponDiscountPct * 0.01).toCPOSFixed(2));
+      let saleTaxTotal = Number(Number((this.tktDtlItems[k].unitPrice * this.tktDtlItems[k].quantity) * this.tktDtlItems[k].salesTaxPct * 0.01).toCPOSFixed(2));
       let vndDiscountTotal = this.tktDtlItems[k].discountAmount | 0;
-      let subTotal = Number(Number(this.tktDtlItems[k].unitPrice * this.tktDtlItems[k].quantity).toFixed(2));
+      let subTotal = Number(Number(this.tktDtlItems[k].unitPrice * this.tktDtlItems[k].quantity).toCPOSFixed(2));
 
       this.subTotalDC += subTotal;
       this.exchCpnTotal += exchCpnTotal;
@@ -158,14 +158,14 @@ export class CheckoutItemsComponent implements OnInit, OnChanges {
       this.vndDiscountTotal += vndDiscountTotal;
 
       var checkOutItem: SalesTransactionCheckoutItem = { ...this.tktDtlItems[k] };
-      checkOutItem.lineItemDollarDisplayAmount = checkOutItem.quantity * Number(Number(subTotal - exchCpnTotal - vndDiscountTotal + saleTaxTotal).toFixed(2));
-      checkOutItem.lineItemTaxAmount = checkOutItem.quantity * Number(Number(saleTaxTotal).toFixed(2));
-      checkOutItem.discountAmount = checkOutItem.quantity * Number(Number(exchCpnTotal + vndDiscountTotal).toFixed(2));
+      checkOutItem.lineItemDollarDisplayAmount = checkOutItem.quantity * Number(Number(subTotal - exchCpnTotal - vndDiscountTotal + saleTaxTotal).toCPOSFixed(2));
+      checkOutItem.lineItemTaxAmount = checkOutItem.quantity * Number(Number(saleTaxTotal).toCPOSFixed(2));
+      checkOutItem.discountAmount = checkOutItem.quantity * Number(Number(exchCpnTotal + vndDiscountTotal).toCPOSFixed(2));
 
     }
 
-    this.grandTotal = Number(Number(this.subTotalDC - this.exchCpnTotal + this.saleTaxTotal).toFixed(2));
-    this.totalSavings = Number(Number(this.exchCpnTotal + this.vndDiscountTotal).toFixed(2));
+    this.grandTotal = Number(Number(this.subTotalDC - this.exchCpnTotal + this.saleTaxTotal).toCPOSFixed(2));
+    this.totalSavings = Number(Number(this.exchCpnTotal + this.vndDiscountTotal).toCPOSFixed(2));
   }
 
   public DisplayVendorDiscPopUp(saleItemId: number, tktDetailId: number, itemName: string, vndCpnAmountDC: number, vendorCouponDiscountPct: number,

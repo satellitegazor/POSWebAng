@@ -40,7 +40,7 @@ export const getBalanceDueFC = createSelector(getTktObjState,
 // export const getRemainingBalanceDC = createSelector(getTktObjState,
 //   (state) => {
 //     let tenderTotal: number = 0;
-//     state.tktObj.ticketTenderList.forEach(tndr => tenderTotal += parseFloat((tndr.tenderAmount).toFixed(2)));
+//     state.tktObj.ticketTenderList.forEach(tndr => tenderTotal += parseFloat((tndr.tenderAmount).toCPOSFixed(2)));
 //     let ticketTotal: number = 0;
 //     state.tktObj.tktList.forEach(itm => ticketTotal += itm.lineItemDollarDisplayAmount);
 //     return Round2DecimalService.round(ticketTotal + state.tktObj.tipAmountDC - tenderTotal);
@@ -49,7 +49,7 @@ export const getBalanceDueFC = createSelector(getTktObjState,
 // export const getRemainingBalanceFC = createSelector(getTktObjState,
 //   (state) => {
 //     let tenderTotalFC: number = 0;
-//     state.tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += parseFloat((tndr.fcTenderAmount).toFixed(2)));
+//     state.tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += parseFloat((tndr.fcTenderAmount).toCPOSFixed(2)));
 //     let ticketTotalFC: number = 0;
 //     state.tktObj.tktList.forEach(itm => ticketTotalFC += itm.dCLineItemDollarDisplayAmount);
 //     return Round2DecimalService.round(ticketTotalFC + state.tktObj.tipAmountNDC - tenderTotalFC);
@@ -71,13 +71,13 @@ export interface AmountUSDFC {
     let ticketTotalFC: number = 0;
     let tipTotalFC: number = 0;
 
-    state.tktObj.ticketTenderList.forEach(tndr => tenderTotalUSD += parseFloat((tndr.tenderTypeCode != "SV" ? tndr.tenderAmount : 0).toFixed(2)));
-    state.tktObj.tktList.forEach(itm => ticketTotalUSD += parseFloat((itm.lineItemDollarDisplayAmount ?? 0).toFixed(2)));
-    state.tktObj.associateTips.forEach(tip => tipTotalUSD += parseFloat((tip.tipAmount).toFixed(2)));
+    state.tktObj.ticketTenderList.forEach(tndr => tenderTotalUSD += parseFloat((tndr.tenderTypeCode != "SV" ? tndr.tenderAmount : 0).toCPOSFixed(2)));
+    state.tktObj.tktList.forEach(itm => ticketTotalUSD += parseFloat((itm.lineItemDollarDisplayAmount ?? 0).toCPOSFixed(2)));
+    state.tktObj.associateTips.forEach(tip => tipTotalUSD += parseFloat((tip.tipAmount).toCPOSFixed(2)));
 
-    state.tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += parseFloat((tndr.tenderTypeCode != "SV" ? tndr.fcTenderAmount : 0).toFixed(2)));
-    state.tktObj.tktList.forEach(itm => ticketTotalFC += parseFloat((itm.dcLineItemDollarDisplayAmount ?? 0).toFixed(2)));
-    state.tktObj.associateTips.forEach(tip => tipTotalFC += parseFloat((tip.tipAmtLocCurr).toFixed(2)));
+    state.tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += parseFloat((tndr.tenderTypeCode != "SV" ? tndr.fcTenderAmount : 0).toCPOSFixed(2)));
+    state.tktObj.tktList.forEach(itm => ticketTotalFC += parseFloat((itm.dcLineItemDollarDisplayAmount ?? 0).toCPOSFixed(2)));
+    state.tktObj.associateTips.forEach(tip => tipTotalFC += parseFloat((tip.tipAmtLocCurr).toCPOSFixed(2)));
 
     if (state.tktObj.isPartialPay) {
       ticketTotalUSD = state.tktObj.partialAmount;

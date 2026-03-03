@@ -45,7 +45,7 @@ export class RedeeemGiftCardTndrsService {
                     tndrCopy.traceId = "false";
                     tndrCopy.tenderAmount = response.TotalApprovedAmount;
                     tndrCopy.inStoreCardNbrTmp = response.ACCT_NUM;
-                    tndrCopy.fcTenderAmount = Number(Number(response.TotalApprovedAmount * this._logonDataSvc.getExchangeRate()).toFixed(2));
+                    tndrCopy.fcTenderAmount = Number(Number(response.TotalApprovedAmount * this._logonDataSvc.getExchangeRate()).toCPOSFixed(2));
 
                     this._toastSvc.success(`Gift Card Redeemed Successfully: Card Ending Nbr ${response.CardEndingNbr}, Approved Amount ${tndrCopy.tenderAmount}`);
 

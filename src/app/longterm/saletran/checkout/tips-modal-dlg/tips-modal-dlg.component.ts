@@ -68,11 +68,11 @@ export class TipsModalDlgComponent implements OnInit {
 
 
       this._store.select(getTicketTotals).subscribe(dt => {
-        this.dcTotal = Number.parseFloat(((dt.grandTotalDC * 100) / 100).toFixed(2));
-        this.ndcTotal = Number.parseFloat(((dt.grandTotalNDC * 100) / 100).toFixed(2));
+        this.dcTotal = Number.parseFloat(((dt.grandTotalDC * 100) / 100).toCPOSFixed(2));
+        this.ndcTotal = Number.parseFloat(((dt.grandTotalNDC * 100) / 100).toCPOSFixed(2));
 
-        this.lineItemTotalDC = (Number.parseFloat((dt.grandTotalDC - dt.tipTotalDC).toFixed(2)) * 100) / 100;
-        this.lineItemTotalNDC = (Number.parseFloat((dt.grandTotalNDC - dt.tipTotalNDC).toFixed(2)) * 100) / 100;
+        this.lineItemTotalDC = (Number.parseFloat((dt.grandTotalDC - dt.tipTotalDC).toCPOSFixed(2)) * 100) / 100;
+        this.lineItemTotalNDC = (Number.parseFloat((dt.grandTotalNDC - dt.tipTotalNDC).toCPOSFixed(2)) * 100) / 100;
       })
     })
   }
@@ -106,7 +106,7 @@ export class TipsModalDlgComponent implements OnInit {
       cumulativeTipTotal += indivTipAmt;
 
       if (i == this.assocSaleTips.length - 1) {
-        this.assocSaleTips[i].tipAmount = Number((indivTipAmt + (Math.round((diffAmt - cumulativeTipTotal) * 100) / 100)).toFixed(2));
+        this.assocSaleTips[i].tipAmount = Number((indivTipAmt + (Math.round((diffAmt - cumulativeTipTotal) * 100) / 100)).toCPOSFixed(2));
       }
       else {
         this.assocSaleTips[i].tipAmount = indivTipAmt;

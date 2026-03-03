@@ -109,8 +109,8 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
         this._tndrObj.tenderAmount = this.dcCurrSymbl == '$' ? parseFloat(params['tenderAmountDC']) : parseFloat(params['tenderAmountNDC']);
         this._tndrObj.fcTenderAmount = this.dcCurrSymbl == '$' ? parseFloat(params['tenderAmountNDC']) : parseFloat(params['tenderAmountDC']);
         
-        this.tenderAmountDC = parseFloat(parseFloat(params['tenderAmountDC']).toFixed(2))
-        this.tenderAmountNDC = parseFloat(parseFloat(params['tenderAmountNDC']).toFixed(2));
+        this.tenderAmountDC = parseFloat(parseFloat(params['tenderAmountDC']).toCPOSFixed(2))
+        this.tenderAmountNDC = parseFloat(parseFloat(params['tenderAmountNDC']).toCPOSFixed(2));
       }
       const isRefund = params["IsRefund"] === "true";
 
@@ -208,7 +208,7 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
             
             tndrCopy.tenderTypeCode = this.isDiscoverMilstarCard(data.FIRST6_LAST4) ? (isRefund? 'MR' : 'MS') : (isRefund? 'XR': 'XC');
             tndrCopy.tenderAmount = data.APPROVED_AMOUNT;
-            tndrCopy.fcTenderAmount = parseFloat((this._logonDataSvc.getExchangeRate() * data.APPROVED_AMOUNT).toFixed(2));
+            tndrCopy.fcTenderAmount = parseFloat((this._logonDataSvc.getExchangeRate() * data.APPROVED_AMOUNT).toCPOSFixed(2));
             tndrCopy.tndMaintTimestamp = new Date(Date.now());
             tndrCopy.tndrTimeStamp = new Date(Date.now());
             tndrCopy.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
@@ -229,7 +229,7 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
               isPaymentApproved = true;
               tndrCopy.tenderStatus = TenderStatusType.InProgress;  
               tndrCopy.tenderAmount = this._captureTranResponse.APPROVED_AMOUNT;
-              tndrCopy.fcTenderAmount = Number(Number(tndrCopy.tenderAmount * dailyExchRate.exchangeRate).toFixed(2));
+              tndrCopy.fcTenderAmount = Number(Number(tndrCopy.tenderAmount * dailyExchRate.exchangeRate).toCPOSFixed(2));
             }
             else {
               tndrCopy.tenderStatus = TenderStatusType.Declined;
@@ -390,13 +390,13 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
   //   let ticketTotalFC: number = 0;
   //   let tipTotalFC: number = 0;
 
-  //   tktObj.ticketTenderList.forEach(tndr => tenderTotal += parseFloat((tndr.tenderAmount).toFixed(2)));
-  //   tktObj.tktList.forEach(itm => ticketTotal += parseFloat((itm.lineItemDollarDisplayAmount).toFixed(2)));
-  //   tktObj.associateTips.forEach(tip => tipTotal += parseFloat((tip.tipAmount).toFixed(2)));
+  //   tktObj.ticketTenderList.forEach(tndr => tenderTotal += parseFloat((tndr.tenderAmount).toCPOSFixed(2)));
+  //   tktObj.tktList.forEach(itm => ticketTotal += parseFloat((itm.lineItemDollarDisplayAmount).toCPOSFixed(2)));
+  //   tktObj.associateTips.forEach(tip => tipTotal += parseFloat((tip.tipAmount).toCPOSFixed(2)));
 
-  //   tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += parseFloat((tndr.fcTenderAmount).toFixed(2)));
-  //   tktObj.tktList.forEach(itm => ticketTotalFC += parseFloat((itm.dCLineItemDollarDisplayAmount).toFixed(2)));
-  //   tktObj.associateTips.forEach(tip => tipTotalFC += parseFloat((tip.tipAmtLocCurr).toFixed(2)));
+  //   tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += parseFloat((tndr.fcTenderAmount).toCPOSFixed(2)));
+  //   tktObj.tktList.forEach(itm => ticketTotalFC += parseFloat((itm.dCLineItemDollarDisplayAmount).toCPOSFixed(2)));
+  //   tktObj.associateTips.forEach(tip => tipTotalFC += parseFloat((tip.tipAmtLocCurr).toCPOSFixed(2)));
 
   //   if (tktObj.isPartialPay) {
   //     ticketTotal = tktObj.partialAmount;

@@ -99,7 +99,7 @@ export class PosCurrencyDirective implements ControlValueAccessor {
     const value = this.cents / 100;
     this.setView();
     // notify angular forms
-    this.onChange(Number(value.toFixed(2)));
+    this.onChange(Number(value.toCPOSFixed(2)));
     // also dispatch native events so (input)/(change) handlers fire
     try {
       const inputEl = this.el.nativeElement;
@@ -111,7 +111,7 @@ export class PosCurrencyDirective implements ControlValueAccessor {
   }
 
   private setView() {
-    const valueStr = (this.cents / 100).toFixed(2);
+    const valueStr = (this.cents / 100).toCPOSFixed(2);
     const display = this.currencySymbol ? `${this.currencySymbol}${valueStr}` : valueStr;
     this.renderer.setProperty(this.el.nativeElement, 'value', display);
   }

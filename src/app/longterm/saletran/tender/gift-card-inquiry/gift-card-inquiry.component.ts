@@ -188,7 +188,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
           }
 
           // Transaction was approved
-          this._toastSvc.success('Gift Card Inquiry Successful. Balance Amount: ' + data.BalanceAmount.toFixed(2));
+          this._toastSvc.success('Gift Card Inquiry Successful. Balance Amount: ' + data.BalanceAmount.toCPOSFixed(2));
           var tndrCopy = TenderUtil.copyTenderObj(savedTender);
 
           tndrCopy.rrn = this.InvoiceId;

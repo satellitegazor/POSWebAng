@@ -50,7 +50,7 @@ export class PartPayComponent implements OnInit {
       this.partPayAmount = tktTotals.partPayDC;
 
       if (tktTotals.grandTotalDC > 0 && tktTotals.partPayNDC > 0) {
-        this.partPayPercent = Number(((tktTotals.partPayNDC / tktTotals.grandTotalDC) * 100).toFixed(2));
+        this.partPayPercent = Number(((tktTotals.partPayNDC / tktTotals.grandTotalDC) * 100).toCPOSFixed(2));
       }
     })
 
@@ -67,8 +67,8 @@ export class PartPayComponent implements OnInit {
     this.partPayPercent = Round2DecimalService.round(event.target.value);
 
     if (this.partPayPercent > 0) {
-      this.partPayAmount = Number(((this.grandTotalDC - this.amtPaidDC) * this.partPayPercent / 100).toFixed(2));
-      this.partPayAmountNDC = Number((this.partPayAmount * (this.dailyExchRateObj.isOneUSD ? this.dailyExchRateObj.oneUSDRate : (1 / this.dailyExchRateObj.oneUSDRate))).toFixed(2));
+      this.partPayAmount = Number(((this.grandTotalDC - this.amtPaidDC) * this.partPayPercent / 100).toCPOSFixed(2));
+      this.partPayAmountNDC = Number((this.partPayAmount * (this.dailyExchRateObj.isOneUSD ? this.dailyExchRateObj.oneUSDRate : (1 / this.dailyExchRateObj.oneUSDRate))).toCPOSFixed(2));
       this._store.dispatch(updatePartPayData({ partPayFlag: true, partPayAmountDC: this.partPayAmount, partPayAmountNDC: this.partPayAmountNDC }));
     }
     else {
@@ -80,7 +80,7 @@ export class PartPayComponent implements OnInit {
   onPartPayAmount(event: any) {
     this.partPayAmount = Round2DecimalService.round(event.target.value);
     if (this.partPayAmount > 0) {
-      this.partPayPercent = Number((this.partPayAmount / (this.grandTotalDC - this.amtPaidDC) * 100).toFixed(2));
+      this.partPayPercent = Number((this.partPayAmount / (this.grandTotalDC - this.amtPaidDC) * 100).toCPOSFixed(2));
       this._store.dispatch(updatePartPayData({ partPayFlag: true, partPayAmountDC: this.partPayAmount, partPayAmountNDC: this.partPayAmount }));
     }
     else {

@@ -123,7 +123,7 @@ export class CouponsModalDlgComponent implements OnInit {
 
       const totalCouponDC = this.DiscountPct > 0
         ? 0
-        : parseFloat((this.DiscountAmt * (this.dfltCurrCode === 'USD' ? 1 : this.exchRate)).toFixed(2));
+        : parseFloat((this.DiscountAmt * (this.dfltCurrCode === 'USD' ? 1 : this.exchRate)).toCPOSFixed(2));
 
       let remainingCouponDC = totalCouponDC;
       let remainingBaseDC = totalBaseDC;
@@ -135,14 +135,14 @@ export class CouponsModalDlgComponent implements OnInit {
 
         let itemDiscDC = 0;
         if (this.DiscountPct > 0) {
-          itemDiscDC = parseFloat((itemBaseDC * this.DiscountPct / 100).toFixed(2));
+          itemDiscDC = parseFloat((itemBaseDC * this.DiscountPct / 100).toCPOSFixed(2));
         } else {
           if (!isLast) {
-            itemDiscDC = parseFloat((totalCouponDC * (itemBaseDC / totalBaseDC)).toFixed(2));
-            remainingCouponDC = parseFloat((remainingCouponDC - itemDiscDC).toFixed(2));
-            remainingBaseDC = parseFloat((remainingBaseDC - itemBaseDC).toFixed(2));
+            itemDiscDC = parseFloat((totalCouponDC * (itemBaseDC / totalBaseDC)).toCPOSFixed(2));
+            remainingCouponDC = parseFloat((remainingCouponDC - itemDiscDC).toCPOSFixed(2));
+            remainingBaseDC = parseFloat((remainingBaseDC - itemBaseDC).toCPOSFixed(2));
           } else {
-            itemDiscDC = parseFloat(remainingCouponDC.toFixed(2));
+            itemDiscDC = parseFloat(remainingCouponDC.toCPOSFixed(2));
           }
         }
 
