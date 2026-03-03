@@ -18,9 +18,9 @@
 }
 
 export enum CouponType {
-    exchCpnItem,
-    vndCpnItem,
-    exchCpnTran
+    exchCpnItem = "Exchange Coupon - Item",
+    vndCpnItem = "Vendor Coupon - Item",
+    exchCpnTran = "Exchange Coupon - All Items"
 }
 
 export enum BusinessFunctionCode {

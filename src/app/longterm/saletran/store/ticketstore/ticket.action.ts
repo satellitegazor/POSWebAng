@@ -185,6 +185,7 @@ export const loadInProgressTendersSuccess = createAction(LOAD_INPROGRESS_TENDERS
 export const loadInProgressTendersFail = createAction(LOAD_INPROGRESS_TENDERS_FAIL,
     props<{ errMessage: String }>());
 
+export const updateShipHandling = createAction('updateShipHandling', props<{dfltCurrSymbl: string,shipHandlingAmountUSD: number, shipHandlingTaxUSD: number, shipHandlingAmountFC: number, shipHandlingTaxFC: number}>());
 
 
 //export const updateLocationConfig = createAction(UPDATE_LOCATION_CONFIG, props<{}>)

@@ -29,7 +29,8 @@
                         <td class="text-end"> 
                             <a class="text-primary text-decoration-none" 
                                id="vndrDisc_{{itm.salesItemUID}}_{{itm.ticketDetailId}}" 
-                               (click)="DisplayVendorDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc, itm.vndCpnAmountDC, itm.vendorCouponDiscountPct)" 
+                               (click)="DisplayVendorDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc, itm.vndCpnAmountDC, 
+                                itm.vendorCouponDiscountPct, (dcCurrSymbl == '$' ? (itm.lineItemDollarDisplayAmount - itm.lineItemTaxAmount - itm.lineItemEnvTaxAmount): (itm.dcLineItemDollarDisplayAmount - itm.dcLineItemTaxAmount - itm.fcLineItemEnvTaxAmount)))" 
                                style="cursor: pointer;">
                                 {{dcCurrSymbl}}{{itm.vndCpnAmountDC | number:'1.2-2'}}
                             </a>
@@ -37,7 +38,7 @@
                         <td class="text-end">
                             <a class="text-primary text-decoration-none" 
                                id="exchDisc_{{itm.salesItemUID}}_{{itm.ticketDetailId}}" 
-                               (click)="DisplayExchDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc, (dcCurrSymbl == '$' ? itm.exchCpnAmountDC : itm.exchCpnAmountNDC), itm.exchangeCouponDiscountPct)"
+                               (click)="DisplayExchDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc, itm.couponLineItemDollarAmount, itm.exchangeCouponDiscountPct, (dcCurrSymbl == '$' ? (itm.lineItemDollarDisplayAmount - itm.lineItemTaxAmount - itm.lineItemEnvTaxAmount): (itm.dcLineItemDollarDisplayAmount - itm.dcLineItemTaxAmount - itm.fcLineItemEnvTaxAmount)))"
                                style="cursor: pointer;">
                                 ${{(dcCurrSymbl == '$' ? itm.exchCpnAmountDC : itm.exchCpnAmountNDC) | number:'1.2-2'}}
                             </a>
@@ -78,20 +79,31 @@
             <tbody>
                 <tr>
                     <td class="text-end">Item Subtotal:</td>
-                    <td class="text-end fw-semibold">{{dcCurrSymbl}}{{subTotal | number:'1.2-2'}}</td>
+                    <td class="text-end fw-semibold">{{dcCurrSymbl}}{{subTotalDC | number:'1.2-2'}}</td>
+                    <td *ngIf="isOConusLocation" class="text-end fw-semibold">{{ndcCurrSymbl}}{{subTotalNDC | number:'1.2-2'}}</td>
                 </tr>
                 <tr>
                     <td class="text-end">Exchange Coupon:</td>
                     <td class="text-end">
                         <a class="text-primary text-decoration-none" id="exchTranCoupon" 
-                           (click)="DisplayExchTranDiscPopUp()" style="cursor: pointer;">
+                           (click)="DisplayExchTranDiscPopUp(dfltCurrCode == 'USD' ? subTotalDC : subTotalNDC)" style="cursor: pointer;">
                             {{dcCurrSymbl}}{{exchCpnTotal | number:'1.2-2'}}
                         </a>
                     </td>
+                    <td *ngIf="isOConusLocation" class="text-end">   
+                        {{ndcCurrSymbl}}{{exchCpnTotalNDC | number:'1.2-2'}}   
+                    </td>
+
                 </tr>
                 <tr>
                     <td class="text-end">Sales Tax:</td>
                     <td class="text-end fw-semibold">{{dcCurrSymbl}}{{saleTaxTotal | number:'1.2-2'}}</td>
+                    <td *ngIf="isOConusLocation" class="text-end fw-semibold">{{ndcCurrSymbl}}{{saleTaxTotalNDC | number:'1.2-2'}}</td>
+                </tr>
+                <tr *ngIf="useShipHandling">
+                    <td class="text-end">Shipping & Handling:</td>
+                    <td class="text-end fw-semibold">{{dcCurrSymbl}}{{ (dfltCurrCode == "USD" ? shippingHandling : shippingHandlingFC) | number:'1.2-2'}}</td>
+                    <td *ngIf="isOConusLocation" class="text-end fw-semibold">{{ndcCurrSymbl}}{{(dfltCurrCode != "USD" ? shippingHandling : shippingHandlingFC) | number:'1.2-2'}}</td>
                 </tr>
                 <tr *ngIf="allowTips">
                     <td class="text-end">Tips:</td>
@@ -101,14 +113,19 @@
                             {{dcCurrSymbl}}{{tipsTotal | number:'1.2-2'}}
                         </a>
                     </td>
+                    <td *ngIf="isOConusLocation" class="text-end">   
+                        {{ndcCurrSymbl}}{{tipsTotalNDC | number:'1.2-2'}}
+                    </td>
                 </tr>
                 <tr class="border-top border-2">
                     <td class="text-end fw-bold fs-5">Grand Total:</td>
                     <td class="text-end fw-bold fs-5 text-success">{{dcCurrSymbl}}{{grandTotal | number:'1.2-2'}}</td>
+                    <td *ngIf="isOConusLocation" class="text-end fw-bold fs-5 text-success">{{ndcCurrSymbl}}{{grandTotalNDC | number:'1.2-2'}}</td>
                 </tr>
                 <tr>
                     <td class="text-end text-success">Total Savings:</td>
                     <td class="text-end text-success fw-semibold">{{dcCurrSymbl}}{{totalSavings | number:'1.2-2'}}</td>
+                    <td *ngIf="isOConusLocation" class="text-end text-success fw-semibold">{{ndcCurrSymbl}}{{totalSavingsNDC | number:'1.2-2'}}</td>
                 </tr>
             </tbody>
         </table>

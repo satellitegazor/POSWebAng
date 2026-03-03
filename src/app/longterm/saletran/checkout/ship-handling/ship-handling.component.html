@@ -1,0 +1,43 @@
+<div class="modal-header">
+	<h4>Shipping/Handling</h4>
+</div>
+<div class="modal-content">
+	<div class="panel">
+		<div class="panel-body">
+			<table class="table table-striped">
+				<tr>
+					<td style="width:40%;">Enter Shipping/Handling (optional):&nbsp;</td>
+					<td><span class="dfltCurSymbl">{{dfltCurrSymbl}}</span></td>
+					<td style="text-align:left;">
+						<input
+							id="txtShipHandling"
+							type="text"
+							placeholder="Shipping/Handling"
+							maxlength="10"
+							autofocus
+							class="form-control shipHandling"
+							[(ngModel)]="shipHandlingAmountUIVal"
+							[appPosCurrency]="dfltCurrSymbl"
+							appPosCurrency />
+					</td>
+					<td style="text-align:left;">
+						<input
+							id="txtShipHandlingTaxPct"
+							type="text"
+							placeholder="Tax Percent"
+							maxlength="6"
+							class="form-control shipHandling"
+							[(ngModel)]="shipHandlingTaxPctUIVal" />
+					</td>
+					<td>%</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+<div class="modal-footer">
+	<div class="row">
+		<button class="btn btn-info" (click)="Continue()">Continue</button>&nbsp;
+		<button class="btn btn-info" (click)="Cancel()">Cancel</button>&nbsp;
+	</div>
+</div>

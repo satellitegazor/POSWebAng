@@ -7,3 +7,94 @@
 .ca {
     text-align: center;
 }
+
+.modal-header {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-dark-light) 100%);
+    color: var(--white);
+    border-bottom: none;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    box-shadow: var(--shadow-sm);
+}
+
+.modal-title {
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    font-size: var(--font-size-lg);
+    color:white;
+}
+
+.modal-content {
+    background-color: var(--neutral-bg-lighter);
+    padding: var(--spacing-lg) var(--spacing-xl);
+}
+
+.coupon-panel {
+    background: var(--white);
+    border: 1px solid var(--neutral-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+    max-width: 640px;
+}
+
+.panel-title {
+    font-weight: 600;
+    color: var(--neutral-text-primary);
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-base);
+}
+
+.panel-body {
+    padding: 0;
+}
+
+.coupon-table {
+    margin: 0;
+    background-color: var(--neutral-bg-lighter);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.coupon-table td {
+    vertical-align: middle;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-top: none;
+}
+
+.coupon-table .item-name {
+    font-weight: 500;
+    color: var(--neutral-text-primary);
+    max-width: 260px;
+}
+
+.coupon-table .spacer {
+    width: var(--spacing-xl);
+}
+
+.form-control {
+    border-radius: var(--radius-md);
+    border: 1px solid var(--neutral-border);
+    box-shadow: none;
+    font-size: var(--font-size-base);
+}
+
+.form-control:focus {
+    border-color: var(--primary-accent);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.15);
+}
+
+.modal-footer {
+    border-top: none;
+    background-color: var(--neutral-bg-light);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.coupon-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-sm);
+}
