@@ -11,27 +11,27 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   }]
 })
 export class PosCurrency3Directive implements ControlValueAccessor {
-
+  @Input('appPosCurrency3') currencySymbol: string = '$'; // usage: appPosCurrency3 or [appPosCurrency3]="'€'"
   private onChange: (val: number | null) => void = () => { };
   private onTouched: () => void = () => { };
-  private units: number = 0; // integer units
+  private cents: number = 0; // integer cents
   private disabled = false;
 
   constructor(private el: ElementRef<HTMLInputElement>, private renderer: Renderer2) { }
 
   writeValue(value: number | null): void {
     if (value == null || isNaN(value)) {
-      this.units = 0;
+      this.cents = 0;
       this.setView();
       return;
     }
-    this.units = Math.round(value * 1000);
+    this.cents = Math.round(value * 1000);
     this.setView();
   }
 
-  registerOnChange(fn: (val: number | null) => void): void { 
-    
-    this.onChange = fn; 
+  registerOnChange(fn: (val: number | null) => void): void {
+
+    this.onChange = fn;
   }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
   setDisabledState?(isDisabled: boolean): void { this.disabled = isDisabled; this.renderer.setProperty(this.el.nativeElement, 'disabled', isDisabled); }
@@ -52,7 +52,7 @@ export class PosCurrency3Directive implements ControlValueAccessor {
 
     if (key === 'Backspace') {
       e.preventDefault();
-      this.units = Math.floor(this.units / 10);
+      this.cents = Math.floor(this.cents / 10);
       this.propagate();
       return;
     }
@@ -61,9 +61,9 @@ export class PosCurrency3Directive implements ControlValueAccessor {
     if (/^\d$/.test(key)) {
       e.preventDefault();
       // append digit to the right (shifts previous digits left)
-      this.units = this.units * 10 + Number(key);
+      this.cents = this.cents * 10 + Number(key);
       // optionally cap length to avoid overflow (e.g. max 12 digits)
-      if (this.units > 999999999999) { this.units = 999999999999; }
+      if (this.cents > 999999999999) { this.cents = 999999999999; }
       this.propagate();
       return;
     }
@@ -81,8 +81,8 @@ export class PosCurrency3Directive implements ControlValueAccessor {
     if (!digits) return;
     // treat pasted digits as a sequence of typed digits
     for (const ch of digits) {
-      this.units = this.units * 10 + Number(ch);
-      if (this.units > 999999999999) { this.units = 999999999999; break; }
+      this.cents = this.cents * 10 + Number(ch);
+      if (this.cents > 999999999999) { this.cents = 999999999999; break; }
     }
     this.propagate();
   }
@@ -95,10 +95,10 @@ export class PosCurrency3Directive implements ControlValueAccessor {
   }
 
   private propagate() {
-    const value = this.units / 1000;
+    const value = this.cents / 1000;
     this.setView();
     // notify angular forms
-    this.onChange(Number(value.toCPOSFixed(3)));
+    this.onChange(Number(value.toCPOSFixed(2)));
     // also dispatch native events so (input)/(change) handlers fire
     try {
       const inputEl = this.el.nativeElement;
@@ -110,8 +110,8 @@ export class PosCurrency3Directive implements ControlValueAccessor {
   }
 
   private setView() {
-    const valueStr = (this.units / 1000).toCPOSFixed(3);
-    const display = valueStr + '%';
+    const valueStr = (this.cents / 1000).toCPOSFixed(2);
+    const display = this.currencySymbol ? `${this.currencySymbol}${valueStr}` : valueStr;
     this.renderer.setProperty(this.el.nativeElement, 'value', display);
   }
 }

@@ -144,4 +144,8 @@ export class TicketTotals {
     public tipTotalNDC: number = 0;
     public partPayDC: number = 0;
     public partPayNDC: number = 0;
+    public shipHandlingDC: number = 0;
+    public shipHandlingNDC: number = 0;
+    public shipHandlingTaxAmtDC: number = 0;
+    public shipHandlingTaxAmtNDC: number = 0;
 }

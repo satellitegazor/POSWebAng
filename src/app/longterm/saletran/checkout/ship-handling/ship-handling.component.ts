@@ -9,6 +9,8 @@ import { Store } from '@ngrx/store';
 import { UtilService } from 'src/app/services/util.service';
 import { Router } from '@angular/router';
 import { getTktObjSelector } from '../../store/ticketstore/ticket.selector';
+import { updateCheckoutTotals, updateShipHandling } from '../../store/ticketstore/ticket.action';
+import { ToastService } from 'src/app/services/toast.service';
 
 @Component({
   selector: 'app-ship-handling',
@@ -30,7 +32,8 @@ export class ShipHandlingComponent {
   constructor(private modal: NgbModal, private _saleTranSvc: SalesTranService, 
     private _logonDataSvc: LogonDataService,
     private _store: Store<saleTranDataInterface>, 
-    private router: Router, private utilSvc: UtilService) {
+    private router: Router, private utilSvc: UtilService,
+    private toastSvc: ToastService) {
       this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
   }
   
@@ -49,15 +52,26 @@ export class ShipHandlingComponent {
     // TODO: wire into checkout flow
     if(this.dfltCurrSymbl == '$') {
       this.shipHandlingAmountDC = this.shipHandlingAmountUIVal ?? 0;
-      this.shipHandlingTaxDC = (this.shipHandlingTaxPctUIVal ?? 0) > 0 ? (this.shipHandlingAmountDC * (this.shipHandlingTaxPctUIVal ?? 0) / 100) : 0;
+      this.shipHandlingTaxDC = parseFloat(((this.shipHandlingTaxPctUIVal ?? 0) > 0 ? (this.shipHandlingAmountDC * (this.shipHandlingTaxPctUIVal ?? 0) / 100) : 0).toCPOSFixed(2));
+      this.shipHandlingAmountFC = parseFloat((this._logonDataSvc.getDailyExchRate().exchangeRate * this.shipHandlingAmountDC).toCPOSFixed(2));
+      this.shipHandlingTaxFC = parseFloat((this._logonDataSvc.getDailyExchRate().exchangeRate * this.shipHandlingTaxDC).toCPOSFixed(2));
+
     } else {
-      this.shipHandlingAmountFC = this.shipHandlingAmountUIVal ?? 0;
-      this.shipHandlingTaxFC = (this.shipHandlingTaxPctUIVal ?? 0) > 0 ? (this.shipHandlingAmountFC * (this.shipHandlingTaxPctUIVal ?? 0) / 100) : 0;
+      this.shipHandlingAmountDC = this.shipHandlingAmountUIVal ?? 0;
+      this.shipHandlingTaxDC = parseFloat(((this.shipHandlingTaxPctUIVal ?? 0) > 0 ? (this.shipHandlingAmountDC * (this.shipHandlingTaxPctUIVal ?? 0) / 100) : 0).toCPOSFixed(2));
+      this.shipHandlingAmountFC = parseFloat((this._logonDataSvc.getDailyExchRate().exchangeRate > 0 ? parseFloat((this.shipHandlingAmountDC / this._logonDataSvc.getDailyExchRate().exchangeRate).toCPOSFixed(2)) : 0).toCPOSFixed(2));
+      this.shipHandlingTaxFC = parseFloat((this._logonDataSvc.getDailyExchRate().exchangeRate > 0 ? parseFloat((this.shipHandlingTaxDC / this._logonDataSvc.getDailyExchRate().exchangeRate).toCPOSFixed(2)) : 0).toCPOSFixed(2));
     }
+      this._store.dispatch(updateShipHandling({ dfltCurrSymbl: this.dfltCurrSymbl, shipHandlingAmountDC: this.shipHandlingAmountDC, shipHandlingTaxDC: this.shipHandlingTaxDC, shipHandlingAmountNDC: this.shipHandlingAmountFC, shipHandlingTaxNDC: this.shipHandlingTaxFC }));
+      this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
+
+    this.toastSvc.info('The shipping & handling charges have been updated successfully.');
+    this.modal.dismissAll();
   }
 
   Cancel() {
     // TODO: close dialog
+    this.modal.dismissAll();
   }
 
 }

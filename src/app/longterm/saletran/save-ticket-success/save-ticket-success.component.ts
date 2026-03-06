@@ -37,6 +37,9 @@ export class SaveTicketSuccessComponent implements OnInit {
   }
 
   ReceiptOption(optn: string) {
+    sessionStorage.setItem('inProgTranId', '0');
+    sessionStorage.setItem('inProgTranTabSerialNum', '');
+    
     this._store.dispatch(resetTktObj({dummyNumber: 0}));
 
     if(this._logonDataSvc.getLocationConfig().pinReqdForSalesTran) {

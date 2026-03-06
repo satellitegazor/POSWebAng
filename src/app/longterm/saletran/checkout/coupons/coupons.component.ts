@@ -4,7 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { CouponType } from 'src/app/global/global.constants';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn } from '../../store/ticketstore/ticket.action';
+import { updateCheckoutTotals, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn } from '../../store/ticketstore/ticket.action';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { currSymbls } from 'src/app/models/CurrencySymbols';
 import { ToastService, ToastType } from 'src/app/services/toast.service';
@@ -37,6 +37,7 @@ export class CouponsModalDlgComponent implements OnInit {
   public dfltCurrCode: string = 'USD'
   public isOconusLocation: boolean = false;
   tktObj: TicketSplit = {} as TicketSplit;
+  public CurrSymbl: string = '$';
 
   ngOnInit(): void {
     this.exchRate = this.logonDataSvc.getExchangeRate();
@@ -83,6 +84,7 @@ export class CouponsModalDlgComponent implements OnInit {
       }
       break;
     }
+    this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this.logonDataSvc }));
     this.modal.dismissAll('');
   }
 
@@ -148,7 +150,7 @@ export class CouponsModalDlgComponent implements OnInit {
 
         const itemDisplay = this.dfltCurrCode === 'USD'
           ? item.lineItemDollarDisplayAmount
-          : item.dcLineItemDollarDisplayAmount;
+          : item.fcLineItemDollarDisplayAmount;
 
         if (itemDiscDC > itemDisplay) {
           this.toastSvc.show('Exchange coupon cannot be applied as it results in negative lineItemDollarDisplayAmount', "error");

@@ -13,6 +13,7 @@ import { CouponsModalDlgComponent } from '../coupons/coupons.component';
 import { TipsModalDlgComponent } from '../tips-modal-dlg/tips-modal-dlg.component';
 import { currSymbls } from 'src/app/models/CurrencySymbols';
 import { UtilService } from 'src/app/services/util.service';
+import { ShipHandlingComponent } from '../ship-handling/ship-handling.component';
 
 @Component({
   selector: 'app-checkout-items',
@@ -27,6 +28,7 @@ export class CheckoutItemsComponent implements OnInit, OnChanges {
     keyboard: false,
     centered: true
   };
+
 
   constructor(private _store: Store<saleTranDataInterface>,
     private _logonDataSvc: LogonDataService,
@@ -56,6 +58,8 @@ export class CheckoutItemsComponent implements OnInit, OnChanges {
 
   shippingHandling: number = 0;
   shippingHandlingFC: number = 0
+  shipHandlingTaxAmt: number = 0;
+  shipHandlingTaxAmtFC: number = 0;
 
   isOConusLocation: boolean = false;
 
@@ -84,7 +88,9 @@ export class CheckoutItemsComponent implements OnInit, OnChanges {
       this._store.select(getTktObjSelector).subscribe(tktObj => {
         if(tktObj) {
           this.shippingHandling = tktObj.shipHandling;
+          this.shipHandlingTaxAmt = tktObj.shipHandlingTaxAmt ?? 0;
           this.shippingHandlingFC = tktObj.shipHandlingFC ?? 0;
+          this.shipHandlingTaxAmtFC = tktObj.shipHandlingTaxAmtFC ?? 0;
         }
       })  
     }
@@ -214,5 +220,9 @@ export class CheckoutItemsComponent implements OnInit, OnChanges {
   public DisplayTipsPopUp() {
     const modalRef = this._modalService.open(TipsModalDlgComponent, this.modalOptions);
     modalRef.componentInstance.tndrCode = "";
+  }
+
+  public DisplayShippingHandlingPopUp() {
+    const modalRef = this._modalService.open(ShipHandlingComponent, this.modalOptions);
   }
 }

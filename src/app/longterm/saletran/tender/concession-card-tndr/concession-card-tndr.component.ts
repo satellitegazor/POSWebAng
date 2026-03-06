@@ -84,8 +84,8 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
 
       this.isSplitPay = isSplitPay;
       if (!isSplitPay) {
-        this._tndrObj.tenderAmount = this.dcCurrSymbl == '$' ? tenderBal.amountUSD : tenderBal.amountFC;
-        this._tndrObj.fcTenderAmount = this.dcCurrSymbl == '$' ? tenderBal.amountFC : tenderBal.amountUSD;
+        this._tndrObj.tenderAmount = tenderBal.amountUSD
+        this._tndrObj.fcTenderAmount = tenderBal.amountFC;
         this.tenderAmountDC = this.dcCurrSymbl == '$' ? tenderBal.amountUSD : tenderBal.amountFC;
         this.tenderAmountNDC = this.dcCurrSymbl == '$' ? tenderBal.amountFC : tenderBal.amountUSD;
       }

@@ -66,11 +66,11 @@ export class SaleItemComponent implements OnInit {
       coItm.departmentUID = si.departmentUID;
       coItm.deptName = si.departmentName;
       coItm.dtlMaintTimestamp = si.maintTimestamp;
-      coItm.dcUnitPrice = si.price;
-      coItm.dcCouponLineItemDollarAmount = 0;
-      coItm.dcDiscountAmount = 0;
-      coItm.dcLineItemDollarDisplayAmount = 0;
-      coItm.dcLineItemTaxAmount = 0;
+      coItm.fcUnitPrice = si.price;
+      coItm.fcCouponLineItemDollarAmount = 0;
+      coItm.fcDiscountAmount = 0;
+      coItm.fcLineItemDollarDisplayAmount = 0;
+      coItm.fcLineItemTaxAmount = 0;
       coItm.facilityUID = si.facilityUID;
       coItm.fcCouponLineItemDollarAmount = 0;
       coItm.fcLineItemEnvTaxAmount = 0;
