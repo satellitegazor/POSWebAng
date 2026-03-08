@@ -181,11 +181,11 @@ export class VendorLTComponent implements OnInit {
                     
                     this._toastSvc.info("An incomplete ticket has been found. Please complete it or void it!!");
                     this._locConfigStore.dispatch(loadTicket({ tranId: inProgTranId, locationId: locModel.locationUID, indivId: locModel.individualUID }));
-                    this._locConfigStore.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }))
 
                     setTimeout((logonDataSvc, locConfigStore, routr) => {
                         routr.navigate(['/checkout']);
-                    }, 1000, this._logonDataSvc, this._locConfigStore, this.router);                    
+                        locConfigStore.dispatch(updateCheckoutTotals({ logonDataSvc: logonDataSvc }))
+                    }, 800, this._logonDataSvc, this._locConfigStore, this.router);                    
                 }
                 else {
                     this.router.navigate(['/salestran']);

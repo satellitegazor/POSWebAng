@@ -26,8 +26,8 @@ export class ShipHandlingComponent {
 
   shipHandlingAmountDC: number = 0;
   shipHandlingTaxDC: number = 0;
-  shipHandlingAmountFC: number = 0;
-  shipHandlingTaxFC: number = 0;
+  shipHandlingAmountNDC: number = 0;
+  shipHandlingTaxNDC: number = 0;
 
   constructor(private modal: NgbModal, private _saleTranSvc: SalesTranService, 
     private _logonDataSvc: LogonDataService,
@@ -53,16 +53,16 @@ export class ShipHandlingComponent {
     if(this.dfltCurrSymbl == '$') {
       this.shipHandlingAmountDC = this.shipHandlingAmountUIVal ?? 0;
       this.shipHandlingTaxDC = parseFloat(((this.shipHandlingTaxPctUIVal ?? 0) > 0 ? (this.shipHandlingAmountDC * (this.shipHandlingTaxPctUIVal ?? 0) / 100) : 0).toCPOSFixed(2));
-      this.shipHandlingAmountFC = parseFloat((this._logonDataSvc.getDailyExchRate().exchangeRate * this.shipHandlingAmountDC).toCPOSFixed(2));
-      this.shipHandlingTaxFC = parseFloat((this._logonDataSvc.getDailyExchRate().exchangeRate * this.shipHandlingTaxDC).toCPOSFixed(2));
+      this.shipHandlingAmountNDC = parseFloat((this._logonDataSvc.getDailyExchRate().exchangeRate * this.shipHandlingAmountDC).toCPOSFixed(2));
+      this.shipHandlingTaxNDC = parseFloat((this._logonDataSvc.getDailyExchRate().exchangeRate * this.shipHandlingTaxDC).toCPOSFixed(2));
 
     } else {
       this.shipHandlingAmountDC = this.shipHandlingAmountUIVal ?? 0;
       this.shipHandlingTaxDC = parseFloat(((this.shipHandlingTaxPctUIVal ?? 0) > 0 ? (this.shipHandlingAmountDC * (this.shipHandlingTaxPctUIVal ?? 0) / 100) : 0).toCPOSFixed(2));
-      this.shipHandlingAmountFC = parseFloat((this._logonDataSvc.getDailyExchRate().exchangeRate > 0 ? parseFloat((this.shipHandlingAmountDC / this._logonDataSvc.getDailyExchRate().exchangeRate).toCPOSFixed(2)) : 0).toCPOSFixed(2));
-      this.shipHandlingTaxFC = parseFloat((this._logonDataSvc.getDailyExchRate().exchangeRate > 0 ? parseFloat((this.shipHandlingTaxDC / this._logonDataSvc.getDailyExchRate().exchangeRate).toCPOSFixed(2)) : 0).toCPOSFixed(2));
+      this.shipHandlingAmountNDC = parseFloat((this._logonDataSvc.getDailyExchRate().exchangeRate > 0 ? parseFloat((this.shipHandlingAmountDC / this._logonDataSvc.getDailyExchRate().exchangeRate).toCPOSFixed(2)) : 0).toCPOSFixed(2));
+      this.shipHandlingTaxNDC = parseFloat((this._logonDataSvc.getDailyExchRate().exchangeRate > 0 ? parseFloat((this.shipHandlingTaxDC / this._logonDataSvc.getDailyExchRate().exchangeRate).toCPOSFixed(2)) : 0).toCPOSFixed(2));
     }
-      this._store.dispatch(updateShipHandling({ dfltCurrSymbl: this.dfltCurrSymbl, shipHandlingAmountDC: this.shipHandlingAmountDC, shipHandlingTaxDC: this.shipHandlingTaxDC, shipHandlingAmountNDC: this.shipHandlingAmountFC, shipHandlingTaxNDC: this.shipHandlingTaxFC }));
+      this._store.dispatch(updateShipHandling({ dfltCurrSymbl: this.dfltCurrSymbl, shipHandlingAmountDC: this.shipHandlingAmountDC, shipHandlingTaxDC: this.shipHandlingTaxDC, shipHandlingAmountNDC: this.shipHandlingAmountNDC, shipHandlingTaxNDC: this.shipHandlingTaxNDC }));
       this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
 
     this.toastSvc.info('The shipping & handling charges have been updated successfully.');

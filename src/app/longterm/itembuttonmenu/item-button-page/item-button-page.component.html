@@ -12,10 +12,14 @@
             </div>
 
             <!-- Default Currency (only show if not CONUS) -->
-            <div *ngIf="rgnCode !== 'CON'" class="col-lg-2 col-md-4 col-12 text-lg-end mt-3 mt-md-0">
+            <div *ngIf="rgnCode !== 'CON'" class="defCurrCtrl col-lg-2 col-md-4 col-12 text-lg-end mt-3 mt-md-0"
+                [class.disabled]="!canChangeCurrency"
+                [attr.title]="saleTranCount > 0 ? defCurrDisabledTooltip : null">
                 <label class="form-label fw-bold mb-0">Default Currency</label>
             </div>
-            <div *ngIf="rgnCode !== 'CON'" class="col-lg-4 col-md-12 col-12 mt-3 mt-md-0">
+            <div *ngIf="rgnCode !== 'CON'" class="defCurrCtrl col-lg-4 col-md-12 col-12 mt-3 mt-md-0"
+                [class.disabled]="!canChangeCurrency"
+                [attr.title]="saleTranCount > 0 ? defCurrDisabledTooltip : null">
                 <div class="btn-group w-100" role="group">
                     <input type="radio" class="btn-check" name="defaultCurrency" id="dvCurUSD"
                         [checked]="defaultCurrency === 'USD'" (change)="defaultCurrency = 'USD'"

@@ -167,6 +167,16 @@ export class SalesTranService {
             { headers: this.headerObjs });
     }
 
+    public getTranCountForLocEvent(locEvtId: number, appType: number, uid: string): Observable<TranCountForLocEventResultModel> {
+        return this.httpClient.get<TranCountForLocEventResultModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/GetTranCountForLocEvent?guid=' + GlobalConstants.GET_GUID
+                + '&locEvtId=' + locEvtId.toString()
+                + '&appType=' + appType.toString()
+                + '&uid=' + uid,
+            { headers: this.headerObjs }
+        );
+    }
+
     public getTranIdForTicketNum(pLocationUID: number, pTicketNum: number, pIndividualId: number) {
 
         return this.httpClient.get<SingleTransactionId>(GlobalConstants.CPOS_SVCS_URL + '/ltc/GetTranId?guid=' + GlobalConstants.GET_GUID + 
@@ -224,5 +234,11 @@ export interface PartPaymentInfo {
     partPayId: number;
     partPayAmount: number;
     partPayAmountFC: number;
+}
+
+export interface TranCountForLocEventResultModel {
+    results: MobileBase;
+    tranCount: number;
+    locEventId: number;
 }
   

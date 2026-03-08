@@ -12,7 +12,7 @@ import { LocationConfigState } from '../../saletran/store/locationconfigstore/lo
 import { saleTranDataInterface } from '../../saletran/store/ticketstore/ticket.state';
 import { Subject } from 'rxjs';
 import { VendorLoginResultsModel } from 'src/app/models/vendor.login.results.model';
-import { UtilService } from 'src/app/services/util.service';
+import { CPOSAppType, UtilService } from 'src/app/services/util.service';
 import { GlobalConstants } from 'src/app/global/global.constants';
 import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheckoutItem';
 import { ThisReceiver } from '@angular/compiler';
@@ -33,6 +33,8 @@ import { Router } from '@angular/router';
   // In your component.ts
   defaultCurrency: string = 'EUR'; // or 'USD'
   canChangeCurrency: boolean = true;
+  saleTranCount: number = 0;
+  defCurrDisabledTooltip: string = 'Default currency is disabled because transactions already exist for this setup, and it cannot be changed now.';
   allowTaxExemption: boolean = true;
   concessionDiscountAfterTax: boolean = false;
   exchangeCouponAfterTax: boolean = false;
@@ -92,10 +94,26 @@ import { Router } from '@angular/router';
 
     this.getAllSaleItems(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0, 0, 0, 0);
 
-    const saleTranCountStr = sessionStorage.getItem('SaleTranCount');
-    const saleTranCount = saleTranCountStr ? parseInt(saleTranCountStr, 10) : 0;
-    // Disable currency change if any transactions exist
-    this.canChangeCurrency = saleTranCount === 0;
+    this._saleTranSvc.getTranCountForLocEvent(
+      Number(this.vendorLoginResult.locationUID),
+      CPOSAppType.LongTerm,
+      this.vendorLoginResult.individualUID
+    ).subscribe({
+      next: (response) => {
+        const tranCount = response?.tranCount ?? 0;
+        this.saleTranCount = tranCount;
+        sessionStorage.setItem('SaleTranCount', tranCount.toString());
+        // Disable currency controls when at least one transaction exists.
+        this.canChangeCurrency = tranCount <= 0;
+      },
+      error: () => {
+        // Keep previous behavior as fallback if service call fails.
+        const saleTranCountStr = sessionStorage.getItem('SaleTranCount');
+        const saleTranCount = saleTranCountStr ? parseInt(saleTranCountStr, 10) : 0;
+        this.saleTranCount = saleTranCount;
+        this.canChangeCurrency = saleTranCount === 0;
+      }
+    });
     
 
     this.salesItemAddedInSC.subscribe(data => {

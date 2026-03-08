@@ -966,14 +966,15 @@ export const _tktObjReducer = createReducer(
       // Add ship/handling to totals
       const shipHandlingTaxAmtUsd = taxExempted ? 0 : (state.tktObj.shipHandlingTaxAmt || 0);
       const shipHandlingTaxAmtFc = taxExempted ? 0 : (state.tktObj.shipHandlingTaxAmtFC || 0);
+      
       const shipHandlingAmtUsd = state.tktObj.shipHandling || 0;
       const shipHandlingAmtFc = state.tktObj.shipHandlingFC || 0;
 
-      taxTotalDC += shipHandlingTaxAmtUsd;
-      taxTotalNDC += shipHandlingTaxAmtFc;
+      taxTotalDC += isUsd ? shipHandlingTaxAmtUsd : shipHandlingTaxAmtFc;
+      taxTotalNDC += isUsd ? shipHandlingTaxAmtFc : shipHandlingTaxAmtUsd;
 
-      grandTotalDC = Round2DecimalService.round(subtotalDC + taxTotalDC - totalSavingsDC + shipHandlingAmtUsd);
-      grandTotalNDC = Round2DecimalService.round(subtotalNDC + taxTotalNDC - totalSavingsNDC + shipHandlingAmtFc);
+      grandTotalDC = Round2DecimalService.round(subtotalDC + taxTotalDC - totalSavingsDC + (isUsd ? shipHandlingAmtUsd : shipHandlingAmtFc));
+      grandTotalNDC = Round2DecimalService.round(subtotalNDC + taxTotalNDC - totalSavingsNDC + (isUsd ? shipHandlingAmtFc : shipHandlingAmtUsd));
 
       return {
          ...state,
