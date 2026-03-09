@@ -198,18 +198,28 @@ import { Router } from '@angular/router';
   public getSaleItemList(categoryId: number): void {
 
     this.saleItemList = [];
-    let allCatList = this.allItemButtonMenuList.filter(item => item.salesCategoryID == categoryId && item.saleItemActive);
+    let allCatList = this.allItemButtonMenuList.filter(item => item.salesCategoryID == categoryId);
+
     allCatList.forEach(itm => {
       let k = this.saleItemList.filter(si => si.id == itm.salesItemID);
       if (k.length == 0) {
+        itm.price = itm.price ?? 0;
+        itm.salesTax = itm.salesTax ?? 0;
         this.saleItemList.push(new SaleItemButton(itm));
       }
     });
-
+    
+    let inActiveSaleItems = this.saleItemList.filter(item => item.active == false);
     this.saleItemList = this.saleItemList.length == 1 && this.saleItemList.filter(si => si.description == 'Enter Item Description Here' && si.id > 0).length == 1 ?
-      this.saleItemList :
-      this.saleItemList.filter(si => si.active) 
-      ;
+        this.saleItemList : this.saleItemList.filter(si => si.active);
+
+   
+    if(this.saleItemList.length > 0) {
+      let emptySaleItem = inActiveSaleItems.filter(item => item.description == 'Enter Item Description Here' && item.price == 0 && item.salesTax == 0)[0]
+      this.saleItemList = this.saleItemList.concat(emptySaleItem ? [emptySaleItem] : []);
+    }
+
+    this.saleItemList.sort((a, b) => (a.active ? 0 : 1) - (b.active ? 0 : 1) || (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
 
     //console.log('setting salesItemListRefresh to true');
     this.salesItemListRefresh.next(true)
