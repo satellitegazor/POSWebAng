@@ -44,7 +44,7 @@ export class ShipHandlingComponent {
     this._store.select(getTktObjSelector).subscribe(tktObj => {
       if(tktObj) {
         this.shipHandlingAmountUIVal =  this.dfltCurrSymbl == '$' ? tktObj.shipHandling : tktObj.shipHandlingFC ?? 0;
-        this.shipHandlingTaxPctUIVal = this.dfltCurrSymbl == '$' ? (tktObj.shipHandlingTaxAmt / tktObj.shipHandling) * 100 : (tktObj.shipHandlingFC ? (tktObj.shipHandlingTaxAmtFC / tktObj.shipHandlingFC) * 100 : 0);
+        this.shipHandlingTaxPctUIVal = this.dfltCurrSymbl == '$' ? parseFloat(((tktObj.shipHandlingTaxAmt / tktObj.shipHandling) * 100).toCPOSFixed(2)) : (tktObj.shipHandlingFC ? parseFloat(((tktObj.shipHandlingTaxAmtFC / tktObj.shipHandlingFC) * 100).toCPOSFixed(2)) : 0);
       }
     });
   }

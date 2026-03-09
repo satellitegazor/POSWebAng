@@ -30,7 +30,16 @@ export const _tktObjReducer = createReducer(
             ticketRRN: _utilSvc.getUniqueRRN(),
             tranStatus: TranStatusType.InProgress,
             voidType: '',
-            voidTypeDesc: ''
+            voidTypeDesc: '',
+            tktList: [] as SalesTransactionCheckoutItem[],
+            ticketTenderList: [] as TicketTender[],
+            associateTips: [] as AssociateSaleTips[],
+            vMTndr: [] as ExchCardTndr[],
+            shipHandling: 0,
+            shipHandlingTaxAmt: 0,
+            shipHandlingFC: 0,
+            shipHandlingTaxAmtFC: 0
+
          }
       }
    }),
@@ -1677,6 +1686,9 @@ export const _tktObjReducer = createReducer(
 
       const cancelledTenderTypeIds = new Set([10, 11, 1, 2]);
       const normalizeAuthNbr = (authNbr?: string | null) => (authNbr ?? '').trim();
+      const rawLoadedTicket = loadedTktObj as any;
+      const shipHandlingFc = rawLoadedTicket.fCShipHandling ?? rawLoadedTicket.fcShipHandling ?? rawLoadedTicket.shipHandlingFC ?? 0;
+      const shipHandlingTaxAmtFc = rawLoadedTicket.fCShipHandlingTaxAmt ?? rawLoadedTicket.fcShipHandlingTaxAmt ?? rawLoadedTicket.shipHandlingTaxAmtFC ?? 0;
 
       const tenderList = TicketTender.deepCopyTenderList(loadedTktObj.tenders).map(tndr => {
          const isAuthMissing = normalizeAuthNbr(tndr.authNbr).length === 0;
@@ -1701,9 +1713,9 @@ export const _tktObjReducer = createReducer(
             balanceDue: loadedTktObj.balanceDue,
             customerId: loadedTktObj.customer != null ? loadedTktObj.customer.customerUID : 0,
             shipHandling: loadedTktObj.shipHandling ?? 0,
-            shipHandlingFC: loadedTktObj.fCShipHandling,
-            shipHandlingTaxAmt: loadedTktObj.shipHandlingTaxAmt,
-            shipHandlingTaxAmtFC: loadedTktObj.fCShipHandlingTaxAmt,
+            shipHandlingFC: shipHandlingFc,
+            shipHandlingTaxAmt: loadedTktObj.shipHandlingTaxAmt ?? 0,
+            shipHandlingTaxAmtFC: shipHandlingTaxAmtFc,
             taxExempted: loadedTktObj.taxExempted == 1,
             transactionDate: loadedTktObj.transactionDate ? new Date(loadedTktObj.transactionDate) : new Date(),
             tranStatus: TranStatusType.InProgress,

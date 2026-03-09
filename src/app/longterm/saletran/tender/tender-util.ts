@@ -24,6 +24,8 @@ export class TenderUtil {
             ticketTotal += parseFloat((tktObj.associateTips[key].tipAmount).toCPOSFixed(2));
         }
 
+        ticketTotal += tktObj.shipHandling + tktObj.shipHandlingTaxAmt;
+
         let tenderTotals = 0;
         tktObj.ticketTenderList.forEach((tender) => {
             tenderTotals += parseFloat((tender.tenderAmount).toCPOSFixed(2));

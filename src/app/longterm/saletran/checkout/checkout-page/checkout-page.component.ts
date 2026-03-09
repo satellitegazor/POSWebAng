@@ -51,10 +51,12 @@ export class CheckoutPageComponent implements OnInit {
   showErrMsg: boolean = false;
   strongErrMessage: string = "";
   errMessage: string = "";
+  dfltCurrSymbl: string = '';
 
   locationConfig: LocationConfig = {} as LocationConfig;
   isOConus: boolean = false;
   tenderAmount: number = 0;
+  fcTenderAmount: number = 0;
 
   _tenderTypesModel: TenderTypeModel = {} as TenderTypeModel;
   _displayTenders: TenderType[] = [];
@@ -69,19 +71,34 @@ export class CheckoutPageComponent implements OnInit {
     this.locationConfig = this._logonDataSvc.getLocationConfig();
     this.isInCompleteTicket = this.locationConfig.inProgTranId > 0;
     this.isOConus = this.locationConfig.rgnCode != "CON";
+    this.dfltCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getDfltCurrCode()) ?? '';
 
     this._tenderTypesModel = this._logonDataSvc.getTenderTypes();
     this.isRefund = this._logonDataSvc.getTranMode();
     this.tenderButtonUIDisplay();
 
     this._store.select(getCheckoutItemsSelector).subscribe(items => {
+
       if (items == null)
         return;
+
       this.tenderAmount = 0;
+      this.fcTenderAmount = 0;
+
       items.forEach(itm => {
-        this.tenderAmount += itm.lineItemDollarDisplayAmount;
+        this.tenderAmount += itm.lineItemDollarDisplayAmount ?? 0;
+        this.fcTenderAmount += itm.fcLineItemDollarDisplayAmount ?? 0;
       })
     })
+
+    this._store.select(getTktObjSelector).subscribe(tktObj => {
+      if (tktObj) {
+        this.tenderAmount += (tktObj.shipHandling + tktObj.shipHandlingTaxAmt);
+        this.fcTenderAmount += (tktObj.shipHandlingFC + tktObj.shipHandlingTaxAmtFC);
+        this.tenderAmount += this.dfltCurrSymbl == '$' ? tktObj.tipAmountDC : tktObj.tipAmountNDC;
+        this.fcTenderAmount += this.dfltCurrSymbl == '$' ? tktObj.tipAmountNDC : tktObj.tipAmountDC;
+      }
+    });
   }
 
   btnCustDetailsClick(evt: Event) {

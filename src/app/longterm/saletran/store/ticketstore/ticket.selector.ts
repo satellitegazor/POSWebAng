@@ -85,8 +85,8 @@ export interface AmountUSDFC {
     }
 
     return {
-      amountUSD: Round2DecimalService.round(ticketTotalUSD + tipTotalUSD  - tenderTotalUSD),
-      amountFC: Round2DecimalService.round(ticketTotalFC + tipTotalFC  - tenderTotalFC)
+      amountUSD: Round2DecimalService.round(ticketTotalUSD + tipTotalUSD + state.tktObj.shipHandling + state.tktObj.shipHandlingTaxAmt - tenderTotalUSD),
+      amountFC: Round2DecimalService.round(ticketTotalFC + tipTotalFC + state.tktObj.shipHandlingFC + state.tktObj.shipHandlingTaxAmtFC - tenderTotalFC)
     } as AmountUSDFC;
   });
 
@@ -126,7 +126,7 @@ export const getIsCustomerAddedToTicket = createSelector(getTktObjState,
       let tipTotal: number = 0;
       state.tktObj.associateTips.forEach(tip => tipTotal += tip.tipAmount);
       
-      return Round2DecimalService.round(ticketTotal + tipTotal);
+      return Round2DecimalService.round(ticketTotal + tipTotal + state.tktObj.shipHandling + state.tktObj.shipHandlingTaxAmt);
     });
 
     export const getTicketTotalToPayFC = createSelector(getTktObjState,
@@ -139,7 +139,7 @@ export const getIsCustomerAddedToTicket = createSelector(getTktObjState,
         let tipTotalFC: number = 0;
         state.tktObj.associateTips.forEach(tip => tipTotalFC += tip.tipAmtLocCurr);
        
-        return Round2DecimalService.round(ticketTotalFC + tipTotalFC);
+        return Round2DecimalService.round(ticketTotalFC + tipTotalFC + state.tktObj.shipHandlingFC + state.tktObj.shipHandlingTaxAmtFC);
       });
 
   export const getIsSplitPayR5 = createSelector(getTktObjState,

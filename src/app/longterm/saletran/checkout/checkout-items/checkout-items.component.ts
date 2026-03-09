@@ -56,10 +56,10 @@ export class CheckoutItemsComponent implements OnInit, OnChanges {
   vndDiscountTotal: number = 0;
   taxExempt: boolean = false;
 
-  shippingHandling: number = 0;
-  shippingHandlingFC: number = 0
-  shipHandlingTaxAmt: number = 0;
-  shipHandlingTaxAmtFC: number = 0;
+  shipHandlingDC: number = 0;
+  shipHandlingNDC: number = 0;
+  shipHandlingTaxAmtDC: number = 0;
+  shipHandlingTaxAmtNDC: number = 0;
 
   isOConusLocation: boolean = false;
 
@@ -76,6 +76,10 @@ export class CheckoutItemsComponent implements OnInit, OnChanges {
     this.allowTips = this._logonDataSvc.getAllowTips();
     this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
     this.useShipHandling = this._logonDataSvc.getLocationConfig().useShipHndlng;
+    this.exchRate = this._logonDataSvc.getExchangeRate();
+    this.dfltCurrCode = this._logonDataSvc.getDfltCurrCode();
+    this.dcCurrSymbl = this._utilSvc.currencySymbols.get(this.dfltCurrCode);
+    this.ndcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getNonDfltCurrCode());
 
     this._store.select(getCheckoutItemsSelector).subscribe(saleItems => {
       this.tktDtlItems = (saleItems ?? []); //.slice().reverse(); // Reverse to display in correct order
@@ -87,20 +91,16 @@ export class CheckoutItemsComponent implements OnInit, OnChanges {
     if(this.useShipHandling) {
       this._store.select(getTktObjSelector).subscribe(tktObj => {
         if(tktObj) {
-          this.shippingHandling = tktObj.shipHandling;
-          this.shipHandlingTaxAmt = tktObj.shipHandlingTaxAmt ?? 0;
-          this.shippingHandlingFC = tktObj.shipHandlingFC ?? 0;
-          this.shipHandlingTaxAmtFC = tktObj.shipHandlingTaxAmtFC ?? 0;
+          this.shipHandlingDC = this.dfltCurrCode == 'USD' ? tktObj.shipHandling : tktObj.shipHandlingFC;
+          this.shipHandlingTaxAmtDC = this.dfltCurrCode == 'USD' ? tktObj.shipHandlingTaxAmt : tktObj.shipHandlingTaxAmtFC ?? 0;
+          this.shipHandlingNDC = this.dfltCurrCode != 'USD' ? tktObj.shipHandling : tktObj.shipHandlingFC;
+          this.shipHandlingTaxAmtNDC = this.dfltCurrCode != 'USD' ? tktObj.shipHandlingTaxAmt : tktObj.shipHandlingTaxAmtFC ?? 0;
         }
       })  
     }
 
 
-    this.dcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getDfltCurrCode());
-    this.ndcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getNonDfltCurrCode());
 
-    this.exchRate = this._logonDataSvc.getExchangeRate();
-    this.dfltCurrCode = this._logonDataSvc.getDfltCurrCode();
   }
 
   ngOnChanges(changes: SimpleChanges): void {

@@ -116,9 +116,9 @@
                     <td class="text-end">Shipping & Handling:</td>
                     <td class="text-end fw-semibold"><a class="text-primary text-decoration-none" id="shippingHandling" 
                        (click)="DisplayShippingHandlingPopUp()" style="cursor: pointer;">
-                        {{dcCurrSymbl}}{{ (dfltCurrCode == "USD" ? shippingHandling : shippingHandlingFC) | number:'1.2-2'}}
+                        {{dcCurrSymbl}}{{ (shipHandlingDC) | number:'1.2-2'}}
                     </a></td>
-                    <td *ngIf="isOConusLocation" class="text-end fw-semibold">{{ndcCurrSymbl}}{{(dfltCurrCode != "USD" ? shippingHandling : shippingHandlingFC) | number:'1.2-2'}}</td>
+                    <td *ngIf="isOConusLocation" class="text-end fw-semibold">{{ndcCurrSymbl}}{{(shipHandlingNDC) | number:'1.2-2'}}</td>
                 </tr>
                 <tr *ngIf="allowTips">
                     <td class="text-end">Tips:</td>

@@ -61,6 +61,7 @@ export class TicketSplit {
 
 export function mapLtcTicketToTicketSplit(ltc: LTC_Ticket): TicketSplit {
     const split = new TicketSplit(); // assuming TicketSplit has a default constructor
+    const rawTicket = ltc as any;
 
     // Core ticket fields
     split.locationUID = ltc.locationUID ?? 0;
@@ -73,7 +74,8 @@ export function mapLtcTicketToTicketSplit(ltc: LTC_Ticket): TicketSplit {
     split.customerId = ltc.customer != null ? ltc.customer.customerUID : 0;
     split.shipHandling = ltc.shipHandling ?? 0;
     split.shipHandlingTaxAmt = ltc.shipHandlingTaxAmt ?? 0;
-    split.shipHandlingFC = ltc.shipHandling ?? 0;
+    split.shipHandlingFC = rawTicket.fCShipHandling ?? rawTicket.fcShipHandling ?? rawTicket.shipHandlingFC ?? 0;
+    split.shipHandlingTaxAmtFC = rawTicket.fCShipHandlingTaxAmt ?? rawTicket.fcShipHandlingTaxAmt ?? rawTicket.shipHandlingTaxAmtFC ?? 0;
 
     split.taxExempted = ltc.taxExempted == 0 ? false : true;
     split.transactionDate = ltc.transactionDate ? new Date(ltc.transactionDate) : new Date();
