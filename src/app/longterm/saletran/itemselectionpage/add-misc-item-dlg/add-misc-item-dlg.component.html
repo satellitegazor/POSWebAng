@@ -1,0 +1,111 @@
+<div class="modal-header">
+	<h5 class="modal-title">Miscellaneous Sale Item</h5>
+	<button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+</div>
+
+<div class="modal-body">
+	<form novalidate>
+		<div class="row g-3 align-items-end">
+			<div class="col-12 col-md-6">
+				<label for="miscDepartment" class="form-label">Department</label>
+				<select
+					id="miscDepartment"
+					class="form-select"
+					name="miscDepartment"
+					[(ngModel)]="selectedDepartmentId"
+					required>
+					<option [ngValue]="0" disabled>Select department</option>
+					<option *ngFor="let dept of departmentOptions" [ngValue]="dept.id">{{ dept.name }}</option>
+				</select>
+			</div>
+
+			<div class="col-12 col-md-6">
+				<label for="miscDescription" class="form-label">Item Description</label>
+				<input
+					id="miscDescription"
+					class="form-control"
+					type="text"
+					name="miscDescription"
+					maxlength="30"
+					placeholder="Description of Item"
+					required
+					[(ngModel)]="itemDescription">
+			</div>
+
+			<div class="col-12 col-sm-4">
+				<label for="miscPrice" class="form-label">Price ({{defaultCurrSymbl}}): </label>
+				<input
+					id="miscPrice"
+					class="form-control"
+					type="number"
+					appPosCurrency
+					min="0"
+					step="0.01"
+					name="miscPrice"
+					placeholder="Price"
+					required
+					[(ngModel)]="price">
+			</div>
+
+			<div class="col-12 col-sm-4">
+				<label for="miscTaxPct" class="form-label">Tax %</label>
+				<input
+					id="miscTaxPct"
+					class="form-control"
+					type="text"
+					appPosCurrency3
+					min="0"
+					step="0.001"
+					name="miscTaxPct"
+					placeholder="Tax %"
+					required
+					[(ngModel)]="taxPct">
+			</div>
+
+			<div class="col-12 col-sm-4" *ngIf="showEnvTax">
+				<label for="miscEnvTaxPct" class="form-label">Env. Tax %</label>
+				<input
+					id="miscEnvTaxPct"
+					class="form-control"
+					type="text"
+					appPosCurrency3
+					min="0"
+					step="0.001"
+					name="miscEnvTaxPct"
+					placeholder="Env. Tax %"
+					required
+					[(ngModel)]="envTaxPct">
+			</div>
+
+			<div class="col-12 col-sm-4" *ngIf="showTags">
+				<label for="miscTags" class="form-label">Tags</label>
+				<input
+					id="miscTags"
+					class="form-control"
+					type="number"
+					min="1"
+					step="1"
+					name="miscTags"
+					placeholder="# of Tags"
+					required
+					[(ngModel)]="tags">
+			</div>
+		</div>
+	</form>
+</div>
+
+<div class="modal-footer">
+	<button
+		type="button"
+		class="btn btn-primary"
+		[disabled]="selectedDepartmentId === 0
+			|| itemDescription.trim().length === 0
+			|| price === null
+			|| taxPct === null
+			|| (showEnvTax && envTaxPct === null)
+			|| (showTags && tags === null)"
+		(click)="confirm()">
+		Confirm
+	</button>
+	<button type="button" class="btn btn-outline-secondary" (click)="cancel()">Cancel</button>
+</div>

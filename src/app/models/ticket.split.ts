@@ -127,6 +127,8 @@ export class TicketDetailListAry {
     public ticketDetailId: number = 0;
     public individualLocationUID: number = 0;
     public salesItemUID: number = 0;
+    public salesItemDesc: string = '';
+    public isMiscellaneous: boolean = false;
 }
 
 export class TicketTotals {

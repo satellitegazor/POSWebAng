@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AuthState } from 'src/app/authstate/auth.state';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
@@ -40,6 +40,8 @@ export class TktSaleItemComponent implements OnInit {
     public exchRate: number = 1;
     public dfltCurrCode: string = 'USD'
 
+    @Output() addMiscItemClicked: EventEmitter<void> = new EventEmitter<void>();
+
     ngOnInit(): void {
 
         this._store.select(getCheckoutItemsSelector).subscribe(data => {
@@ -76,8 +78,6 @@ export class TktSaleItemComponent implements OnInit {
 
     btnPlusClicked(evt: Event, i: number) {
         this._store.dispatch(incSaleitemQty({saleItemId: this.tktSaleItems[i].salesItemUID, tktDtlId: this.tktSaleItems[i].ticketDetailId, defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));
-
-        //this.tktSaleItems[i].quantity++;
     }
 
     public btnCheckoutClicked() {
@@ -87,17 +87,15 @@ export class TktSaleItemComponent implements OnInit {
 
     onAssociateChange(evt: any, indivLocId: number, saleItemId: number, indx: number, srvdByAssociateVal: string) {
 
-        //console.log(evt.target)
         let srvdByAssociateName = evt.target['options'][+evt.target.selectedIndex].innerText;
         this._store.dispatch(updateServedByAssociate({ saleItemId, indx, indLocId: indivLocId, srvdByAssociateName: evt.target['options'][+evt.target.selectedIndex].innerText }))
         this._store.dispatch(updateAssocInAssocTips({ saleItemId: saleItemId, indLocId: indivLocId }));
 
-        //  setTimeout(function(obj: any, saleItemId: number, indx: number, indivLocId: number, srvdByAssociateName: string) {
-        //      obj._store.dispatch(updateServedByAssociate({saleItemId, indx, indLocId: indivLocId, srvdByAssociateName}))
-        //      obj._store.dispatch(updateAssocInAssocTips({saleItemId: saleItemId, indLocId: indivLocId}));
-        //  }, 100, this, saleItemId, indx, indivLocId, evt.target['options'][+evt.target.selectedIndex].innerText
-        // ) 
-
         return true;
     }
+
+    btnAddMiscItemClicked($event: Event) {
+        this.addMiscItemClicked.emit();
+    }
+
 }

@@ -22,11 +22,13 @@ import { LocationConfig, LocationIndividual } from '../../../models/location-con
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { addTabSerialToTktObj, initTktObj } from '../../store/ticketstore/ticket.action';
 import { TicketLookupComponent } from '../../../../shared/ticket-lookup/ticket-lookup.component';
-import { getCheckoutItemsCount, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
+import { getCheckoutItemsCount, getTicketTotals, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import {initialLocationConfigState, LocationConfigState} from '../../store/locationconfigstore/locationconfig.state';
 import { Router } from '@angular/router';
 import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
 import { VerifoneCommStatus } from '../../../models/general-classes';
+import { AddMiscItemDlgComponent } from '../add-misc-item-dlg/add-misc-item-dlg.component';
+import { DailyExchRate } from 'src/app/models/exchange.rate';
 
 @Component({
     selector: 'app-sales-cart',
@@ -35,7 +37,6 @@ import { VerifoneCommStatus } from '../../../models/general-classes';
     standalone: false
 })
 export class SalesCartComponent implements OnInit, OnDestroy {
-
 
        modalOptions: NgbModalOptions = {
             backdrop: 'static',
@@ -76,9 +77,17 @@ export class SalesCartComponent implements OnInit, OnDestroy {
     locationIndividuals: LocationIndividual[] = [];
 
     disableCheckoutBtn: boolean = true;
+    activeSalesCatId: number = 0;
+    activeDeptId: number = 0;
     tktCustomerId: number = 0;
     tktCustomerLastName: string = '';
     pendingCheckoutAfterCustomer: boolean = false;
+    private isAddMiscModalOpen: boolean = false;
+    exchangeRate: string = '';
+    defaultCurrencyCode: string = 'USD';
+    defaultCurrencySubtotal: number = 0;
+    private isDefaultCurrencyUsd: boolean = true;
+    isForeignCurrency: boolean = false;
 
     //public salesCategoryListRefresh: Subject<boolean> = new Subject<boolean>();
     public salesItemListRefresh: Subject<boolean> = new Subject<boolean>();
@@ -90,6 +99,22 @@ export class SalesCartComponent implements OnInit, OnDestroy {
 
         //console.log('SalesCart ngOnInit')
         this.vendorLoginResult = this._logonDataSvc.getLTVendorLogonData();
+        const dfltCurrCode = this._logonDataSvc.getDfltCurrCode?.() ?? this._logonDataSvc.getLocationConfig()?.defaultCurrency ?? 'USD';
+        this.defaultCurrencyCode = dfltCurrCode;
+        this.isDefaultCurrencyUsd = dfltCurrCode.toUpperCase() === 'USD';
+        
+        let exchRateObj = this._logonDataSvc.getDailyExchRate();
+        this.isForeignCurrency = exchRateObj?.isForeignCurr ?? false;
+        if(this.isForeignCurrency) {
+
+            if(exchRateObj.isOneUSD) {
+                this.exchangeRate = '1 USD = ' + exchRateObj.exchangeRate.toCPOSFixed(2) + ' ' + exchRateObj.foreignCurrCode;
+            }
+            else {
+                this.exchangeRate = '1 USD' + ' = ' + exchRateObj.exchangeRate.toCPOSFixed(2) + ' ' + exchRateObj.dfltCurrCode;
+            }
+        }
+
         let pinpadStatus: VerifoneCommStatus = new VerifoneCommStatus();
 
         this._buildTktObj();
@@ -135,11 +160,17 @@ export class SalesCartComponent implements OnInit, OnDestroy {
             }
         })
 
+        this._store.select(getTicketTotals).subscribe(tktTotals => {
+            
+            if (!tktTotals) {
+                this.defaultCurrencySubtotal = 0;
+                return;
+            }
+            this.defaultCurrencySubtotal = this.isDefaultCurrencyUsd ? (tktTotals.subTotalDC ?? 0) : (tktTotals.subTotalNDC ?? 0);
+        });
     }
 
-    ngOnDestroy(): void {
-
-    }
+    ngOnDestroy(): void {}
 
     public getDeptList(): void {
         
@@ -195,10 +226,12 @@ export class SalesCartComponent implements OnInit, OnDestroy {
     }
 
     deptClicked(id: any) {
+        this.activeDeptId = Number(id) || 0;
         this.getSalesCategoryList(id);
     }
 
     saleCatClicked(id: any) {
+        this.activeSalesCatId = Number(id) || 0;
         this.getSaleItemList(id);
     }
 
@@ -242,5 +275,40 @@ export class SalesCartComponent implements OnInit, OnDestroy {
 
     closeTicketLookupDlg() {
         this.displayTicketLookupDlg = "none";
+    }
+
+    btnAddMiscItemClicked() {
+        if (this.isAddMiscModalOpen) {
+            return;
+        }
+
+        this.isAddMiscModalOpen = true;
+        console.log('SalesCartComponent.btnAddMiscItemClicked invoked');
+        const modalRef = this.modalService.open(AddMiscItemDlgComponent, {
+            ...this.modalOptions,
+            size: 'lg'
+        });
+
+        modalRef.componentInstance.data = {
+            departmentNames: this.deptList.map(dept => ({
+                departmentUID: dept.departmentUID,
+                departmentName: dept.departmentName
+            }))
+        };
+        modalRef.componentInstance.allSaleItems = this.allItemButtonMenuList;
+        modalRef.componentInstance.dailyExchRate = this._logonDataSvc ? this._logonDataSvc.getDailyExchRate() : {} as DailyExchRate;
+
+        modalRef.result.then((result: any) => {
+            if (!result) {
+                return;
+            }
+
+            // Keep payload handling local until store wiring is implemented.
+            console.log('Misc item dialog result:', result);
+        }).catch(() => {
+            // User cancelled the modal.
+        }).finally(() => {
+            this.isAddMiscModalOpen = false;
+        });
     }
 }

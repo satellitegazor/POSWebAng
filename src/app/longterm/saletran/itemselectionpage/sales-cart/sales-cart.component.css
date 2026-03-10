@@ -68,3 +68,11 @@
          min-width: 180px;
      }
  }
+
+.footer-summary-bar {
+    background-color: #0f4c5c;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+}

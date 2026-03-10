@@ -5,7 +5,7 @@ import { SharedSubjectService } from '../../../../shared-subject/shared-subject.
 import { CheckoutItemsComponent } from '../../checkout/checkout-items/checkout-items.component';
 import { SaleItem } from '../../../models/sale.item';
 import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCheckoutItem';
-import { addSaleItem, updateServedByAssociate } from '../../store/ticketstore/ticket.action';
+import { addSaleItem, updateCheckoutTotals, updateServedByAssociate } from '../../store/ticketstore/ticket.action';
 import { getCheckoutItemsCount } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Observable, Subject } from 'rxjs';
@@ -52,6 +52,7 @@ export class SaleItemComponent implements OnInit {
           this._store.dispatch(updateServedByAssociate({ saleItemId: saleCheckoutItem.salesItemUID, indx: 0, 
             indLocId: saleCheckoutItem.srvdByAssociateVal, srvdByAssociateName: saleCheckoutItem.srvdByAssociateText}))
         }
+      this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
     }
 
     private getSaleCheckOutItem(si: SaleItem): SalesTransactionCheckoutItem {

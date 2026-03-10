@@ -20,9 +20,14 @@ export class SalesCategoryComponent implements OnInit, OnChanges {
     @Output() saleCatClicked: EventEmitter<number> = new EventEmitter();
     activeId: number = 0
 
+    private setActiveId(catgId: number): void {
+        this.activeId = catgId;
+        this.saleCatClicked.emit(catgId);
+    }
+
     ngOnInit(): void {
         if(this.saleCatList.length > 0) {
-            this.activeId = this.saleCatList[0].salesCategoryUID;
+            this.setActiveId(this.saleCatList[0].salesCategoryUID);
         }
     }
 
@@ -30,13 +35,12 @@ export class SalesCategoryComponent implements OnInit, OnChanges {
         if (changes['saleCatList'] && !changes['saleCatList'].firstChange) {
             // saleCatList was updated from parent
             if (this.saleCatList.length > 0) {
-                this.activeId = this.saleCatList[0].salesCategoryUID;
+                this.setActiveId(this.saleCatList[0].salesCategoryUID);
             }
         }
     }
 
     public salesCatgClick(event: Event, catgId: number): void {
-        this.activeId = catgId;
-        this.saleCatClicked.emit(catgId);
+        this.setActiveId(catgId);
     }
 }
