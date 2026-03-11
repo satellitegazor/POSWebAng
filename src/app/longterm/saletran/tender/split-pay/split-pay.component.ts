@@ -237,6 +237,10 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
       Number(Number(this.yetToPayDC / this._logonDataSvc.getExchangeRate()).toCPOSFixed(2));
   }
 
+  onCancelClick(): void {
+    this.router.navigate(['/checkout']);
+  }
+
   async btnTndrClick(evt: Event) {
     
     if (!this._isClickAllowed()) {

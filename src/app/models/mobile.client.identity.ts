@@ -1,5 +1,5 @@
 ﻿export class MobClientIdentity {
-    public nonAafesPersonnelCodes: string = "CIMO";
+    public nonAssociatePersonnelCodes: string = "CIMO";
     public name: string = '';
     public employeeID: number = 0;
     public firstName: string = '';
@@ -16,6 +16,6 @@
     public useR_ID: string = '';
     public principalCacheKey: string = '';
     public isLnUser: boolean = false;
-    public isNonAafes: boolean = false;
+    public isNonAssociate: boolean = false;
     public isAuthenticated: boolean = false;
 }

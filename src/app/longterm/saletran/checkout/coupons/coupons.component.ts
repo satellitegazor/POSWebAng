@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
@@ -10,6 +10,7 @@ import { currSymbls } from 'src/app/models/CurrencySymbols';
 import { ToastService, ToastType } from 'src/app/services/toast.service';
 import { TicketSplit } from 'src/app/models/ticket.split';
 import { getTktObjSelector } from '../../store/ticketstore/ticket.selector';
+import { UtilService } from 'src/app/services/util.service';
 
 @Component({
     selector: 'app-coupons',
@@ -17,7 +18,9 @@ import { getTktObjSelector } from '../../store/ticketstore/ticket.selector';
     styleUrls: ['./coupons.component.css'],
     standalone: false
 })
-export class CouponsModalDlgComponent implements OnInit {
+export class CouponsModalDlgComponent implements OnInit, AfterViewInit {
+
+  @ViewChild('amountInput') amountInput!: ElementRef<HTMLInputElement>;
 
   public CpnType: CouponType = CouponType.exchCpnItem;
   public Title: string = "";
@@ -30,21 +33,22 @@ export class CouponsModalDlgComponent implements OnInit {
   public MaxDiscAmt: number = 0;
 
   constructor(private modal: NgbModal, private logonDataSvc: LogonDataService, 
-    private _store: Store<saleTranDataInterface>, private toastSvc: ToastService) { }
+    private _store: Store<saleTranDataInterface>, private toastSvc: ToastService,
+    private _utilSvc: UtilService) { }
 
   public dfltCurrSymbl: string = '$'
   public exchRate: number = 1;
   public dfltCurrCode: string = 'USD'
   public isOconusLocation: boolean = false;
   tktObj: TicketSplit = {} as TicketSplit;
-  public CurrSymbl: string = '$';
+  //public CurrSymbl: string = '$';
 
   ngOnInit(): void {
     this.exchRate = this.logonDataSvc.getExchangeRate();
     this.dfltCurrCode = this.logonDataSvc.getDfltCurrCode();
     this.isOconusLocation = this.logonDataSvc.getIsForeignCurr();
 
-    this.dfltCurrSymbl = currSymbls.find(x => x.key == this.dfltCurrCode)?.value ?? '$';
+    this.dfltCurrSymbl =  this._utilSvc.currencySymbols.get(this.dfltCurrCode) ?? '$';
 
     this._store.select(getTktObjSelector).subscribe(tktObj => {
       if(tktObj) {
@@ -62,6 +66,11 @@ export class CouponsModalDlgComponent implements OnInit {
       }
     });
 
+  }
+
+  ngAfterViewInit(): void {
+    // Delay focus slightly to ensure modal content is fully rendered and interactive.
+    setTimeout(() => this.amountInput?.nativeElement?.focus(), 0);
   }
 
 

@@ -19,7 +19,7 @@ export class InactiveLogoutInterceptor implements HttpInterceptor {
   constructor(private _localStorageSvc: LocalStorageService, private _router: Router, private _store: Store<saleTranDataInterface>,) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    this.expirationCounter(300000);
+    this.expirationCounter(1000000);
     return next.handle(request);
   }
 

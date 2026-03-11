@@ -133,8 +133,6 @@ export class SalesCartComponent implements OnInit, OnDestroy {
 
             this.locationConfig = data.configs[0];
             this.locationIndividuals = data.individuals;
-
-            this._store.dispatch(initTktObj({ locConfig: this.locationConfig, individualUID: +this.vendorLoginResult.individualUID}));
         });
 
         this._cposWebSvc.pinpadHeartbeat("PING").subscribe(data => {

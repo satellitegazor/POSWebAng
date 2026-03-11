@@ -29,16 +29,16 @@
                         <td class="text-end"> 
                             <a class="text-primary text-decoration-none" 
                                id="vndrDisc_{{itm.salesItemUID}}_{{itm.ticketDetailId}}" 
-                               (click)="DisplayVendorDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc, itm.vndCpnAmountDC, 
-                                itm.vendorCouponDiscountPct, (dcCurrSymbl == '$' ? (itm.lineItemDollarDisplayAmount - itm.lineItemTaxAmount - itm.lineItemEnvTaxAmount): (itm.fcLineItemDollarDisplayAmount - itm.fcLineItemTaxAmount - itm.fcLineItemEnvTaxAmount)))" 
+                               (click)="DisplayVendorDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc, (dcCurrSymbl == '$' ? (itm.discountAmount): (itm.fcDiscountAmount)), 
+                                itm.vendorCouponDiscountPct, (dcCurrSymbl == '$' ? (itm.unitPrice * itm.quantity) : (itm.fcUnitPrice * itm.quantity)))" 
                                style="cursor: pointer;">
-                                {{dcCurrSymbl}}{{itm.vndCpnAmountDC | number:'1.2-2'}}
+                                {{dcCurrSymbl}}{{(dcCurrSymbl == '$' ? itm.discountAmount : itm.fcDiscountAmount) | number:'1.2-2'}}
                             </a>
                         </td>
                         <td class="text-end">
                             <a class="text-primary text-decoration-none" 
                                id="exchDisc_{{itm.salesItemUID}}_{{itm.ticketDetailId}}" 
-                               (click)="DisplayExchDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc, itm.couponLineItemDollarAmount, itm.exchangeCouponDiscountPct, (dcCurrSymbl == '$' ? (itm.lineItemDollarDisplayAmount - itm.lineItemTaxAmount - itm.lineItemEnvTaxAmount): (itm.fcLineItemDollarDisplayAmount - itm.fcLineItemTaxAmount - itm.fcLineItemEnvTaxAmount)))"
+                               (click)="DisplayExchDiscPopUp(itm.salesItemUID, itm.ticketDetailId, itm.salesItemDesc, itm.couponLineItemDollarAmount, itm.exchangeCouponDiscountPct, (dcCurrSymbl == '$' ? (itm.unitPrice * itm.quantity) : (itm.fcUnitPrice * itm.quantity)))"
                                style="cursor: pointer;">
                                 ${{(dcCurrSymbl == '$' ? itm.couponLineItemDollarAmount : itm.fcCouponLineItemDollarAmount) | number:'1.2-2'}}
                             </a>

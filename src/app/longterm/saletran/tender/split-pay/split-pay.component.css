@@ -358,6 +358,10 @@
     transform: translateY(0);
 }
 
+#btnCancelSplitPay {
+    width: 30%;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .payment-section,

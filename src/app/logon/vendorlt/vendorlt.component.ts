@@ -168,7 +168,8 @@ export class VendorLTComponent implements OnInit {
 
                 this._logonDataSvc.setLocationConfig(locCnfgData);
                 this._locConfigStore.dispatch(setLocationConfig({ locationConfig: locCnfgData }));
-                this._tktObjStore.dispatch(initTktObj({ locConfig: this._logonDataSvc.getLocationConfig(), individualUID: +data.individualUID}));
+                let locConfig = this._logonDataSvc.getLocationConfig();
+                this._tktObjStore.dispatch(initTktObj({ locConfig: locConfig, individualUID: +data.individualUID}));
 
                 let today = new Date();
                 today.toDateString()

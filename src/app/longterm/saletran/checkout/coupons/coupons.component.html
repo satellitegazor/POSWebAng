@@ -14,9 +14,9 @@
                             (change)="percentChanged()" [(ngModel)]="DiscountPct" appPosCurrency/>
                     </td>
                     <td class="spacer">&nbsp;</td>
-                    <td class="ra">{{CurrSymbl}}</td>
+                    <td class="ra">{{dfltCurrSymbl}}</td>
                     <td>
-                        <input class="form-control" type="text" name="amount" id="amount"
+                        <input #amountInput class="form-control" type="text" name="amount" id="amount"
                             (change)="amountChanged()" [(ngModel)]="DiscountAmt" appPosCurrency/>
                     </td>
                 </tr>
