@@ -88,22 +88,22 @@
                         <div *ngIf="dfltCurrCode === 'USD'">
                             <a class="text-primary text-decoration-none" id="exchTranCouponDC" 
                             (click)="DisplayExchTranDiscPopUp(subTotalDC)" style="cursor: pointer;">
-                                {{dcCurrSymbl}}{{exchCpnTotal | number:'1.2-2'}}
+                                {{dcCurrSymbl}}{{tranExchCpnAmtDC | number:'1.2-2'}}
                             </a>
                         </div>
                         <div *ngIf="dfltCurrCode !== 'USD'">
-                            {{dcCurrSymbl}}{{exchCpnTotal | number:'1.2-2'}}
+                            {{dcCurrSymbl}}{{tranExchCpnAmtDC | number:'1.2-2'}}
                         </div>
                     </td>
                     <td *ngIf="isOConusLocation" class="text-end" id="ndcExchCpnTotal">   
                         <div *ngIf="dfltCurrCode !== 'USD'">
                             <a class="text-primary text-decoration-none" id="exchTranCouponNDC" 
                                 (click)="DisplayExchTranDiscPopUp(subTotalNDC)" style="cursor: pointer;">
-                                {{ndcCurrSymbl}}{{exchCpnTotalNDC | number:'1.2-2'}}
+                                {{ndcCurrSymbl}}{{tranExchCpnAmtNDC | number:'1.2-2'}}
                             </a>
                         </div>
                         <div *ngIf="dfltCurrCode === 'USD'">
-                            {{ndcCurrSymbl}}{{exchCpnTotalNDC | number:'1.2-2'}}   
+                            {{ndcCurrSymbl}}{{tranExchCpnAmtNDC | number:'1.2-2'}}   
                         </div>
                     </td>
                 </tr>

@@ -138,8 +138,9 @@ export class TicketTotals {
     public subTotalNDC: number = 0;
     public grandTotalDC: number = 0;
     public grandTotalNDC: number = 0;
-    public totalExchCpnAmtDC: number = 0;
-    public totalExchCpnAmtNDC: number = 0;
+    public tranExchCpnAmtDC: number = 0;
+    public tranExchCpnAmtNDC: number = 0;
+    public exchCpnPct: number = 0;
     public totalSavingsDC: number = 0;
     public totalSavingsNDC: number = 0;
     public totalTaxDC: number = 0;

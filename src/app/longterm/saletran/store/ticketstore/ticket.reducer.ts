@@ -118,7 +118,7 @@ export const _tktObjReducer = createReducer(
             subTotalNDC: 0,
             grandTotalDC: 0,
             grandTotalNDC: 0,
-            totalExchCpnAmtDC: 0,
+            tranExchCpnAmtDC: 0,
             totalExchCpnAmtNDC: 0,
             totalSavingsDC: 0,
             totalSavingsNDC: 0,
@@ -1003,7 +1003,7 @@ export const _tktObjReducer = createReducer(
             totalTaxNDC: Round2DecimalService.round(taxTotalNDC),
             totalSavingsDC: Round2DecimalService.round(totalSavingsDC),
             totalSavingsNDC: Round2DecimalService.round(totalSavingsNDC),
-            totalExchCpnAmtDC: Round2DecimalService.round(transExchTotalDC),
+            tranExchCpnAmtDC: Round2DecimalService.round(transExchTotalDC),
             totalExchCpnAmtNDC: Round2DecimalService.round(transExchTotalNDC),
             grandTotalDC: Round2DecimalService.round(grandTotalDC),
             grandTotalNDC: Round2DecimalService.round(grandTotalNDC)
@@ -1535,6 +1535,9 @@ export const _tktObjReducer = createReducer(
       //    totalSavingsNDC += item.fcCouponLineItemDollarAmount;
       // });
 
+      let exchDiscAmtDC = 0;
+      let exchDiscAmtNDC = 0;
+
       return {
          ...state,
          tktObj: {
@@ -1543,6 +1546,11 @@ export const _tktObjReducer = createReducer(
             tCouponAmt: action.cpnAmt,
             tCouponPct: action.cpnPct,
             tDCouponAmt: parseFloat((action.cpnAmt * exchRate).toCPOSFixed(2))
+         },
+         tktTotals: {
+            ...state.tktTotals,
+            tranExchCpnAmtDC: action.cpnAmt,
+            tranExchCpnAmtNDC: parseFloat((action.cpnAmt * exchRate).toCPOSFixed(2)),
          }
       }
    }),

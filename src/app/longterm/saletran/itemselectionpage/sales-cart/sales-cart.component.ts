@@ -166,7 +166,7 @@ export class SalesCartComponent implements OnInit, OnDestroy {
                 this.defaultCurrencySubtotal = 0;
                 return;
             }
-            this.defaultCurrencySubtotal = this.isDefaultCurrencyUsd ? (tktTotals.subTotalDC ?? 0) : (tktTotals.subTotalNDC ?? 0);
+            this.defaultCurrencySubtotal = tktTotals.subTotalDC;
         });
     }
 

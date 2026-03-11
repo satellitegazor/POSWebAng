@@ -43,8 +43,8 @@ export class CheckoutItemsComponent implements OnInit, OnChanges {
 
   subTotalDC: number = 0;
   subTotalNDC: number = 0;
-  exchCpnTotal: number = 0;
-  exchCpnTotalNDC: number = 0;
+  tranExchCpnAmtDC: number = 0;
+  tranExchCpnAmtNDC: number = 0;
   saleTaxTotal: number = 0;
   saleTaxTotalNDC: number = 0;
   tipsTotal: number = 0;
@@ -117,8 +117,8 @@ export class CheckoutItemsComponent implements OnInit, OnChanges {
     this._store.select(getTicketTotals).subscribe(tktTotals => {
       this.subTotalDC = tktTotals.subTotalDC;
       this.subTotalNDC = tktTotals.subTotalNDC;
-      this.exchCpnTotal = tktTotals.totalExchCpnAmtDC;
-      this.exchCpnTotalNDC = tktTotals.totalExchCpnAmtNDC ?? 0;
+      this.tranExchCpnAmtDC = tktTotals.tranExchCpnAmtDC;
+      this.tranExchCpnAmtNDC = tktTotals.tranExchCpnAmtNDC ?? 0;
       this.grandTotal = tktTotals.grandTotalDC;
       this.grandTotalNDC = tktTotals.grandTotalNDC;
       this.totalSavings = tktTotals.totalSavingsDC ?? 0;
@@ -145,7 +145,7 @@ export class CheckoutItemsComponent implements OnInit, OnChanges {
   public calcCheckoutTotals() {
 
     this.subTotalDC = 0;
-    this.exchCpnTotal = 0;
+    this.tranExchCpnAmtDC = 0;
     this.saleTaxTotal = 0;
     this.tipsTotal = 0;
     this.grandTotal = 0;
@@ -159,7 +159,7 @@ export class CheckoutItemsComponent implements OnInit, OnChanges {
       let subTotal = Number(Number(this.tktDtlItems[k].unitPrice * this.tktDtlItems[k].quantity).toCPOSFixed(2));
 
       this.subTotalDC += subTotal;
-      this.exchCpnTotal += exchCpnTotal;
+      this.tranExchCpnAmtDC += exchCpnTotal;
       this.saleTaxTotal += saleTaxTotal;
       this.vndDiscountTotal += vndDiscountTotal;
 
@@ -170,8 +170,8 @@ export class CheckoutItemsComponent implements OnInit, OnChanges {
 
     }
 
-    this.grandTotal = Number(Number(this.subTotalDC - this.exchCpnTotal + this.saleTaxTotal).toCPOSFixed(2));
-    this.totalSavings = Number(Number(this.exchCpnTotal + this.vndDiscountTotal).toCPOSFixed(2));
+    this.grandTotal = Number(Number(this.subTotalDC - this.tranExchCpnAmtDC + this.saleTaxTotal).toCPOSFixed(2));
+    this.totalSavings = Number(Number(this.tranExchCpnAmtDC + this.vndDiscountTotal).toCPOSFixed(2));
   }
 
   public DisplayVendorDiscPopUp(saleItemId: number, tktDetailId: number, itemName: string, vndCpnAmountDC: number, vendorCouponDiscountPct: number,

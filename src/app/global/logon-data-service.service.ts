@@ -78,7 +78,7 @@ export class LogonDataService {
             }
         }
 
-        if(locConfig.rgnCode == 'OCONE' || locConfig.rgnCode == 'OCONP' && locConfig.cCDevice) {
+        if((locConfig.rgnCode == 'OCONE' || locConfig.rgnCode == 'OCONP') && locConfig.cCDevice) {
 
             if(locConfig.cCDevice == 'E') {
                 this._ltTenderTypeMdl.types = JSON.parse(JSON.stringify(this._ltTenderTypeMdl.types.filter((tndr) => tndr.tenderTypeCode != 'CC' && tndr.tenderTypeCode != 'CR')));
