@@ -5,6 +5,7 @@ import { map, Subject, takeUntil } from 'rxjs';
 import { getTktObjSelector } from './longterm/saletran/store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from './longterm/saletran/store/ticketstore/ticket.state';
 import { LogonDataService } from './global/logon-data-service.service';
+import { UiBlockService } from './services/ui-block.service';
 
 @Component({
     selector: 'app-root',
@@ -19,7 +20,8 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     private route: Router,
     private _store: Store<saleTranDataInterface>,
-    private _logonDataSvc: LogonDataService) {
+    private _logonDataSvc: LogonDataService,
+    private _uiBlockSvc: UiBlockService) {
 
   }
   
@@ -30,6 +32,8 @@ export class AppComponent implements OnInit, OnDestroy {
   Region: String = 'Europe';
   title = 'CPOSWeb';
   TicketNumber: number = 0
+  isUiBlocked: boolean = false;
+  uiBlockMessage: string = 'Please wait...';
 
   public ngOnInit(): void {
     this._store.pipe(
@@ -38,6 +42,14 @@ export class AppComponent implements OnInit, OnDestroy {
       takeUntil(this._destroy$)
     ).subscribe((ticketNumber) => {
       this.TicketNumber = ticketNumber;
+    });
+
+    this._uiBlockSvc.isBlocked$.pipe(takeUntil(this._destroy$)).subscribe((isBlocked) => {
+      this.isUiBlocked = isBlocked;
+    });
+
+    this._uiBlockSvc.message$.pipe(takeUntil(this._destroy$)).subscribe((message) => {
+      this.uiBlockMessage = message;
     });
   }
 

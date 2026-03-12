@@ -29,6 +29,7 @@ import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
 import { VerifoneCommStatus } from '../../../models/general-classes';
 import { AddMiscItemDlgComponent } from '../add-misc-item-dlg/add-misc-item-dlg.component';
 import { DailyExchRate } from 'src/app/models/exchange.rate';
+import { UtilService } from 'src/app/services/util.service';
 
 @Component({
     selector: 'app-sales-cart',
@@ -52,7 +53,8 @@ export class SalesCartComponent implements OnInit, OnDestroy {
         private _store: Store<saleTranDataInterface>,
         private router: Router,
         private _locConfigStore: Store<LocationConfigState>,
-        private _cposWebSvc: CPOSWebSvcService) {
+        private _cposWebSvc: CPOSWebSvcService,
+        private _utilSvc: UtilService) {
 
         //console.log('SalesCart constructor')
         this.salesCategoryListRefreshEvent = new Subject<boolean>();
@@ -85,9 +87,12 @@ export class SalesCartComponent implements OnInit, OnDestroy {
     private isAddMiscModalOpen: boolean = false;
     exchangeRate: string = '';
     defaultCurrencyCode: string = 'USD';
-    defaultCurrencySubtotal: number = 0;
+    dcSubtotal: number = 0;
+    ndcSubtotal: number = 0;
     private isDefaultCurrencyUsd: boolean = true;
     isForeignCurrency: boolean = false;
+    dcCurrSymbol: string = '';
+    ndcCurrSymbol: string = '';
 
     //public salesCategoryListRefresh: Subject<boolean> = new Subject<boolean>();
     public salesItemListRefresh: Subject<boolean> = new Subject<boolean>();
@@ -99,12 +104,13 @@ export class SalesCartComponent implements OnInit, OnDestroy {
 
         //console.log('SalesCart ngOnInit')
         this.vendorLoginResult = this._logonDataSvc.getLTVendorLogonData();
-        const dfltCurrCode = this._logonDataSvc.getDfltCurrCode?.() ?? this._logonDataSvc.getLocationConfig()?.defaultCurrency ?? 'USD';
-        this.defaultCurrencyCode = dfltCurrCode;
-        this.isDefaultCurrencyUsd = dfltCurrCode.toUpperCase() === 'USD';
+        this.defaultCurrencyCode = this._logonDataSvc.getDfltCurrCode?.() ?? this._logonDataSvc.getLocationConfig()?.defaultCurrency ?? 'USD';
+        
+        this.isDefaultCurrencyUsd = this.defaultCurrencyCode.toUpperCase() === 'USD';
         
         let exchRateObj = this._logonDataSvc.getDailyExchRate();
         this.isForeignCurrency = exchRateObj?.isForeignCurr ?? false;
+        
         if(this.isForeignCurrency) {
 
             if(exchRateObj.isOneUSD) {
@@ -114,6 +120,9 @@ export class SalesCartComponent implements OnInit, OnDestroy {
                 this.exchangeRate = '1 USD' + ' = ' + exchRateObj.exchangeRate.toCPOSFixed(2) + ' ' + exchRateObj.dfltCurrCode;
             }
         }
+
+        this.dcCurrSymbol = this._utilSvc.currencySymbols.get(this.defaultCurrencyCode) || '';
+        this.ndcCurrSymbol = this._utilSvc.currencySymbols.get(this.defaultCurrencyCode != 'USD' ? "USD" : exchRateObj.currCode) || '';
 
         let pinpadStatus: VerifoneCommStatus = new VerifoneCommStatus();
 
@@ -161,10 +170,11 @@ export class SalesCartComponent implements OnInit, OnDestroy {
         this._store.select(getTicketTotals).subscribe(tktTotals => {
             
             if (!tktTotals) {
-                this.defaultCurrencySubtotal = 0;
+                this.dcSubtotal = 0;
                 return;
             }
-            this.defaultCurrencySubtotal = tktTotals.subTotalDC;
+            this.dcSubtotal = tktTotals.subTotalDC;
+            this.ndcSubtotal = tktTotals.subTotalNDC;
         });
     }
 

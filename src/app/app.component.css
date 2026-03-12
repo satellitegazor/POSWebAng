@@ -1,1 +1,37 @@
+
+.app-busy-cursor {
+	cursor: wait;
+}
+
+.global-ui-blocker {
+	position: fixed;
+	inset: 0;
+	background: rgba(20, 24, 34, 0.45);
+	backdrop-filter: blur(1px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1060;
+	pointer-events: all;
+	cursor: wait;
+}
+
+.global-ui-blocker-content {
+	min-width: 320px;
+	max-width: 90vw;
+	padding: 16px 20px;
+	border-radius: 10px;
+	background: rgba(17, 25, 40, 0.9);
+	color: #ffffff;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.global-ui-blocker-text {
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 1.3;
+}
  

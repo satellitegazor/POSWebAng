@@ -27,7 +27,8 @@
             <div *ngIf="isForeignCurrency">Exchange Rate: {{ exchangeRate }}</div>
         </div>
         <div class="col-6 text-end">
-            {{ defaultCurrencyCode }} Subtotal: {{ defaultCurrencySubtotal | number:'1.2-2' }}
+            Ticket Subtotal {{ dcCurrSymbol }}{{ dcSubtotal | number:'1.2-2' }}
+            {{ ndcCurrSymbol }}{{ ndcSubtotal | number:'1.2-2' }}
         </div>
     </div>
     <div id="stButtonBottomBar" class="row">

@@ -65,10 +65,11 @@ export class LogonDataService {
             const savedTenderTypes = sessionStorage.getItem(LogonDataService.LT_TENDER_TYPES_KEY);
             if (savedTenderTypes) {
                 try {
-                    this._ltTenderTypeMdl = JSON.parse(savedTenderTypes) as TenderTypeModel;
+                    const parsedTenderTypes = JSON.parse(savedTenderTypes) as TenderTypeModel;
+                    this.replaceTenderTypesModel(parsedTenderTypes);
                 }
                 catch {
-                    this._ltTenderTypeMdl = {} as TenderTypeModel;
+                    this.clearTenderTypes();
                 }
             }
         }
@@ -78,7 +79,8 @@ export class LogonDataService {
 
     public setTenderTypes(tndrMdl: TenderTypeModel) {
 
-        this._ltTenderTypeMdl = JSON.parse(JSON.stringify(tndrMdl || {}));
+        this.replaceTenderTypesModel(tndrMdl);
+        this._ltTenderTypeMdl.types = this._ltTenderTypeMdl.types || [];
 
         let locConfig = this.getLocationConfig();
         if(locConfig.eagleCashOptn == false) {
@@ -111,8 +113,15 @@ export class LogonDataService {
     }
 
     public clearTenderTypes(): void {
-        this._ltTenderTypeMdl = {} as TenderTypeModel;
+        const tenderTypeObj = this._ltTenderTypeMdl as any;
+        Object.keys(tenderTypeObj).forEach((key) => delete tenderTypeObj[key]);
         sessionStorage.removeItem(LogonDataService.LT_TENDER_TYPES_KEY);
+    }
+
+    private replaceTenderTypesModel(tndrMdl: TenderTypeModel): void {
+        const tenderTypeObj = this._ltTenderTypeMdl as any;
+        Object.keys(tenderTypeObj).forEach((key) => delete tenderTypeObj[key]);
+        Object.assign(tenderTypeObj, JSON.parse(JSON.stringify(tndrMdl || {})));
     }
 
     public getLTVendorLogonData(): VendorLoginResultsModel {

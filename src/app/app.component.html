@@ -1,4 +1,4 @@
-<div class="font-wrapper">
+<div class="font-wrapper" [class.app-busy-cursor]="isUiBlocked">
   <nav class="navbar navbar-expand-md navbar-light bg-light">
     <div class="container">
       <a class="navbar-brand" href="#">Concession POS - {{Region}}</a>
@@ -34,6 +34,13 @@
       <router-outlet></router-outlet>
       <app-toast></app-toast>
       <!--<app-logon-vendorlt></app-logon-vendorlt>-->
+  </div>
+
+  <div *ngIf="isUiBlocked" class="global-ui-blocker" role="status" aria-live="polite" [attr.aria-label]="uiBlockMessage">
+    <div class="global-ui-blocker-content">
+      <div class="spinner-border text-light" role="presentation"></div>
+      <div class="global-ui-blocker-text">{{uiBlockMessage}}</div>
+    </div>
   </div>
 
 
