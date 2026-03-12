@@ -10,6 +10,7 @@ import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCh
 import { ExchCardTndr, SaveExchCardTndrResult } from 'src/app/models/exch.card.tndr';
 import { LTC_Ticket } from 'src/app/longterm/models/ticket.list';
 import { DailyExchRate } from 'src/app/models/exchange.rate';
+import { InactiveTicketDetailRequest, InactiveTicketDetailResultModel, SaveTicketDetailRequest, SaveTicketDetailResultModel } from '../../services/sales-tran.service';
  
 export const ADD_SALE_ITEM = 'addSaleItem';
 export const INC_SALE_ITEM_QTY = 'incSaleItemQty';
@@ -40,6 +41,14 @@ export const UPDATE_ASSOC_IN_ASSOCTIPS = 'updateAssocInAssocTips';
 export const SAVE_TENDER_OBJ = 'saveTenderObj';
 export const SAVE_TENDER_OBJ_SUCCESS = 'saveTenderObjSuccess';
 export const SAVE_TENDER_OBJ_FAILED = 'saveTenderObjFailed';
+
+export const SAVE_TICKET_DETAIL = 'saveTicketDetail';
+export const SAVE_TICKET_DETAIL_SUCCESS = 'saveTicketDetailSuccess';
+export const SAVE_TICKET_DETAIL_FAILED = 'saveTicketDetailFailed';
+
+export const INACTIVE_TICKET_DETAIL = 'inactiveTicketDetail';
+export const INACTIVE_TICKET_DETAIL_SUCCESS = 'inactiveTicketDetailSuccess';
+export const INACTIVE_TICKET_DETAIL_FAILED = 'inactiveTicketDetailFailed';
 
 export const DELETE_DECLINED_TNDR = 'deleteDeclinedTender';
 
@@ -112,6 +121,20 @@ export const saveTenderObjSuccess = createAction(SAVE_TENDER_OBJ_SUCCESS,
     props<{data: SaveTenderResultModel}>());
 export const saveTenderObjFailed = createAction(SAVE_TENDER_OBJ_FAILED,
     props<{data: SaveTenderResultModel}>());
+
+export const saveTicketDetail = createAction(SAVE_TICKET_DETAIL,
+    props<{uid: number, appType: number, request: SaveTicketDetailRequest}>());
+export const saveTicketDetailSuccess = createAction(SAVE_TICKET_DETAIL_SUCCESS,
+    props<{data: SaveTicketDetailResultModel, request: SaveTicketDetailRequest}>());
+export const saveTicketDetailFailed = createAction(SAVE_TICKET_DETAIL_FAILED,
+    props<{error: any}>());
+
+export const inactiveTicketDetail = createAction(INACTIVE_TICKET_DETAIL,
+    props<{uid: number, request: InactiveTicketDetailRequest}>());
+export const inactiveTicketDetailSuccess = createAction(INACTIVE_TICKET_DETAIL_SUCCESS,
+    props<{data: InactiveTicketDetailResultModel, request: InactiveTicketDetailRequest}>());
+export const inactiveTicketDetailFailed = createAction(INACTIVE_TICKET_DETAIL_FAILED,
+    props<{error: any}>());
 
 export const deleteDeclinedTender = createAction(DELETE_DECLINED_TNDR, props<{rrn: string}>());
 

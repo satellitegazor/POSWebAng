@@ -7,7 +7,7 @@ import { AssociateSaleTips } from "src/app/models/associate.sale.tips";
 import { LTC_Customer } from "src/app/models/customer";
 import { TenderStatusType, TicketTender, TranStatusType } from "src/app/models/ticket.tender";
 import { SalesTransactionCheckoutItem } from "../../../models/salesTransactionCheckoutItem";
-import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketForGuestCheckSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData, removeTndrWithSaveCode, saveCompleteTicketSplitSuccess, addPinpadResp, saveTenderObjSuccess, savePinpadResponse, updateTenderRRN, markTendersComplete, markTicketComplete, addTabSerialToTktObj, isSplitPayR5, deleteDeclinedTender, loadTicketSuccess, loadInProgressTendersSuccess, updateShipHandling } from "./ticket.action";
+import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketForGuestCheckSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData, removeTndrWithSaveCode, saveCompleteTicketSplitSuccess, addPinpadResp, saveTenderObjSuccess, saveTicketDetailSuccess, inactiveTicketDetailSuccess, savePinpadResponse, updateTenderRRN, markTendersComplete, markTicketComplete, addTabSerialToTktObj, isSplitPayR5, deleteDeclinedTender, loadTicketSuccess, loadInProgressTendersSuccess, updateShipHandling } from "./ticket.action";
 import { Round2DecimalService } from "src/app/services/round2-decimal.service";
 import { tktObjInitialState, saleTranDataInterface } from "./ticket.state";
 import { ExchCardTndr } from "src/app/models/exch.card.tndr";
@@ -1561,6 +1561,46 @@ export const _tktObjReducer = createReducer(
             }),
          },
       }
+   }),
+   on(saveTicketDetailSuccess, (state, action) => {
+      let isMapped = false;
+      const requestItemDescription = (action.request.ItemDescription || '').trim().toLowerCase();
+
+      return {
+         ...state,
+         tktObj: {
+            ...state.tktObj,
+            transactionID: action.data.TransactionId || state.tktObj.transactionID,
+            tktList: state.tktObj.tktList.map((itm) => {
+               const isSameSalesItem = itm.salesItemUID === action.data.SalesItemId;
+               const isMiscByDescription = itm.isMiscellaneous &&
+                  (itm.salesItemDesc || '').trim().toLowerCase() === requestItemDescription;
+               const isUnresolvedTempItem = itm.ticketDetailId < 0;
+
+               if (!isMapped && isUnresolvedTempItem && (isMiscByDescription || isSameSalesItem)) {
+                  isMapped = true;
+                  return {
+                     ...itm,
+                     salesItemUID: action.data.SalesItemId,
+                     ticketDetailId: action.data.TicketDetailId,
+                     tktTransactionID: action.data.TransactionId,
+                     itemSaved: true
+                  };
+               }
+
+               return itm;
+            })
+         }
+      };
+   }),
+   on(inactiveTicketDetailSuccess, (state, action) => {
+      return {
+         ...state,
+         tktObj: {
+            ...state.tktObj,
+            tktList: state.tktObj.tktList.filter(itm => itm.ticketDetailId !== action.request.TicketDetailId)
+         }
+      };
    }),
    on(saveCompleteTicketSplitSuccess, (state, action) => {
       

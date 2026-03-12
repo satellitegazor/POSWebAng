@@ -146,4 +146,9 @@ export const getIsCustomerAddedToTicket = createSelector(getTktObjState,
     (state) => {
       return state.tktObj.isSplitPayR5;
     }); 
+
+  export const getTranIdTicketNumber = createSelector(getTktObjState,
+    (state) => {
+      return { tranId: state.tktObj.transactionID, ticketNumber: state.tktObj.ticketNumber, locationId: state.tktObj.locationUID };
+    });
     

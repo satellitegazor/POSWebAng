@@ -125,6 +125,25 @@ export class SalesTranService {
             { headers: this.headerObjs });
     }
 
+    public saveTicketDetail(uid: number, appType: number, request: SaveTicketDetailRequest): Observable<SaveTicketDetailResultModel> {
+        return this.httpClient.put<SaveTicketDetailResultModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveTicketDetail?guid=' + GlobalConstants.PUT_GUID
+                + '&uid=' + uid.toString()
+                + '&appType=' + appType.toString(),
+            JSON.stringify(request),
+            { headers: this.headerObjs }
+        );
+    }
+
+    public inactiveTicketDetail(uid: number, request: InactiveTicketDetailRequest): Observable<InactiveTicketDetailResultModel> {
+        return this.httpClient.put<InactiveTicketDetailResultModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/InactiveTicketDetail?guid=' + GlobalConstants.PUT_GUID
+                + '&uid=' + uid.toString(),
+            JSON.stringify(request),
+            { headers: this.headerObjs }
+        );
+    }
+
     public getInProgressTenders(tranId: number, appType: number, tenderStatus: number, uid: number) {
         return this.httpClient.get<InProgressTendersResultModel>(
             GlobalConstants.CPOS_SVCS_URL + '/ltc/GetInProgressTenders?guid=' + GlobalConstants.GET_GUID
@@ -240,5 +259,64 @@ export interface TranCountForLocEventResultModel {
     results: MobileBase;
     tranCount: number;
     locEventId: number;
+}
+
+export interface SaveTicketDetailRequest {
+    AppType: number;
+    TransactionId: number;
+    TicketDetailId: number;
+    SalesItemUID: number;
+    SeqNbr: number;
+    ItemDescription: string;
+    Quantity: number;
+    UnitPrice: number;
+    FCUnitPrice: number;
+    SalesTaxPct: number;
+    EnvTaxPct: number;
+    DiscountAmount: number;
+    FCDiscountAmount: number;
+    CouponLineItemDollarAmount: number;
+    FCCouponLineItemDollarAmount: number;
+    LineItemDollarDisplayAmount: number;
+    FCLineItemDollarDisplayAmount: number;
+    LineItemTaxAmount: number;
+    FCLineItemTaxAmount: number;
+    LineItemEnvTaxAmount: number;
+    FCLineItemEnvTaxAmount: number;
+    LineItmKatsaCpnAmt: number;
+    FCLineItmKatsaCpnAmt: number;
+    DeptUID: number;
+    SrvdByAssocVal: number;
+    IsMisc: boolean;
+    IsFulfilled: boolean;
+    IsForeignCurr: boolean;
+    IsDefaultUSD: boolean;
+    NoOfTags: number;
+    MaintUserId: number;
+    CliTimeVar: number;
+    Active: boolean;
+}
+
+export interface SaveTicketDetailResultModel {
+    Results: MobileBase;
+    TicketDetailId: number;
+    TransactionId: number;
+    SalesItemId: number;
+    ItemDescription: string;
+}
+
+export interface InactiveTicketDetailRequest {
+    LocEvtId: number;
+    TranId: number;
+    TicketDetailId: number;
+    AppType: number;
+    UserId: number;
+    VoidTicket: boolean;
+    VoidTypeCode: string;
+    VoidOtherReason: string;
+}
+
+export interface InactiveTicketDetailResultModel {
+    Results: MobileBase;
 }
   

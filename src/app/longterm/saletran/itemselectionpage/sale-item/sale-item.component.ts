@@ -5,11 +5,11 @@ import { SharedSubjectService } from '../../../../shared-subject/shared-subject.
 import { CheckoutItemsComponent } from '../../checkout/checkout-items/checkout-items.component';
 import { SaleItem } from '../../../models/sale.item';
 import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCheckoutItem';
-import { addSaleItem, updateCheckoutTotals, updateServedByAssociate } from '../../store/ticketstore/ticket.action';
-import { getCheckoutItemsCount } from '../../store/ticketstore/ticket.selector';
+import { addSaleItem, saveTicketDetail, updateCheckoutTotals, updateServedByAssociate } from '../../store/ticketstore/ticket.action';
+import { getCheckoutItemsCount, getTranIdTicketNumber } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Observable, Subject } from 'rxjs';
-import { UtilService } from 'src/app/services/util.service';
+import { CPOSAppType, UtilService } from 'src/app/services/util.service';
 
  
 @Component({
@@ -25,6 +25,10 @@ export class SaleItemComponent implements OnInit {
     @Input() salesItemListRefreshEvent: Observable<boolean> = new Observable<boolean>();
     activeId: number = 0;
     dcCurrSymbl: string = '';
+
+    transactionId: number = 0;
+    ticketNumber: number = 0;
+    
     ngOnInit(): void {
 
       this.dcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getDfltCurrCode()) || '';
@@ -38,6 +42,12 @@ export class SaleItemComponent implements OnInit {
           this.activeId = this.saleItemList[0].salesItemID;
         }
       });
+
+      this._store.select(getTranIdTicketNumber).subscribe(data => {
+        //console.log('tranId: ' + data.tranId + ' ticketNumber: ' + data.ticketNumber);
+        this.transactionId = data.tranId;
+        this.ticketNumber = data.ticketNumber;
+      });
     }
     
     public salesItemClick(event: Event, itemId: number): void {
@@ -47,6 +57,52 @@ export class SaleItemComponent implements OnInit {
 
         saleCheckoutItem.srvdByAssociateText = this._logonDataSvc.getLTVendorLogonData().associateName;
         this._store.dispatch(addSaleItem({saleItem: saleCheckoutItem, defCurrSymbl: this.dcCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));       
+
+
+        if(this.transactionId > 0) {
+          // If transactionId is present, means ticket is already saved once and we are adding item to existing ticket, so we need to update served by associate for the new item
+          const individualUid = Number(this._logonDataSvc.getLTVendorLogonData().individualUID || 0);
+          this._store.dispatch(saveTicketDetail({
+            uid: individualUid,
+            appType: CPOSAppType.LongTerm,
+            request: {
+              AppType: CPOSAppType.LongTerm,
+              TransactionId: this.transactionId,
+              TicketDetailId: saleCheckoutItem.ticketDetailId,
+              SalesItemUID: saleCheckoutItem.salesItemUID,
+              SeqNbr: 0,
+              ItemDescription: saleCheckoutItem.salesItemDesc,
+              Quantity: saleCheckoutItem.quantity,
+              UnitPrice: saleCheckoutItem.unitPrice,
+              FCUnitPrice: saleCheckoutItem.fcUnitPrice,
+              SalesTaxPct: saleCheckoutItem.salesTaxPct,
+              EnvTaxPct: saleCheckoutItem.envrnmtlTaxPct,
+              DiscountAmount: saleCheckoutItem.discountAmount,
+              FCDiscountAmount: saleCheckoutItem.fcDiscountAmount,
+              CouponLineItemDollarAmount: saleCheckoutItem.couponLineItemDollarAmount,
+              FCCouponLineItemDollarAmount: saleCheckoutItem.fcCouponLineItemDollarAmount,
+              LineItemDollarDisplayAmount: saleCheckoutItem.lineItemDollarDisplayAmount,
+              FCLineItemDollarDisplayAmount: saleCheckoutItem.fcLineItemDollarDisplayAmount,
+              LineItemTaxAmount: saleCheckoutItem.lineItemTaxAmount,
+              FCLineItemTaxAmount: saleCheckoutItem.fcLineItemTaxAmount,
+              LineItemEnvTaxAmount: saleCheckoutItem.lineItemEnvTaxAmount,
+              FCLineItemEnvTaxAmount: saleCheckoutItem.fcLineItemEnvTaxAmount,
+              LineItmKatsaCpnAmt: saleCheckoutItem.lineItmKatsaCpnAmt,
+              FCLineItmKatsaCpnAmt: saleCheckoutItem.fcLineItmKatsaCpnAmt,
+              DeptUID: saleCheckoutItem.departmentUID,
+              SrvdByAssocVal: saleCheckoutItem.srvdByAssociateVal,
+              IsMisc: saleCheckoutItem.isMiscellaneous,
+              IsFulfilled: false,
+              IsForeignCurr: this._logonDataSvc.getIsForeignCurr(),
+              IsDefaultUSD: this._logonDataSvc.getDfltCurrCode() == 'USD',
+              NoOfTags: saleCheckoutItem.noOfTags,
+              MaintUserId: individualUid,
+              CliTimeVar: this._logonDataSvc.getLTVendorLogonData().cliTimeVar,
+              Active: true
+            }
+          }));
+        }
+
         if(this._logonDataSvc.getAllowTips()) {
           
           this._store.dispatch(updateServedByAssociate({ saleItemId: saleCheckoutItem.salesItemUID, indx: 0, 

@@ -61,31 +61,29 @@ export class LogonDataService {
     }
 
     public getTenderTypes(): TenderTypeModel {
-        if (!this._ltTenderTypeMdl?.types?.length) {
-            const savedTenderTypes = sessionStorage.getItem(LogonDataService.LT_TENDER_TYPES_KEY);
-            if (savedTenderTypes) {
-                try {
-                    const parsedTenderTypes = JSON.parse(savedTenderTypes) as TenderTypeModel;
-                    this.replaceTenderTypesModel(parsedTenderTypes);
-                }
-                catch {
-                    this.clearTenderTypes();
-                }
-            }
+        const savedTenderTypes = sessionStorage.getItem(LogonDataService.LT_TENDER_TYPES_KEY);
+        if (!savedTenderTypes) {
+            return { results: {} as any, types: [] } as TenderTypeModel;
         }
 
-        return JSON.parse(JSON.stringify(this._ltTenderTypeMdl || {}));
+        try {
+            return JSON.parse(savedTenderTypes) as TenderTypeModel;
+        }
+        catch {
+            this.clearTenderTypes();
+            return { results: {} as any, types: [] } as TenderTypeModel;
+        }
     }
 
     public setTenderTypes(tndrMdl: TenderTypeModel) {
-
-        this.replaceTenderTypesModel(tndrMdl);
-        this._ltTenderTypeMdl.types = this._ltTenderTypeMdl.types || [];
+        const tenderTypeMdl = JSON.parse(JSON.stringify(tndrMdl || {})) as TenderTypeModel;
+        tenderTypeMdl.results = tenderTypeMdl.results || ({} as any);
+        tenderTypeMdl.types = tenderTypeMdl.types || [];
 
         let locConfig = this.getLocationConfig();
         if(locConfig.eagleCashOptn == false) {
 
-            let egTndrs = this._ltTenderTypeMdl.types.filter(tndr => tndr.tenderTypeCode == 'EG');
+            let egTndrs = tenderTypeMdl.types.filter(tndr => tndr.tenderTypeCode == 'EG');
             if(egTndrs && egTndrs.length > 0) {
                 let eg = egTndrs[0]
                 if(eg)
@@ -97,31 +95,23 @@ export class LogonDataService {
         if((locConfig.rgnCode == 'OCONE' || locConfig.rgnCode == 'OCONP') && locConfig.cCDevice) {
 
             if(locConfig.cCDevice == 'E') {
-                this._ltTenderTypeMdl.types = JSON.parse(JSON.stringify(this._ltTenderTypeMdl.types.filter((tndr) => tndr.tenderTypeCode != 'CC' && tndr.tenderTypeCode != 'CR')));
+                tenderTypeMdl.types = JSON.parse(JSON.stringify(tenderTypeMdl.types.filter((tndr) => tndr.tenderTypeCode != 'CC' && tndr.tenderTypeCode != 'CR')));
             }
 
             if(locConfig.cCDevice == 'C') {
-                this._ltTenderTypeMdl.types = JSON.parse(JSON.stringify(this._ltTenderTypeMdl.types.filter((tndr) => tndr.tenderTypeCode != 'XC' && tndr.tenderTypeCode != 'XR')));
+                tenderTypeMdl.types = JSON.parse(JSON.stringify(tenderTypeMdl.types.filter((tndr) => tndr.tenderTypeCode != 'XC' && tndr.tenderTypeCode != 'XR')));
             }
         }
 
         if(locConfig.rgnCode == 'CON') {
-            this._ltTenderTypeMdl.types = JSON.parse(JSON.stringify(this._ltTenderTypeMdl.types.filter((tndr) => tndr.tenderTypeCode != 'XC' && tndr.tenderTypeCode != 'XR')));
+            tenderTypeMdl.types = JSON.parse(JSON.stringify(tenderTypeMdl.types.filter((tndr) => tndr.tenderTypeCode != 'XC' && tndr.tenderTypeCode != 'XR')));
         }
 
-        sessionStorage.setItem(LogonDataService.LT_TENDER_TYPES_KEY, JSON.stringify(this._ltTenderTypeMdl));
+        sessionStorage.setItem(LogonDataService.LT_TENDER_TYPES_KEY, JSON.stringify(tenderTypeMdl));
     }
 
     public clearTenderTypes(): void {
-        const tenderTypeObj = this._ltTenderTypeMdl as any;
-        Object.keys(tenderTypeObj).forEach((key) => delete tenderTypeObj[key]);
         sessionStorage.removeItem(LogonDataService.LT_TENDER_TYPES_KEY);
-    }
-
-    private replaceTenderTypesModel(tndrMdl: TenderTypeModel): void {
-        const tenderTypeObj = this._ltTenderTypeMdl as any;
-        Object.keys(tenderTypeObj).forEach((key) => delete tenderTypeObj[key]);
-        Object.assign(tenderTypeObj, JSON.parse(JSON.stringify(tndrMdl || {})));
     }
 
     public getLTVendorLogonData(): VendorLoginResultsModel {

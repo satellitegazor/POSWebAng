@@ -4,7 +4,7 @@ import { select, State, Store } from "@ngrx/store";
 import { EMPTY, from, of } from "rxjs";
 import { catchError, concatMap, exhaustMap, map, mergeMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { SalesTranService } from "../../services/sales-tran.service";
-import { saveTicketForGuestCheck, saveTicketForGuestCheckSuccess, saveTicketForGuestCheckFailed, saveCompleteTicketSplit, saveCompleteTicketSplitSuccess, saveCompleteTicketSplitFailed, saveTenderObj, saveTenderObjSuccess, saveTenderObjFailed, savePinpadResponse, savePinpadResponseFailed, savePinpadResponseSuccess, loadTicket, loadTicketSuccess, loadTicketFail, loadInProgressTenders, loadInProgressTendersSuccess, loadInProgressTendersFail } from "./ticket.action";
+import { saveTicketForGuestCheck, saveTicketForGuestCheckSuccess, saveTicketForGuestCheckFailed, saveCompleteTicketSplit, saveCompleteTicketSplitSuccess, saveCompleteTicketSplitFailed, saveTenderObj, saveTenderObjSuccess, saveTenderObjFailed, saveTicketDetail, saveTicketDetailSuccess, saveTicketDetailFailed, inactiveTicketDetail, inactiveTicketDetailSuccess, inactiveTicketDetailFailed, savePinpadResponse, savePinpadResponseFailed, savePinpadResponseSuccess, loadTicket, loadTicketSuccess, loadTicketFail, loadInProgressTenders, loadInProgressTendersSuccess, loadInProgressTendersFail } from "./ticket.action";
 import { saleTranDataInterface } from "./ticket.state";
 import { getTktObjSelector } from './ticket.selector';
 import { CPOSAppType } from "src/app/services/util.service";
@@ -68,6 +68,39 @@ export class TicketObjectEffects {
             })
         )
     });
+
+    saveTicketDetailEffect$ = createEffect(() => {
+        return this.action$.pipe(
+            ofType(saveTicketDetail),
+            mergeMap((action) => {
+                return this.saleTranSvc.saveTicketDetail(action.uid, action.appType, action.request).pipe(
+                    map(data => {
+                        return saveTicketDetailSuccess({ data, request: action.request });
+                    }),
+                    catchError((error) => {
+                        return of(saveTicketDetailFailed({ error }));
+                    })
+                );
+            })
+        );
+    });
+
+    inactiveTicketDetailEffect$ = createEffect(() => {
+        return this.action$.pipe(
+            ofType(inactiveTicketDetail),
+            mergeMap((action) => {
+                return this.saleTranSvc.inactiveTicketDetail(action.uid, action.request).pipe(
+                    map(data => {
+                        return inactiveTicketDetailSuccess({ data, request: action.request });
+                    }),
+                    catchError((error) => {
+                        return of(inactiveTicketDetailFailed({ error }));
+                    })
+                );
+            })
+        );
+    });
+
     savePinpadResponseEffect$ = createEffect(() => {
         return this.action$.pipe(
             ofType(savePinpadResponse),

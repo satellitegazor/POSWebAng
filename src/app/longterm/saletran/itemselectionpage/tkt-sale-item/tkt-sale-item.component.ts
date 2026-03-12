@@ -10,11 +10,12 @@ import { getLocationAssocSelector } from '../../store/localtionassociates/locati
 import { getLocCnfgIsAllowTipsSelector } from '../../store/locationconfigstore/locationconfig.selector';
 import { SalesTranService } from '../../services/sales-tran.service';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
-import { addSaleItem, updateServedByAssociate, decSaleitemQty, delSaleitemZeroQty, incSaleitemQty, updateAssocInAssocTips, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
+import { addSaleItem, updateServedByAssociate, decSaleitemQty, delSaleitemZeroQty, incSaleitemQty, updateAssocInAssocTips, updateCheckoutTotals, inactiveTicketDetail } from '../../store/ticketstore/ticket.action';
 import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCheckoutItem';
 import { ConditionalExpr } from '@angular/compiler';
-import { getCheckoutItemsSelector } from '../../store/ticketstore/ticket.selector';
+import { getCheckoutItemsSelector, getTranIdTicketNumber } from '../../store/ticketstore/ticket.selector';
 import { Router } from '@angular/router';
+import { CPOSAppType } from 'src/app/services/util.service';
 
 import { currSymbls } from 'src/app/models/CurrencySymbols';
 
@@ -40,9 +41,16 @@ export class TktSaleItemComponent implements OnInit {
     public exchRate: number = 1;
     public dfltCurrCode: string = 'USD'
 
+    public transactionId: number = 0;
+    public locationId: number = 0;
+
     @Output() addMiscItemClicked: EventEmitter<void> = new EventEmitter<void>();
 
     ngOnInit(): void {
+
+        this._store.select(getTranIdTicketNumber).subscribe(data => {
+            this.transactionId = data.tranId;
+            this.locationId = data.locationId;});
 
         this._store.select(getCheckoutItemsSelector).subscribe(data => {
         
@@ -56,7 +64,7 @@ export class TktSaleItemComponent implements OnInit {
         this.allowTips = locConfig.allowTips;
         this.indivId = +this._logonDataSvc.getLTVendorLogonData().individualUID;        
 
-        this._saleTranSvc.getLocationAssociates(locConfig.locationUID, +this._logonDataSvc.getLTVendorLogonData().individualUID).subscribe(data => {
+        this._saleTranSvc.getLocationAssociates(this.locationId, this.indivId).subscribe(data => {
             this.SaleAssocList = data.associates
         })
 
@@ -69,7 +77,27 @@ export class TktSaleItemComponent implements OnInit {
     btnMinusClicked(evt: Event, i: number) {
 
         if(this.tktSaleItems[i].quantity == 1) {
-            this._store.dispatch(delSaleitemZeroQty({saleItemId: this.tktSaleItems[i].salesItemUID, tktDtlId: this.tktSaleItems[i].ticketDetailId, defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));    
+
+            if (this.transactionId > 0) {
+                this._store.dispatch(inactiveTicketDetail({
+                    uid: this.indivId,
+                    request: {
+                        LocEvtId: this.locationId,
+                        TranId: this.transactionId,
+                        TicketDetailId: this.tktSaleItems[i].ticketDetailId,
+                        AppType: CPOSAppType.LongTerm,
+                        UserId: this.indivId,
+                        VoidTicket: false,
+                        VoidTypeCode: '',
+                        VoidOtherReason: ''
+                    }
+                }));
+            } 
+            else 
+            {
+                this._store.dispatch(delSaleitemZeroQty({saleItemId: this.tktSaleItems[i].salesItemUID, tktDtlId: this.tktSaleItems[i].ticketDetailId, defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));    
+            }
+
         }
         else {
             this._store.dispatch(decSaleitemQty({ saleItemId: this.tktSaleItems[i].salesItemUID, tktDtlId: this.tktSaleItems[i].ticketDetailId , defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));
