@@ -9,6 +9,8 @@ import { TenderTypeModel } from '../longterm/models/tender.type';
 })
 export class LogonDataService {
 
+    private static readonly LT_TENDER_TYPES_KEY = 'ltTenderTypes';
+
     private _ltvendorLogonData: VendorLoginResultsModel = {} as VendorLoginResultsModel;
     private _ltLocationConfig: LocationConfigModel = {} as LocationConfigModel;
     private _ltTenderTypeMdl: TenderTypeModel = {} as TenderTypeModel;
@@ -58,13 +60,25 @@ export class LogonDataService {
 
     }
 
-    public getTenderTypes() {
-        return this._ltTenderTypeMdl;
+    public getTenderTypes(): TenderTypeModel {
+        if (!this._ltTenderTypeMdl?.types?.length) {
+            const savedTenderTypes = sessionStorage.getItem(LogonDataService.LT_TENDER_TYPES_KEY);
+            if (savedTenderTypes) {
+                try {
+                    this._ltTenderTypeMdl = JSON.parse(savedTenderTypes) as TenderTypeModel;
+                }
+                catch {
+                    this._ltTenderTypeMdl = {} as TenderTypeModel;
+                }
+            }
+        }
+
+        return JSON.parse(JSON.stringify(this._ltTenderTypeMdl || {}));
     }
 
     public setTenderTypes(tndrMdl: TenderTypeModel) {
 
-        this._ltTenderTypeMdl = tndrMdl;
+        this._ltTenderTypeMdl = JSON.parse(JSON.stringify(tndrMdl || {}));
 
         let locConfig = this.getLocationConfig();
         if(locConfig.eagleCashOptn == false) {
@@ -92,6 +106,13 @@ export class LogonDataService {
         if(locConfig.rgnCode == 'CON') {
             this._ltTenderTypeMdl.types = JSON.parse(JSON.stringify(this._ltTenderTypeMdl.types.filter((tndr) => tndr.tenderTypeCode != 'XC' && tndr.tenderTypeCode != 'XR')));
         }
+
+        sessionStorage.setItem(LogonDataService.LT_TENDER_TYPES_KEY, JSON.stringify(this._ltTenderTypeMdl));
+    }
+
+    public clearTenderTypes(): void {
+        this._ltTenderTypeMdl = {} as TenderTypeModel;
+        sessionStorage.removeItem(LogonDataService.LT_TENDER_TYPES_KEY);
     }
 
     public getLTVendorLogonData(): VendorLoginResultsModel {

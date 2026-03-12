@@ -4,6 +4,7 @@ import { select, Store } from '@ngrx/store';
 import { map, Subject, takeUntil } from 'rxjs';
 import { getTktObjSelector } from './longterm/saletran/store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from './longterm/saletran/store/ticketstore/ticket.state';
+import { LogonDataService } from './global/logon-data-service.service';
 
 @Component({
     selector: 'app-root',
@@ -17,12 +18,13 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: Router,
-    private _store: Store<saleTranDataInterface>) {
+    private _store: Store<saleTranDataInterface>,
+    private _logonDataSvc: LogonDataService) {
 
   }
   
   vlogout() {
-
+    this._logonDataSvc.clearTenderTypes();
     this.route.navigate(['/vlogon']);
   }
   Region: String = 'Europe';

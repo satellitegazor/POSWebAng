@@ -11,12 +11,14 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { saleTranDataInterface } from '../longterm/saletran/store/ticketstore/ticket.state';
 import { resetTktObj } from '../longterm/saletran/store/ticketstore/ticket.action';
+import { LogonDataService } from '../global/logon-data-service.service';
 @Injectable()
 export class InactiveLogoutInterceptor implements HttpInterceptor {
   
   tokenSubscription = new Subscription();
   
-  constructor(private _localStorageSvc: LocalStorageService, private _router: Router, private _store: Store<saleTranDataInterface>,) {}
+  constructor(private _localStorageSvc: LocalStorageService, private _router: Router, private _store: Store<saleTranDataInterface>,
+    private _logonDataSvc: LogonDataService,) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     this.expirationCounter(1000000);
@@ -28,6 +30,7 @@ export class InactiveLogoutInterceptor implements HttpInterceptor {
     this.tokenSubscription.unsubscribe();
     this.tokenSubscription = of(null).pipe(delay(timeOut)).subscribe((expired) => {
       let appType = this._localStorageSvc.getItemData('apptype');
+      this._logonDataSvc.clearTenderTypes();
 
       if(appType == 'longterm') {
         this._router.navigateByUrl('/vlogon');
