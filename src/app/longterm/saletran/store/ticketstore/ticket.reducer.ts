@@ -321,18 +321,6 @@ export const _tktObjReducer = createReducer(
                   return {
                      ...itm,
                      quantity: itm.quantity + 1,
-                     lineItemDollarDisplayAmount: parseFloat(((itm.lineItemDollarDisplayAmount / itm.quantity) * (itm.quantity + 1)).toCPOSFixed(2)), //Number(Number(Number((itm.unitPrice * (itm.quantity + 1)) + (state.tktObj.taxExempted ? 0 : (itm.unitPrice * (itm.quantity + 1) * itm.salesTaxPct * 0.01)))).toCPOSFixed(2)),
-                     lineItemTaxAmount: parseFloat(((itm.lineItemTaxAmount / itm.quantity) * (itm.quantity + 1)).toCPOSFixed(2)),//Number(Number(Number(state.tktObj.taxExempted ? 0 : (itm.unitPrice * (itm.quantity + 1) * itm.salesTaxPct * 0.01))).toCPOSFixed(2)),
-                     couponLineItemDollarAmount: parseFloat(((itm.couponLineItemDollarAmount / itm.quantity) * (itm.quantity + 1)).toCPOSFixed(2)),
-                     exchCpnAmountDC: parseFloat(((itm.exchCpnAmountDC / itm.quantity) * (itm.quantity + 1)).toCPOSFixed(2)),
-                     exchCpnAmountNDC: parseFloat(((itm.exchCpnAmountNDC / itm.quantity) * (itm.quantity + 1)).toCPOSFixed(2)),
-                     discountAmount: parseFloat(((itm.discountAmount / itm.quantity) * (itm.quantity + 1)).toCPOSFixed(2)),
-                     fcDiscountAmount: parseFloat(((itm.fcDiscountAmount / itm.quantity) * (itm.quantity + 1)).toCPOSFixed(2)),
-                     fcLineItmKatsaCpnAmt: parseFloat(((itm.fcLineItmKatsaCpnAmt / itm.quantity) * (itm.quantity + 1)).toCPOSFixed(2)),
-                     lineItmKatsaCpnAmt: parseFloat(((itm.lineItmKatsaCpnAmt / itm.quantity) * (itm.quantity + 1)).toCPOSFixed(2)),
-                     fcLineItemTaxAmount: parseFloat(((itm.fcLineItemTaxAmount / itm.quantity) * (itm.quantity + 1)).toCPOSFixed(2)),//Number(Number(state.tktObj.taxExempted ? 0 : (unitPriceNDC * (itm.quantity + 1) * itm.salesTaxPct * 0.01)).toCPOSFixed(2)),
-                     fcLineItemDollarDisplayAmount: parseFloat(((itm.fcLineItemDollarDisplayAmount / itm.quantity) * (itm.quantity + 1)).toCPOSFixed(2)),//Number(Number((unitPriceNDC * (itm.quantity + 1)) + (state.tktObj.taxExempted ? 0 : (unitPriceNDC * (itm.quantity + 1) * itm.salesTaxPct * 0.01))).toCPOSFixed(2))
-                     
                   }
                }
                else {
@@ -353,17 +341,6 @@ export const _tktObjReducer = createReducer(
                   return {
                      ...itm,
                      quantity: itm.quantity - 1,
-                     lineItemDollarDisplayAmount: parseFloat(((itm.lineItemDollarDisplayAmount / itm.quantity) * (itm.quantity - 1)).toCPOSFixed(2)), //Number(Number(Number((itm.unitPrice * (itm.quantity - 1)) + (state.tktObj.taxExempted ? 0 : (itm.unitPrice * (itm.quantity - 1) * itm.salesTaxPct * 0.01)))).toCPOSFixed(2)),
-                     lineItemTaxAmount: parseFloat(((itm.lineItemTaxAmount / itm.quantity) * (itm.quantity - 1)).toCPOSFixed(2)),//Number(Number(Number(state.tktObj.taxExempted ? 0 : (itm.unitPrice * (itm.quantity - 1) * itm.salesTaxPct * 0.01))).toCPOSFixed(2)),
-                     couponLineItemDollarAmount: parseFloat(((itm.couponLineItemDollarAmount / itm.quantity) * (itm.quantity - 1)).toCPOSFixed(2)),
-                     exchCpnAmountDC: parseFloat(((itm.exchCpnAmountDC / itm.quantity) * (itm.quantity - 1)).toCPOSFixed(2)),
-                     exchCpnAmountNDC: parseFloat(((itm.exchCpnAmountNDC / itm.quantity) * (itm.quantity - 1)).toCPOSFixed(2)),
-                     discountAmount: parseFloat(((itm.discountAmount / itm.quantity) * (itm.quantity - 1)).toCPOSFixed(2)),
-                     fcDiscountAmount: parseFloat(((itm.fcDiscountAmount / itm.quantity) * (itm.quantity - 1)).toCPOSFixed(2)),
-                     fcLineItmKatsaCpnAmt: parseFloat(((itm.fcLineItmKatsaCpnAmt / itm.quantity) * (itm.quantity - 1)).toCPOSFixed(2)),
-                     lineItmKatsaCpnAmt: parseFloat(((itm.lineItmKatsaCpnAmt / itm.quantity) * (itm.quantity - 1)).toCPOSFixed(2)),
-                     fcLineItemTaxAmount: parseFloat(((itm.fcLineItemTaxAmount / itm.quantity) * (itm.quantity - 1)).toCPOSFixed(2)),//Number(Number(state.tktObj.taxExempted ? 0 : (unitPriceNDC * (itm.quantity - 1) * itm.salesTaxPct * 0.01)).toCPOSFixed(2)),
-                     fcLineItemDollarDisplayAmount: parseFloat(((itm.fcLineItemDollarDisplayAmount / itm.quantity) * (itm.quantity - 1)).toCPOSFixed(2)),//Number(Number((unitPriceNDC * (itm.quantity - 1)) + (state.tktObj.taxExempted ? 0 : (unitPriceNDC * (itm.quantity - 1) * itm.salesTaxPct * 0.01))).toCPOSFixed(2))
                   }
                }
                else {

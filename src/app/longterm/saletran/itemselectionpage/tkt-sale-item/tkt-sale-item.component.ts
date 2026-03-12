@@ -10,7 +10,7 @@ import { getLocationAssocSelector } from '../../store/localtionassociates/locati
 import { getLocCnfgIsAllowTipsSelector } from '../../store/locationconfigstore/locationconfig.selector';
 import { SalesTranService } from '../../services/sales-tran.service';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
-import { addSaleItem, updateServedByAssociate, decSaleitemQty, delSaleitemZeroQty, incSaleitemQty, updateAssocInAssocTips } from '../../store/ticketstore/ticket.action';
+import { addSaleItem, updateServedByAssociate, decSaleitemQty, delSaleitemZeroQty, incSaleitemQty, updateAssocInAssocTips, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
 import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCheckoutItem';
 import { ConditionalExpr } from '@angular/compiler';
 import { getCheckoutItemsSelector } from '../../store/ticketstore/ticket.selector';
@@ -74,10 +74,12 @@ export class TktSaleItemComponent implements OnInit {
         else {
             this._store.dispatch(decSaleitemQty({ saleItemId: this.tktSaleItems[i].salesItemUID, tktDtlId: this.tktSaleItems[i].ticketDetailId , defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));
         }
+        this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
     }
 
     btnPlusClicked(evt: Event, i: number) {
         this._store.dispatch(incSaleitemQty({saleItemId: this.tktSaleItems[i].salesItemUID, tktDtlId: this.tktSaleItems[i].ticketDetailId, defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));
+        this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
     }
 
     public btnCheckoutClicked() {
