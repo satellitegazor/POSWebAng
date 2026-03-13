@@ -95,7 +95,7 @@ export const addTabSerialToTktObj = createAction(ADD_TAB_SERIAL_TO_TKT_OBJ,
     props<{ tabSerialNum: string, ipAddress: string }>());
 
 export const resetTktObj = createAction(RESET_TKT_OBJ, 
-    props<{dummyNumber: number}>());
+    props<{ locConfig: LocationConfig }>());
 
 export const saveTicketForGuestCheck = createAction(SAVE_TICKET_SPLIT,
     props<{tktObj: TicketSplit}>());

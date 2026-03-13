@@ -32,13 +32,15 @@ export class InactiveLogoutInterceptor implements HttpInterceptor {
       let appType = this._localStorageSvc.getItemData('apptype');
       this._logonDataSvc.clearTenderTypes();
 
+      let locConfig = this._logonDataSvc.getLocationConfig();
+
       if(appType == 'longterm') {
         this._router.navigateByUrl('/vlogon');
-        this._store.dispatch(resetTktObj({dummyNumber: 0}));
+        this._store.dispatch(resetTktObj({ locConfig: locConfig }));
       }
       else if(appType == 'shortterm') {
         this._router.navigateByUrl('/rlogon');
-        this._store.dispatch(resetTktObj({dummyNumber: 0}));
+        this._store.dispatch(resetTktObj({ locConfig: locConfig }));
       } 
       else if(appType == 'sbm') {
         this._router.navigateByUrl('/logon');

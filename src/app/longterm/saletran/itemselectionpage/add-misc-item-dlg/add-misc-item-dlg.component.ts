@@ -5,11 +5,12 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { SalesTransactionCheckoutItem } from 'src/app/longterm/models/salesTransactionCheckoutItem';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Store } from '@ngrx/store';
-import { addSaleItem } from '../../store/ticketstore/ticket.action';
+import { addSaleItem, saveTicketDetail } from '../../store/ticketstore/ticket.action';
 import { DailyExchRate } from 'src/app/models/exchange.rate';
-import { UtilService } from 'src/app/services/util.service';
+import { CPOSAppType, UtilService } from 'src/app/services/util.service';
 import { PosCurrencyDirective } from 'src/app/directives/pos-currency.directive';
 import { PosCurrency3Directive } from 'src/app/directives/pos-currency.directive.3';
+import { GlobalConstants } from 'src/app/global/global.constants';
 
 interface MiscDeptOption {
   id: number;
@@ -48,6 +49,9 @@ export class AddMiscItemDlgComponent {
   envTaxPct: number | null = null;
   tags: number | null = null;
   defaultCurrSymbl: string = '$';
+
+  public transactionId: number = 0;
+  public individualId: number = 0;
 
   constructor(private activeModal: NgbActiveModal, 
     private _store: Store<saleTranDataInterface>,
@@ -106,6 +110,50 @@ export class AddMiscItemDlgComponent {
 
       
       this._store.dispatch(addSaleItem({ saleItem: newMiscItem, defCurrSymbl: this.defaultCurrSymbl, dailyExchRateObj: this.dailyExchRate }));
+
+      if(this.transactionId > 0) {
+                // If transactionId is present, means ticket is already saved once and we are adding item to existing ticket, so we need to update served by associate for the new item
+                const individualUid = this.individualId;
+                this._store.dispatch(saveTicketDetail({
+                  uid: individualUid,
+                  appType: CPOSAppType.LongTerm,
+                  request: {
+                    AppType: CPOSAppType.LongTerm,
+                    TransactionId: this.transactionId,
+                    TicketDetailId: newMiscItem.ticketDetailId,
+                    SalesItemUID: newMiscItem.salesItemUID,
+                    SeqNbr: 0,
+                    ItemDescription: newMiscItem.salesItemDesc,
+                    Quantity: newMiscItem.quantity,
+                    UnitPrice: newMiscItem.unitPrice,
+                    FCUnitPrice: newMiscItem.fcUnitPrice,
+                    SalesTaxPct: newMiscItem.salesTaxPct,
+                    EnvTaxPct: newMiscItem.envrnmtlTaxPct,
+                    DiscountAmount: newMiscItem.discountAmount,
+                    FCDiscountAmount: newMiscItem.fcDiscountAmount,
+                    CouponLineItemDollarAmount: newMiscItem.couponLineItemDollarAmount,
+                    FCCouponLineItemDollarAmount: newMiscItem.fcCouponLineItemDollarAmount,
+                    LineItemDollarDisplayAmount: newMiscItem.lineItemDollarDisplayAmount,
+                    FCLineItemDollarDisplayAmount: newMiscItem.fcLineItemDollarDisplayAmount,
+                    LineItemTaxAmount: newMiscItem.lineItemTaxAmount,
+                    FCLineItemTaxAmount: newMiscItem.fcLineItemTaxAmount,
+                    LineItemEnvTaxAmount: newMiscItem.lineItemEnvTaxAmount,
+                    FCLineItemEnvTaxAmount: newMiscItem.fcLineItemEnvTaxAmount,
+                    LineItmKatsaCpnAmt: newMiscItem.lineItmKatsaCpnAmt,
+                    FCLineItmKatsaCpnAmt: newMiscItem.fcLineItmKatsaCpnAmt,
+                    DeptUID: newMiscItem.departmentUID,
+                    SrvdByAssocVal: newMiscItem.srvdByAssociateVal,
+                    IsMisc: newMiscItem.isMiscellaneous,
+                    IsFulfilled: false,
+                    IsForeignCurr: this.defaultCurrSymbl != '$',
+                    IsDefaultUSD: this.defaultCurrSymbl == '$',
+                    NoOfTags: newMiscItem.noOfTags,
+                    MaintUserId: individualUid,
+                    CliTimeVar: GlobalConstants.GetClientTimeVariance(),
+                    Active: true
+                  }
+                }));
+              }
     } finally {
       this.activeModal.close(result);
     }

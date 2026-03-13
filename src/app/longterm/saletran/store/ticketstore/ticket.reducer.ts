@@ -68,11 +68,14 @@ export const _tktObjReducer = createReducer(
 
       let _utilSvc = new UtilService();
 
-      let k: number = action.dummyNumber;
+      //let logonDataSvc = action._logonDataSvc;
+      let locationCnfg = action.locConfig;
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
+            locationUID: locationCnfg.locationUID,
+            individualUID: locationCnfg.individualUID,
             tktList: [] as SalesTransactionCheckoutItem[],
             transactionDate: new Date(Date.now()),
             ticketTenderList: [] as TicketTender[],

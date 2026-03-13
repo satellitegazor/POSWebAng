@@ -16,8 +16,9 @@ import { ResetPinDlgComponent } from './reset-pin-dlg/reset-pin-dlg.component';
 import { MandateTrainingComponent } from './mandate-training/mandate-training.component';
 import { ToastService } from 'src/app/services/toast.service';
 import { HttpClient } from '@angular/common/http';
-import { initTktObj, loadTicket, updateCheckoutTotals } from 'src/app/longterm/saletran/store/ticketstore/ticket.action';
+import { initTktObj, loadTicket, loadTicketSuccess, updateCheckoutTotals } from 'src/app/longterm/saletran/store/ticketstore/ticket.action';
 import { TktObjState } from 'src/app/app.state';
+import { Actions, ofType } from '@ngrx/effects';
 
 @Component({
     selector: 'app-logon-vendorlt',
@@ -38,6 +39,7 @@ export class VendorLTComponent implements OnInit {
     receiptPrinterName: string = 'Star Micronics Printer';
     verifoneAPIUrl: string = 'http://localhost:8000/cposwebsvc/pinpad/';
     
+    
 
     constructor(private logonSvc: LogonSvc, 
         private router: Router,
@@ -48,7 +50,8 @@ export class VendorLTComponent implements OnInit {
         private _locConfigStore: Store<LocationConfigState>,
         private _modalService: NgbModal,
         private _httpClient: HttpClient,
-        private _tktObjStore: Store<TktObjState>) { }
+        private _tktObjStore: Store<TktObjState>,
+        private actions$: Actions) { }
     cookieVal = '';
     ngOnInit() {
 
@@ -181,12 +184,14 @@ export class VendorLTComponent implements OnInit {
                 if(inProgTranId > 0) {
                     
                     this._toastSvc.info("An incomplete ticket has been found. Please complete it or void it!!");
-                    this._locConfigStore.dispatch(loadTicket({ tranId: inProgTranId, locationId: locModel.locationUID, indivId: locModel.individualUID }));
+                    this._locConfigStore.dispatch(loadTicket({ tranId: inProgTranId, locationId: locModel.locationUID, indivId: locModel.individualUID }))
 
-                    setTimeout((logonDataSvc, locConfigStore, routr) => {
-                        routr.navigate(['/checkout']);
-                        locConfigStore.dispatch(updateCheckoutTotals({ logonDataSvc: logonDataSvc }))
-                    }, 800, this._logonDataSvc, this._locConfigStore, this.router);                    
+                    this.actions$.pipe(ofType(loadTicketSuccess)).subscribe(() => {
+                        setTimeout((logonDataSvc, locConfigStore, routr) => {
+                            routr.navigate(['/checkout']);
+                            locConfigStore.dispatch(updateCheckoutTotals({ logonDataSvc: logonDataSvc }))
+                        }, 800, this._logonDataSvc, this._locConfigStore, this.router);                           
+                    });                 
                 }
                 else {
                     this.router.navigate(['/salestran']);

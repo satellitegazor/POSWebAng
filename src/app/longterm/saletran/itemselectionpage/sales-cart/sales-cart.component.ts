@@ -45,6 +45,8 @@ export class SalesCartComponent implements OnInit, OnDestroy {
             centered: true
         };
     salesCategoryListRefreshEvent: any;
+    transactionId: number = 0;
+    individualId: number = 0;
         
     constructor(private _saleTranSvc: SalesTranService, 
         private _logonDataSvc: LogonDataService,
@@ -110,6 +112,8 @@ export class SalesCartComponent implements OnInit, OnDestroy {
         
         let exchRateObj = this._logonDataSvc.getDailyExchRate();
         this.isForeignCurrency = exchRateObj?.isForeignCurr ?? false;
+
+        this.individualId = +this._logonDataSvc.getLTVendorLogonData().individualUID;
         
         if(this.isForeignCurrency) {
 
@@ -159,6 +163,7 @@ export class SalesCartComponent implements OnInit, OnDestroy {
         this._store.select(getTktObjSelector).subscribe(tktObj => {
             this.tktCustomerId = tktObj?.customerId ?? 0;
             this.tktCustomerLastName = tktObj?.customer?.cLastName ?? '';
+            this.transactionId = tktObj?.transactionID ?? 0;
 
             const isCustomerMissing = this.tktCustomerId === 0 && (this.tktCustomerLastName ?? '').trim().length === 0;
             if (this.pendingCheckoutAfterCustomer && !isCustomerMissing) {
@@ -305,6 +310,8 @@ export class SalesCartComponent implements OnInit, OnDestroy {
         };
         modalRef.componentInstance.allSaleItems = this.allItemButtonMenuList;
         modalRef.componentInstance.dailyExchRate = this._logonDataSvc ? this._logonDataSvc.getDailyExchRate() : {} as DailyExchRate;
+        modalRef.componentInstance.transactionId = this.transactionId;
+        modalRef.componentInstance.individualId = this.individualId;
 
         modalRef.result.then((result: any) => {
             if (!result) {
