@@ -96,6 +96,8 @@ export class SalesCartComponent implements OnInit, OnDestroy {
     dcCurrSymbol: string = '';
     ndcCurrSymbol: string = '';
 
+    customerReqdForSaleItems: boolean = false;
+
     //public salesCategoryListRefresh: Subject<boolean> = new Subject<boolean>();
     public salesItemListRefresh: Subject<boolean> = new Subject<boolean>();
 
@@ -161,9 +163,12 @@ export class SalesCartComponent implements OnInit, OnDestroy {
         })
 
         this._store.select(getTktObjSelector).subscribe(tktObj => {
+
+            this.customerReqdForSaleItems = (tktObj?.tktList?.filter(item => item.custInfoReq).length ?? 0) > 0;
+
             this.tktCustomerId = tktObj?.customerId ?? 0;
             this.tktCustomerLastName = tktObj?.customer?.cLastName ?? '';
-            this.transactionId = tktObj?.transactionID ?? 0;
+            this.transactionId = tktObj?.transactionID ?? 0;            
 
             const isCustomerMissing = this.tktCustomerId === 0 && (this.tktCustomerLastName ?? '').trim().length === 0;
             if (this.pendingCheckoutAfterCustomer && !isCustomerMissing) {
@@ -259,9 +264,11 @@ export class SalesCartComponent implements OnInit, OnDestroy {
     btnCheckoutClick(evt: Event) {
         const isLaundry = this.locationConfig.busFuncCode == BusinessFunctionCode.BUSFNC_LNDRYCLN
             || this.locationConfig.busFuncCode == BusinessFunctionCode.BUSFNC_LNDRYCLN_WALT;
+        
+
         const isCustomerMissing = this.tktCustomerId === 0 && (this.tktCustomerLastName ?? '').trim().length === 0;
 
-        if (isLaundry && isCustomerMissing) {
+        if ((isLaundry || this.customerReqdForSaleItems) && isCustomerMissing ) {
             this.pendingCheckoutAfterCustomer = true;
             this.btnCustDetailsClick(new Event('isLaundry'));
             return;

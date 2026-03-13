@@ -7,11 +7,11 @@ import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { UtilService } from 'src/app/services/util.service';
 import { Actions, ofType } from '@ngrx/effects';
 import { getIsSplitPayR5, getRemainingBal, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
-import { combineLatest, firstValueFrom, map, Subject, Subscription, take, takeUntil } from 'rxjs';
+import { combineLatest, filter, firstValueFrom, map, Subject, Subscription, take, takeUntil } from 'rxjs';
 import { TicketSplit } from 'src/app/models/ticket.split';
 import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
 import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
-import { addTender, deleteDeclinedTender, isSplitPayR5, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj, saveTenderObjSuccess } from '../../store/ticketstore/ticket.action';
+import { addTender, deleteDeclinedTender, isSplitPayR5, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj, saveTenderObjFailed, saveTenderObjSuccess } from '../../store/ticketstore/ticket.action';
 import { AurusGiftCardInquiryResp } from '../../services/models/gift-card-enquiry-response';
 import { TenderUtil } from '../tender-util';
 import { AurusGiftCardRedeemResp, GCRedeemInput } from '../../services/models/aurus-gift-card-redeem-resp';
@@ -176,6 +176,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
           var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
           if (tktObjData == null) {
             console.error('Unable to fetch ticket object');
+            this.route.navigate(['/splitpay']);
             return;
           }
 
@@ -184,6 +185,37 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
           if (!savedTender) {
             console.error('Tender not found in state');
             this.authorizationInProgress = false;
+            this.route.navigate(['/splitpay']);
+            return;
+          }
+
+          const duplicateTndr = tktObjData.ticketTenderList.find(tndr => tndr.cardEndingNbr === data.CardNbrF6L4);
+          if(duplicateTndr) {
+            // The in-progress tender created for this inquiry must be explicitly cancelled.
+            // We persist the cancellation first so DB and client state remain consistent.
+            const cancelledTender = TenderUtil.copyTenderObj(savedTender);
+            cancelledTender.tenderStatus = TenderStatusType.Cancelled;
+            cancelledTender.tndMaintTimestamp = new Date(Date.now());
+
+            this._store.dispatch(saveTenderObj({ tndrObj: cancelledTender }));
+
+            // Wait for save result before mutating local store entry.
+            const saveResult = await firstValueFrom(
+              this.actions$.pipe(
+                ofType(saveTenderObjSuccess, saveTenderObjFailed),
+                filter(action => !('data' in action) || !action.data?.data?.rrn || action.data.data.rrn === cancelledTender.rrn),
+                take(1)
+              )
+            );
+
+            // Remove only after successful persistence so refresh/load does not resurrect it.
+            if (saveResult.type === saveTenderObjSuccess.type) {
+              this._store.dispatch(deleteDeclinedTender({ rrn: cancelledTender.rrn }));
+            }
+
+            this._toastSvc.warning('This gift card "' + data.CardNbrF6L4 + '" has already been used for payment. Please use another gift card or tender method.');
+            this.authorizationInProgress = false;
+            this.route.navigate(['/splitpay']);
             return;
           }
 
@@ -223,6 +255,8 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
                 },
                 error: (error) => {
                   console.error('Error during gift card redemption: ', error);
+                  this._toastSvc.error('Gift Card Redemption Failed: ' + error.message + '.<br/>Please complete the transaction using another tender method.');
+                  this.route.navigate(['/splitpay']);
                   return false;
                 }
               });

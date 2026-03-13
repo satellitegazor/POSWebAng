@@ -471,210 +471,6 @@ export const _tktObjReducer = createReducer(
       }
    }),
    
-
-   // on(updateCheckoutTotals, (state, action) => {
-
-   //    let ExchCouponsAfterTax = action.logonDataSvc.getExchCouponAfterTax();
-   //    let VendCouponsAfterTax = action.logonDataSvc.getVendorCouponAfterTax();
-   //    let exchRateObj = action.logonDataSvc.getDailyExchRate()
-   //    let exchangeRate: number = Round2DecimalService.round(exchRateObj.dfltCurrCode == 'USD' ? exchRateObj.exchangeRate : 1 / exchRateObj.exchangeRate) * 10000 / 10000;
-
-   //    var updatedTktList: SalesTransactionCheckoutItem[] = JSON.parse(JSON.stringify([...state.tktObj.tktList]));
-   //    let totalSaleDC: number = 0;
-   //    let totalSaleNDC: number = 0;
-
-   //    const taxExepted = state.tktObj.taxExempted;
-   //    const transCouponPct = state.tktObj.tCouponPerc || 0;
-   //    const transCouponAmtUsd = state.tktObj.tCouponAmt || 0;
-   //    const transCouponAmtNdc = state.tktObj.tDCouponAmt || 0;
-   //    const isUsd = exchRateObj.dfltCurrCode == 'USD';
-   //    const transCouponDC = isUsd ? transCouponAmtUsd : transCouponAmtNdc;
-   //    const transCouponNDC = isUsd ? transCouponAmtNdc : transCouponAmtUsd;
-   //    const useTransCoupon = transCouponPct > 0 || transCouponDC > 0 || transCouponNDC > 0;
-
-   //    let eligibleBaseDC = 0;
-   //    let eligibleBaseNDC = 0;
-   //    let remainingCouponDC = transCouponDC;
-   //    let remainingCouponNDC = transCouponNDC;
-   //    let lastEligibleIndex = -1;
-
-   //    if (useTransCoupon && transCouponPct <= 0) {
-   //       for (let i = 0; i < updatedTktList.length; i++) {
-   //          const isKatusaEligible = (updatedTktList[i].deptName ?? '').toUpperCase() !== 'KATUSA';
-   //          if (!isKatusaEligible) {
-   //             continue;
-   //          }
-
-   //          const baseDC = ((updatedTktList[i].unitPrice * updatedTktList[i].quantity) * 100) / 100;
-   //          const unitPriceNDC = exchRateObj.dfltCurrCode == 'USD'
-   //             ? (updatedTktList[i].unitPrice * exchRateObj.exchangeRate)
-   //             : (updatedTktList[i].unitPrice / exchRateObj.exchangeRate);
-   //          const baseNDC = ((unitPriceNDC * updatedTktList[i].quantity) * 100) / 100;
-
-   //          if (baseDC > 0 || baseNDC > 0) {
-   //             eligibleBaseDC += baseDC;
-   //             eligibleBaseNDC += baseNDC;
-   //             lastEligibleIndex = i;
-   //          }
-   //       }
-   //    }
-
-   //    for (let k = 0; k < updatedTktList.length; k++) {
-
-   //       const isKatusaLineItem = (updatedTktList[k].deptName ?? '').toUpperCase() === 'KATUSA';
-
-   //       let subTotalDC = (( updatedTktList[k].unitPrice * updatedTktList[k].quantity) * 100) / 100;
-   //       let exchCpnTotalDC = 0;
-   //       if (useTransCoupon) {
-   //          if (!isKatusaLineItem) {
-   //             if (transCouponPct > 0) {
-   //                exchCpnTotalDC = ((subTotalDC) * transCouponPct * 0.01 * 100) / 100;
-   //             } else if (k === lastEligibleIndex) {
-   //                exchCpnTotalDC = remainingCouponDC;
-   //             } else {
-   //                exchCpnTotalDC = eligibleBaseDC > 0
-   //                   ? Round2DecimalService.round(transCouponDC * (subTotalDC / eligibleBaseDC))
-   //                   : 0;
-   //                remainingCouponDC = Round2DecimalService.round(remainingCouponDC - exchCpnTotalDC);
-   //             }
-   //          }
-   //       } else {
-   //          exchCpnTotalDC = ((updatedTktList[k].unitPrice * updatedTktList[k].quantity) * updatedTktList[k].exchangeCouponDiscountPct * 0.01 * 100) / 100;
-   //       }
-   //       let vndDiscountTotalDC = (updatedTktList[k].discountAmount | 0 * 100) / 100;
-   //       if (isKatusaLineItem) {
-   //          exchCpnTotalDC = 0;
-   //          vndDiscountTotalDC = 0;
-   //       }
-   //       const lineItmKtsCpnDC = isKatusaLineItem ? subTotalDC : 0;
-   //       let totalDiscountDC = exchCpnTotalDC + vndDiscountTotalDC + lineItmKtsCpnDC;
-   //       let preTaxDiscountDC = (VendCouponsAfterTax ? 0 : vndDiscountTotalDC) + (ExchCouponsAfterTax ? 0 : exchCpnTotalDC);
-   //       if (isKatusaLineItem) {
-   //          preTaxDiscountDC = subTotalDC;
-   //          totalDiscountDC = subTotalDC;
-   //       }
-   //       let taxableBaseDC = subTotalDC - preTaxDiscountDC;
-   //       let saleTaxTotalDC = ((taxableBaseDC) * updatedTktList[k].salesTaxPct * 0.01 * 100) / 100;
-   //       let envTaxTotalDC = ((taxableBaseDC) * updatedTktList[k].envrnmtlTaxPct * 0.01 * 100) / 100;
-
-   //       let unitPriceNDC = exchRateObj.dfltCurrCode == 'USD' ? (updatedTktList[k].unitPrice * exchRateObj.exchangeRate) : (updatedTktList[k].unitPrice / exchRateObj.exchangeRate);
-   //       let subTotalNDC = (( unitPriceNDC * updatedTktList[k].quantity) * 100) / 100;
-   //       let exchCpnTotalNDC = 0;
-   //       if (useTransCoupon) {
-   //          if (!isKatusaLineItem) {
-   //             if (transCouponPct > 0) {
-   //                exchCpnTotalNDC = ((subTotalNDC) * transCouponPct * 0.01 * 100) / 100;
-   //             } else if (k === lastEligibleIndex) {
-   //                exchCpnTotalNDC = remainingCouponNDC;
-   //             } else {
-   //                exchCpnTotalNDC = eligibleBaseNDC > 0
-   //                   ? Round2DecimalService.round(transCouponNDC * (subTotalNDC / eligibleBaseNDC))
-   //                   : 0;
-   //                remainingCouponNDC = Round2DecimalService.round(remainingCouponNDC - exchCpnTotalNDC);
-   //             }
-   //          }
-   //       } else {
-   //          exchCpnTotalNDC = ((unitPriceNDC * updatedTktList[k].quantity) * updatedTktList[k].exchangeCouponDiscountPct * 0.01 * 100) / 100;
-   //       }
-   //       let vndDiscountTotalNDC = (updatedTktList[k].fcDiscountAmount | 0 * 100) / 100;
-   //       if (isKatusaLineItem) {
-   //          exchCpnTotalNDC = 0;
-   //          vndDiscountTotalNDC = 0;
-   //       }
-   //       const lineItmKtsCpnNDC = isKatusaLineItem ? subTotalNDC : 0;
-   //       let totalDiscountNDC = exchCpnTotalNDC + vndDiscountTotalNDC + lineItmKtsCpnNDC;
-   //       let preTaxDiscountNDC = (VendCouponsAfterTax ? 0 : vndDiscountTotalNDC) + (ExchCouponsAfterTax ? 0 : exchCpnTotalNDC);
-   //       if (isKatusaLineItem) {
-   //          preTaxDiscountNDC = subTotalNDC;
-   //          totalDiscountNDC = subTotalNDC;
-   //       }
-   //       let taxableBaseNDC = subTotalNDC - preTaxDiscountNDC;
-   //       let saleTaxTotalNDC = ((taxableBaseNDC) * updatedTktList[k].salesTaxPct * 0.01 * 100) / 100;
-   //       let envTaxTotalNDC = ((taxableBaseNDC) * updatedTktList[k].envrnmtlTaxPct * 0.01 * 100) / 100;
-
-   //       if (taxExepted) {
-   //          saleTaxTotalDC = 0;
-   //          saleTaxTotalNDC = 0;
-   //          envTaxTotalDC = 0;
-   //          envTaxTotalNDC = 0;
-   //       }
-
-   //       if (isKatusaLineItem) {
-   //          saleTaxTotalDC = 0;
-   //          saleTaxTotalNDC = 0;
-   //          envTaxTotalDC = 0;
-   //          envTaxTotalNDC = 0;
-   //       }
-
-   //       if (exchRateObj.dfltCurrCode == 'USD') {
-
-   //          updatedTktList[k].lineItemDollarDisplayAmount = Round2DecimalService.round(((subTotalDC - totalDiscountDC + (taxExepted ? 0 : (saleTaxTotalDC + envTaxTotalDC))) * 100) / 100);
-   //          updatedTktList[k].lineItemTaxAmount = taxExepted ? 0 : saleTaxTotalDC;
-   //          updatedTktList[k].lineItemEnvTaxAmount = taxExepted ? 0 : envTaxTotalDC;
-   //          updatedTktList[k].discountAmount = Round2DecimalService.round(totalDiscountDC);
-
-   //          updatedTktList[k].fcLineItemDollarDisplayAmount = Round2DecimalService.round(((subTotalNDC - totalDiscountNDC + (taxExepted ? 0 : (saleTaxTotalNDC + envTaxTotalNDC))) * 100) / 100);
-   //          updatedTktList[k].fcLineItemTaxAmount = taxExepted ? 0 : saleTaxTotalNDC;
-   //          updatedTktList[k].fcLineItemEnvTaxAmount = taxExepted ? 0 : envTaxTotalNDC;
-   //          updatedTktList[k].fcDiscountAmount = Round2DecimalService.round(totalDiscountNDC);
-
-   //          totalSaleDC += Round2DecimalService.round(updatedTktList[k].lineItemDollarDisplayAmount);
-   //          totalSaleNDC += Round2DecimalService.round(updatedTktList[k].fcLineItemDollarDisplayAmount);
-   //       }
-   //       else {
-   //          updatedTktList[k].lineItemDollarDisplayAmount = Round2DecimalService.round(((subTotalNDC - totalDiscountNDC + (taxExepted ? 0 : (saleTaxTotalNDC + envTaxTotalNDC))) * 100) / 100);
-   //          updatedTktList[k].lineItemTaxAmount = taxExepted ? 0 : saleTaxTotalNDC;
-   //          updatedTktList[k].lineItemEnvTaxAmount = taxExepted ? 0 : envTaxTotalNDC;
-   //          updatedTktList[k].discountAmount = Round2DecimalService.round(totalDiscountNDC);
-
-   //          updatedTktList[k].fcLineItemDollarDisplayAmount = Round2DecimalService.round(((subTotalDC - totalDiscountDC + (taxExepted ? 0 : (saleTaxTotalDC + envTaxTotalDC))) * 100) / 100);
-   //          updatedTktList[k].fcLineItemTaxAmount = taxExepted ? 0 : saleTaxTotalDC;
-   //          updatedTktList[k].fcLineItemEnvTaxAmount = taxExepted ? 0 : envTaxTotalDC;
-   //          updatedTktList[k].fcDiscountAmount = Round2DecimalService.round(totalDiscountDC);
-
-   //          totalSaleDC += Round2DecimalService.round(updatedTktList[k].fcLineItemDollarDisplayAmount);
-   //          totalSaleNDC += Round2DecimalService.round(updatedTktList[k].lineItemDollarDisplayAmount);
-   //       }
-   //    }
-
-   //    // Ship/Handling amounts are stored as USD (shipHandling*) and non-USD (shipHandling*FC).
-   //    const shipHandlingTaxAmtUsd = taxExepted ? 0 : (state.tktObj.shipHandlingTaxAmt || 0);
-   //    const shipHandlingTaxAmtFc = taxExepted ? 0 : (state.tktObj.shipHandlingTaxAmtFC || 0);
-   //    const shipHandlingAmtUsd = state.tktObj.shipHandling || 0;
-   //    const shipHandlingAmtFc = state.tktObj.shipHandlingFC || 0;
-
-   //    totalSaleDC += Round2DecimalService.round(shipHandlingAmtUsd + shipHandlingTaxAmtUsd);
-   //    totalSaleNDC += Round2DecimalService.round(shipHandlingAmtFc + shipHandlingTaxAmtFc);
-
-   //    return {
-   //       ...state,
-   //       tktObj: {
-   //          ...state.tktObj,
-   //          tktList: updatedTktList,
-   //          shipHandlingTaxAmt: shipHandlingTaxAmtUsd,
-   //          shipHandlingTaxAmtFC: shipHandlingTaxAmtFc,
-   //          totalSale: totalSaleDC,
-   //          totalSaleFC: totalSaleNDC,
-   //          //balanceDue: totalSale,
-   //       },
-   //       tktTotals: {
-   //          ...state.tktTotals,
-   //          subTotalDC: Round2DecimalService.round(eligibleBaseDC),
-   //          subTotalNDC: Round2DecimalService.round(eligibleBaseNDC),
-   //          grandTotalDC: Round2DecimalService.round(totalSaleDC),
-   //          totalExchCpnAmtDC: Round2DecimalService.round(transCouponDC),
-   //          totalExchCpnAmtNDC: Round2DecimalService.round(transCouponNDC),
-   //          totalSavingsDC: Round2DecimalService.round(transCouponDC + state.tktObj.tCouponAmt),
-   //          totalSavingsNDC: Round2DecimalService.round(transCouponNDC + state.tktObj.tDCouponAmt),
-   //          totalTaxDC: Round2DecimalService.round(totalSaleDC - eligibleBaseDC + (VendCouponsAfterTax ? 0 : state.tktObj.tCouponAmt)),
-   //          totalTaxNDC: Round2DecimalService.round(totalSaleNDC - eligibleBaseNDC + (VendCouponsAfterTax ? 0 : state.tktObj.tDCouponAmt)),
-   //          grandTotalNDC: Round2DecimalService.round(totalSaleNDC)
-   //       }
-
-   //    }
-
-   // }),
-
    on(updateCheckoutTotals, (state, action) => {
       /**
        * updateCheckoutTotals
@@ -831,7 +627,10 @@ export const _tktObjReducer = createReducer(
          // DC values
          const lineSubDC = Round2DecimalService.round(item.unitPrice * item.quantity);
 
-         let vendorDiscDC = Round2DecimalService.round(dfltCurrCode == "USD" ? item.discountAmount || 0 : item.fcDiscountAmount || 0);
+         const vendorPct = Number(item.vendorCouponDiscountPct) || 0;
+         let vendorDiscDC = vendorPct > 0
+            ? Round2DecimalService.round(lineSubDC * (vendorPct / 100))
+            : Round2DecimalService.round(dfltCurrCode == "USD" ? item.discountAmount || 0 : item.fcDiscountAmount || 0);
          let exchDiscDC = 0;
 
          if (!useTransExch) {
@@ -878,7 +677,9 @@ export const _tktObjReducer = createReducer(
          const unitPriceNDC = isUsd ? item.unitPrice * exchangeRate : item.unitPrice / exchangeRate;
          const lineSubNDC = Round2DecimalService.round(unitPriceNDC * item.quantity);
 
-         const vendorDiscNDC = Round2DecimalService.round(dfltCurrCode == "USD" ? item.fcDiscountAmount || 0 : item.discountAmount || 0);
+         const vendorDiscNDC = vendorPct > 0
+            ? Round2DecimalService.round(lineSubNDC * (vendorPct / 100))
+            : Round2DecimalService.round(dfltCurrCode == "USD" ? item.fcDiscountAmount || 0 : item.discountAmount || 0);
          const exchDiscNDC = useTransExch
             ? Round2DecimalService.round(item.exchCpnAmountNDC || 0)
             : (item.exchangeCouponDiscountPct > 0
@@ -1379,7 +1180,7 @@ export const _tktObjReducer = createReducer(
                      vndCpnAmountDC: dfltCurrCode == "USD" ? cpnAmt : cpnAmtNDC,
                      vndCpnAmountNDC: dfltCurrCode == "USD" ? cpnAmtNDC : cpnAmt,
 
-                     vendorCouponDiscountPct: cpnPct > 0 ? cpnPct : itm.vendorCouponDiscountPct
+                     vendorCouponDiscountPct: cpnPct > 0 ? cpnPct : 0
                   }
                }
                else {
