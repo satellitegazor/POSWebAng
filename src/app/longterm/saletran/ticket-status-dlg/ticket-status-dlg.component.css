@@ -1,0 +1,118 @@
+.modal-title {
+	color: #16365c;
+	font-weight: 700;
+}
+
+.modal-subtitle {
+	color: #5f6b7a;
+	font-size: 0.95rem;
+}
+
+.ticket-status-shell {
+	display: grid;
+	gap: 1rem;
+}
+
+.ticket-status-aside {
+	align-items: center;
+	background: linear-gradient(135deg, #eaf2fb 0%, #d8e7f9 100%);
+	border: 1px solid #c5d9f1;
+	border-radius: 1rem;
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: auto 1fr;
+	padding: 1rem;
+}
+
+.ticket-status-icon {
+	align-items: center;
+	background: linear-gradient(135deg, #173b67 0%, #285b98 100%);
+	border-radius: 0.9rem;
+	color: #fff;
+	display: inline-flex;
+	font-size: 1.1rem;
+	font-weight: 700;
+	height: 3rem;
+	justify-content: center;
+	letter-spacing: 0.08em;
+	width: 3rem;
+}
+
+.ticket-status-aside-title {
+	color: #173b67;
+	font-size: 0.9rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.ticket-status-aside-copy {
+	color: #4c5d73;
+	font-size: 0.95rem;
+	line-height: 1.5;
+}
+
+.ticket-status-panel {
+	background: linear-gradient(180deg, #204772 0%, #17365d 100%);
+}
+
+.ticket-status-panel .card-body {
+	background: rgba(255, 255, 255, 0.96);
+	border-radius: 0.9rem;
+	margin: 0.35rem;
+}
+
+.field-label {
+	color: #254a73;
+	font-size: 0.82rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.field-value {
+	background: #edf4fb;
+	border: 1px solid #c7d7ea;
+	border-radius: 0.5rem;
+	color: #16365c;
+	font-size: 1rem;
+	font-weight: 600;
+	min-height: calc(1.5em + 0.75rem + 2px);
+	padding: 0.5rem 0.75rem;
+}
+
+.section-divider {
+	border-color: rgba(22, 54, 92, 0.15);
+}
+
+.form-control,
+.form-select {
+	border-color: #bfd0e5;
+	min-height: 2.75rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+	border-color: #4c7cb2;
+	box-shadow: 0 0 0 0.2rem rgba(76, 124, 178, 0.15);
+}
+
+.modal-footer .btn {
+	min-width: 7rem;
+}
+
+@media (min-width: 768px) {
+	.ticket-status-shell {
+		align-items: start;
+		grid-template-columns: 14rem minmax(0, 1fr);
+	}
+
+	.ticket-status-aside {
+		grid-template-columns: 1fr;
+		text-align: center;
+	}
+
+	.ticket-status-icon {
+		margin: 0 auto;
+	}
+}

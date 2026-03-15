@@ -6,8 +6,10 @@ import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { resetTktObj, saveTicketForGuestCheckSuccess } from '../store/ticketstore/ticket.action';
 import { SaveTicketResultsModel } from 'src/app/models/ticket.split';
 import { getSavedTicketResult } from '../store/ticketstore/ticket.selector';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { PinValidateComponent } from '../pin-validate/pin-validate.component';
+import { TicketStatusDlgComponent } from '../ticket-status-dlg/ticket-status-dlg.component';
+import { TicketStatusLocationData } from '../../models/ticket.status.location.models';
 
 @Component({
     selector: 'app-save-ticket-success',
@@ -16,6 +18,17 @@ import { PinValidateComponent } from '../pin-validate/pin-validate.component';
     standalone: false
 })
 export class SaveTicketSuccessComponent implements OnInit {
+
+  modalOptions: NgbModalOptions = {
+    backdrop: 'static',
+    keyboard: false,
+    centered: true,
+    size: 'lg'
+  };
+
+  ticketStatusData: TicketStatusLocationData = new TicketStatusLocationData();
+  private _hasOpenedTicketStatusDialog = false;
+
 
   constructor(private _store: Store<saleTranDataInterface>,
     private activatedRoute: ActivatedRoute,
@@ -28,15 +41,29 @@ export class SaveTicketSuccessComponent implements OnInit {
   saveTktRsltMdl: SaveTicketResultsModel = {} as SaveTicketResultsModel;
 
   tktSaveResultMessage: string = '';
+  businessFunctionCode: string = '';
+
+  laundryBusFuncCodes: string[] = ['BUSFNC_ALT', 'BUSFNC_LNDRYCLN', 'BUSFNC_LNDRYCLN_WALT'];
 
   ngOnInit(): void {
     this._store.select(getSavedTicketResult).subscribe(data => {
       this.saveTktRsltMdl = data;
-      this.tktSaveResultMessage = this.saveTktRsltMdl.ticketNumber > 0 ? ('Ticket save Successful')  : 'Ticket saving...'
+      this.tktSaveResultMessage = this.saveTktRsltMdl.ticketNumber > 0 ? ('Ticket save Successful')  : 'Ticket saving...';
+      this._syncTicketStatusData();
+      this._openTicketStatusDialogIfNeeded();
     })
+
+    let locConfig = this._logonDataSvc.getLocationConfig();
+    this.businessFunctionCode = locConfig.busFuncCode;
+
+    if(this.laundryBusFuncCodes.includes(this.businessFunctionCode)) {
+      this._openTicketStatusDialogIfNeeded();
+    }
+
   }
 
   ReceiptOption(optn: string) {
+
     sessionStorage.setItem('inProgTranId', '0');
     sessionStorage.setItem('inProgTranTabSerialNum', '');
 
@@ -50,6 +77,43 @@ export class SaveTicketSuccessComponent implements OnInit {
     else {
       this.route.navigate(['/salestran'])
     }
+  }
+
+  private _syncTicketStatusData(): void {
+    this.ticketStatusData = Object.assign(new TicketStatusLocationData(), this.ticketStatusData, {
+      balanceDue: this.saveTktRsltMdl.balanceDue ?? this.ticketStatusData.balanceDue,
+      ticketNumber: this.saveTktRsltMdl.ticketNumber ?? this.ticketStatusData.ticketNumber,
+      transactionID: this.saveTktRsltMdl.transactionId ?? this.ticketStatusData.transactionID,
+      readyByDate: this.ticketStatusData.readyByDate ?? new Date(),
+      tktStatusId: this.ticketStatusData.tktStatusId || 1,
+    });
+  }
+
+  private _openTicketStatusDialogIfNeeded(): void {
+    if (this._hasOpenedTicketStatusDialog) {
+      return;
+    }
+
+    if (!this.laundryBusFuncCodes.includes(this.businessFunctionCode)) {
+      return;
+    }
+
+    if ((this.saveTktRsltMdl.ticketNumber ?? 0) <= 0) {
+      return;
+    }
+
+    this._hasOpenedTicketStatusDialog = true;
+
+    const modalRef = this._modalService.open(TicketStatusDlgComponent, this.modalOptions);
+    modalRef.componentInstance.title = 'Ticket Status';
+    modalRef.componentInstance.ticketStatus = Object.assign(new TicketStatusLocationData(), this.ticketStatusData);
+    modalRef.componentInstance.showBalanceFields = (this.ticketStatusData.balanceDue ?? 0) > 0;
+
+    modalRef.result.then((ticketStatus?: TicketStatusLocationData) => {
+      if (ticketStatus) {
+        this.ticketStatusData = Object.assign(new TicketStatusLocationData(), ticketStatus);
+      }
+    }).catch(() => undefined);
   }
 
 }
