@@ -19,6 +19,7 @@ import { ExchCardTndr, SaveExchCardTndrResult, SaveExchCardTndrResultModel } fro
 import { LTC_SaveSalesItemModel, LTC_SaveSalesItemModelParameters } from '../../models/long-term-sale-item';
 import { MobileBase } from 'src/app/models/mobile.base';
 import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
+import { LoadTicketStatLocRequest, LoadTicketStatLocResultModel } from '../../models/ticket.status.location.models';
 
 
 @Injectable({
@@ -240,6 +241,24 @@ export class SalesTranService {
             { headers: this.headerObjs });
     }
 
+    public loadTicketStatLoc(uid: number, request: LoadTicketStatLocRequest): Observable<LoadTicketStatLocResultModel> {
+        return this.httpClient.post<LoadTicketStatLocResultModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/LoadTicketStatLoc?guid=' + GlobalConstants.POST_GUID
+                + '&uid=' + uid.toString(),
+            JSON.stringify(request),
+            { headers: this.headerObjs }
+        );
+    }
+
+    public updateTicketStatusLocation(uid: string, request: UpdateTicketStatusLocationRequest): Observable<UpdateTicketStatusLocationResultModel> {
+        return this.httpClient.put<UpdateTicketStatusLocationResultModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/UpdateTicketStatusLocation?guid=' + GlobalConstants.PUT_GUID
+                + '&uid=' + uid,
+            JSON.stringify(request),
+            { headers: this.headerObjs }
+        );
+    }
+
 }
 
 export interface InProgressTendersResultModel {
@@ -262,61 +281,92 @@ export interface TranCountForLocEventResultModel {
 }
 
 export interface SaveTicketDetailRequest {
-    AppType: number;
-    TransactionId: number;
-    TicketDetailId: number;
-    SalesItemUID: number;
-    SeqNbr: number;
-    ItemDescription: string;
-    Quantity: number;
-    UnitPrice: number;
-    FCUnitPrice: number;
-    SalesTaxPct: number;
-    EnvTaxPct: number;
-    DiscountAmount: number;
-    FCDiscountAmount: number;
-    CouponLineItemDollarAmount: number;
-    FCCouponLineItemDollarAmount: number;
-    LineItemDollarDisplayAmount: number;
-    FCLineItemDollarDisplayAmount: number;
-    LineItemTaxAmount: number;
-    FCLineItemTaxAmount: number;
-    LineItemEnvTaxAmount: number;
-    FCLineItemEnvTaxAmount: number;
-    LineItmKatsaCpnAmt: number;
-    FCLineItmKatsaCpnAmt: number;
-    DeptUID: number;
-    SrvdByAssocVal: number;
-    IsMisc: boolean;
-    IsFulfilled: boolean;
-    IsForeignCurr: boolean;
-    IsDefaultUSD: boolean;
-    NoOfTags: number;
-    MaintUserId: number;
-    CliTimeVar: number;
-    Active: boolean;
+    appType: number;
+    transactionId: number;
+    ticketDetailId: number;
+    salesItemUID: number;
+    seqNbr: number;
+    itemDescription: string;
+    quantity: number;
+    unitPrice: number;
+    fcUnitPrice: number;
+    salesTaxPct: number;
+    envTaxPct: number;
+    discountAmount: number;
+    fcDiscountAmount: number;
+    couponLineItemDollarAmount: number;
+    fcCouponLineItemDollarAmount: number;
+    lineItemDollarDisplayAmount: number;
+    fcLineItemDollarDisplayAmount: number;
+    lineItemTaxAmount: number;
+    fcLineItemTaxAmount: number;
+    lineItemEnvTaxAmount: number;
+    fcLineItemEnvTaxAmount: number;
+    lineItmKatsaCpnAmt: number;
+    fcLineItmKatsaCpnAmt: number;
+    deptUID: number;
+    srvdByAssocVal: number;
+    isMisc: boolean;
+    isFulfilled: boolean;
+    isForeignCurr: boolean;
+    isDefaultUSD: boolean;
+    noOfTags: number;
+    maintUserId: number;
+    cliTimeVar: number;
+    active: boolean;
 }
 
 export interface SaveTicketDetailResultModel {
-    Results: MobileBase;
-    TicketDetailId: number;
-    TransactionId: number;
-    SalesItemId: number;
-    ItemDescription: string;
+    results: MobileBase;
+    ticketDetailId: number;
+    transactionId: number;
+    salesItemId: number;
+    itemDescription: string;
 }
 
 export interface InactiveTicketDetailRequest {
-    LocEvtId: number;
-    TranId: number;
-    TicketDetailId: number;
-    AppType: number;
-    UserId: number;
-    VoidTicket: boolean;
-    VoidTypeCode: string;
-    VoidOtherReason: string;
+    locEvtId: number;
+    tranId: number;
+    ticketDetailId: number;
+    appType: number;
+    userId: number;
+    voidTicket: boolean;
+    voidTypeCode: string;
+    voidOtherReason: string;
 }
 
 export interface InactiveTicketDetailResultModel {
-    Results: MobileBase;
+    results: MobileBase;
+}
+
+export interface UpdateTicketStatusLocationRequest {
+    transactionId: number;
+    readyByDate: Date | null;
+    statusId: number;
+    rackLocationId: number;
+    rckLocDesc: string;
+    payByDueDate: Date | null;
+    locationId: number;
+    userId: string;
+}
+
+export interface TicketStatusRackModel {
+    tktStatusRackId: number;
+    transactionId: number;
+    tktStatusId: number | null;
+    rackLocationId: number | null;
+    readyByDate: Date | null;
+    maintUserId: string;
+    maintTimeStamp: Date;
+    payByDueDate: Date | null;
+    rckLocDesc: string;
+}
+
+export interface UpdateTicketStatusLocationResultModel {
+    results: MobileBase;
+    data: TicketStatusRackModel;
+    queryStatus: number;
+    queryMessage: string;
+    errorNumber: number;
 }
   

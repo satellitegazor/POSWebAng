@@ -1,20 +1,28 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, HostListener, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import {
+  LoadTicketStatLocRequest,
+  LoadTicketStatLocResultModel,
   LTC_RackLocation,
   LTC_TicketStatus,
   TicketStatusLocationData,
 } from '../../models/ticket.status.location.models';
+import { SalesTranService, UpdateTicketStatusLocationRequest } from '../services/sales-tran.service';
+import { Store } from '@ngrx/store';
+import { TktObjState } from 'src/app/app.state';
+import { getSavedTicketResult, getTktObjSelector } from '../store/ticketstore/ticket.selector';
+import { SaveTicketResultsModel } from 'src/app/models/ticket.split';
+import { ToastService } from 'src/app/services/toast.service';
 
 @Component({
   selector: 'app-ticket-status-dlg',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './ticket-status-dlg.component.html',
-  styleUrl: './ticket-status-dlg.component.css'
+  styleUrls: ['./ticket-status-dlg.component.css']
 })
 export class TicketStatusDlgComponent implements OnInit {
   @Input() title = 'Ticket Status';
@@ -31,6 +39,8 @@ export class TicketStatusDlgComponent implements OnInit {
   readyByDateValue = '';
   nextPaymentDueValue = '';
   readyByTimeValue = '16:00';
+  isReadyByTimePopupOpen = false;
+  currentUserId = '';
 
   private _initialState = '';
 
@@ -41,9 +51,39 @@ export class TicketStatusDlgComponent implements OnInit {
     '19:00', '20:00', '21:00', '22:00',
   ];
 
-  constructor(public activeModal: NgbActiveModal) {}
+  tktStatRequest: LoadTicketStatLocRequest = new LoadTicketStatLocRequest();
+  tktStatResult: LoadTicketStatLocResultModel = new LoadTicketStatLocResultModel();
+  saveTktRsltMdl: SaveTicketResultsModel = {} as SaveTicketResultsModel;
+  tktSaveResultMessage: string = '';
+  businessFunctionCode: string = '';
+
+  constructor(public activeModal: NgbActiveModal, 
+    private _salesTranSvc: SalesTranService,
+    private _store: Store<TktObjState>,
+    private _toastService: ToastService) {}
 
   ngOnInit(): void {
+
+    this._store.select(getTktObjSelector).subscribe(tktObj => {
+
+      this.tktStatRequest = new LoadTicketStatLocRequest();
+      this.tktStatRequest.locationId = tktObj?.locationUID ?? 0;
+      this.tktStatRequest.tranId = tktObj?.transactionID ?? 0;
+      this.currentUserId = (tktObj?.individualUID ?? 0).toString();
+      let userId: number = tktObj?.individualUID ?? 0;
+      
+      this._store.select(getSavedTicketResult).subscribe(data => {
+        this.saveTktRsltMdl = data;
+        this.tktSaveResultMessage = this.saveTktRsltMdl.ticketNumber > 0 ? ('Ticket save Successful')  : 'Ticket saving...';
+      })
+
+      this._salesTranSvc.loadTicketStatLoc(userId, this.tktStatRequest).subscribe(result => {
+        if (result && result.results && result.results.success) {
+          this.tktStatResult = result as LoadTicketStatLocResultModel;
+        }
+      });
+    });
+
     this.editableTicketStatus = this._cloneTicketStatus(this.ticketStatus);
     this.readyByDateValue = this._formatDateForInput(this.editableTicketStatus.readyByDate);
     this.nextPaymentDueValue = this._formatDateForInput(this.editableTicketStatus.payByDueDate);
@@ -68,6 +108,16 @@ export class TicketStatusDlgComponent implements OnInit {
     return this._formatAmount(this.editableTicketStatus.balanceDue);
   }
 
+  get readyByTimeOptionRows(): string[][] {
+    const rows: string[][] = [];
+
+    for (let index = 0; index < this.readyByTimeOptions.length; index += 4) {
+      rows.push(this.readyByTimeOptions.slice(index, index + 4));
+    }
+
+    return rows;
+  }
+
   cancel(): void {
     this.activeModal.dismiss('cancel');
   }
@@ -88,7 +138,32 @@ export class TicketStatusDlgComponent implements OnInit {
       savedTicketStatus.rckLocDesc = selectedRackLocation.description;
     }
 
-    this.activeModal.close(savedTicketStatus);
+    const updateRequest: UpdateTicketStatusLocationRequest = {
+      transactionId: this.tktStatRequest.tranId,
+      readyByDate: savedTicketStatus.readyByDate,
+      statusId: savedTicketStatus.tktStatusId ?? 0,
+      rackLocationId: savedTicketStatus.rackLocationId ?? 0,
+      rckLocDesc: savedTicketStatus.rckLocDesc,
+      payByDueDate: savedTicketStatus.payByDueDate,
+      locationId: this.tktStatRequest.locationId,
+      userId: this.currentUserId
+    };
+
+    this._salesTranSvc.updateTicketStatusLocation(this.currentUserId, updateRequest).subscribe(
+      (response) => {
+        if (response && response.results && response.results.success) {
+          this.activeModal.close(savedTicketStatus);
+          this._toastService.success('Ticket status updated successfully');
+        } else {
+          this._toastService.error('Failed to update ticket status');
+          console.error('Update failed:', response?.queryMessage);
+        }
+      },
+      (error) => {
+        this._toastService.error('Failed to update ticket status');
+        console.error('Update error:', error);
+      }
+    );
   }
 
   onPickupStatusChange(ticketStatusId: string | number): void {
@@ -103,12 +178,39 @@ export class TicketStatusDlgComponent implements OnInit {
     this.editableTicketStatus.rackLocationId = rackLocation?.rckLocationUID ?? 0;
   }
 
+  toggleReadyByTimePopup(): void {
+    this.isReadyByTimePopupOpen = !this.isReadyByTimePopupOpen;
+  }
+
+  selectReadyByTime(time: string): void {
+    this.readyByTimeValue = time;
+    this.isReadyByTimePopupOpen = false;
+  }
+
   trackByTicketStatusId(_: number, status: LTC_TicketStatus): number {
     return status.tktStatusId;
   }
 
   trackByRackLocationId(_: number, location: LTC_RackLocation): number {
     return location.rckLocationUID;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.isReadyByTimePopupOpen) {
+      return;
+    }
+
+    const target = event.target as HTMLElement | null;
+
+    if (!target?.closest('.ready-time-picker')) {
+      this.isReadyByTimePopupOpen = false;
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.isReadyByTimePopupOpen = false;
   }
 
   private _cloneTicketStatus(source: TicketStatusLocationData | null | undefined): TicketStatusLocationData {

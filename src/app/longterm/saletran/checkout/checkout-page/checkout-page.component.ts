@@ -169,8 +169,6 @@ export class CheckoutPageComponent implements OnInit {
       tndrObj.tenderStatus = TenderStatusType.Complete;
       tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
 
-      //this._store.dispatch(addTender({ tndrObj }));
-
       var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
       if (tktObjData) {
         this._store.dispatch(saveTicketForGuestCheck({ tktObj: tktObjData }));

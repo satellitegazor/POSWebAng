@@ -1368,15 +1368,15 @@ export const _tktObjReducer = createReducer(
    }),
    on(saveTicketDetailSuccess, (state, action) => {
       let isMapped = false;
-      const requestItemDescription = (action.request.ItemDescription || '').trim().toLowerCase();
+      const requestItemDescription = (action.request.itemDescription || '').trim().toLowerCase();
 
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
-            transactionID: action.data.TransactionId || state.tktObj.transactionID,
+            transactionID: action.data.transactionId || state.tktObj.transactionID,
             tktList: state.tktObj.tktList.map((itm) => {
-               const isSameSalesItem = itm.salesItemUID === action.data.SalesItemId;
+               const isSameSalesItem = itm.salesItemUID === action.data.salesItemId;
                const isMiscByDescription = itm.isMiscellaneous &&
                   (itm.salesItemDesc || '').trim().toLowerCase() === requestItemDescription;
                const isUnresolvedTempItem = itm.ticketDetailId < 0;
@@ -1385,9 +1385,9 @@ export const _tktObjReducer = createReducer(
                   isMapped = true;
                   return {
                      ...itm,
-                     salesItemUID: action.data.SalesItemId,
-                     ticketDetailId: action.data.TicketDetailId,
-                     tktTransactionID: action.data.TransactionId,
+                     salesItemUID: action.data.salesItemId,
+                     ticketDetailId: action.data.ticketDetailId,
+                     tktTransactionID: action.data.transactionId,
                      itemSaved: true
                   };
                }
@@ -1402,7 +1402,7 @@ export const _tktObjReducer = createReducer(
          ...state,
          tktObj: {
             ...state.tktObj,
-            tktList: state.tktObj.tktList.filter(itm => itm.ticketDetailId !== action.request.TicketDetailId)
+            tktList: state.tktObj.tktList.filter(itm => itm.ticketDetailId !== action.request.ticketDetailId)
          }
       };
    }),

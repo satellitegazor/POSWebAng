@@ -82,14 +82,14 @@ export class TktSaleItemComponent implements OnInit {
                 this._store.dispatch(inactiveTicketDetail({
                     uid: this.indivId,
                     request: {
-                        LocEvtId: this.locationId,
-                        TranId: this.transactionId,
-                        TicketDetailId: this.tktSaleItems[i].ticketDetailId,
-                        AppType: CPOSAppType.LongTerm,
-                        UserId: this.indivId,
-                        VoidTicket: false,
-                        VoidTypeCode: '',
-                        VoidOtherReason: ''
+                        locEvtId: this.locationId,
+                        tranId: this.transactionId,
+                        ticketDetailId: this.tktSaleItems[i].ticketDetailId,
+                        appType: CPOSAppType.LongTerm,
+                        userId: this.indivId,
+                        voidTicket: false,
+                        voidTypeCode: '',
+                        voidOtherReason: ''
                     }
                 }));
             } 
