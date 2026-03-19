@@ -136,7 +136,7 @@ export const inactiveTicketDetailSuccess = createAction(INACTIVE_TICKET_DETAIL_S
 export const inactiveTicketDetailFailed = createAction(INACTIVE_TICKET_DETAIL_FAILED,
     props<{error: any}>());
 
-export const deleteDeclinedTender = createAction(DELETE_DECLINED_TNDR, props<{rrn: string}>());
+export const deleteDeclinedTenderFromStore = createAction(DELETE_DECLINED_TNDR, props<{rrn: string}>());
 
 export const savePinpadResponse = createAction(SAVE_PINPAD_RESP,
     props<{respObj: ExchCardTndr}>());

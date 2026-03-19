@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Subject, takeUntil } from 'rxjs';
 
 import {
   LoadTicketStatLocRequest,
@@ -24,7 +25,7 @@ import { ToastService } from 'src/app/services/toast.service';
   templateUrl: './ticket-status-dlg.component.html',
   styleUrls: ['./ticket-status-dlg.component.css']
 })
-export class TicketStatusDlgComponent implements OnInit {
+export class TicketStatusDlgComponent implements OnInit, OnDestroy {
   @Input() title = 'Ticket Status';
   @Input() ticketStatus: TicketStatusLocationData = new TicketStatusLocationData();
   @Input() ticketStatuses: LTC_TicketStatus[] = [
@@ -41,6 +42,7 @@ export class TicketStatusDlgComponent implements OnInit {
   readyByTimeValue = '16:00';
   isReadyByTimePopupOpen = false;
   currentUserId = '';
+  private readonly _destroy$ = new Subject<void>();
 
   private _initialState = '';
 
@@ -64,32 +66,44 @@ export class TicketStatusDlgComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this._store.select(getTktObjSelector).subscribe(tktObj => {
-
-      this.tktStatRequest = new LoadTicketStatLocRequest();
-      this.tktStatRequest.locationId = tktObj?.locationUID ?? 0;
-      this.tktStatRequest.tranId = tktObj?.transactionID ?? 0;
-      this.currentUserId = (tktObj?.individualUID ?? 0).toString();
-      let userId: number = tktObj?.individualUID ?? 0;
-      
-      this._store.select(getSavedTicketResult).subscribe(data => {
+    this._store.select(getSavedTicketResult)
+      .pipe(takeUntil(this._destroy$))
+      .subscribe(data => {
         this.saveTktRsltMdl = data;
         this.tktSaveResultMessage = this.saveTktRsltMdl.ticketNumber > 0 ? ('Ticket save Successful')  : 'Ticket saving...';
-      })
-
-      this._salesTranSvc.loadTicketStatLoc(userId, this.tktStatRequest).subscribe(result => {
-        if (result && result.results && result.results.success) {
-          this.tktStatResult = result as LoadTicketStatLocResultModel;
-        }
+        this.showBalanceFields = (this.saveTktRsltMdl.balanceDue ?? 0) > 0;
       });
-    });
+
+    this._store.select(getTktObjSelector)
+      .pipe(takeUntil(this._destroy$))
+      .subscribe(tktObj => {
+
+        this.tktStatRequest = new LoadTicketStatLocRequest();
+        this.tktStatRequest.locationId = tktObj?.locationUID ?? 0;
+        this.tktStatRequest.tranId = tktObj?.transactionID ?? 0;
+        this.currentUserId = (tktObj?.individualUID ?? 0).toString();
+        const userId: number = tktObj?.individualUID ?? 0;
+
+        this._salesTranSvc.loadTicketStatLoc(userId, this.tktStatRequest)
+          .pipe(takeUntil(this._destroy$))
+          .subscribe(result => {
+            if (result && result.results && result.results.success) {
+              this.tktStatResult = result as LoadTicketStatLocResultModel;
+            }
+          });
+      });
 
     this.editableTicketStatus = this._cloneTicketStatus(this.ticketStatus);
-    this.readyByDateValue = this._formatDateForInput(this.editableTicketStatus.readyByDate);
+    this.readyByDateValue = '';  // Start with blank date, don't auto-populate from input
     this.nextPaymentDueValue = this._formatDateForInput(this.editableTicketStatus.payByDueDate);
-    this.readyByTimeValue = this._formatTimeForInput(this.editableTicketStatus.readyByDate) || this.readyByTimeOptions[9];
-    this.showBalanceFields = this.showBalanceFields || (this.editableTicketStatus.balanceDue ?? 0) > 0;
+    this.readyByTimeValue = '16:00';  // Keep as 16:00 default, don't override with input time
+    
     this._initialState = this._snapshotState();
+  }
+
+  ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   get hasChanges(): boolean {
@@ -105,7 +119,7 @@ export class TicketStatusDlgComponent implements OnInit {
   }
 
   get balanceDueDisplay(): string {
-    return this._formatAmount(this.editableTicketStatus.balanceDue);
+    return this._formatAmount(this.saveTktRsltMdl.balanceDue);
   }
 
   get readyByTimeOptionRows(): string[][] {

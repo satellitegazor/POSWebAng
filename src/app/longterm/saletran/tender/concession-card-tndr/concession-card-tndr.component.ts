@@ -9,7 +9,7 @@ import { filter, firstValueFrom, Subscription, take } from 'rxjs';
 import { getIsSplitPayR5, getRemainingBal, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
 import { TenderType } from '../../../models/tender.type';
-import { addPinpadResp, addTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, savePinpadResponse, saveTenderObj, updateTenderRRN } from '../../store/ticketstore/ticket.action';
+import { addPinpadResp, addTender, deleteDeclinedTenderFromStore, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, savePinpadResponse, saveTenderObj, updateTenderRRN } from '../../store/ticketstore/ticket.action';
 import { UtilService } from 'src/app/services/util.service';
 //import { VfoneCaptureTran } from '../../services/models/capture-tran.model';
 import { forkJoin } from 'rxjs';
@@ -183,10 +183,30 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
   }
 
   btnDeclineClick(evt: Event) {
+    this.markAndDeleteTender(TenderStatusType.Declined);
     this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
   }
 
   btnCancelClick(evt: Event) {
+    this.markAndDeleteTender();
     this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
+  }
+
+  async markAndDeleteTender(tndrStatus: TenderStatusType = TenderStatusType.Cancelled) {
+    var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+    if (tktObjData == null) {
+      console.error('Unable to fetch ticket object');
+      return;
+    }
+
+    this._tndrObj = JSON.parse(JSON.stringify(tktObjData.ticketTenderList.filter(tndr => tndr.rrn == this._tndrObj.rrn)[0]))
+
+    this._tndrObj.tenderStatus = Number(tndrStatus);
+    this._tndrObj.tndMaintTimestamp = new Date(Date.now());
+    this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
+    this._store.dispatch(addTender({ tndrObj: JSON.parse(JSON.stringify(this._tndrObj)) }));
+    this._store.dispatch(saveTenderObj({ tndrObj: JSON.parse(JSON.stringify(this._tndrObj)) }));
+    this._store.dispatch(deleteDeclinedTenderFromStore({ rrn: this._tndrObj.rrn }));
+
   }
 }

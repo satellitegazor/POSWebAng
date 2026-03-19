@@ -119,21 +119,21 @@
 }
 
 .ready-time-popup {
-	background: #fff;
+	background: #022755;
 	border: 1px solid #bfd0e5;
 	border-radius: 0.75rem;
 	left: 0;
 	margin-top: 0.4rem;
-	padding: 0.4rem;
+	min-width: 24rem;
+	padding: 0.5rem;
 	position: absolute;
 	top: 100%;
-	width: 100%;
 	z-index: 20;
 }
 
 .ready-time-table {
 	border-collapse: separate;
-	border-spacing: 0.35rem;
+	border-spacing: 0.42rem;
 	width: 100%;
 }
 
@@ -145,11 +145,11 @@
 .ready-time-option {
 	background: #edf4fb;
 	border: 1px solid transparent;
-	border-radius: 0.55rem;
+	border-radius: 0.66rem;
 	color: #17365d;
-	font-size: 0.9rem;
+	font-size: 1.08rem;
 	font-weight: 600;
-	padding: 0.55rem 0.35rem;
+	padding: 0.66rem 0.42rem;
 	transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 	width: 100%;
 }

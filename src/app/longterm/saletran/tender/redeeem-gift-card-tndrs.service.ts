@@ -9,6 +9,7 @@ import { addTender, saveTenderObj } from '../store/ticketstore/ticket.action';
 import { ToastService } from 'src/app/services/toast.service';
 import { GCRedeemInput } from '../services/models/aurus-gift-card-redeem-resp';
 import { UiBlockService } from 'src/app/services/ui-block.service';
+import { UtilService } from 'src/app/services/util.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,8 @@ export class RedeeemGiftCardTndrsService {
     private _cposWebSvc: CPOSWebSvcService,
     private _store: Store<saleTranDataInterface>,
     private _toastSvc: ToastService,
-    private _uiBlockSvc: UiBlockService) { }
+    private _uiBlockSvc: UiBlockService,
+    private _utilSvc: UtilService) { }
 
       public redeem(giftCardTenders: TicketTender[]): Observable<void> {
 
@@ -27,6 +29,7 @@ export class RedeeemGiftCardTndrsService {
             this._toastSvc.info('No gift card tenders to redeem.');
             return of(void 0);
         }
+
         this._toastSvc.info("Initiating Gift Card Redeem, please wait...");
         this._uiBlockSvc.block('Processing gift card redemption. Please wait...');
 
@@ -49,6 +52,7 @@ export class RedeeemGiftCardTndrsService {
                     tndrCopy.tenderAmount = response.TotalApprovedAmount;
                     tndrCopy.inStoreCardNbrTmp = response.ACCT_NUM;
                     tndrCopy.fcTenderAmount = Number(Number(response.TotalApprovedAmount * this._logonDataSvc.getExchangeRate()).toCPOSFixed(2));
+                    tndrCopy.rrn = this._utilSvc.getUniqueRRN();
 
                     this._toastSvc.success(`Gift Card Redeemed Successfully: Card Ending Nbr ${response.CardEndingNbr}, Approved Amount ${tndrCopy.tenderAmount}`);
 

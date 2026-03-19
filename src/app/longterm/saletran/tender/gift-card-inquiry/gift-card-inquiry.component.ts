@@ -11,7 +11,7 @@ import { combineLatest, filter, firstValueFrom, map, Subject, Subscription, take
 import { TicketSplit } from 'src/app/models/ticket.split';
 import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
 import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
-import { addTender, deleteDeclinedTender, isSplitPayR5, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj, saveTenderObjFailed, saveTenderObjSuccess } from '../../store/ticketstore/ticket.action';
+import { addTender, deleteDeclinedTenderFromStore, isSplitPayR5, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj, saveTenderObjFailed, saveTenderObjSuccess } from '../../store/ticketstore/ticket.action';
 import { AurusGiftCardInquiryResp } from '../../services/models/gift-card-enquiry-response';
 import { TenderUtil } from '../tender-util';
 import { AurusGiftCardRedeemResp, GCRedeemInput } from '../../services/models/aurus-gift-card-redeem-resp';
@@ -210,7 +210,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
 
             // Remove only after successful persistence so refresh/load does not resurrect it.
             if (saveResult.type === saveTenderObjSuccess.type) {
-              this._store.dispatch(deleteDeclinedTender({ rrn: cancelledTender.rrn }));
+              this._store.dispatch(deleteDeclinedTenderFromStore({ rrn: cancelledTender.rrn }));
             }
 
             this._toastSvc.warning('This gift card "' + data.CardNbrF6L4 + '" has already been used for payment. Please use another gift card or tender method.');
@@ -357,7 +357,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
               tndrCopy.tenderStatus = TenderStatusType.Declined;
               this._store.dispatch(addTender({ tndrObj: tndrCopy }));
               this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
-              this._store.dispatch(deleteDeclinedTender({ rrn: this.InvoiceId }));
+              this._store.dispatch(deleteDeclinedTenderFromStore({ rrn: this.InvoiceId }));
 
               this.route.navigate(['/splitpay']);
               this.btnCancelClick(new PointerEvent('auto-decline'));
@@ -392,7 +392,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
     tndrCopy.tenderStatus = TenderStatusType.Declined;
     this._store.dispatch(addTender({ tndrObj: tndrCopy }));
     this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
-    this._store.dispatch(deleteDeclinedTender({ rrn: this.InvoiceId }));
+    this._store.dispatch(deleteDeclinedTenderFromStore({ rrn: this.InvoiceId }));
 
     this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
   }

@@ -5,7 +5,7 @@ import { getBalanceDue, getBalanceDueFC, getTktObjSelector, getRemainingBal, Amo
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
-import { addPinpadResp, addTender, deleteDeclinedTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, savePinpadResponse, saveTenderObj, saveTenderObjSuccess, saveTicketForGuestCheck, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
+import { addPinpadResp, addTender, deleteDeclinedTenderFromStore, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, savePinpadResponse, saveTenderObj, saveTenderObjSuccess, saveTicketForGuestCheck, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
 import { LocalStorageService } from 'src/app/global/local-storage.service';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { TenderType, TenderTypeModel } from '../../../models/tender.type';
@@ -373,7 +373,7 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
     tndrCopy.tenderStatus = TenderStatusType.Declined;
     this._store.dispatch(addTender({ tndrObj: tndrCopy }));
     this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
-    this._store.dispatch(deleteDeclinedTender({ rrn: this.InvoiceId }));
+    this._store.dispatch(deleteDeclinedTenderFromStore({ rrn: this.InvoiceId }));
 
     this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
   }

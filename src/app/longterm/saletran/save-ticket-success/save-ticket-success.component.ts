@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { saleTranDataInterface } from '../store/ticketstore/ticket.state';
 import { Store } from '@ngrx/store';
 import { Router, ActivatedRoute, Params } from '@angular/router';
@@ -10,6 +10,8 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { PinValidateComponent } from '../pin-validate/pin-validate.component';
 import { TicketStatusDlgComponent } from '../ticket-status-dlg/ticket-status-dlg.component';
 import { TicketStatusLocationData } from '../../models/ticket.status.location.models';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-save-ticket-success',
@@ -17,7 +19,7 @@ import { TicketStatusLocationData } from '../../models/ticket.status.location.mo
     styleUrls: ['./save-ticket-success.component.css'],
     standalone: false
 })
-export class SaveTicketSuccessComponent implements OnInit {
+export class SaveTicketSuccessComponent implements OnInit, OnDestroy {
 
   modalOptions: NgbModalOptions = {
     backdrop: 'static',
@@ -28,6 +30,8 @@ export class SaveTicketSuccessComponent implements OnInit {
 
   ticketStatusData: TicketStatusLocationData = new TicketStatusLocationData();
   private _hasOpenedTicketStatusDialog = false;
+  private _destroy$ = new Subject<void>();
+  private _selectorSubscription: any;
 
 
   constructor(private _store: Store<saleTranDataInterface>,
@@ -46,20 +50,29 @@ export class SaveTicketSuccessComponent implements OnInit {
   laundryBusFuncCodes: string[] = ['BUSFNC_ALT', 'BUSFNC_LNDRYCLN', 'BUSFNC_LNDRYCLN_WALT'];
 
   ngOnInit(): void {
-    this._store.select(getSavedTicketResult).subscribe(data => {
-      this.saveTktRsltMdl = data;
-      this.tktSaveResultMessage = this.saveTktRsltMdl.ticketNumber > 0 ? ('Ticket save Successful')  : 'Ticket saving...';
-      this._syncTicketStatusData();
-      this._openTicketStatusDialogIfNeeded();
-    })
 
     let locConfig = this._logonDataSvc.getLocationConfig();
     this.businessFunctionCode = locConfig.busFuncCode;
 
-    if(this.laundryBusFuncCodes.includes(this.businessFunctionCode)) {
-      this._openTicketStatusDialogIfNeeded();
-    }
+    // Only subscribe to selector when this component is actively displayed
+    this._selectorSubscription = this._store.select(getSavedTicketResult)
+      .pipe(
+        takeUntil(this._destroy$)
+      )
+      .subscribe(data => {
+        this.saveTktRsltMdl = data;
+        this.tktSaveResultMessage = this.saveTktRsltMdl.ticketNumber > 0 ? ('Ticket save Successful')  : 'Ticket saving...';
+        this._syncTicketStatusData();
+        if (this.laundryBusFuncCodes.includes(this.businessFunctionCode)) {
+          this._openTicketStatusDialogIfNeeded();
+        }
+      });
+  }
 
+  ngOnDestroy(): void {
+    // Unsubscribe from the store selector when component is destroyed
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   ReceiptOption(optn: string) {

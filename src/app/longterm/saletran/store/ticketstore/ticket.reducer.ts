@@ -7,7 +7,7 @@ import { AssociateSaleTips } from "src/app/models/associate.sale.tips";
 import { LTC_Customer } from "src/app/models/customer";
 import { TenderStatusType, TicketTender, TranStatusType } from "src/app/models/ticket.tender";
 import { SalesTransactionCheckoutItem } from "../../../models/salesTransactionCheckoutItem";
-import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketForGuestCheckSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData, removeTndrWithSaveCode, saveCompleteTicketSplitSuccess, addPinpadResp, saveTenderObjSuccess, saveTicketDetailSuccess, inactiveTicketDetailSuccess, savePinpadResponse, updateTenderRRN, markTendersComplete, markTicketComplete, addTabSerialToTktObj, isSplitPayR5, deleteDeclinedTender, loadTicketSuccess, loadInProgressTendersSuccess, updateShipHandling } from "./ticket.action";
+import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketForGuestCheckSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData, removeTndrWithSaveCode, saveCompleteTicketSplitSuccess, addPinpadResp, saveTenderObjSuccess, saveTicketDetailSuccess, inactiveTicketDetailSuccess, savePinpadResponse, updateTenderRRN, markTendersComplete, markTicketComplete, addTabSerialToTktObj, isSplitPayR5, deleteDeclinedTenderFromStore, loadTicketSuccess, loadInProgressTendersSuccess, updateShipHandling } from "./ticket.action";
 import { Round2DecimalService } from "src/app/services/round2-decimal.service";
 import { tktObjInitialState, saleTranDataInterface } from "./ticket.state";
 import { ExchCardTndr } from "src/app/models/exch.card.tndr";
@@ -24,7 +24,7 @@ export const _tktObjReducer = createReducer(
          tktObj: {
             ...state.tktObj,
             locationUID: action.locConfig.locationUID,
-            individualUID: action.individualUID,
+            individualUID: action.locConfig.individualUID,
             cliTimeVar: GlobalConstants.GetClientTimeVariance(),
             transactionDate: new Date(Date.now()),
             ticketRRN: _utilSvc.getUniqueRRN(),
@@ -400,7 +400,7 @@ export const _tktObjReducer = createReducer(
       let tenderListCopy: TicketTender[] = JSON.parse(JSON.stringify(state.tktObj.ticketTenderList));
       tenderListCopy = tenderListCopy.filter(tndr => tndr.tenderTypeCode != "SV");
       
-      if(tenderListCopy.filter(tndr => (tndr.rrn == action.tndrObj.rrn)).length > 0) {
+      if(tenderListCopy.filter(tndr => (tndr.ticketTenderId == action.tndrObj.ticketTenderId || tndr.rrn == action.tndrObj.rrn)).length > 0) {
          let tndrObj: TicketTender = tenderListCopy.filter(tndr => tndr.rrn == action.tndrObj.rrn || tndr.ticketTenderId == action.tndrObj.ticketTenderId)[0];
          tndrObj.authNbr = action.tndrObj.authNbr;
          tndrObj.cardEndingNbr = action.tndrObj.cardEndingNbr;
@@ -415,6 +415,7 @@ export const _tktObjReducer = createReducer(
          tndrObj.isAuthorized = action.tndrObj.isAuthorized;
          tndrObj.exchCardPymntType = action.tndrObj.exchCardPymntType !== null ? action.tndrObj.exchCardPymntType : '';
          tndrObj.inStoreCardNbrTmp = action.tndrObj.inStoreCardNbrTmp !== null ? action.tndrObj.inStoreCardNbrTmp : '';
+         tndrObj.tenderTransactionId = (action.tndrObj.tenderTransactionId !== null && action.tndrObj.tenderTransactionId > 0) ? action.tndrObj.tenderTransactionId : state.tktObj.transactionID;
 
       }
       else {
@@ -431,7 +432,7 @@ export const _tktObjReducer = createReducer(
       }
    }),
 
-   on(deleteDeclinedTender, (state, action) => {
+   on(deleteDeclinedTenderFromStore, (state, action) => {
       return {
          ...state,
          tktObj: {
@@ -1350,17 +1351,30 @@ export const _tktObjReducer = createReducer(
             ...state.tktObj,
             ticketTenderList: state.tktObj.ticketTenderList.map(tndr => {
                
-               if (action.data != null && action.data.data != null 
-                     && action.data.data.rrn != null && tndr.rrn == action.data.data.rrn) {
-                  console.log("Updating tender with RRN:", tndr.rrn, "with ticketTenderId:", action.data.data.ticketTenderId);
-                  return {
-                     ...tndr,
-                     ticketTenderId: action.data.data.ticketTenderId,                  
-                  };
+               if (action.data != null && action.data.data != null) {
+                  if(action.data.data.ticketTenderId != null && tndr.ticketTenderId == action.data.data.ticketTenderId) {
+                     return {
+                        ...tndr
+                     };
+                  }
+                  else if(action.data.data.rrn != null && tndr.rrn == action.data.data.rrn) {
+                     console.log("Updating tender with RRN:", tndr.rrn, "with ticketTenderId:", action.data.data.ticketTenderId);
+                     return {
+                        ...tndr,
+                        ticketTenderId: action.data.data.ticketTenderId,                  
+                     };
+                  }
+                  else {
+                     return {
+                        ...tndr
+                     };                     
+                  }
                }
                else {
                   console.log("No match for tender with RRN:", tndr.rrn);
-                  return tndr
+                  return {
+                     ...tndr
+                  };
                }
             }),
          },
