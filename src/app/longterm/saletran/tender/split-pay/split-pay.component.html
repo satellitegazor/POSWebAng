@@ -1,5 +1,26 @@
 <div class="panel">
+    <div *ngIf="isVoidingPayments" class="void-refund-overlay" aria-live="polite" aria-busy="true">
+        <div class="void-refund-overlay-content">
+            {{ voidRefundProgressMessage || 'Processing payment void/refund...' }}
+        </div>
+    </div>
     <div class="panel-body">
+        <ng-template #voidPaymentsConfirmDialog>
+            <div class="modal-header">
+                <h4 class="modal-title">Void Payments</h4>
+                <button type="button" class="btn-close" aria-label="Close" [disabled]="isVoidingPayments" (click)="dismissVoidPaymentsDialog()"></button>
+            </div>
+            <div class="modal-body">
+                <p>Do you want to void the Sale Transaction Payments?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" [disabled]="isVoidingPayments" (click)="dismissVoidPaymentsDialog()">No</button>
+                <button type="button" class="btn btn-danger" [disabled]="isVoidingPayments" (click)="confirmVoidPayments()">
+                    {{ isVoidingPayments ? 'Voiding...' : 'Yes' }}
+                </button>
+            </div>
+        </ng-template>
+
         <table class="table table-striped">
             <tr class="total-payment-section">
                 <td class="firstcolumn">
@@ -67,9 +88,7 @@
             <div class="instruction-message">
                 <div class="instruction-icon">ℹ️</div>
                 <div class="instruction-text">
-                    <strong>Split Payment Instructions:</strong> Enter the amount you want to pay in the input fields
-                    below. You can enter any amount less than or equal to the total payment amount. After entering the split
-                    amount, select the appropriate payment method button to proceed.
+                    <strong>Split Payment Instructions:</strong> {{splitPayMsg}}
                 </div>
             </div>
         </div>

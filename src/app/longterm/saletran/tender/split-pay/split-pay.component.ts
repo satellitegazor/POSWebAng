@@ -1,17 +1,18 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, TemplateRef } from '@angular/core';
+import { Actions, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
 import { getBalanceDue, getTktObjSelector, getTicketTendersSelector, getBalanceDueFC, getTicketTotalToPayUSD, getTicketTotalToPayFC } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { SalesTranService } from '../../services/sales-tran.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { SharedSubjectService } from 'src/app/shared-subject/shared-subject.service';
 import { TenderType, TenderTypeModel } from '../../../models/tender.type';
-import { firstValueFrom, forkJoin, Subscription, take } from 'rxjs';
+import { filter, firstValueFrom, forkJoin, Subscription, take } from 'rxjs';
 import { TipsModalDlgComponent } from '../../checkout/tips-modal-dlg/tips-modal-dlg.component';
-import { updateCheckoutTotals, addTender, saveTicketForGuestCheck, removeTndrWithSaveCode, saveTenderObj, saveCompleteTicketSplit, markTendersComplete, markTicketComplete } from '../../store/ticketstore/ticket.action';
+import { updateCheckoutTotals, addTender, saveTicketForGuestCheck, saveTicketForGuestCheckSuccess, saveTicketForGuestCheckFailed, removeTndrWithSaveCode, saveTenderObj, saveCompleteTicketSplit, markTendersComplete, markTicketComplete, saveTenderObjSuccess, saveTenderObjFailed, resetTktObj } from '../../store/ticketstore/ticket.action';
 import { AlertModalComponent } from 'src/app/alert-modal/alert-modal.component';
 import { UtilService } from 'src/app/services/util.service';
 import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
@@ -20,6 +21,9 @@ import { RedeemGiftCardTenders } from '../redeem-gift-card-tenders';
 import { ToastService } from 'src/app/services/toast.service';
 import { TicketSplit } from 'src/app/models/ticket.split';
 import { RedeeemGiftCardTndrsService } from '../redeeem-gift-card-tndrs.service';
+import { MilstarRefundReqData } from '../../services/models/milstar-refund-req-data';
+import { VoidTranInput } from '../../services/models/void-tran-input';
+import { VfoneCaptureTran } from '../../services/models/capture-tran.model';
 
 @Component({
   selector: 'app-split-pay',
@@ -29,6 +33,7 @@ import { RedeeemGiftCardTndrsService } from '../redeeem-gift-card-tndrs.service'
 })
 export class SplitPayComponent implements OnInit, AfterViewInit {
   @ViewChild('dcTndrAmt') dcTndrAmtInput!: ElementRef;
+  @ViewChild('voidPaymentsConfirmDialog') voidPaymentsConfirmDialog!: TemplateRef<unknown>;
 
   modalOptions: NgbModalOptions = {
     backdrop: 'static',
@@ -43,8 +48,14 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
 
   private _clickDebounceMs: number = 2000; // 2 second debounce window
   private _lastClickTime: number = 0;
+  private _confirmModalRef: NgbModalRef | null = null;
 
+  splitPayMsg: string = 'Enter the amount you want to pay in the input fields below. You can enter any amount less than or equal to the total payment amount. After entering the split amount, select the appropriate payment method button to proceed.';
+  
   // ...existing code...
+
+  isVoidingPayments: boolean = false;
+  voidRefundProgressMessage: string = '';
 
   private _isClickAllowed(): boolean {
     const now = Date.now();
@@ -61,6 +72,7 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
     private _sharedSubSvc: SharedSubjectService,
     private modalService: NgbModal,
     private _store: Store<saleTranDataInterface>,
+    private actions$: Actions,
     private router: Router,
     private activRoute: ActivatedRoute,
     private _utlSvc: UtilService,
@@ -202,10 +214,183 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
   }
 
   onCancelClick(): void {
-    //this.router.navigate(['/checkout']);
+    if (this.tndrs.length === 0) {
+      this.router.navigate(['/checkout']);
+      return;
+    }
 
+    this._confirmModalRef = this.modalService.open(this.voidPaymentsConfirmDialog, {
+      ...this.modalOptions,
+      centered: true
+    });
+  }
 
-    
+  dismissVoidPaymentsDialog(): void {
+    if (this.isVoidingPayments) {
+      return;
+    }
+
+    this._confirmModalRef?.dismiss('No click');
+    this._confirmModalRef = null;
+  }
+
+  async confirmVoidPayments(): Promise<void> {
+    if (this.isVoidingPayments) {
+      return;
+    }
+
+    this._confirmModalRef?.close('Yes click');
+    this._confirmModalRef = null;
+
+    this.isVoidingPayments = true;
+
+    try 
+    {
+      const tenderList = TicketTender.deepCopyTenderList(this.tndrs);
+      const individualId = this._logonDataSvc.getLocationConfig().individualUID;
+
+      for (const tender of tenderList) 
+      {
+        await this.processCancelledTender(tender, individualId);
+      }
+
+      await this.finalizeVoidedSaleTransaction();
+    }
+    catch (error) 
+    {
+      const message = error instanceof Error ? error.message : 'Unable to void one or more payments.';
+      this._toastSvc.error(message);
+    } 
+    finally 
+    {
+      this.isVoidingPayments = false;
+      this.voidRefundProgressMessage = '';
+    }
+  }
+
+  private async processCancelledTender(tender: TicketTender, individualId: number): Promise<void> {
+    const tndrCopy = TenderUtil.copyTenderObj(tender);
+    const cardEnding = tndrCopy.cardEndingNbr || 'N/A';
+    const tenderAmount = Number(tndrCopy.tenderAmount || 0).toCPOSFixed(2);
+
+    if (tndrCopy.tenderTypeCode === 'MS') 
+    {
+      this.voidRefundProgressMessage = `Refunding ${tenderAmount} for card ending ${cardEnding}.`;
+      const response = await firstValueFrom(this._cposWebSvc.milstarRefund(this.buildMilstarRefundRequest(tndrCopy, individualId)).pipe(take(1)));
+      this.throwIfPinpadResponseFailed(response, tndrCopy);
+      tndrCopy.refundAuthNbr = response.AUTH_CODE;
+    } 
+    else if (tndrCopy.tenderTypeCode === 'XC') 
+    {
+      this.voidRefundProgressMessage = `Voiding ${tenderAmount} for card ending ${cardEnding}.`;
+      const response = await firstValueFrom(this._cposWebSvc.voidThisTran(this.buildVoidTranRequest(tndrCopy, individualId)).pipe(take(1)));
+      this.throwIfPinpadResponseFailed(response, tndrCopy);
+      tndrCopy.refundAuthNbr = response.AUTH_CODE;
+    } else {
+      this.voidRefundProgressMessage = `Voiding ${tenderAmount} for card ending ${cardEnding}.`;
+    }
+
+    tndrCopy.tenderStatus = TenderStatusType.Voided;
+    tndrCopy.tndMaintTimestamp = new Date();
+    tndrCopy.tndrTimeStamp = new Date();
+
+    await this.persistTenderUpdate(tndrCopy);
+  }
+
+  private buildMilstarRefundRequest(tender: TicketTender, individualId: number): MilstarRefundReqData {
+    const request = new MilstarRefundReqData();
+    request.EncCardNbr = tender.inStoreCardNbrTmp;
+    request.TranAmt = tender.tenderAmount;
+    request.ClerkId = individualId;
+    request.PlanNum = tender.milstarPlanNum;
+    return request;
+  }
+
+  private buildVoidTranRequest(tender: TicketTender, individualId: number): VoidTranInput {
+    const request = new VoidTranInput();
+    const rrnDateTime = this.extractTranDateTime(tender.rrn);
+
+    request.RefNum = tender.rrn;
+    request.OrigAurusPayTktNum = String(tender.ticketTenderId ?? '');
+    request.OrigTranId = String(tender.tenderTransactionId ?? '');
+    request.TranDate = rrnDateTime.tranDate;
+    request.TranTime = rrnDateTime.tranTime;
+    request.TenderAmt = tender.tenderAmount;
+    request.AuthCode = '';
+    request.ClerkId = String(individualId);
+    request.MsgDisplay = 'refunding payment ' + tender.tenderAmount.toCPOSFixed(2);
+    request.PlanNum = tender.milstarPlanNum;
+
+    return request;
+  }
+
+  private extractTranDateTime(rrn: string): { tranDate: string; tranTime: string } {
+    const digitsOnly = (rrn || '').replace(/\D/g, '');
+
+    if (digitsOnly.length < 14) {
+      return { tranDate: '', tranTime: '' };
+    }
+
+    return {
+      tranDate: digitsOnly.substring(0, 8),
+      tranTime: digitsOnly.substring(8, 14)
+    };
+  }
+
+  private throwIfPinpadResponseFailed(response: VfoneCaptureTran, tender: TicketTender): void {
+    if (response?.rslt?.IsSuccessful === false) {
+      throw new Error(response.rslt.ReturnMsg || 'Unable to void payment for tender ' + tender.tenderTypeCode + '.');
+    }
+  }
+
+  private async persistTenderUpdate(tndrObj: TicketTender): Promise<void> {
+    const tndrCopy = TicketTender.deepCopy(tndrObj);
+
+    this._store.dispatch(addTender({ tndrObj: tndrCopy }));
+    this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
+
+    const saveResult = await firstValueFrom(
+      this.actions$.pipe(
+        ofType(saveTenderObjSuccess, saveTenderObjFailed),
+        filter(action => action.type === saveTenderObjFailed.type || !action.data?.data?.rrn || action.data.data.rrn === tndrCopy.rrn),
+        take(1)
+      )
+    );
+
+    if (saveResult.type === saveTenderObjFailed.type) {
+      throw new Error('Unable to save voided tender ' + tndrCopy.rrn + '.');
+    }
+  }
+
+  private async finalizeVoidedSaleTransaction(): Promise<void> {
+    this.voidRefundProgressMessage = 'Finalizing voided sale transaction...';
+
+    this._store.dispatch(markTicketComplete({ status: TranStatusType.Void }));
+
+    const tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    if (tktObjData) {
+      this._toastSvc.info('Ticket ' + tktObjData.ticketNumber + ' voided successfully.');
+      tktObjData.ticketNumber
+
+      this._store.dispatch(saveTicketForGuestCheck({ tktObj: tktObjData }));
+
+      const saveTicketResult = await firstValueFrom(
+        this.actions$.pipe(
+          ofType(saveTicketForGuestCheckSuccess, saveTicketForGuestCheckFailed),
+          take(1)
+        )
+      );
+
+      if (saveTicketResult.type === saveTicketForGuestCheckFailed.type) {
+        throw new Error('Unable to save the voided transaction.');
+      }
+    }
+
+    const locConfig = this._logonDataSvc.getLocationConfig();
+    sessionStorage.setItem('inProgTranId', '0');
+    sessionStorage.setItem('inProgTranTabSerialNum', '');
+    this._store.dispatch(resetTktObj({ locConfig }));
+    this.router.navigate(['/salestran']);
   }
 
   async btnTndrClick(evt: Event) {

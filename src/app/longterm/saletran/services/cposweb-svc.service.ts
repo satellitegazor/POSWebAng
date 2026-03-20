@@ -11,6 +11,7 @@ import { VerifoneCommStatus } from '../../models/general-classes';
 import { AurusGiftCardInquiryResp } from './models/gift-card-enquiry-response';
 import { AurusGiftCardRedeemResp, GCRedeemInput } from './models/aurus-gift-card-redeem-resp';
 import { VfoneCaptureTran } from './models/capture-tran.model';
+import { MilstarRefundReqData } from './models/milstar-refund-req-data';
 import { VfoneLastTran } from './models/vfone-last-tran';
 import { VoidTranInput } from './models/void-tran-input';
 import { ToastService } from 'src/app/services/toast.service';
@@ -208,6 +209,25 @@ export class CPOSWebSvcService {
   }
 
   private handleVoidTranError(error: any): Observable<VfoneCaptureTran> {
+    const { msg, statusCode } = this.getErrorMessage(error);
+    const errorResult = new VfoneCaptureTran();
+    errorResult.rslt.IsSuccessful = false;
+    errorResult.rslt.ReturnMsg = `Error (${statusCode}): ${msg}`;
+    errorResult.rslt.VersionNum = '';
+    return of(errorResult);
+  }
+
+  milstarRefund(dataVal: MilstarRefundReqData): Observable<VfoneCaptureTran> {
+    return this.httpClient.post<VfoneCaptureTran>(
+      this.cposWebSvcUrl + 'pinpad/MilstarRefund',
+      dataVal,
+      { headers: this.headerObjs }
+    ).pipe(
+      catchError(error => this.handleMilstarRefundError(error))
+    );
+  }
+
+  private handleMilstarRefundError(error: any): Observable<VfoneCaptureTran> {
     const { msg, statusCode } = this.getErrorMessage(error);
     const errorResult = new VfoneCaptureTran();
     errorResult.rslt.IsSuccessful = false;

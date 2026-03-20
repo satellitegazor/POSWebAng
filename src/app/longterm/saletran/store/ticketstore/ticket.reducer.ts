@@ -1532,7 +1532,7 @@ export const _tktObjReducer = createReducer(
          ...state,
          tktObj: {
             ...state.tktObj,
-            tranStatus: TranStatusType.Complete
+            tranStatus: state.tktObj.tranStatus
          }
       }
    }),
