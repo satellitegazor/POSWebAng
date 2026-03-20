@@ -160,42 +160,6 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
         return true;
       }
 
-      //   this.tndrs.filter(t => t.tenderTypeCode == "GC").forEach(t => {
-      //     this._cposWebSvc.GiftCardRedeem(t.tenderTransactionId, t.ticketTenderId, 0, t.inStoreCardNbrTmp, t.tenderAmount).subscribe({
-      //       next: (data) => {
-      //         // Handle successful response
-      //         if (data.rslt.IsSuccessful) {
-      //           if(data.AuthorizedAmount < t.tenderAmount) {
-      //             // Handle insufficient authorized amount
-      //             //console.error('Gift Card Redemption Failed: Authorized amount is less than tender amount.');
-      //             let tndrCopy = TenderUtil.copyTenderObj(t);
-      //             tndrCopy.tenderAmount = data.AuthorizedAmount;
-      //             tndrCopy.fcTenderAmount = data.AuthorizedAmount * this._logonDataSvc.getExchangeRate();
-      //             tndrCopy.isAuthorized = true;
-      //             tndrCopy.authNbr = data.ApprovalCode;
-      //             tndrCopy.cardEndingNbr = data.CardEndingNbr;
-      //             tndrCopy.traceId = "false";
-      //             tndrCopy.tenderAmount = data.AuthorizedAmount;
-      //             tndrCopy.fcTenderAmount = data.AuthorizedAmount * this._logonDataSvc.getExchangeRate();
-      //             this._store.dispatch(addTender({ tndrObj: tndrCopy })); 
-      //             this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
-      //             this.router.navigate(['/splitpay']);
-      //             return;
-      //           }
-      //           // Successful redemption logic here
-      //           //console.log('Gift Card Redeemed Successfully');
-      //         } else {
-      //           // Handle error response
-      //           //console.error('Gift Card Redemption Failed: ' + data.rslt.ReturnMsg);
-      //         }
-      //       },
-      //       error: (error) => {
-      //         // Handle HTTP or network errors
-      //         //console.error('Error occurred during Gift Card Redemption: ', error);
-      //       }
-      //   });
-      //   return true;
-      // });
     }
     else {
       return true;
@@ -238,7 +202,10 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
   }
 
   onCancelClick(): void {
-    this.router.navigate(['/checkout']);
+    //this.router.navigate(['/checkout']);
+
+
+    
   }
 
   async btnTndrClick(evt: Event) {

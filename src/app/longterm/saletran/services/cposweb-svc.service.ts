@@ -10,6 +10,9 @@ import { SigCapture } from './models/capture-signature.model';
 import { VerifoneCommStatus } from '../../models/general-classes';
 import { AurusGiftCardInquiryResp } from './models/gift-card-enquiry-response';
 import { AurusGiftCardRedeemResp, GCRedeemInput } from './models/aurus-gift-card-redeem-resp';
+import { VfoneCaptureTran } from './models/capture-tran.model';
+import { VfoneLastTran } from './models/vfone-last-tran';
+import { VoidTranInput } from './models/void-tran-input';
 import { ToastService } from 'src/app/services/toast.service';
 
 @Injectable({
@@ -169,6 +172,44 @@ export class CPOSWebSvcService {
   private handleGiftcardRedeemError(error: any): Observable<AurusGiftCardRedeemResp> {
     const { msg, statusCode } = this.getErrorMessage(error);
     const errorResult = new AurusGiftCardRedeemResp();
+    errorResult.rslt.IsSuccessful = false;
+    errorResult.rslt.ReturnMsg = `Error (${statusCode}): ${msg}`;
+    errorResult.rslt.VersionNum = '';
+    return of(errorResult);
+  }
+
+  txnStatus(UniqueId: string, TranDate: string, TranTime: string, TranAmt: number): Observable<VfoneLastTran> {
+    return this.httpClient.get<VfoneLastTran>(
+      this.cposWebSvcUrl + 'pinpad/TxnStatus?UniqueId=' + UniqueId +
+        '&TranDate=' + TranDate + '&TranTime=' + TranTime + '&TranAmt=' + TranAmt,
+      { headers: this.headerObjs }
+    ).pipe(
+      catchError(error => this.handleTxnStatusError(error))
+    );
+  }
+
+  private handleTxnStatusError(error: any): Observable<VfoneLastTran> {
+    const { msg, statusCode } = this.getErrorMessage(error);
+    const errorResult = new VfoneLastTran();
+    errorResult.rslt.IsSuccessful = false;
+    errorResult.rslt.ReturnMsg = `Error (${statusCode}): ${msg}`;
+    errorResult.rslt.VersionNum = '';
+    return of(errorResult);
+  }
+
+  voidThisTran(dataVal: VoidTranInput): Observable<VfoneCaptureTran> {
+    return this.httpClient.post<VfoneCaptureTran>(
+      this.cposWebSvcUrl + 'pinpad/VoidThisTran',
+      dataVal,
+      { headers: this.headerObjs }
+    ).pipe(
+      catchError(error => this.handleVoidTranError(error))
+    );
+  }
+
+  private handleVoidTranError(error: any): Observable<VfoneCaptureTran> {
+    const { msg, statusCode } = this.getErrorMessage(error);
+    const errorResult = new VfoneCaptureTran();
     errorResult.rslt.IsSuccessful = false;
     errorResult.rslt.ReturnMsg = `Error (${statusCode}): ${msg}`;
     errorResult.rslt.VersionNum = '';
