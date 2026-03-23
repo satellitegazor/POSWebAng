@@ -1532,7 +1532,7 @@ export const _tktObjReducer = createReducer(
          ...state,
          tktObj: {
             ...state.tktObj,
-            tranStatus: state.tktObj.tranStatus
+            tranStatus: action.status
          }
       }
    }),

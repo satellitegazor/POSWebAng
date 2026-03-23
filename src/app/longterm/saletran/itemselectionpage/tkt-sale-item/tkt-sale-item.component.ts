@@ -112,6 +112,7 @@ export class TktSaleItemComponent implements OnInit {
 
     public btnCheckoutClicked() {
 
+        this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
         this._router.navigate(['/checkout'])
     }
 

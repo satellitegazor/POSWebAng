@@ -115,13 +115,40 @@ export class CheckoutPageComponent implements OnInit {
     return false;
   }
 
+  private _resolveTenderCode(evt: Event): string {
+    const directTarget = evt.target as HTMLElement | null;
+    const currentTarget = evt.currentTarget as HTMLElement | null;
+
+    if (currentTarget?.id) {
+      return currentTarget.id;
+    }
+
+    if (directTarget?.id) {
+      return directTarget.id;
+    }
+
+    return directTarget?.closest('button')?.id || '';
+  }
+
+  private _navigateToTenderPage(tndrCode: string): void {
+    const route = this._utilSvc.tenderCodePageMap.get(tndrCode);
+    if (!route) {
+      this.showErrMsg = true;
+      this.strongErrMessage = 'Navigation Error';
+      this.errMessage = 'Unable to determine tender page for tender code: ' + tndrCode;
+      return;
+    }
+
+    this.router.navigate([route], { queryParams: { code: tndrCode } });
+  }
+
   private async genericTenderClickProcessing(tndrCode: string): Promise<void> {
 
     this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
     this._store.dispatch(isSplitPayR5({ isSplitPayR5: (tndrCode == 'btnSplitPay') }));
 
     if (tndrCode == 'btnSplitPay' && this.locationConfig.inProgTranId > 0) {
-      this.router.navigate([this._utilSvc.tenderCodePageMap.get(tndrCode)], { queryParams: { code: tndrCode } })
+      this._navigateToTenderPage(tndrCode);
       return
     }
 
@@ -152,7 +179,7 @@ export class CheckoutPageComponent implements OnInit {
 
           // Update tender with transaction ID
           this._store.dispatch(addTender({ tndrObj }));
-          this.router.navigate([this._utilSvc.tenderCodePageMap.get(tndrCode)], { queryParams: { code: tndrCode } })
+          this._navigateToTenderPage(tndrCode);
         });
       }
     }
@@ -191,7 +218,7 @@ export class CheckoutPageComponent implements OnInit {
             modalRef.componentInstance.tndrCode = tndrCode;
           }
           else {
-            this.router.navigate([this._utilSvc.tenderCodePageMap.get(tndrCode)], { queryParams: { code: tndrCode } })
+            this._navigateToTenderPage(tndrCode);
           }
         });
       }
@@ -203,7 +230,10 @@ export class CheckoutPageComponent implements OnInit {
       return; // Ignore the click if within debounce window
     }
 
-    let tndrCode = (evt.target as Element).id
+    let tndrCode = this._resolveTenderCode(evt);
+    if (!tndrCode) {
+      return;
+    }
     await this.genericTenderClickProcessing(tndrCode);
   }
 
@@ -212,7 +242,10 @@ export class CheckoutPageComponent implements OnInit {
       return; // Ignore the click if within debounce window
     }
 
-    let tndrCode = (evt.target as Element).id
+    let tndrCode = this._resolveTenderCode(evt);
+    if (!tndrCode) {
+      return;
+    }
     await this.genericTenderClickProcessing(tndrCode);
   }
 

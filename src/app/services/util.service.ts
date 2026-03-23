@@ -34,12 +34,15 @@ export class UtilService {
     ['btnSplitPay', 'splitpay'],
     ['CK', 'cashcheck'],
     ['CA', 'cashcheck'],
-    ['XC', 'pinpadtran'],
-    ['XR', 'pinpadtran'],
+    ['CR', 'cashcheck'],
     ['GC', 'gcinquiry'],
     ['CC', 'cctender'],
     ['EG', 'eaglecash'],
-    ['MS', 'pinpadtran']
+    ['RC', 'cctender'],
+    ['XC', 'pinpadtran'],
+    ['XR', 'pinpadtran'],
+    ['MS', 'pinpadtran'],
+    ['MR', 'pinpadtran']
   ]);
 
   public currencySymbols = new Map<string, string>([

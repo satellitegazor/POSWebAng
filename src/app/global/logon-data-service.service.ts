@@ -223,9 +223,6 @@ export class LogonDataService {
         sessionStorage.setItem('tenderDateTime', String(locConfig.configs[0].tenderDateTime));
         sessionStorage.setItem('discMilstarBinRange', locConfig.configs[0].discMilstarBinRange);
 
-        if( typeof (this._ltLocationConfig.configs) == 'undefined' || this._ltLocationConfig.configs.length == 0) {
-            this._ltLocationConfig = locConfig;
-        }
     }
 
     public setTranMode(IsRefund: boolean) {

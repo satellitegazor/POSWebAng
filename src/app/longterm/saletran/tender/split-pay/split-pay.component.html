@@ -110,7 +110,7 @@
         <div class="tender-buttons-container">
             <button *ngFor="let tndr of _displayTenders" class="border border-white btn btn-info btn-lg tender-btn"
                 id="{{tndr.tenderTypeCode}}" [ngStyle]="{width: tenderButtonWidthPercent + '%'}"
-                aria-label="{{tndr.tenderTypeDesc}}" (click)="btnTndrClick($event)">
+                [attr.aria-label]="tndr.tenderTypeDesc" (click)="btnTndrClick($event)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-wallet2"
                     viewBox="0 0 16 16">
                     <path
