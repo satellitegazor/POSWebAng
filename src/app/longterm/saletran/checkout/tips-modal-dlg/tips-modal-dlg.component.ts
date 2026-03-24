@@ -19,6 +19,7 @@ import { UtilService } from 'src/app/services/util.service';
   standalone: false
 })
 export class TipsModalDlgComponent implements OnInit {
+  private readonly MAX_TIP_USD = 100;
 
   constructor(private modal: NgbModal, private _saleTranSvc: SalesTranService, 
     private _logonDataSvc: LogonDataService,
@@ -40,6 +41,7 @@ export class TipsModalDlgComponent implements OnInit {
 
   dcTotal: number = 0;
   ndcTotal: number = 0;
+  tipValidationErrorMsg: string = '';
 
   isOConusLocation: boolean = false;
 
@@ -86,6 +88,9 @@ export class TipsModalDlgComponent implements OnInit {
       }
     })
     this.dcTotal += tipAmt;
+
+    const totalTipAmt = this.getCurrentTipTotal();
+    this.validateTipLimits(totalTipAmt);
   }
 
   onTotalAmountChanged(value: number) {
@@ -97,6 +102,10 @@ export class TipsModalDlgComponent implements OnInit {
     }
 
     let diffAmt = totalTipAmt - this.lineItemTotalDC;
+    if (!this.validateTipLimits(diffAmt)) {
+      return;
+    }
+
     let indivTipAmt = Math.round(((diffAmt / this.assocSaleTips.length) + Number.EPSILON) * 100) / 100;;
     let indx = 0;
 
@@ -119,6 +128,69 @@ export class TipsModalDlgComponent implements OnInit {
     this.tipTotalNDC = diffAmt;
   }
 
+  private getCurrentTipTotal(): number {
+    return this.assocSaleTips.reduce((total, assoc) => total + Number(assoc.tipAmount ?? 0), 0);
+  }
+
+  private convertDefaultCurrencyToUsd(amountInDefaultCurrency: number): number {
+    const dfltCurrCode = (this._logonDataSvc.getDfltCurrCode() || 'USD').toUpperCase();
+    if (dfltCurrCode === 'USD') {
+      return amountInDefaultCurrency;
+    }
+
+    const exchangeRate = this._logonDataSvc.getExchangeRate();
+    if (!exchangeRate || exchangeRate <= 0) {
+      return amountInDefaultCurrency;
+    }
+
+    return amountInDefaultCurrency / exchangeRate;
+  }
+
+  private getMaxTipInDefaultCurrency(): number {
+    const dfltCurrCode = (this._logonDataSvc.getDfltCurrCode() || 'USD').toUpperCase();
+    if (dfltCurrCode === 'USD') {
+      return this.MAX_TIP_USD;
+    }
+
+    const exchangeRate = this._logonDataSvc.getExchangeRate();
+    if (!exchangeRate || exchangeRate <= 0) {
+      return this.MAX_TIP_USD;
+    }
+
+    return Number((this.MAX_TIP_USD * exchangeRate).toCPOSFixed(2));
+  }
+
+  private validateTipLimits(totalTipAmount: number): boolean {
+    this.tipValidationErrorMsg = '';
+
+    const maxTipInDefaultCurrency = this.getMaxTipInDefaultCurrency();
+    for (const assoc of this.assocSaleTips) {
+      const individualTip = Number(assoc.tipAmount ?? 0);
+
+      if (individualTip < 0) {
+        this.tipValidationErrorMsg = 'Tip amount cannot be negative.';
+        return false;
+      }
+
+      if (this.convertDefaultCurrencyToUsd(individualTip) > this.MAX_TIP_USD) {
+        this.tipValidationErrorMsg = `Individual tip cannot exceed USD ${this.MAX_TIP_USD.toFixed(2)} (max ${maxTipInDefaultCurrency.toFixed(2)} ${this._logonDataSvc.getDfltCurrCode()}).`;
+        return false;
+      }
+    }
+
+    if (totalTipAmount < 0) {
+      this.tipValidationErrorMsg = 'Total tip amount cannot be negative.';
+      return false;
+    }
+
+    if (this.convertDefaultCurrencyToUsd(totalTipAmount) > this.MAX_TIP_USD) {
+      this.tipValidationErrorMsg = `Total tip amount cannot exceed USD ${this.MAX_TIP_USD.toFixed(2)} (max ${maxTipInDefaultCurrency.toFixed(2)} ${this._logonDataSvc.getDfltCurrCode()}).`;
+      return false;
+    }
+
+    return true;
+  }
+
   public Save() {
 
     //this._store.dispatch(removeTndrWithSaveCode({ tndrCode: "SV" }))
@@ -129,6 +201,10 @@ export class TipsModalDlgComponent implements OnInit {
       //console.log('in Save Tip: ' + obj.tipAmount);
       totalTipAmt += obj.tipAmount;
     })
+
+    if (!this.validateTipLimits(totalTipAmt)) {
+      return;
+    }
 
     this.tipTotalDC = totalTipAmt;
     this.tipTotalNDC = totalTipAmt;

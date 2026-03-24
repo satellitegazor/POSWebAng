@@ -17,6 +17,7 @@
 							autofocus
 							class="form-control shipHandling"
 							[(ngModel)]="shipHandlingAmountUIVal"
+							(ngModelChange)="onShipHandlingAmountChange($event)"
 							[appPosCurrency]="dfltCurrSymbl"
 							appPosCurrency />
 					</td>
@@ -28,11 +29,18 @@
 							maxlength="6"
 							class="form-control shipHandling"
 							appPosCurrency3
-							[(ngModel)]="shipHandlingTaxPctUIVal" />
+							[(ngModel)]="shipHandlingTaxPctUIVal"
+							(ngModelChange)="onShipHandlingTaxPctChange($event)" />
 					</td>
 					<td>%</td>
 				</tr>
 			</table>
+			<div *ngIf="shipHandlingAmountErrorMsg" class="text-danger">
+				{{shipHandlingAmountErrorMsg}}
+			</div>
+			<div *ngIf="shipHandlingTaxPctErrorMsg" class="text-danger">
+				{{shipHandlingTaxPctErrorMsg}}
+			</div>
 		</div>
 	</div>
 </div>

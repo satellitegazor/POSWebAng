@@ -21,10 +21,13 @@
             </td>
         </tr>
     </table>
+    <div *ngIf="tipValidationErrorMsg" class="text-danger" style="padding-left: 10px; padding-bottom: 10px;">
+        {{tipValidationErrorMsg}}
+    </div>
 </div>
     <div class="modal-footer">
         <div class="row">
-            <button class="btn btn-info" (click)="Save()">Save</button>&nbsp;
+            <button class="btn btn-info" [disabled]="!!tipValidationErrorMsg" (click)="Save()">Save</button>&nbsp;
             <button class="btn btn-info" (click)="Cancel()">Cancel</button>&nbsp;
         </div>
     </div>

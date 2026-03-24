@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PosCurrencyDirective } from '../../../../directives/pos-currency.directive';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -14,7 +15,7 @@ import { ToastService } from 'src/app/services/toast.service';
 
 @Component({
   selector: 'app-ship-handling',
-  imports: [FormsModule, PosCurrencyDirective],
+  imports: [CommonModule, FormsModule, PosCurrencyDirective],
   templateUrl: './ship-handling.component.html',
   styleUrl: './ship-handling.component.css'
 })
@@ -22,6 +23,8 @@ export class ShipHandlingComponent {
   dfltCurrSymbl = '€';
   shipHandlingAmountUIVal: number | null = null;
   shipHandlingTaxPctUIVal: number | null = null;
+  shipHandlingAmountErrorMsg: string = '';
+  shipHandlingTaxPctErrorMsg: string = '';
   isOConusLocation: boolean = false;
 
   shipHandlingAmountDC: number = 0;
@@ -48,7 +51,53 @@ export class ShipHandlingComponent {
       }
     });
   }
+
+  onShipHandlingAmountChange(value: number | null): void {
+    this.shipHandlingAmountErrorMsg = '';
+
+    if (value == null || value === undefined) {
+      return;
+    }
+
+    const amount = Number(value);
+    if (!Number.isFinite(amount)) {
+      return;
+    }
+
+    if (amount < 0) {
+      this.shipHandlingAmountErrorMsg = 'Shipping/Handling cannot be negative.';
+      return;
+    }
+
+    if (amount > 999999) {
+      this.shipHandlingAmountErrorMsg = 'Shipping/Handling cannot exceed 999,999.00.';
+    }
+  }
+
+  onShipHandlingTaxPctChange(value: number | null): void {
+    this.shipHandlingTaxPctErrorMsg = '';
+
+    if (value == null || value === undefined) {
+      return;
+    }
+
+    const taxPct = Number(value);
+    if (!Number.isFinite(taxPct)) {
+      return;
+    }
+
+    if (taxPct > 30) {
+      this.shipHandlingTaxPctErrorMsg = 'Tax percent cannot exceed 30%.';
+    }
+  }
+
   Continue() {
+    this.onShipHandlingAmountChange(this.shipHandlingAmountUIVal);
+    this.onShipHandlingTaxPctChange(this.shipHandlingTaxPctUIVal);
+    if (this.shipHandlingAmountErrorMsg || this.shipHandlingTaxPctErrorMsg) {
+      return;
+    }
+
     // TODO: wire into checkout flow
     if(this.dfltCurrSymbl == '$') {
       this.shipHandlingAmountDC = this.shipHandlingAmountUIVal ?? 0;
