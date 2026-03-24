@@ -225,7 +225,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
 
           tndrCopy.rrn = this.InvoiceId;
           tndrCopy.isAuthorized = false;
-          tndrCopy.authNbr = data.ApprovalCode;
+          tndrCopy.authNbr = '';
           tndrCopy.cardEndingNbr = data.CardNbrF6L4;
           tndrCopy.traceId = "false";
           tndrCopy.tenderTypeDesc = "pinpad";

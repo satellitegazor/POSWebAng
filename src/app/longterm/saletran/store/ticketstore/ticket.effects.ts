@@ -4,7 +4,7 @@ import { select, State, Store } from "@ngrx/store";
 import { EMPTY, from, of } from "rxjs";
 import { catchError, concatMap, exhaustMap, map, mergeMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { SalesTranService } from "../../services/sales-tran.service";
-import { saveTicketForGuestCheck, saveTicketForGuestCheckSuccess, saveTicketForGuestCheckFailed, saveCompleteTicketSplit, saveCompleteTicketSplitSuccess, saveCompleteTicketSplitFailed, saveTenderObj, saveTenderObjSuccess, saveTenderObjFailed, saveTicketDetail, saveTicketDetailSuccess, saveTicketDetailFailed, inactiveTicketDetail, inactiveTicketDetailSuccess, inactiveTicketDetailFailed, savePinpadResponse, savePinpadResponseFailed, savePinpadResponseSuccess, loadTicket, loadTicketSuccess, loadTicketFail, loadInProgressTenders, loadInProgressTendersSuccess, loadInProgressTendersFail } from "./ticket.action";
+import { saveTicketForGuestCheck, saveTicketForGuestCheckSuccess, saveTicketForGuestCheckFailed, saveCompleteTicketSplit, saveCompleteTicketSplitSuccess, saveCompleteTicketSplitFailed, saveTenderObj, saveTenderObjSuccess, saveTenderObjFailed, saveTicketDetail, saveTicketDetailSuccess, saveTicketDetailFailed, inactiveTicketDetail, inactiveTicketDetailSuccess, inactiveTicketDetailFailed, savePinpadResponse, savePinpadResponseFailed, savePinpadResponseSuccess, loadTicket, loadTicketSuccess, loadTicketFail, loadInProgressTenders, loadInProgressTendersSuccess, loadInProgressTendersFail, deleteDeclinedTenderFromStore } from "./ticket.action";
 import { saleTranDataInterface } from "./ticket.state";
 import { getTktObjSelector } from './ticket.selector';
 import { CPOSAppType } from "src/app/services/util.service";
@@ -58,7 +58,7 @@ export class TicketObjectEffects {
                 return this.saleTranSvc.saveTenderObj(action.tndrObj).pipe(
                     map(data => {
                         //console.log("saveTenderObj success ");
-                        return saveTenderObjSuccess({data});
+                        return saveTenderObjSuccess({data, tndrObj: action.tndrObj});
                     }),
                     catchError((errResp) => {
                         const errMessage = errResp + "Unable to save ticket data. Please logoff and logon again";
@@ -175,17 +175,34 @@ export class TicketObjectEffects {
         )
     });
 
+    removeCancelledTenderAfterSave$ = createEffect(() => {
+        return this.action$.pipe(
+            ofType(saveTenderObjSuccess),
+            mergeMap(action => {
+                const tndr = action.tndrObj;
+                if (!tndr
+                    || tndr.tenderStatus !== TenderStatusType.Cancelled
+                    || !['XC', 'XR', 'MS', 'MR', 'GC'].includes(tndr.tenderTypeCode ?? '')
+                    || !tndr.rrn) {
+                    return EMPTY;
+                }
+                return of(deleteDeclinedTenderFromStore({ rrn: tndr.rrn }));
+            })
+        );
+    });
+
     persistCancelledTendersOnLoad$ = createEffect(() => {
         return this.action$.pipe(
             ofType(loadInProgressTendersSuccess),
             withLatestFrom(this.store.pipe(select(getTktObjSelector))),
             mergeMap(([action, tktObj]) => {
-                const cancelledTenderTypeIds = new Set([10, 11, 1, 2]);
+
+                const cancelledTenderTypeCodes = new Set(['XC', 'XR', 'MS', 'MR', 'GC'].map(type => (type)));
                 const normalizeAuthNbr = (authNbr?: string | null) => (authNbr ?? '').trim();
 
                 const tendersToCancel = (action.tenders ?? []).filter(tndr => {
                     const isAuthMissing = normalizeAuthNbr(tndr.authNbr).length === 0;
-                    return tndr.tenderTypeId === 5 || (cancelledTenderTypeIds.has(tndr.tenderTypeId) && isAuthMissing);
+                    return tndr.tenderTypeCode == 'GC' || (cancelledTenderTypeCodes.has(tndr.tenderTypeCode) && isAuthMissing);
                 });
 
                 if (tendersToCancel.length === 0) {

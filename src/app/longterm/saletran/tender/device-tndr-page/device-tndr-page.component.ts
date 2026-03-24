@@ -207,6 +207,7 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
             tndrCopy.inStoreCardNbrTmp = data.ACCT_NUM;
             
             tndrCopy.tenderTypeCode = this.isDiscoverMilstarCard(data.FIRST6_LAST4) ? (isRefund? 'MR' : 'MS') : (isRefund? 'XR': 'XC');
+            tndrCopy.isDiscoverMilstar = this.isDiscoverMilstarCard(data.FIRST6_LAST4);
             tndrCopy.tenderAmount = data.APPROVED_AMOUNT;
             tndrCopy.fcTenderAmount = parseFloat((this._logonDataSvc.getExchangeRate() * data.APPROVED_AMOUNT).toCPOSFixed(2));
             tndrCopy.tndMaintTimestamp = new Date(Date.now());
@@ -214,7 +215,6 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
             tndrCopy.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
 
             // ticketTenderId is already set from the saved tender
-
             this._captureTranResponse.copyFrom(data);
             this._captureTranResponse.RRN = this.InvoiceId;
             this._captureTranResponse.ticketTenderId = tndrCopy.ticketTenderId; // Use the tender's ID from state
@@ -247,6 +247,7 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
 
             // Use the pre-stored tender ID for the pinpad response
             this._store.dispatch(addPinpadResp({ respObj: this._captureTranResponse }));
+            this._store.dispatch(savePinpadResponse({ respObj: this._captureTranResponse }));
             var tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
 
             if (TenderUtil.IsTicketComplete(tktObjData1, this._logonDataSvc.getAllowPartPay())) {

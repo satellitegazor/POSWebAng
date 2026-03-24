@@ -151,31 +151,10 @@ export const _tktObjReducer = createReducer(
       
       var newCheckOutItem: SalesTransactionCheckoutItem = JSON.parse(JSON.stringify(action.saleItem));
       var _tktObj = { ...state.tktObj };
-      // var _totalSaleAmt = 0;
-      // let amtPaidDC: number = 0;
-      // let amtPaidNDC: number = 0;
-      // let lsubTotalDC: number = 0;
-      // let lsubTotalNDC: number = 0;
-      // let lgrandTotalDC: number = 0;
-      // let lgrandTotalNDC: number = 0;
-      // let ltotalExchCpnAmtDC: number = 0;
-      // let ltotalExchCpnAmtNDC: number = 0;
-      // let ltotalSavingsDC: number = 0;
-      // let ltotalSavingsNDC: number = 0;
-      // let ltotalTaxDC: number = 0;
-      // let ltotalTaxNDC: number = 0;
+
 
       var saleAssocAry: AssociateSaleTips[] = [];
       _tktObj.tktList.forEach(k => {
-         // _totalSaleAmt += action.defCurrSymbl == '$' ? k.lineItemDollarDisplayAmount : k.fcLineItemDollarDisplayAmount;
-         // lgrandTotalDC += action.defCurrSymbl == '$' ? k.lineItemDollarDisplayAmount : k.fcLineItemDollarDisplayAmount;
-         // lgrandTotalNDC += action.defCurrSymbl == '$' ? k.fcLineItemDollarDisplayAmount : k.lineItemDollarDisplayAmount;
-         // ltotalExchCpnAmtDC += k.exchCpnAmountDC;
-         // ltotalExchCpnAmtNDC += k.exchCpnAmountNDC;
-         // ltotalSavingsDC += parseFloat((k.exchCpnAmountDC + (action.defCurrSymbl == '$' ? (k.discountAmount + k.lineItmKatsaCpnAmt) : (k.fcDiscountAmount + k.fcLineItmKatsaCpnAmt))).toCPOSFixed(2));
-         // ltotalSavingsNDC += parseFloat((k.exchCpnAmountNDC + (action.defCurrSymbl == '$' ? (k.fcDiscountAmount + k.fcLineItmKatsaCpnAmt) : (k.discountAmount + k.lineItmKatsaCpnAmt))).toCPOSFixed(2));
-         // ltotalTaxDC += parseFloat((action.defCurrSymbl == '$' ? (k.lineItemTaxAmount + k.lineItemEnvTaxAmount) : (k.fcLineItemTaxAmount + k.fcLineItemEnvTaxAmount)).toCPOSFixed(2));
-         // ltotalTaxNDC += parseFloat((action.defCurrSymbl == '$' ? (k.fcLineItemTaxAmount + k.fcLineItemEnvTaxAmount) : (k.lineItemTaxAmount + k.lineItemEnvTaxAmount)).toCPOSFixed(2));
 
          if(saleAssocAry.filter(assoc => assoc.indivLocId == k.srvdByAssociateVal).length > 0) {
             saleAssocAry.filter(assoc => assoc.indivLocId == k.srvdByAssociateVal)[0]?.tipSaleItemIdList.push(k.salesItemUID);
@@ -191,22 +170,12 @@ export const _tktObjReducer = createReducer(
 
 
       newCheckOutItem.ticketDetailId = -1 * (_tktObj.tktList.length + 1);
-      // newCheckOutItem.lineItemTaxAmount = parseFloat((state.tktObj.taxExempted ? 0 : (action.defCurrSymbl == '$' ? newCheckOutItem.unitPrice : (newCheckOutItem.unitPrice / action.dailyExchRateObj.exchangeRate))  * newCheckOutItem.quantity * newCheckOutItem.salesTaxPct * 0.01).toCPOSFixed(2));
-      // newCheckOutItem.fcLineItemTaxAmount = parseFloat((state.tktObj.taxExempted ? 0 : (action.defCurrSymbl != '$' ? newCheckOutItem.unitPrice : (newCheckOutItem.unitPrice * action.dailyExchRateObj.exchangeRate)) * newCheckOutItem.quantity * newCheckOutItem.salesTaxPct * 0.01).toCPOSFixed(2));
-      
-      // newCheckOutItem.lineItemDollarDisplayAmount = parseFloat(((((action.defCurrSymbl == '$' ? newCheckOutItem.unitPrice : (newCheckOutItem.unitPrice / action.dailyExchRateObj.exchangeRate))) * newCheckOutItem.quantity) + newCheckOutItem.lineItemTaxAmount).toCPOSFixed(2));
-      // newCheckOutItem.fcLineItemDollarDisplayAmount = parseFloat(((((action.defCurrSymbl != '$' ? newCheckOutItem.unitPrice : (newCheckOutItem.unitPrice * action.dailyExchRateObj.exchangeRate))) * newCheckOutItem.quantity) + newCheckOutItem.fcLineItemTaxAmount).toCPOSFixed(2));
-      
-      // newCheckOutItem.lineItemEnvTaxAmount = parseFloat(((((action.defCurrSymbl == '$' ? newCheckOutItem.unitPrice : (newCheckOutItem.unitPrice / action.dailyExchRateObj.exchangeRate))) * newCheckOutItem.quantity) * newCheckOutItem.envrnmtlTaxPct * 0.01).toCPOSFixed(2));
-      // newCheckOutItem.fcLineItemEnvTaxAmount = parseFloat(((((action.defCurrSymbl != '$' ? newCheckOutItem.unitPrice : (newCheckOutItem.unitPrice * action.dailyExchRateObj.exchangeRate))) * newCheckOutItem.quantity) * newCheckOutItem.envrnmtlTaxPct * 0.01).toCPOSFixed(2));
-      // newCheckOutItem.discountAmount = 0;
       newCheckOutItem.fcDiscountAmount = 0;
       newCheckOutItem.exchCpnAmountDC = 0;
       newCheckOutItem.exchCpnAmountNDC = 0;
       newCheckOutItem.couponLineItemDollarAmount = 0;
       newCheckOutItem.lineItmKatsaCpnAmt = 0;
       newCheckOutItem.fcLineItmKatsaCpnAmt = 0;
-
 
       if(saleAssocAry.filter(assoc => assoc.indivLocId == newCheckOutItem.srvdByAssociateVal).length > 0) {
          saleAssocAry.filter(assoc => assoc.indivLocId == newCheckOutItem.srvdByAssociateVal)[0]?.tipSaleItemIdList.push(newCheckOutItem.salesItemUID);
@@ -218,45 +187,14 @@ export const _tktObjReducer = createReducer(
          saleAssocAry.push(saleAssoc);
       }
 
-      // lgrandTotalDC += action.defCurrSymbl == '$' ? newCheckOutItem.lineItemDollarDisplayAmount : newCheckOutItem.fcLineItemDollarDisplayAmount;
-      // lgrandTotalNDC += action.defCurrSymbl != '$' ? newCheckOutItem.lineItemDollarDisplayAmount : newCheckOutItem.fcLineItemDollarDisplayAmount;
-      // ltotalExchCpnAmtDC += newCheckOutItem.exchCpnAmountDC;
-      // ltotalExchCpnAmtNDC += newCheckOutItem.exchCpnAmountNDC;
-      // ltotalSavingsDC += parseFloat((newCheckOutItem.exchCpnAmountDC + (action.defCurrSymbl == '$' ? (newCheckOutItem.discountAmount + newCheckOutItem.lineItmKatsaCpnAmt) : (newCheckOutItem.fcDiscountAmount + newCheckOutItem.fcLineItmKatsaCpnAmt))).toCPOSFixed(2));
-      // ltotalSavingsNDC += parseFloat((newCheckOutItem.exchCpnAmountNDC + (action.defCurrSymbl != '$' ? (newCheckOutItem.discountAmount + newCheckOutItem.lineItmKatsaCpnAmt) : (newCheckOutItem.fcDiscountAmount + newCheckOutItem.fcLineItmKatsaCpnAmt))).toCPOSFixed(2));
-      // ltotalTaxDC += parseFloat((action.defCurrSymbl == '$' ? (newCheckOutItem.lineItemTaxAmount + newCheckOutItem.lineItemEnvTaxAmount) : (newCheckOutItem.fcLineItemTaxAmount + newCheckOutItem.fcLineItemEnvTaxAmount)).toCPOSFixed(2));
-      // ltotalTaxNDC += parseFloat((action.defCurrSymbl != '$' ? (newCheckOutItem.lineItemTaxAmount + newCheckOutItem.lineItemEnvTaxAmount) : (newCheckOutItem.fcLineItemTaxAmount + newCheckOutItem.fcLineItemEnvTaxAmount)).toCPOSFixed(2));
-
-      // lsubTotalDC = parseFloat((lgrandTotalDC - ltotalTaxDC).toCPOSFixed(2));
-      // lsubTotalNDC = parseFloat((lgrandTotalNDC - ltotalTaxNDC).toCPOSFixed(2));
-
-      // lgrandTotalDC += action.defCurrSymbl == '$' ? (state.tktObj.shipHandling + state.tktObj.shipHandlingTaxAmt) : (state.tktObj.shipHandlingFC + state.tktObj.shipHandlingTaxAmtFC);
-      // lgrandTotalNDC += action.defCurrSymbl != '$' ? (state.tktObj.shipHandling + state.tktObj.shipHandlingTaxAmt) : (state.tktObj.shipHandlingFC + state.tktObj.shipHandlingTaxAmtFC);
-
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
             tktList: [...state.tktObj?.tktList,
                newCheckOutItem],
-            //totalSale: action.defCurrSymbl == '$' ? lgrandTotalDC : lgrandTotalNDC,
-            //totalSaleFC: action.defCurrSymbl == '$' ? lgrandTotalNDC : lgrandTotalDC,
             associateTips: saleAssocAry,
-            //balanceDue: lsubTotalDC
          },
-         // tktTotals: {
-         //    ...state.tktTotals,
-         //    subTotalDC: lsubTotalDC,
-         //    subTotalNDC: lsubTotalNDC,
-         //    grandTotalDC: lgrandTotalDC,
-         //    totalExchCpnAmtDC: ltotalExchCpnAmtDC,
-         //    totalExchCpnAmtNDC: ltotalExchCpnAmtNDC,
-         //    totalSavingsDC: ltotalSavingsDC,
-         //    totalSavingsNDC: ltotalSavingsNDC,
-         //    totalTaxDC: ltotalTaxDC,
-         //    totalTaxNDC: ltotalTaxNDC,
-         //    grandTotalNDC: lgrandTotalNDC
-         // }
       };
    }),
    
@@ -1059,100 +997,6 @@ export const _tktObjReducer = createReducer(
          cpnAmtNDC = parseFloat((cpnAmt * (dfltCurrCode == "USD" ? exchRate : (1 / exchRate))).toCPOSFixed(2));
       }
 
-      // lineItemGrantTotal = tktItem.unitPrice * tktItem.quantity;
-      // lineitemGrandTotalNDC = parseFloat((tktItem.unitPrice * tktItem.quantity * (dfltCurr == "USD" ? action.logonDataSvc.getExchangeRate() : (1 / action.logonDataSvc.getExchangeRate()))).toCPOSFixed(2));
-
-      // const targetLineItemGrantTotal = lineItemGrantTotal;
-      // const targetLineitemGrandTotalNDC = lineitemGrandTotalNDC;
-
-      // if (cpnPct > 0) {
-      //    vndDiscAmtDC = parseFloat((targetLineItemGrantTotal * cpnPct / 100).toCPOSFixed(2));
-      //    vndDiscAmtNDC = parseFloat((targetLineitemGrandTotalNDC * cpnPct / 100).toCPOSFixed(2));
-      // }
-      // else if (cpnAmt > 0) {
-      //    vndDiscAmtDC = parseFloat((cpnAmt).toCPOSFixed(2));
-      //    vndDiscAmtNDC = parseFloat((cpnAmt * (dfltCurr == "USD" ? action.logonDataSvc.getExchangeRate() : (1 / action.logonDataSvc.getExchangeRate()))).toCPOSFixed(2));
-      // }
-
-      // let item = state.tktObj.tktList.filter(item => item.salesItemUID == action.saleItemId && item.ticketDetailId == action.tktDtlId)[0]
-
-      // const itemLineTotalDC = parseFloat((item.unitPrice * item.quantity).toCPOSFixed(2));
-      // const itemLineTotalNDC = parseFloat((itemLineTotalDC * (dfltCurr == "USD" ? action.logonDataSvc.getExchangeRate() : (1 / action.logonDataSvc.getExchangeRate()))).toCPOSFixed(2));
-
-      // const itemExchDiscDC = item.exchCpnAmountDC;
-      // const itemExchDiscNDC = item.exchCpnAmountNDC;
-
-      // const itemDCBeforeTaxDiscount = (vendAfterTax ? 0 : vndDiscAmtDC) + (exchAfterTax ? 0 : itemExchDiscDC);
-      // const itemNDCBeforeTaxDiscount = (vendAfterTax ? 0 : vndDiscAmtNDC) + (exchAfterTax ? 0 : itemExchDiscNDC);
-
-      // let itemDcLineItemTaxAmount = 0;
-      // let itemNdcLineItemTaxAmount = 0;
-      // let itemDcLineItemEnvTaxAmount = 0;
-      // let itemNdcLineItemEnvTaxAmount = 0;
-      // let itemDcLineItemDollarDisplayAmount = 0;
-      // let itemNdcLineItemDollarDisplayAmount = 0;
-
-      // if (state.tktObj.taxExempted) {
-      //    itemDcLineItemDollarDisplayAmount = itemLineTotalDC - (vndDiscAmtDC + itemExchDiscDC);
-      //    itemNdcLineItemDollarDisplayAmount = itemLineTotalNDC - (vndDiscAmtNDC + itemExchDiscNDC);
-      // }
-      // else {
-      //    itemDcLineItemTaxAmount = parseFloat(((itemLineTotalDC - itemDCBeforeTaxDiscount) * item.salesTaxPct / 100).toCPOSFixed(2));
-      //    itemNdcLineItemTaxAmount = parseFloat(((itemLineTotalNDC - itemNDCBeforeTaxDiscount) * item.salesTaxPct / 100).toCPOSFixed(2));
-
-      //    itemDcLineItemEnvTaxAmount = parseFloat(((itemLineTotalDC - itemDCBeforeTaxDiscount) * item.envrnmtlTaxPct / 100).toCPOSFixed(2));
-      //    itemNdcLineItemEnvTaxAmount = parseFloat(((itemLineTotalNDC - itemNDCBeforeTaxDiscount) * item.envrnmtlTaxPct / 100).toCPOSFixed(2));
-
-      //    itemDcLineItemDollarDisplayAmount = parseFloat(((itemLineTotalDC - (vndDiscAmtDC + itemExchDiscDC) + itemDcLineItemTaxAmount + itemDcLineItemEnvTaxAmount)).toCPOSFixed(2));
-      //    itemNdcLineItemDollarDisplayAmount = parseFloat(((itemLineTotalNDC - (vndDiscAmtNDC + itemExchDiscNDC) + itemNdcLineItemTaxAmount + itemNdcLineItemEnvTaxAmount)).toCPOSFixed(2));
-      // }
-
-      // const itemDcDiscountAmount = vndDiscAmtDC;
-      // const itemNdcDiscountAmount = vndDiscAmtNDC;
-      // const itemDcCouponLineItemDollarAmount = itemExchDiscDC;
-      // const itemNdcCouponLineItemDollarAmount = itemExchDiscNDC;
-
-      // lineItemGrantTotal = 0;
-      // lineitemGrandTotalNDC = 0;
-      // subTotalDC = 0;
-      // subTotalNDC = 0;
-      // totalSavingsDC = 0;
-      // totalSavingsNDC = 0;
-      // totalTaxDC = 0;
-      // totalTaxNDC = 0;
-      // for (let i = 0; i < state.tktObj.tktList.length; i++) {
-      //    if (state.tktObj.tktList[i].salesItemUID == action.saleItemId && state.tktObj.tktList[i].ticketDetailId == action.tktDtlId) {
-      //       lineItemGrantTotal = parseFloat((lineItemGrantTotal + (dfltCurr == "USD" ? itemDcLineItemDollarDisplayAmount : itemNdcLineItemDollarDisplayAmount)).toCPOSFixed(2));
-      //       lineitemGrandTotalNDC = parseFloat((lineitemGrandTotalNDC + (dfltCurr == "USD" ? itemNdcLineItemDollarDisplayAmount : itemDcLineItemDollarDisplayAmount)).toCPOSFixed(2));
-
-      //       subTotalDC = parseFloat((subTotalDC + (dfltCurr == "USD" ? (itemDcLineItemDollarDisplayAmount - (itemDcLineItemTaxAmount + itemDcLineItemEnvTaxAmount)) :
-      //          (itemNdcLineItemDollarDisplayAmount - (itemNdcLineItemTaxAmount + itemNdcLineItemEnvTaxAmount)))).toCPOSFixed(2));
-      //       subTotalNDC = parseFloat((subTotalNDC + (dfltCurr == "USD" ? (itemNdcLineItemDollarDisplayAmount - (itemNdcLineItemTaxAmount + itemNdcLineItemEnvTaxAmount)) :
-      //          (itemDcLineItemDollarDisplayAmount - (itemDcLineItemTaxAmount + itemDcLineItemEnvTaxAmount)))).toCPOSFixed(2));
-
-      //       totalSavingsDC = parseFloat((totalSavingsDC + (dfltCurr == "USD" ? (itemDcDiscountAmount + itemDcCouponLineItemDollarAmount) : (itemNdcDiscountAmount + itemNdcCouponLineItemDollarAmount))).toCPOSFixed(2));
-      //       totalSavingsNDC = parseFloat((totalSavingsNDC + (dfltCurr == "USD" ? (itemNdcDiscountAmount + itemNdcCouponLineItemDollarAmount) : (itemDcDiscountAmount + itemDcCouponLineItemDollarAmount))).toCPOSFixed(2));
-
-      //       totalTaxDC = parseFloat((totalTaxDC + (dfltCurr == "USD" ? itemDcLineItemTaxAmount : itemNdcLineItemTaxAmount)).toCPOSFixed(2));
-      //       totalTaxNDC = parseFloat((totalTaxNDC + (dfltCurr == "USD" ? itemNdcLineItemTaxAmount : itemDcLineItemTaxAmount)).toCPOSFixed(2));
-      //    }
-      //    else {
-      //       lineItemGrantTotal = parseFloat((lineItemGrantTotal + (dfltCurr == "USD" ? state.tktObj.tktList[i].lineItemDollarDisplayAmount : state.tktObj.tktList[i].fcLineItemDollarDisplayAmount)).toCPOSFixed(2));
-      //       lineitemGrandTotalNDC = parseFloat((lineitemGrandTotalNDC + (dfltCurr == "USD" ? state.tktObj.tktList[i].fcLineItemDollarDisplayAmount : state.tktObj.tktList[i].lineItemDollarDisplayAmount)).toCPOSFixed(2));
-
-      //       subTotalDC = parseFloat((subTotalDC + (dfltCurr == "USD" ? (state.tktObj.tktList[i].lineItemDollarDisplayAmount - (state.tktObj.tktList[i].lineItemTaxAmount + state.tktObj.tktList[i].lineItemEnvTaxAmount)) :
-      //          (state.tktObj.tktList[i].fcLineItemDollarDisplayAmount - (state.tktObj.tktList[i].fcLineItemTaxAmount + state.tktObj.tktList[i].fcLineItemEnvTaxAmount)))).toCPOSFixed(2));
-      //       subTotalNDC = parseFloat((subTotalNDC + (dfltCurr == "USD" ? (state.tktObj.tktList[i].fcLineItemDollarDisplayAmount - (state.tktObj.tktList[i].fcLineItemTaxAmount + state.tktObj.tktList[i].fcLineItemEnvTaxAmount)) :
-      //          (state.tktObj.tktList[i].lineItemDollarDisplayAmount - (state.tktObj.tktList[i].lineItemTaxAmount + state.tktObj.tktList[i].lineItemEnvTaxAmount)))).toCPOSFixed(2));
-
-      //       totalSavingsDC = parseFloat((totalSavingsDC + (dfltCurr == "USD" ? (state.tktObj.tktList[i].discountAmount + state.tktObj.tktList[i].couponLineItemDollarAmount) : (state.tktObj.tktList[i].fcDiscountAmount + state.tktObj.tktList[i].fcCouponLineItemDollarAmount))).toCPOSFixed(2));
-      //       totalSavingsNDC = parseFloat((totalSavingsNDC + (dfltCurr == "USD" ? (state.tktObj.tktList[i].fcDiscountAmount + state.tktObj.tktList[i].fcCouponLineItemDollarAmount) : (state.tktObj.tktList[i].discountAmount + state.tktObj.tktList[i].couponLineItemDollarAmount))).toCPOSFixed(2));
-
-      //       totalTaxDC = parseFloat((totalTaxDC + (dfltCurr == "USD" ? state.tktObj.tktList[i].lineItemTaxAmount : state.tktObj.tktList[i].fcLineItemTaxAmount)).toCPOSFixed(2));
-      //       totalTaxNDC = parseFloat((totalTaxNDC + (dfltCurr == "USD" ? state.tktObj.tktList[i].fcLineItemTaxAmount : state.tktObj.tktList[i].lineItemTaxAmount)).toCPOSFixed(2));
-      //    }
-      // }
-
       return {
          ...state,
          tktObj: {
@@ -1162,18 +1006,6 @@ export const _tktObjReducer = createReducer(
                if (itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.tktDtlId) {
                   return {
                      ...itm,
-                     // exchangeCouponDiscountPct: itm.exchangeCouponDiscountPct > 0 ? action.cpnPct : itm.exchangeCouponDiscountPct,
-
-                     // lineItemDollarDisplayAmount: dfltCurr == "USD" ? itemDcLineItemDollarDisplayAmount : itemNdcLineItemDollarDisplayAmount,
-                     // fcLineItemDollarDisplayAmount: dfltCurr == "USD" ? itemNdcLineItemDollarDisplayAmount : itemDcLineItemDollarDisplayAmount,
-
-                     // lineItemTaxAmount: dfltCurr == "USD" ? itemDcLineItemTaxAmount : itemNdcLineItemTaxAmount,
-                     // lineItemEnvTaxAmount: dfltCurr == "USD" ? itemDcLineItemEnvTaxAmount : itemNdcLineItemEnvTaxAmount,
-                     // fCLineItemTaxAmount: dfltCurr == "USD" ? itemNdcLineItemTaxAmount : itemDcLineItemTaxAmount,
-                     // fcLineItemEnvTaxAmount: dfltCurr == "USD" ? itemNdcLineItemEnvTaxAmount : itemDcLineItemEnvTaxAmount,
-
-                     // fcCouponLineItemDollarAmount: dfltCurr == "USD" ? itemDcCouponLineItemDollarAmount : itemNdcCouponLineItemDollarAmount,
-                     // fCCouponLineItemDollarAmount: dfltCurr == "USD" ? itemNdcCouponLineItemDollarAmount : itemDcCouponLineItemDollarAmount,
 
                      discountAmount: dfltCurrCode == "USD" ? cpnAmt : cpnAmtNDC,
                      fcDiscountAmount: dfltCurrCode == "USD" ? cpnAmtNDC : cpnAmt,
@@ -1191,20 +1023,6 @@ export const _tktObjReducer = createReducer(
                }
             })
          },
-         // tktTotals: {
-         //    ...state.tktTotals,
-         //    subTotalDC: subTotalDC,
-         //    subTotalNDC: subTotalNDC,
-
-         //    totalTaxDC: totalTaxDC,
-         //    totalTaxNDC: totalTaxNDC,
-
-         //    grandTotalDC: lineItemGrantTotal,
-         //    grandTotalNDC: lineitemGrandTotalNDC,
-
-         //    totalSavingsDC: totalSavingsDC,
-         //    totalSavingsNDC: totalSavingsNDC,
-         // }
       }
    }),
    on(upsertTranExchCpn, (state, action) => {
@@ -1212,116 +1030,6 @@ export const _tktObjReducer = createReducer(
       let exchRate = action.logonDataSvc.getExchangeRate();
       let dfltCurr = action.logonDataSvc.getDfltCurrCode();
       let IsForeignCurr = action.logonDataSvc.getIsForeignCurr();
-      // let lineItemGrantTotal: number = 0, lineitemGrandTotalNDC: number = 0;
-      // let cpnPct = 0, exchDiscAmtDC = 0, exchDiscAmtNDC = 0;
-      // let subTotalDC = 0, subTotalNDC = 0, grandTotalDC = 0, grandTotalNDC = 0;
-      // let totalExchCpnAmtDC = 0, totalExchCpnAmtNDC = 0, totalSavingsDC = 0, totalSavingsNDC = 0;
-      // let tktListCopy: SalesTransactionCheckoutItem[] = JSON.parse(JSON.stringify(state.tktObj.tktList))
-      // let updateCpn: boolean = false;
-
-      // let totalTaxDC: number = 0;
-      // let totalTaxNDC: number = 0;
-
-      // if (action.logonDataSvc.getLoadTicket() && state.tktTotals.amtPaidDC == 0) {
-      //    updateCpn = true;
-      // }
-      // const vendAfterTax = action.logonDataSvc.getVendorCouponAfterTax();
-      // const exchAfterTax = action.logonDataSvc.getExchCouponAfterTax();
-
-      // const totalBaseDC = tktListCopy.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
-      // const totalBaseNDC = tktListCopy.reduce((sum, item) => sum + (item.fcUnitPrice * item.quantity), 0);
-
-      // const totalCouponDC = action.cpnPct > 0
-      //    ? 0
-      //    : parseFloat((action.cpnAmt * (dfltCurr == "USD" ? 1 : exchRate)).toCPOSFixed(2));
-      // const totalCouponNDC = action.cpnPct > 0
-      //    ? 0
-      //    : parseFloat((action.cpnAmt * (dfltCurr == "USD" ? exchRate : 1)).toCPOSFixed(2));
-
-      // let remainingCouponDC = totalCouponDC;
-      // let remainingCouponNDC = totalCouponNDC;
-
-      // tktListCopy.forEach((item, idx) => {
-      //    item.exchCpnAmountDC = 0;
-      //    item.exchCpnAmountNDC = 0;
-      //    item.couponLineItemDollarAmount = 0;
-      //    item.fcCouponLineItemDollarAmount = 0;
-
-      //    lineItemGrantTotal = parseFloat((item.unitPrice * item.quantity).toCPOSFixed(2));
-      //    lineitemGrandTotalNDC = parseFloat((item.fcUnitPrice * item.quantity).toCPOSFixed(2));
-
-      //    subTotalDC += lineItemGrantTotal;
-      //    subTotalNDC += lineitemGrandTotalNDC;
-
-      //    if (action.cpnPct > 0) {
-      //       exchDiscAmtDC = parseFloat((lineItemGrantTotal * action.cpnPct / 100).toCPOSFixed(2));
-      //       exchDiscAmtNDC = parseFloat((lineitemGrandTotalNDC * action.cpnPct / 100).toCPOSFixed(2));
-      //    }
-      //    else {
-      //       const isLast = idx === (tktListCopy.length - 1);
-      //       if (!isLast) {
-      //          exchDiscAmtDC = totalBaseDC > 0
-      //             ? parseFloat((totalCouponDC * (lineItemGrantTotal / totalBaseDC)).toCPOSFixed(2))
-      //             : 0;
-      //          exchDiscAmtNDC = totalBaseNDC > 0
-      //             ? parseFloat((totalCouponNDC * (lineitemGrandTotalNDC / totalBaseNDC)).toCPOSFixed(2))
-      //             : 0;
-
-      //          remainingCouponDC = parseFloat((remainingCouponDC - exchDiscAmtDC).toCPOSFixed(2));
-      //          remainingCouponNDC = parseFloat((remainingCouponNDC - exchDiscAmtNDC).toCPOSFixed(2));
-      //       }
-      //       else {
-      //          exchDiscAmtDC = parseFloat(remainingCouponDC.toCPOSFixed(2));
-      //          exchDiscAmtNDC = parseFloat(remainingCouponNDC.toCPOSFixed(2));
-      //       }
-      //    }
-      //    item.exchCpnAmountDC = exchDiscAmtDC;
-      //    item.exchCpnAmountNDC = exchDiscAmtNDC;
-
-      //    totalExchCpnAmtDC += exchDiscAmtDC;
-      //    totalExchCpnAmtNDC += exchDiscAmtNDC;
-
-      //    const totalDiscountDC = exchDiscAmtDC + (item.vndCpnAmountDC || 0);
-      //    const totalDiscountNDC = exchDiscAmtNDC + (item.vndCpnAmountNDC || 0);
-
-      //    const preTaxDiscountDC = (vendAfterTax ? 0 : (item.vndCpnAmountDC || 0)) + (exchAfterTax ? 0 : exchDiscAmtDC);
-      //    const preTaxDiscountNDC = (vendAfterTax ? 0 : (item.vndCpnAmountNDC || 0)) + (exchAfterTax ? 0 : exchDiscAmtNDC);
-
-      //    const taxableBaseDC = lineItemGrantTotal - preTaxDiscountDC;
-      //    const taxableBaseNDC = lineitemGrandTotalNDC - preTaxDiscountNDC;
-
-      //    if (state.tktObj.taxExempted) {
-      //       item.lineItemTaxAmount = 0;
-      //       item.lineItemEnvTaxAmount = 0;
-      //       item.lineItemDollarDisplayAmount = parseFloat((lineItemGrantTotal - totalDiscountDC).toCPOSFixed(2));
-
-      //       item.fcLineItemTaxAmount = 0;
-      //       item.fcLineItemEnvTaxAmount = 0;
-      //       item.fcLineItemDollarDisplayAmount = parseFloat((lineitemGrandTotalNDC - totalDiscountNDC).toCPOSFixed(2));
-      //    }
-      //    else {
-      //       item.lineItemTaxAmount = parseFloat((taxableBaseDC * item.salesTaxPct / 100).toCPOSFixed(2));
-      //       item.fcLineItemTaxAmount = parseFloat((taxableBaseNDC * item.salesTaxPct / 100).toCPOSFixed(2));
-
-      //       item.fcLineItemEnvTaxAmount = parseFloat((taxableBaseNDC * item.envrnmtlTaxPct / 100).toCPOSFixed(2));
-      //       item.lineItemEnvTaxAmount = parseFloat((taxableBaseDC * item.envrnmtlTaxPct / 100).toCPOSFixed(2));
-
-      //       item.lineItemDollarDisplayAmount = parseFloat((lineItemGrantTotal - totalDiscountDC + item.lineItemTaxAmount + item.lineItemEnvTaxAmount).toCPOSFixed(2));
-      //       item.fcLineItemDollarDisplayAmount = parseFloat((lineitemGrandTotalNDC - totalDiscountNDC + item.fcLineItemTaxAmount + item.fcLineItemEnvTaxAmount).toCPOSFixed(2));
-      //    }
-
-      //    item.fcCouponLineItemDollarAmount = parseFloat((exchDiscAmtNDC + item.vndCpnAmountNDC).toCPOSFixed(2));
-      //    item.couponLineItemDollarAmount = parseFloat((exchDiscAmtDC + item.vndCpnAmountDC).toCPOSFixed(2));
-
-      //    totalTaxDC += item.lineItemTaxAmount;
-      //    totalTaxNDC += item.fcLineItemTaxAmount;
-
-      //    grandTotalDC += item.lineItemDollarDisplayAmount;
-      //    grandTotalNDC += item.fcLineItemDollarDisplayAmount;
-
-      //    totalSavingsDC += item.couponLineItemDollarAmount;
-      //    totalSavingsNDC += item.fcCouponLineItemDollarAmount;
-      // });
 
       let exchDiscAmtDC = 0;
       let exchDiscAmtNDC = 0;
@@ -1539,7 +1247,7 @@ export const _tktObjReducer = createReducer(
 
    on(loadTicketSuccess, (state, { tktObj: loadedTktObj }) => {
 
-      const cancelledTenderTypeIds = new Set([10, 11, 1, 2]);
+      const cancelledTenderTypeIds = new Set(['XC', 'XR', 'MS', 'MR', 'GC'].map(type => (type)));
       const normalizeAuthNbr = (authNbr?: string | null) => (authNbr ?? '').trim();
       const rawLoadedTicket = loadedTktObj as any;
       const shipHandlingFc = rawLoadedTicket.fCShipHandling ?? rawLoadedTicket.fcShipHandling ?? rawLoadedTicket.shipHandlingFC ?? 0;
@@ -1548,13 +1256,12 @@ export const _tktObjReducer = createReducer(
       const tenderList = TicketTender.deepCopyTenderList(loadedTktObj.tenders).map(tndr => {
          const isAuthMissing = normalizeAuthNbr(tndr.authNbr).length === 0;
 
-         if (tndr.tenderTypeId === 5 || (cancelledTenderTypeIds.has(tndr.tenderTypeId) && isAuthMissing)) {
+         if (cancelledTenderTypeIds.has(tndr.tenderTypeCode) && isAuthMissing) {
             return {
                ...tndr,
                tenderStatus: TenderStatusType.Cancelled
             };
          }
-
          return tndr;
       });
 

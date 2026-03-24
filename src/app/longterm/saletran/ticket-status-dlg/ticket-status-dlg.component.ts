@@ -137,6 +137,7 @@ export class TicketStatusDlgComponent implements OnInit, OnDestroy {
   }
 
   save(): void {
+    
     const savedTicketStatus = this._cloneTicketStatus(this.editableTicketStatus);
     savedTicketStatus.readyByDate = this._combineDateAndTime(this.readyByDateValue, this.readyByTimeValue);
     savedTicketStatus.payByDueDate = this._toDateOrNull(this.nextPaymentDueValue);

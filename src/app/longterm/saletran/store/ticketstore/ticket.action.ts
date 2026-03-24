@@ -118,7 +118,7 @@ export const saveCompleteTicketSplitFailed = createAction(SAVE_COMPLETE_TICKET_S
 export const saveTenderObj = createAction(SAVE_TENDER_OBJ,
     props<{tndrObj: TicketTender}>());
 export const saveTenderObjSuccess = createAction(SAVE_TENDER_OBJ_SUCCESS,
-    props<{data: SaveTenderResultModel}>());
+    props<{data: SaveTenderResultModel, tndrObj?: TicketTender}>());
 export const saveTenderObjFailed = createAction(SAVE_TENDER_OBJ_FAILED,
     props<{data: SaveTenderResultModel}>());
 
