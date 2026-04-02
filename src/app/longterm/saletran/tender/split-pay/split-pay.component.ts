@@ -88,6 +88,7 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
   private routeSubscription: Subscription = {} as Subscription;
   dcCurrSymbl: string | undefined;
   ndcCurrSymbl: string | undefined;
+  isOConusLocation: boolean = false;
 
   tenderDescrition (tndrCode: string): string {
     return this._utlSvc.tenderCodeDescMap.get(tndrCode) || '';
@@ -99,6 +100,7 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
     this._tenderTypesModel = this._logonDataSvc.getTenderTypes();
     this.dcCurrSymbl = this._utlSvc.currencySymbols.get(this._logonDataSvc.getDfltCurrCode());
     this.ndcCurrSymbl = this._utlSvc.currencySymbols.get(this._logonDataSvc.getNonDfltCurrCode());
+    this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
 
     this.tenderButtonUIDisplay();
 
@@ -185,6 +187,11 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
     }
   }
 
+  private blurActiveElement(): void {
+    const activeElement = document.activeElement as HTMLElement | null;
+    activeElement?.blur();
+  }
+
   public tenderButtonUIDisplay(): void {
 
     this._displayTenders = this._tenderTypesModel.types?.filter((tndr) => tndr.isRefundType == false);
@@ -196,6 +203,7 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
     ////console.log('SplitPay component TipAmountChanged called with event:', evt);
     if (Number(Number(evt.target.value).toCPOSFixed(2)) > this.totalToPayDC) {
       evt.target.value = Number(Number(this.totalToPayDC).toCPOSFixed(2));
+      this.blurActiveElement();
       const modalRef = this.modalService.open(AlertModalComponent, this.modalOptions);
       modalRef.componentInstance.title = 'Tender Amount Exceeds Total';
       modalRef.componentInstance.message = 'The tender amount cannot exceed the total amount due.';
@@ -219,6 +227,7 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
       return;
     }
 
+    this.blurActiveElement();
     this._confirmModalRef = this.modalService.open(this.voidPaymentsConfirmDialog, {
       ...this.modalOptions,
       centered: true

@@ -1,11 +1,11 @@
 <div class="panel">
     <div class="panel-body">
-        <div class="tender-amounts-container">
+        <div class="tender-amounts-container" [class.single-card]="!isOConusLocation">
             <div class="tender-amount-card">
                 <div class="tender-label">Tender Amount (Default Currency)</div>
                 <div class="tender-value dc-amount">{{dcCurrSymbl}}{{tenderAmountDC | number:'1.2-2'}}</div>
             </div>
-            <div class="tender-amount-card">
+            <div *ngIf="isOConusLocation" class="tender-amount-card">
                 <div class="tender-label">Tender Amount (Foreign Currency)</div>
                 <div class="tender-value fc-amount">{{ndcCurrSymbl}}{{tenderAmountNDC | number:'1.2-2'}}</div>
             </div>
@@ -31,7 +31,7 @@
             </div>
         </div>
 
-        <div class="currency-group" *ngIf="foreignFastCashButtons.length > 0">
+        <div *ngIf="isOConusLocation && foreignFastCashButtons.length > 0" class="currency-group">
             <h4 class="currency-title">{{ndcCurrencyCode}}</h4>
             <div class="buttons-grid">
                 <button *ngFor="let amount of foreignFastCashButtons" class="quick-cash-btn"

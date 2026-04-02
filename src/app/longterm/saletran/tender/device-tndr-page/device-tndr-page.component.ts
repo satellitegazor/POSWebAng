@@ -28,7 +28,7 @@ import { RedeeemGiftCardTndrsService } from '../redeeem-gift-card-tndrs.service'
   selector: 'app-tender-page',
   templateUrl: './device-tndr-page.component.html',
   styleUrls: ['./device-tndr-page.component.css'],
-  standalone: false
+  standalone: false,
 })
 export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDestroy {
 
@@ -53,17 +53,19 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
   private _tndrObj: TicketTender = new TicketTender();
   public isWaitingForPinpad: boolean = false;
   private InvoiceId: string = '';
-  private _ticketTenderId: number = 0; // Store the generated tender ID from DB
+  private _ticketTenderId: number = -Date.now() % 10000; // Store the generated tender ID from DB
 
   private subscription: Subscription = {} as Subscription;
   private destroy$ = new Subject<void>(); // Subject to manage subscription cleanup
   private authorizationInProgress: boolean = false; // Flag to prevent multiple authorization calls
   private isSplitPay: boolean = false;
+  public isOConusLocation: boolean = false;
 
   ngOnInit(): void {
     this._store.select(getIsSplitPayR5).subscribe(flag => {
       this.isSplitPay = flag;
     }).unsubscribe();
+    this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
   }
 
   ngOnDestroy(): void {

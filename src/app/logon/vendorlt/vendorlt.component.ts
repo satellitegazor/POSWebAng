@@ -16,9 +16,10 @@ import { ResetPinDlgComponent } from './reset-pin-dlg/reset-pin-dlg.component';
 import { MandateTrainingComponent } from './mandate-training/mandate-training.component';
 import { ToastService } from 'src/app/services/toast.service';
 import { HttpClient } from '@angular/common/http';
-import { initTktObj, loadTicket, loadTicketSuccess, updateCheckoutTotals } from 'src/app/longterm/saletran/store/ticketstore/ticket.action';
+import { addTabSerialToTktObj, initTktObj, loadTicket, loadTicketSuccess, updateCheckoutTotals } from 'src/app/longterm/saletran/store/ticketstore/ticket.action';
 import { TktObjState } from 'src/app/app.state';
 import { Actions, ofType } from '@ngrx/effects';
+import { CPOSWebSvcService } from 'src/app/longterm/saletran/services/cposweb-svc.service';
 
 @Component({
     selector: 'app-logon-vendorlt',
@@ -40,6 +41,7 @@ export class VendorLTComponent implements OnInit {
     verifoneAPIUrl: string = 'http://localhost:8000/cposwebsvc/pinpad/';
     
     
+    
 
     constructor(private logonSvc: LogonSvc, 
         private router: Router,
@@ -51,7 +53,8 @@ export class VendorLTComponent implements OnInit {
         private _modalService: NgbModal,
         private _httpClient: HttpClient,
         private _tktObjStore: Store<TktObjState>,
-        private actions$: Actions) { }
+        private actions$: Actions,
+        private _cposWebSvc: CPOSWebSvcService) { }
     cookieVal = '';
     ngOnInit() {
 
@@ -89,7 +92,6 @@ export class VendorLTComponent implements OnInit {
             if(data == null) {
                 return;
             }
-            //debugger;
 
             let inProgTranId = 0;
 
@@ -185,6 +187,12 @@ export class VendorLTComponent implements OnInit {
                     
                     this._toastSvc.info("An incomplete ticket has been found. Please complete it or void it!!");
                     this._locConfigStore.dispatch(loadTicket({ tranId: inProgTranId, locationId: locModel.locationUID, indivId: locModel.individualUID }))
+
+                    this._cposWebSvc.pinpadHeartbeat("PING").subscribe(data => {
+                        if (data.IsSuccess) {
+                            this._tktObjStore.dispatch(addTabSerialToTktObj({ tabSerialNum: data.TabMachineName, ipAddress: data.IpAddress }));
+                        }
+                    });
 
                     this.actions$.pipe(ofType(loadTicketSuccess)).subscribe(() => {
                         setTimeout((logonDataSvc, locConfigStore, routr) => {

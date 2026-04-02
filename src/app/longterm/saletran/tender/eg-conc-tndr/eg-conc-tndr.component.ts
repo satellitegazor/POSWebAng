@@ -17,11 +17,12 @@ import { ToastService } from 'src/app/services/toast.service';
 import { DecimalPipe } from '@angular/common';
 import { RedeeemGiftCardTndrsService } from '../redeeem-gift-card-tndrs.service';
 
+
 @Component({
   selector: 'app-eg-conc-tndr',
-  imports: [DecimalPipe],
   templateUrl: './eg-conc-tndr.component.html',
-  styleUrl: './eg-conc-tndr.component.css'
+  styleUrl: './eg-conc-tndr.component.css',
+  standalone: false,
 })
 export class EgConcTndrComponent {
 
@@ -36,6 +37,7 @@ export class EgConcTndrComponent {
   ndcCurrSymbl: string | undefined;
   tenderAmountNDC: number | undefined;
   tenderAmountDC: number | undefined;
+  isOConusLocation: boolean = false;
 
   constructor(private _cposWebSvc: CPOSWebSvcService,
     private _store: Store<saleTranDataInterface>,
@@ -46,6 +48,7 @@ export class EgConcTndrComponent {
     private _toastSvc: ToastService,
     private _redeemGiftCardTndrsSvc: RedeeemGiftCardTndrsService) {
     // Initialization logic can go here if needed
+    this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
   }
 
   private _tktObj: TicketSplit = {} as TicketSplit;
@@ -107,7 +110,7 @@ export class EgConcTndrComponent {
     this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
     this._tndrObj.tenderTypeDesc = this._utilSvc.tenderCodeDescMap.get(this._tndrObj.tenderTypeCode) || 'Eagle Cash';
     this._tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
-    this._tndrObj.ticketTenderId = 0;
+    this._tndrObj.ticketTenderId = -Date.now() % 10000;
     this._store.dispatch(addTender({ tndrObj: this._tndrObj }));
 
     var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;

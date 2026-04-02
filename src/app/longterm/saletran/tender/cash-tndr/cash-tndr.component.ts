@@ -12,16 +12,15 @@ import { firstValueFrom, forkJoin, Subscription, take } from 'rxjs';
 import { getIsSplitPayR5, getRemainingBal, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { TenderUtil } from '../tender-util';
 import { addTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj } from '../../store/ticketstore/ticket.action';
-import { CommonModule } from '@angular/common';
 import { RedeemGiftCardTenders } from '../redeem-gift-card-tenders';
 import { ToastService } from 'src/app/services/toast.service';
 import { RedeeemGiftCardTndrsService } from '../redeeem-gift-card-tndrs.service';
 
 @Component({
   selector: 'app-cash-tndr',
-  imports: [CommonModule],
   templateUrl: './cash-tndr.component.html',
-  styleUrl: './cash-tndr.component.css'
+  styleUrls: ['./cash-tndr.component.css'],
+  standalone: false,
 })
 export class CashTndrComponent implements OnInit {
 
@@ -35,6 +34,7 @@ export class CashTndrComponent implements OnInit {
   ndcCurrencyCode: string = '';
   tenderAmountNDC: number | undefined;
   tenderAmountDC: number | undefined;
+  isOConusLocation: boolean = false;
 
   constructor(private _cposWebSvc: CPOSWebSvcService,
     private _store: Store<saleTranDataInterface>,
@@ -45,7 +45,7 @@ export class CashTndrComponent implements OnInit {
     private _toastSvc: ToastService,
     private _redeemGiftCardTndrsSvc: RedeeemGiftCardTndrsService) {
     // Initialization logic can go here if needed
-
+    this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
   }
 
   private _tktObj: TicketSplit = {} as TicketSplit;
@@ -82,7 +82,7 @@ export class CashTndrComponent implements OnInit {
 
       this._tndrObj.tenderTypeCode = params['code'] || 'CA';
       this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
-      this._tndrObj.ticketTenderId = 0; // Will be set when added to store
+      this._tndrObj.ticketTenderId = -Date.now() % 10000;
       this._tndrObj.tenderTypeDesc = this._utilSvc.tenderCodeDescMap.get(this._tndrObj.tenderTypeCode) || 'Cash';
 
       const hasQueryTenderAmount = params['tenderAmountDC'] !== undefined && params['tenderAmountDC'] !== null;

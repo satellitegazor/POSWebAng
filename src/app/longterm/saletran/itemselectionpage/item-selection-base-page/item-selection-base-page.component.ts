@@ -32,12 +32,12 @@ import { DailyExchRate } from 'src/app/models/exchange.rate';
 import { UtilService } from 'src/app/services/util.service';
 
 @Component({
-    selector: 'app-sales-cart',
-    templateUrl: './sales-cart.component.html',
-    styleUrls: ['./sales-cart.component.css'],
+    selector: 'app-item-selection-base-page',
+    templateUrl: './item-selection-base-page.component.html',
+    styleUrls: ['./item-selection-base-page.component.css'],
     standalone: false
 })
-export class SalesCartComponent implements OnInit, OnDestroy {
+export class ItemSelectionBasePageComponent implements OnInit, OnDestroy {
 
        modalOptions: NgbModalOptions = {
             backdrop: 'static',

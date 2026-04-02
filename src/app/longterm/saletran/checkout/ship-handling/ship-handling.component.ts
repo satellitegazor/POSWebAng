@@ -82,6 +82,7 @@ export class ShipHandlingComponent {
     }
 
     const taxPct = Number(value);
+    
     if (!Number.isFinite(taxPct)) {
       return;
     }

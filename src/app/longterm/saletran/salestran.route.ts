@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { SalesTranModule } from './saletran.module';
 import { Routes, RouterModule } from '@angular/router';
 import { ModuleWithProviders } from '@angular/core';
-import { SalesCartComponent } from './itemselectionpage/sales-cart/sales-cart.component';
+import { ItemSelectionBasePageComponent } from './itemselectionpage/item-selection-base-page/item-selection-base-page.component';
 import { CheckoutPageComponent } from './checkout/checkout-page/checkout-page.component';
 import { DeviceTndrPageComponent } from './tender/device-tndr-page/device-tndr-page.component';
 import { SaveTicketSuccessComponent } from './save-ticket-success/save-ticket-success.component';
@@ -18,7 +18,7 @@ import { CanDeactivateGuard } from 'src/app/shared/can-component-deactivate';
 import { GiftCardInquiryComponent } from './tender/gift-card-inquiry/gift-card-inquiry.component';
 
 const routes: Routes = [
-    { path: 'salestran', component: SalesCartComponent },
+    { path: 'salestran', component: ItemSelectionBasePageComponent },
     { path: 'checkout', component: CheckoutPageComponent },
     { path: 'cctender', component: ConcessionCardTndrComponent },
     { path: 'savetktsuccess', component: SaveTicketSuccessComponent },

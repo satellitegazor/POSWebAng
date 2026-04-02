@@ -28,7 +28,10 @@
         </div>
         <div class="col-6 text-end">
             Ticket Subtotal {{ dcCurrSymbol }}{{ dcSubtotal | number:'1.2-2' }}
+            <div *ngIf="isForeignCurrency">
+                 | NDC Subtotal:
             {{ ndcCurrSymbol }}{{ ndcSubtotal | number:'1.2-2' }}
+            </div>
         </div>
     </div>
     <div id="stButtonBottomBar" class="row">

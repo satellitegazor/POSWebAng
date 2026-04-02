@@ -332,8 +332,7 @@ export class LogonDataService {
         dailyExchRate.dailyExchRateId = Number(sessionStorage.getItem('DailyExchRateId') ? sessionStorage.getItem('DailyExchRateId') : '0');
         dailyExchRate.dfltCurrCode = String(sessionStorage.getItem('DfltCurrCode') ? sessionStorage.getItem('DfltCurrCode') : '');
         dailyExchRate.exchangeRate = Number(sessionStorage.getItem('ExchangeRate') ? sessionStorage.getItem('ExchangeRate') : '0');
-        //dailyExchRate.foreignCurrCode = String(sessionStorage.getItem('ForeignCurrCode') ? sessionStorage.getItem('ForeignCurrCode') : '');
-        dailyExchRate.isForeignCurr = Boolean(sessionStorage.getItem('IsForeignCurr') ? sessionStorage.getItem('IsForeignCurr') : 'false');
+        dailyExchRate.isForeignCurr = Boolean(sessionStorage.getItem('IsForeignCurr') ? (sessionStorage.getItem('IsForeignCurr') == 'true' ? 1 : 0) : 0);
         dailyExchRate.oneFCurrRate = Number(sessionStorage.getItem('OneFCurrRate') ? sessionStorage.getItem('OneFCurrRate') : '0');
         dailyExchRate.oneUSDRate = Number(sessionStorage.getItem('OneUSDRate') ? sessionStorage.getItem('OneUSDRate') : '0');
         dailyExchRate.prevDayExchRate = Number(sessionStorage.getItem('PrevDayExchRate') ? sessionStorage.getItem('PrevDayExchRate') : '0');
@@ -344,26 +343,41 @@ export class LogonDataService {
     }
 
     public setDailyExchRate(exchRate: DailyExchRate) {
-        
-        sessionStorage.setItem('BusDate', exchRate.busDate.toString());
-        sessionStorage.setItem('CliTimeVar', exchRate.cliTimeVar.toString());
-        sessionStorage.setItem('CurrCode', exchRate.currCode.toString());
-        sessionStorage.setItem('DailyExchRateId', exchRate.dailyExchRateId.toString());
-        sessionStorage.setItem('DfltCurrCode', exchRate.dfltCurrCode.toString());
-        if(exchRate.currCode != exchRate.dfltCurrCode) {
-            sessionStorage.setItem('NonDfltCurrCode', exchRate.currCode.toString());
+        sessionStorage.setItem('IsForeignCurr', exchRate.isForeignCurr.toString());
+        if(exchRate.isForeignCurr) {
+            // Additional logic for foreign currency can be added here
+            sessionStorage.setItem('BusDate', exchRate.busDate.toString());
+            sessionStorage.setItem('CliTimeVar', exchRate.cliTimeVar.toString());
+            sessionStorage.setItem('CurrCode', exchRate.currCode.toString());
+            sessionStorage.setItem('DailyExchRateId', exchRate.dailyExchRateId.toString());
+            sessionStorage.setItem('DfltCurrCode', exchRate.dfltCurrCode.toString());
+            if (exchRate.currCode != exchRate.dfltCurrCode) {
+                sessionStorage.setItem('NonDfltCurrCode', exchRate.currCode.toString());
+            }
+            else {
+                sessionStorage.setItem('NonDfltCurrCode', 'USD');
+            }
+            sessionStorage.setItem('ExchangeRate', exchRate.exchangeRate.toString());
+            sessionStorage.setItem('OneFCurrRate', exchRate.oneFCurrRate.toString());
+            sessionStorage.setItem('OneUSDRate', exchRate.oneUSDRate.toString());
+            sessionStorage.setItem('PrevDayExchRate', exchRate.prevDayExchRate.toString());
+            sessionStorage.setItem('PrevDayIsOneUSD', exchRate.prevDayIsOneUSD.toString());
+            sessionStorage.setItem('SaleTranCount', exchRate.saleTranCount.toString());
         }
         else {
+            sessionStorage.setItem('BusDate', new Date().toLocaleDateString());
+            sessionStorage.setItem('ExchangeRate', '1');
+            sessionStorage.setItem('CurrCode', "USD");
+            sessionStorage.setItem('DfltCurrCode', "USD");
+            sessionStorage.setItem('OneUSDRate', "1");
             sessionStorage.setItem('NonDfltCurrCode', 'USD');
+            sessionStorage.setItem('OneFCurrRate', "1");
+            sessionStorage.setItem('PrevDayExchRate', "1");
+            sessionStorage.setItem('PrevDayIsOneUSD', "1");
         }
-        sessionStorage.setItem('ExchangeRate', exchRate.exchangeRate.toString());
-        //sessionStorage.setItem('ForeignCurrCode', exchRate.foreignCurrCode.toString());
-        sessionStorage.setItem('IsForeignCurr', exchRate.isForeignCurr.toString());
-        sessionStorage.setItem('OneFCurrRate', exchRate.oneFCurrRate.toString());
-        sessionStorage.setItem('OneUSDRate', exchRate.oneUSDRate.toString());
-        sessionStorage.setItem('PrevDayExchRate', exchRate.prevDayExchRate.toString());
-        sessionStorage.setItem('PrevDayIsOneUSD', exchRate.prevDayIsOneUSD.toString());
-        sessionStorage.setItem('SaleTranCount', exchRate.saleTranCount.toString());
+
+
+
     }
 
     public setLoadTicket(loadTicket: boolean) {
@@ -382,7 +396,7 @@ export class LogonDataService {
         return Number(sessionStorage.getItem('ExchangeRate') ? sessionStorage.getItem('ExchangeRate') : '0').valueOf();
     }
     public getIsForeignCurr(): boolean {
-        return Boolean(sessionStorage.getItem('IsForeignCurr') ? sessionStorage.getItem('IsForeignCurr') : 'false').valueOf();
+        return Boolean(sessionStorage.getItem('IsForeignCurr') ? (sessionStorage.getItem('IsForeignCurr') == 'true' ? 1 : 0) : 0);
     }
 
     public getNonDfltCurrCode(): string {

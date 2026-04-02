@@ -19,11 +19,12 @@ import { RedeemGiftCardTenders } from '../redeem-gift-card-tenders';
 import { ToastService } from 'src/app/services/toast.service';
 import { DecimalPipe } from '@angular/common';
 import { RedeeemGiftCardTndrsService } from '../redeeem-gift-card-tndrs.service';
+
 @Component({
   selector: 'app-concession-card-tndr',
-  imports: [DecimalPipe],
   templateUrl: './concession-card-tndr.component.html',
-  styleUrl: './concession-card-tndr.component.css'
+  styleUrls: ['./concession-card-tndr.component.css'],
+  standalone: false,
 })
 export class ConcessionCardTndrComponent implements AfterViewInit {
 
@@ -33,6 +34,7 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
 
   dcCurrSymbl: string | undefined;
   ndcCurrSymbl: string | undefined;
+  isOConusLocation: boolean = false;
   private isSplitPay: boolean = false;
 
   constructor(
@@ -45,6 +47,7 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
     private _toastSvc: ToastService,
     private _redeemGiftCardTndrsSvc: RedeeemGiftCardTndrsService) {
     // Initialization logic can go here if needed
+    this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
   }
 
   private _tktObj: TicketSplit = {} as TicketSplit;
@@ -105,7 +108,7 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
     this._tndrObj.tenderStatus = TenderStatusType.InProgress; // Assuming 1 is the
     this._tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
     this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
-    this._tndrObj.ticketTenderId = 0;
+    this._tndrObj.ticketTenderId = -Date.now() % 10000;
     this._tndrObj.authNbr = '';
 
     let tndrCopy = JSON.parse(JSON.stringify(this._tndrObj))

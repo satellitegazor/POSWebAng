@@ -1283,7 +1283,8 @@ export const _tktObjReducer = createReducer(
             tranStatus: TranStatusType.InProgress,
             ticketTenderList: tenderList,
             tktList: SalesTransactionCheckoutItem.deepCopySaleItemList(loadedTktObj.items),
-            customer: loadedTktObj.customer ? { ...loadedTktObj.customer } : {} as LTC_Customer
+            customer: loadedTktObj.customer ? { ...loadedTktObj.customer } : {} as LTC_Customer,
+            
          }
       }
    })

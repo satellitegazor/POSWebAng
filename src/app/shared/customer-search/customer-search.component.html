@@ -17,7 +17,7 @@
                         Phone
                     </label>
                     <input name="telephone" class="form-control" [(ngModel)]="telephone" autocomplete="off"
-                        autocorrect="off" autocapitalize="off" spellcheck="false" />
+                        autocorrect="off" autocapitalize="off" spellcheck="false" (keyup.enter)="search()" />
                 </div>
 
                 <div class="col-md-4">
@@ -25,7 +25,7 @@
                         First Name
                     </label>
                     <input name="firstName" class="form-control" [(ngModel)]="firstName" autocomplete="off"
-                        autocorrect="off" autocapitalize="off" spellcheck="false" />
+                        autocorrect="off" autocapitalize="off" spellcheck="false" (keyup.enter)="search()" />
                 </div>
 
                 <div class="col-md-4">
@@ -33,7 +33,7 @@
                         Last Name
                     </label>
                     <input name="lastName" class="form-control" [(ngModel)]="lastName" autocomplete="off"
-                        autocorrect="off" autocapitalize="off" spellcheck="false" />
+                        autocorrect="off" autocapitalize="off" spellcheck="false" (keyup.enter)="search()" />
                 </div>
                             <div class="d-flex justify-content-end gap-2 mt-4">
                             

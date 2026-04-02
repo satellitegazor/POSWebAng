@@ -33,7 +33,7 @@
                         </div>
                     </div>
                 </td>
-                <td class="thirdcolumn">
+                <td *ngIf="isOConusLocation" class="thirdcolumn">
                     <div class="payment-display-item">
                         <div class="payment-display-value fc-amount">
                             {{ndcCurrSymbl}} {{totalToPayNDC | number:'1.2-2'}}
@@ -46,7 +46,7 @@
                     <h5 class="section-title">{{tndrs.length > 0 ? "Applied Tender Payments" : "No Tenders applied yet"}}</h5>
                 </td>
                 <td class="secondcolumn"></td>
-                <td class="thirdcolumn"></td>
+                <td *ngIf="isOConusLocation" class="thirdcolumn"></td>
             </tr>
             <tr *ngFor="let tndr of tndrs" class="applied-tender-section">
                 <td class="firstcolumn">
@@ -57,7 +57,7 @@
                 <td class="secondcolumn">
                     <div class="tender-amount payment-display-value">{{dcCurrSymbl}} {{(dcCurrSymbl == '$' ? tndr.tenderAmount : tndr.fcTenderAmount) | number:'1.2-2'}}</div>
                 </td>
-                <td class="thirdcolumn">
+                <td *ngIf="isOConusLocation" class="thirdcolumn">
                     <div class="tender-amount payment-display-value">{{ndcCurrSymbl}} {{(dcCurrSymbl != '$' ? tndr.tenderAmount : tndr.fcTenderAmount) | number:'1.2-2'}}</div>
                 </td>
             </tr>
@@ -73,8 +73,8 @@
                             placeholder="0.00" />
                     </div>
                 </td>
-                <td class="thirdcolumn">
-                    <div class="currency-input-group">
+                <td *ngIf="isOConusLocation" class="thirdcolumn">
+                    <div  class="currency-input-group">
                         <span class="currency-symbol">{{ndcCurrSymbl}}</span>
                         <input type="text" id="ndcTndrAmt" autocomplete="off" class="form-control currency-input"
                             [(ngModel)]="yetToPayNDC" appPosCurrency placeholder="0.00" />

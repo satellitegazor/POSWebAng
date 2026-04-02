@@ -9,6 +9,16 @@
     margin-bottom: 30px;
 }
 
+.tender-amounts-container.single-card {
+    grid-template-columns: 1fr;
+    justify-items: center;
+}
+
+.tender-amounts-container.single-card .tender-amount-card {
+    width: min(100%, 560px);
+    text-align: center;
+}
+
 .tender-amount-card {
     background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
     border: 2px solid #0056b3;

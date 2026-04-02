@@ -16,13 +16,12 @@ import { AurusGiftCardInquiryResp } from '../../services/models/gift-card-enquir
 import { TenderUtil } from '../tender-util';
 import { AurusGiftCardRedeemResp, GCRedeemInput } from '../../services/models/aurus-gift-card-redeem-resp';
 import { RedeeemGiftCardTndrsService } from '../redeeem-gift-card-tndrs.service';
-import { CommonModule, DecimalPipe } from '@angular/common';
 import { HTTP_TRANSFER_CACHE_ORIGIN_MAP } from '@angular/common/http';
 @Component({
   selector: 'app-gift-card-inquiry',
-  imports: [DecimalPipe, CommonModule],
   templateUrl: './gift-card-inquiry.component.html',
-  styleUrl: './gift-card-inquiry.component.css'
+  styleUrl: './gift-card-inquiry.component.css',
+  standalone: false,
 })
 export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDestroy {
 
@@ -42,7 +41,8 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
   private _tndrObj: TicketTender = new TicketTender();
   public isWaitingForPinpad: boolean = false;
   private InvoiceId: string = '';
-  private _ticketTenderId: number = 0; // Store the generated tender ID from DB
+  private _ticketTenderId: number = -Date.now() % 10000; // Store the generated tender ID from DB
+  isOConusLocation: boolean = false;
 
 
   constructor(private _store: Store,
@@ -53,7 +53,9 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
     private _utilSvc: UtilService,
     private actions$: Actions,
     private _toastSvc: ToastService,
-    private _redeemGiftCardTndrsSvc: RedeeemGiftCardTndrsService) { }
+    private _redeemGiftCardTndrsSvc: RedeeemGiftCardTndrsService) { 
+      this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
+    }
 
   ngOnInit(): void {
     this._store.select(getIsSplitPayR5).subscribe(flag => {
@@ -138,11 +140,47 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
         // Update the original tender object with the ticketTenderId so it's available for all subsequent operations
         //this.tndrObj.ticketTenderId = tenderId;
         //console.log('Tender ID saved:', this._ticketTenderId);
-        this.getGiftCardBalance();
+        if (this.isOConusLocation) {
+          this.getGiftCardBalance();
+        }
+        else {
+
+        }
       });
       return tktObjData.transactionID;
     }
     return 0;
+  }
+
+  private async getMSRCardData() {
+      if (this.authorizationInProgress) {
+        console.warn('Authorization already in progress. Ignoring duplicate call.');
+        return;
+      }
+
+      this.authorizationInProgress = true;
+      this.isWaitingForPinpad = true;
+      this._cposWebSvc.captureMsrSwipe('Please swipe card', 0)
+        .pipe(
+          take(1), // Ensure only one response is processed
+          takeUntil(this.destroy$) // Automatically unsubscribe when component is destroyed
+        )
+        .subscribe({
+          next: (data) => {
+            this.isWaitingForPinpad = false;
+            this.authorizationInProgress = false;
+            // Handle the MSR card data here
+            if(data.rslt.IsSuccessful) {
+              
+            }
+          },
+          error: (err) => {
+            this.isWaitingForPinpad = false;
+            this.authorizationInProgress = false;
+            console.error('Error capturing MSR swipe:', err);
+          }
+        });
+
   }
   
   private async getGiftCardBalance() {

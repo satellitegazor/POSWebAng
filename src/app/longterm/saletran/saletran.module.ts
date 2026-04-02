@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { authinterceptorProviders } from '../../auth/auth.interceptor';
 import { DeptListComponent } from './itemselectionpage/salesdept/deptlist.component';;
-import { SalesCartComponent } from './itemselectionpage/sales-cart/sales-cart.component'
+import { ItemSelectionBasePageComponent } from './itemselectionpage/item-selection-base-page/item-selection-base-page.component'
 import { SalesTranRoutingModule } from './salestran.route';;
 import { SalesCategoryComponent } from './itemselectionpage/sales-category/sales-category.component'
 import { SharedSubjectModule } from '../../shared-subject/shared-subject.module';
@@ -47,14 +47,19 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { EditableButtonComponent } from '../itembuttonmenu/editable-button/editable-button.component';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog';
 import { CanDeactivateGuard } from 'src/app/shared/can-component-deactivate';
+import { CashTndrComponent } from './tender/cash-tndr/cash-tndr.component';
+import { ConcessionCardTndrComponent } from './tender/concession-card-tndr/concession-card-tndr.component';
+import { EgConcTndrComponent } from './tender/eg-conc-tndr/eg-conc-tndr.component';
+import { GiftCardInquiryComponent } from './tender/gift-card-inquiry/gift-card-inquiry.component';
 
 @NgModule({
-    declarations: [DeptListComponent, SalesCartComponent, SalesCategoryComponent, SaleItemComponent,
+    declarations: [DeptListComponent, ItemSelectionBasePageComponent, SalesCategoryComponent, SaleItemComponent,
         TktSaleItemComponent, CouponsModalDlgComponent, PartPayComponent, BalanceDueComponent, 
-        SaleTotalsComponent, CheckoutPageComponent, CheckoutItemsComponent, DeviceTndrPageComponent, 
+        SaleTotalsComponent, CheckoutPageComponent, CheckoutItemsComponent,  
         TipsModalDlgComponent, SaveTicketSuccessComponent, SplitPayComponent, PinValidateComponent, 
         ItemButtonPageComponent, ItemButtonDeptListComponent, ItemButtonSalesCatListComponent, 
-        ItemButtonSalesItemListComponent],
+        ItemButtonSalesItemListComponent, CashTndrComponent, ConcessionCardTndrComponent, 
+        DeviceTndrPageComponent, EgConcTndrComponent, GiftCardInquiryComponent],
     imports: [
         CommonModule,
         ReactiveFormsModule,

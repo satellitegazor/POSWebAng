@@ -6,7 +6,7 @@
 
 <div class="modal-body text-center">
     <ng-container *ngIf="vendorName">
-        <p class="fw-bold mb-2">{{ vendorName }}</p>
+        <p class="fw-bold mb-4" style="font-size: 125%;">{{ vendorName }}</p>
     </ng-container>
     <ng-container *ngIf="businessDate">
         <p class="text-muted mb-3">{{ businessDate }}</p>
@@ -21,7 +21,7 @@
     <div class="form-check form-check-inline d-inline-block">
         <input class="form-check-input" type="checkbox" id="confirmPrivacyAct" [(ngModel)]="confirmed"
             style="width: 1.5em; height: 1.5em;">
-        <label class="form-check-label ms-3 fs-4 fw-medium" for="confirmPrivacyAct">
+        <label class="form-check-label ms-2 fs-4 fw-medium" for="confirmPrivacyAct">
             Confirm
         </label>
     </div>
