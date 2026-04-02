@@ -1,8 +1,8 @@
 import { MobileBase } from "src/app/models/mobile.base";
 
 export class TenderType {
-    public tenderTypeCode: String = '';
-    public tenderTypeDesc: String = '';
+    public tenderTypeCode: string = '';
+    public tenderTypeDesc: string = '';
     public isRefundType: boolean = false;
     public displayThisTender: boolean = true;
     public active: boolean = false;

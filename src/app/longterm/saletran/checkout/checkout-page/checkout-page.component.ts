@@ -252,6 +252,9 @@ export class CheckoutPageComponent implements OnInit {
   public tenderButtonUIDisplay(): void {
 
     this._displayTenders = this._tenderTypesModel.types?.filter((tndr) => tndr.isRefundType == this.isRefund);
+    if(this.isOConus) {
+      this._displayTenders = this._displayTenders?.filter(tndr => !["XC", "XR", "MS", "MR"].includes(tndr.tenderTypeCode));
+    }
     this.tenderButtonWidthPercent = 99 / (this._displayTenders?.length + (this.isRefund ? 1 : 2)); // +1 for split pay button
   }
 
