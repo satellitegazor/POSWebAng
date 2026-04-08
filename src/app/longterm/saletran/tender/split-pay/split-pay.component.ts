@@ -17,10 +17,10 @@ import { AlertModalComponent } from 'src/app/alert-modal/alert-modal.component';
 import { UtilService } from 'src/app/services/util.service';
 import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
 import { TenderUtil } from '../tender-util';
-import { RedeemGiftCardTenders } from '../redeem-gift-card-tenders';
+import { RedeemGiftCardTenders } from '../gc-redeem-services/redeem-gift-card-tenders';
 import { ToastService } from 'src/app/services/toast.service';
 import { TicketSplit } from 'src/app/models/ticket.split';
-import { RedeeemGiftCardTndrsService } from '../redeeem-gift-card-tndrs.service';
+import { OConusRedeemGCWithPinPadService } from '../gc-redeem-services/oconus-redeeem-gc-with-pin-pad';
 import { MilstarRefundReqData } from '../../services/models/milstar-refund-req-data';
 import { VoidTranInput } from '../../services/models/void-tran-input';
 import { VfoneCaptureTran } from '../../services/models/capture-tran.model';
@@ -78,7 +78,7 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
     private _utlSvc: UtilService,
     private _cposWebSvc: CPOSWebSvcService,
     private _toastSvc: ToastService,
-    private _redeemGiftCardTndrsSvc: RedeeemGiftCardTndrsService) { }
+    private _redeemGiftCardTndrsSvc: OConusRedeemGCWithPinPadService) { }
 
   tndrs: TicketTender[] = [];
   totalToPayDC: number = 0;

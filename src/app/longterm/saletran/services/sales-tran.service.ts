@@ -180,7 +180,7 @@ export class SalesTranService {
             { headers: this.headerObjs });
     }
 
-    public aurusGiftCardInquiry(
+    public aurusGiftCardInquiryForConus(
         guid: string,
         uid: string,
         facilityNumber: string,
@@ -188,7 +188,7 @@ export class SalesTranService {
         cardNumberEncrypted: string,
         cardExpiryYear: number,
         cardExpiryMonth: number
-    ): Observable<LTC_GC_BalanceDetialsResultModel> {
+    ): Observable<Conus_GC_Balance_Model> {
         const url = GlobalConstants.CPOS_SVCS_URL + '/common/AurusGiftCardInquiry'
             + '?guid=' + encodeURIComponent(guid)
             + '&uid=' + encodeURIComponent(uid);
@@ -201,10 +201,10 @@ export class SalesTranService {
             CardExpiryMonth: cardExpiryMonth
         };
 
-        return this.httpClient.post<LTC_GC_BalanceDetialsResultModel>(url, JSON.stringify(request), { headers: this.headerObjs });
+        return this.httpClient.post<Conus_GC_Balance_Model>(url, JSON.stringify(request), { headers: this.headerObjs });
     }
 
-    public aurusGiftCardRedeem(
+    public aurusGiftCardRedeemForConus(
         guid: string,
         uid: string,
         facilityNumber: string,
@@ -212,7 +212,7 @@ export class SalesTranService {
         cardNumberEncrypted: string,
         cardExpiryYear: number,
         cardExpiryMonth: number
-    ): Observable<LTC_GC_BalanceDetialsResultModel> {
+    ): Observable<Conus_GC_Balance_Model> {
         const url = GlobalConstants.CPOS_SVCS_URL + '/common/AurusGiftCardRedeem'
             + '?guid=' + encodeURIComponent(guid)
             + '&uid=' + encodeURIComponent(uid);
@@ -225,7 +225,7 @@ export class SalesTranService {
             CardExpiryMonth: cardExpiryMonth
         };
 
-        return this.httpClient.post<LTC_GC_BalanceDetialsResultModel>(url, JSON.stringify(request), { headers: this.headerObjs });
+        return this.httpClient.post<Conus_GC_Balance_Model>(url, JSON.stringify(request), { headers: this.headerObjs });
     }
 
     public getTicketLookup(individualUID: number, locationid: number, ticketNum: number, phone: string, firstname: string, lastname: string) {
@@ -418,8 +418,8 @@ export interface UpdateTicketStatusLocationResultModel {
     errorNumber: number;
 }
 
-export interface LTC_GC_BalanceDetialsResultModel {
-    Results: MobileBase;
+export interface Conus_GC_Balance_Model {
+    results: MobileBase;
     sResp: string;
     stAuth: string;
     stReasonCode: string;

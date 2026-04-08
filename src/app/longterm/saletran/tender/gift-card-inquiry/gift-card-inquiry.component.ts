@@ -15,9 +15,10 @@ import { addTender, deleteDeclinedTenderFromStore, isSplitPayR5, markTendersComp
 import { AurusGiftCardInquiryResp } from '../../services/models/gift-card-enquiry-response';
 import { TenderUtil } from '../tender-util';
 import { AurusGiftCardRedeemResp, GCRedeemInput } from '../../services/models/aurus-gift-card-redeem-resp';
-import { RedeeemGiftCardTndrsService } from '../redeeem-gift-card-tndrs.service';
+import { OConusRedeemGCWithPinPadService } from '../gc-redeem-services/oconus-redeeem-gc-with-pin-pad';
+import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
 import { HTTP_TRANSFER_CACHE_ORIGIN_MAP } from '@angular/common/http';
-import { SalesTranService, LTC_GC_BalanceDetialsResultModel } from '../../services/sales-tran.service';
+import { SalesTranService, Conus_GC_Balance_Model } from '../../services/sales-tran.service';
 import { GlobalConstants } from 'src/app/global/global.constants';
 @Component({
   selector: 'app-gift-card-inquiry',
@@ -40,7 +41,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
   public ndcCurrSymbl: string = '';
   private _tenderTypeCode: string = '';
   private _gcInquiryResponse: AurusGiftCardInquiryResp = new AurusGiftCardInquiryResp();
-  private _gcBalanceDetails: LTC_GC_BalanceDetialsResultModel | null = null;
+  private _gcBalanceDetails: Conus_GC_Balance_Model | null = null;
   private _tndrObj: TicketTender = new TicketTender();
   public isWaitingForPinpad: boolean = false;
   private InvoiceId: string = '';
@@ -56,7 +57,8 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
     private _utilSvc: UtilService,
     private actions$: Actions,
     private _toastSvc: ToastService,
-    private _redeemGiftCardTndrsSvc: RedeeemGiftCardTndrsService,
+    private _redeemGiftCardTndrsSvc: OConusRedeemGCWithPinPadService,
+    private _conusRedeemGCWithAurusAPI: ConusRedeemGCwithAurusAPI,
     private _salesTranSvc: SalesTranService) { 
       this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
     }
@@ -222,7 +224,15 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
             }
             // Handle the MSR card data here
             if(data.rslt.IsSuccessful) {
-              this.getGiftCardBalanceFromApi(data.AcctNumFIPS, data.CardExpiryYear, data.CardExpiryMonth);
+
+              let gcTender = TenderUtil.copyTenderObj(savedTender);
+              gcTender.cardEndingNbr = data.CardEndingNbr;
+              gcTender.inStoreCardNbrTmp = data.AcctNumFIPS;
+              gcTender.tracking = data.AcctNumFIPS;
+              this._store.dispatch(addTender({ tndrObj: gcTender }))
+              this._store.dispatch(saveTenderObj({ tndrObj: gcTender }));
+
+              this.getGiftCardBalanceForConus(data.AcctNumFIPS, data.CardExpiryYear, data.CardExpiryMonth);
             }
           },
           error: (err) => {
@@ -368,7 +378,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
     });
   }
 
-  getGiftCardBalanceFromApi(CardNumber: string, expiryYear: number, expiryMonth: number): void {
+  getGiftCardBalanceForConus(CardNumber: string, expiryYear: number, expiryMonth: number): void {
     if (this.authorizationInProgress) {
       console.warn('Authorization already in progress. Ignoring duplicate call.');
       return;
@@ -381,7 +391,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
     const uid = this._logonDataSvc.getLTVendorLogonData().individualUID;
     const facilityNumber = this._logonDataSvc.getLTVendorLogonData().facilityNumber;
 
-    this._salesTranSvc.aurusGiftCardInquiry(
+    this._salesTranSvc.aurusGiftCardInquiryForConus(
       guid,
       uid,
       facilityNumber,
@@ -394,12 +404,12 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
         takeUntil(this.destroy$)
       )
       .subscribe({
-        next: async (data: LTC_GC_BalanceDetialsResultModel) => {
+        next: async (data: Conus_GC_Balance_Model) => {
           this.isWaitingForPinpad = false;
           this.authorizationInProgress = false;
           this._gcBalanceDetails = data;
 
-          if(data.Results.success) {
+          if(data.results.success) {
 
           var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
           if (tktObjData == null) {
@@ -415,19 +425,21 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
             this.authorizationInProgress = false;
             this.route.navigate(['/splitpay']);
             return;
-          }          
+          }
           // Transaction was approved
           this._toastSvc.success('Gift Card Inquiry Successful. Balance Amount: ' + data.balance.toCPOSFixed(2));
           var tndrCopy = TenderUtil.copyTenderObj(savedTender);
 
           tndrCopy.rrn = this.InvoiceId;
-          tndrCopy.isAuthorized = true;
-          tndrCopy.authNbr = data.stAuth;
-          tndrCopy.tenderAmount = data.balance;
+          if(data.balance < tndrCopy.tenderAmount) {
+            tndrCopy.tenderAmount = data.balance;
+          }
           tndrCopy.fcTenderAmount = tndrCopy.tenderAmount * this._logonDataSvc.getExchangeRate();
           tndrCopy.tndMaintTimestamp = new Date(Date.now());
           tndrCopy.tndrTimeStamp = new Date(Date.now());
           tndrCopy.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+          tndrCopy.gcExpiryYear = expiryYear;
+          tndrCopy.gcExpiryMonth = expiryMonth;
 
           this._store.dispatch(addTender({ tndrObj: tndrCopy }));
           this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
@@ -436,11 +448,11 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
           var tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
 
           if (TenderUtil.IsTicketComplete(tktObjData1, this._logonDataSvc.getAllowPartPay())) {
-            if (tktObjData1.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0) {
-              // Redeem Gift Card Tenders
-              this._redeemGiftCardTndrsSvc.redeem(tktObjData1.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false)).subscribe({
+            const yetToRedeemGCTenders = tktObjData1.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false);
+            if (yetToRedeemGCTenders.length > 0) {
+              this._conusRedeemGCWithAurusAPI.redeem(yetToRedeemGCTenders).subscribe({
                 next: () => {
-                  this.markTicketComplete();
+                this.markTicketComplete();
                   return true;
                 },
                 error: (error) => {
@@ -461,7 +473,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
           }
           }
           else {
-            this._toastSvc.error('Gift Card Inquiry Failed: ' + data.Results.returnMsg + '.<br/>Please complete the transaction using another tender method.');
+            this._toastSvc.error('Gift Card Inquiry Failed: ' + data.results.returnMsg + '.<br/>Please complete the transaction using another tender method.');
             this.route.navigate(['/splitpay']);
           }
         },

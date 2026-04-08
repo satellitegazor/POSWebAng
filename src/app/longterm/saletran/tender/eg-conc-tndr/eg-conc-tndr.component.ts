@@ -12,10 +12,11 @@ import { firstValueFrom, forkJoin, Subscription, take } from 'rxjs';
 import { getIsSplitPayR5, getRemainingBal, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { TenderUtil } from '../tender-util';
 import { addTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj } from '../../store/ticketstore/ticket.action';
-import { RedeemGiftCardTenders } from '../redeem-gift-card-tenders';
+import { RedeemGiftCardTenders } from '../gc-redeem-services/redeem-gift-card-tenders';
 import { ToastService } from 'src/app/services/toast.service';
 import { DecimalPipe } from '@angular/common';
-import { RedeeemGiftCardTndrsService } from '../redeeem-gift-card-tndrs.service';
+import { OConusRedeemGCWithPinPadService } from '../gc-redeem-services/oconus-redeeem-gc-with-pin-pad';
+import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
 
 
 @Component({
@@ -46,7 +47,8 @@ export class EgConcTndrComponent {
     private _logonDataSvc: LogonDataService,
     private _utilSvc: UtilService,
     private _toastSvc: ToastService,
-    private _redeemGiftCardTndrsSvc: RedeeemGiftCardTndrsService) {
+    private _oConusRedeemGCWithPinPad: OConusRedeemGCWithPinPadService,
+    private _conusRedeemGCWithAurusAPI: ConusRedeemGCwithAurusAPI) {
     // Initialization logic can go here if needed
     this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
   }
@@ -116,22 +118,38 @@ export class EgConcTndrComponent {
     var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
     if (tktObjData != null && TenderUtil.IsTicketComplete(tktObjData, this._logonDataSvc.getAllowPartPay())) {
 
-      if(tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0) {
-        // Redeem Gift Card Tenders
-        this._redeemGiftCardTndrsSvc.redeem(tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false)).subscribe({
-          next: () => {
-            this.markTicketComplete();
-            return true;
-          },
-          error: (error) => {
-            console.error('Error during gift card redemption: ', error);
-            return false;
-          }
-        });
+      if (tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0) {
+
+        if (this.isOConusLocation) {
+          // Redeem Gift Card Tenders
+          this._oConusRedeemGCWithPinPad.redeem(tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false)).subscribe({
+            next: () => {
+              this.markTicketComplete();
+              return true;
+            },
+            error: (error) => {
+              console.error('Error during gift card redemption: ', error);
+              return false;
+            }
+          });
+        }
+        else {
+          this._conusRedeemGCWithAurusAPI.redeem(tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false)).subscribe({
+            next: () => {
+              this.markTicketComplete();
+              return true;
+            },
+            error: (error) => {
+              console.error('Error during gift card redemption: ', error);
+              return false;
+            }
+          });
+
+        }
       }
       else {
         this.markTicketComplete();
-      }
+      }   
 
 
     }

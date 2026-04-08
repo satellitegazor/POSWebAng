@@ -86,6 +86,8 @@ export class TenderUtil {
         tndrCopy.cliTimeVar = srcTndr.cliTimeVar;
         tndrCopy.refundAuthNbr = srcTndr.refundAuthNbr;
         tndrCopy.inStoreCardNbrTmp = srcTndr.inStoreCardNbrTmp;
+        tndrCopy.gcExpiryYear = srcTndr.gcExpiryYear;
+        tndrCopy.gcExpiryMonth = srcTndr.gcExpiryMonth;
         tndrCopy.voidRRN = srcTndr.voidRRN;
         tndrCopy.tndrTimeStamp = srcTndr.tndrTimeStamp;
         tndrCopy.refundCardNbr = srcTndr.refundCardNbr;

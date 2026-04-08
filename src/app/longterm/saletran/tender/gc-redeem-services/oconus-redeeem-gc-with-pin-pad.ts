@@ -1,20 +1,20 @@
 import { Injectable } from '@angular/core';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { CPOSWebSvcService } from '../services/cposweb-svc.service';
+import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
 import { TicketTender } from 'src/app/models/ticket.tender';
 import { catchError, concatMap, delay, finalize, forkJoin, from, map, Observable, of, switchMap, tap, toArray } from 'rxjs';
-import { saleTranDataInterface } from '../store/ticketstore/ticket.state';
+import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Store } from '@ngrx/store';
-import { addTender, saveTenderObj } from '../store/ticketstore/ticket.action';
+import { addTender, saveTenderObj } from '../../store/ticketstore/ticket.action';
 import { ToastService } from 'src/app/services/toast.service';
-import { GCRedeemInput } from '../services/models/aurus-gift-card-redeem-resp';
+import { GCRedeemInput } from '../../services/models/aurus-gift-card-redeem-resp';
 import { UiBlockService } from 'src/app/services/ui-block.service';
 import { UtilService } from 'src/app/services/util.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class RedeeemGiftCardTndrsService {
+export class OConusRedeemGCWithPinPadService {
 
   constructor(private _logonDataSvc: LogonDataService, 
     private _cposWebSvc: CPOSWebSvcService,

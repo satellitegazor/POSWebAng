@@ -42,6 +42,8 @@ export class TicketTender {
     cliTimeVar: number = 0;
     refundAuthNbr: string = '';
     inStoreCardNbrTmp: string = '';
+    gcExpiryYear: number = 0;
+    gcExpiryMonth: number = 0;
     voidRRN: string = '';
     tndrTimeStamp!: Date;
     refundCardNbr: string = '';
@@ -109,6 +111,8 @@ export class TicketTender {
         copy.ctroutd = source.ctroutd ?? '';
         copy.refundAuthNbr = source.refundAuthNbr ?? '';
         copy.inStoreCardNbrTmp = source.inStoreCardNbrTmp ?? '';
+        copy.gcExpiryYear = source.gcExpiryYear ?? 0;
+        copy.gcExpiryMonth = source.gcExpiryMonth ?? 0;
         copy.voidRRN = source.voidRRN ?? '';
         copy.refundCardNbr = source.refundCardNbr ?? '';
         copy.refundCardType = source.refundCardType ?? '';

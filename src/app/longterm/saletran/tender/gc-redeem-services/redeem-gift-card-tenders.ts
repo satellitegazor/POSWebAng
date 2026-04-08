@@ -1,17 +1,17 @@
 import { Store } from "@ngrx/store";
 import { forkJoin, Observable, of, take } from "rxjs";
 import { catchError, tap, map } from "rxjs/operators";
-import { saleTranDataInterface } from "../store/ticketstore/ticket.state";
-import { CPOSWebSvcService } from "../services/cposweb-svc.service";
-import { getTicketTendersSelector, getTicketTotalToPayUSD, getTicketTotalToPayFC } from "../store/ticketstore/ticket.selector";
+import { saleTranDataInterface } from "../../store/ticketstore/ticket.state";
+import { CPOSWebSvcService } from "../../services/cposweb-svc.service";
+import { getTicketTendersSelector, getTicketTotalToPayUSD, getTicketTotalToPayFC } from "../../store/ticketstore/ticket.selector";
 import { TicketTender } from "src/app/models/ticket.tender";
-import { TenderUtil } from "./tender-util";
+import { TenderUtil } from "../tender-util";
 import { LogonDataService } from "src/app/global/logon-data-service.service";
 import { from } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 import { ToastService } from "src/app/services/toast.service";
 import { ExchCardTndr } from "src/app/models/exch.card.tndr";
-import { GCRedeemInput } from "../services/models/aurus-gift-card-redeem-resp";
+import { GCRedeemInput } from "../../services/models/aurus-gift-card-redeem-resp";
 
 export class RedeemGiftCardTenders {
 

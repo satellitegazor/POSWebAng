@@ -353,6 +353,8 @@ export const _tktObjReducer = createReducer(
          tndrObj.isAuthorized = action.tndrObj.isAuthorized;
          tndrObj.exchCardPymntType = action.tndrObj.exchCardPymntType !== null ? action.tndrObj.exchCardPymntType : '';
          tndrObj.inStoreCardNbrTmp = action.tndrObj.inStoreCardNbrTmp !== null ? action.tndrObj.inStoreCardNbrTmp : '';
+         tndrObj.gcExpiryYear = action.tndrObj.gcExpiryYear || tndrObj.gcExpiryYear;
+         tndrObj.gcExpiryMonth = action.tndrObj.gcExpiryMonth || tndrObj.gcExpiryMonth;
          tndrObj.tenderTransactionId = (action.tndrObj.tenderTransactionId !== null && action.tndrObj.tenderTransactionId > 0) ? action.tndrObj.tenderTransactionId : state.tktObj.transactionID;
 
       }

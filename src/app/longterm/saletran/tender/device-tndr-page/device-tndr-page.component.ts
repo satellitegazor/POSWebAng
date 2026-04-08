@@ -21,8 +21,9 @@ import { Round2DecimalService } from 'src/app/services/round2-decimal.service';
 import { RootObject } from 'src/app/app.state';
 import { ToastService } from 'src/app/services/toast.service';
 import { TenderUtil } from '../tender-util';
-import { RedeemGiftCardTenders } from '../redeem-gift-card-tenders';
-import { RedeeemGiftCardTndrsService } from '../redeeem-gift-card-tndrs.service';
+import { RedeemGiftCardTenders } from '../gc-redeem-services/redeem-gift-card-tenders';
+import { OConusRedeemGCWithPinPadService } from '../gc-redeem-services/oconus-redeeem-gc-with-pin-pad';
+import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
 
 @Component({
   selector: 'app-tender-page',
@@ -40,7 +41,8 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
     private _utilSvc: UtilService,
     private actions$: Actions,
     private _toastSvc: ToastService,
-    private _redeemGiftCardTndrsSvc: RedeeemGiftCardTndrsService) {
+    private _oConusRedeemGCWithPinPad: OConusRedeemGCWithPinPadService,
+    private _conusRedeemGCWithAurusAPI: ConusRedeemGCwithAurusAPI) {
   }
 
   private _tktObj: TicketSplit = {} as TicketSplit;
@@ -254,33 +256,38 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
 
             if (TenderUtil.IsTicketComplete(tktObjData1, this._logonDataSvc.getAllowPartPay())) {
 
-              if(tktObjData1.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0){
-                // Redeem Gift Card Tenders
-                this._redeemGiftCardTndrsSvc.redeem(tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false)).subscribe({
-                  next: () => {
-                    this.markTicketComplete();
-                    return true;
-                  },
-                  error: (error) => {
-                    console.error('Error during gift card redemption: ', error);
-                    return false;
-                  }
-                });
+              if (tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0) {
+
+                if (this.isOConusLocation) {
+                  // Redeem Gift Card Tenders
+                  this._oConusRedeemGCWithPinPad.redeem(tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false)).subscribe({
+                    next: () => {
+                      this.markTicketComplete();
+                      return true;
+                    },
+                    error: (error) => {
+                      console.error('Error during gift card redemption: ', error);
+                      return false;
+                    }
+                  });
+                }
+                else {
+                  this._conusRedeemGCWithAurusAPI.redeem(tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false)).subscribe({
+                    next: () => {
+                      this.markTicketComplete();
+                      return true;
+                    },
+                    error: (error) => {
+                      console.error('Error during gift card redemption: ', error);
+                      return false;
+                    }
+                  });
+
+                }
               }
               else {
                 this.markTicketComplete();
-              }              
-
-              
-
-              // this._store.dispatch(markTendersComplete({ status: TenderStatusType.Complete }));
-              // this._store.dispatch(markTicketComplete({ status: TranStatusType.Complete }));
-
-              // // Fetch the updated ticket object after marking status as complete
-              // var tktObjDataUpdated = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
-
-              // this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjDataUpdated }));
-              // this.route.navigate(['/savetktsuccess']);
+              }         
             }
             else {
               this._toastSvc.success('Split pay of ' + this.dcCurrSymbl + this.tenderAmountDC + ' Card transaction approved. Please select next tender method.');
