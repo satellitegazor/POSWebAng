@@ -180,6 +180,54 @@ export class SalesTranService {
             { headers: this.headerObjs });
     }
 
+    public aurusGiftCardInquiry(
+        guid: string,
+        uid: string,
+        facilityNumber: string,
+        transactionAmount: number,
+        cardNumberEncrypted: string,
+        cardExpiryYear: number,
+        cardExpiryMonth: number
+    ): Observable<LTC_GC_BalanceDetialsResultModel> {
+        const url = GlobalConstants.CPOS_SVCS_URL + '/common/AurusGiftCardInquiry'
+            + '?guid=' + encodeURIComponent(guid)
+            + '&uid=' + encodeURIComponent(uid);
+
+        const request: AurusGiftCardRequest = {
+            FacilityNumber: facilityNumber,
+            TransactionAmount: transactionAmount,
+            CardNumberEncrypted: cardNumberEncrypted,
+            CardExpiryYear: cardExpiryYear,
+            CardExpiryMonth: cardExpiryMonth
+        };
+
+        return this.httpClient.post<LTC_GC_BalanceDetialsResultModel>(url, JSON.stringify(request), { headers: this.headerObjs });
+    }
+
+    public aurusGiftCardRedeem(
+        guid: string,
+        uid: string,
+        facilityNumber: string,
+        transactionAmount: number,
+        cardNumberEncrypted: string,
+        cardExpiryYear: number,
+        cardExpiryMonth: number
+    ): Observable<LTC_GC_BalanceDetialsResultModel> {
+        const url = GlobalConstants.CPOS_SVCS_URL + '/common/AurusGiftCardRedeem'
+            + '?guid=' + encodeURIComponent(guid)
+            + '&uid=' + encodeURIComponent(uid);
+
+        const request: AurusGiftCardRequest = {
+            FacilityNumber: facilityNumber,
+            TransactionAmount: transactionAmount,
+            CardNumberEncrypted: cardNumberEncrypted,
+            CardExpiryYear: cardExpiryYear,
+            CardExpiryMonth: cardExpiryMonth
+        };
+
+        return this.httpClient.post<LTC_GC_BalanceDetialsResultModel>(url, JSON.stringify(request), { headers: this.headerObjs });
+    }
+
     public getTicketLookup(individualUID: number, locationid: number, ticketNum: number, phone: string, firstname: string, lastname: string) {
 
         return this.httpClient.get<TicketLookupResult>(GlobalConstants.CPOS_SVCS_URL + '/ltc/GetTicketLookup?guid=' + GlobalConstants.GET_GUID +
@@ -368,5 +416,21 @@ export interface UpdateTicketStatusLocationResultModel {
     queryStatus: number;
     queryMessage: string;
     errorNumber: number;
+}
+
+export interface LTC_GC_BalanceDetialsResultModel {
+    Results: MobileBase;
+    sResp: string;
+    stAuth: string;
+    stReasonCode: string;
+    balance: number;
+}
+
+export interface AurusGiftCardRequest {
+    FacilityNumber: string;
+    TransactionAmount: number;
+    CardNumberEncrypted: string;
+    CardExpiryYear: number;
+    CardExpiryMonth: number;
 }
   

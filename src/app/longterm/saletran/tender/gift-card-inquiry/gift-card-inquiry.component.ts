@@ -17,6 +17,8 @@ import { TenderUtil } from '../tender-util';
 import { AurusGiftCardRedeemResp, GCRedeemInput } from '../../services/models/aurus-gift-card-redeem-resp';
 import { RedeeemGiftCardTndrsService } from '../redeeem-gift-card-tndrs.service';
 import { HTTP_TRANSFER_CACHE_ORIGIN_MAP } from '@angular/common/http';
+import { SalesTranService, LTC_GC_BalanceDetialsResultModel } from '../../services/sales-tran.service';
+import { GlobalConstants } from 'src/app/global/global.constants';
 @Component({
   selector: 'app-gift-card-inquiry',
   templateUrl: './gift-card-inquiry.component.html',
@@ -38,6 +40,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
   public ndcCurrSymbl: string = '';
   private _tenderTypeCode: string = '';
   private _gcInquiryResponse: AurusGiftCardInquiryResp = new AurusGiftCardInquiryResp();
+  private _gcBalanceDetails: LTC_GC_BalanceDetialsResultModel | null = null;
   private _tndrObj: TicketTender = new TicketTender();
   public isWaitingForPinpad: boolean = false;
   private InvoiceId: string = '';
@@ -53,7 +56,8 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
     private _utilSvc: UtilService,
     private actions$: Actions,
     private _toastSvc: ToastService,
-    private _redeemGiftCardTndrsSvc: RedeeemGiftCardTndrsService) { 
+    private _redeemGiftCardTndrsSvc: RedeeemGiftCardTndrsService,
+    private _salesTranSvc: SalesTranService) { 
       this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
     }
 
@@ -144,6 +148,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
           this.getGiftCardBalance();
         }
         else {
+          this.getMSRCardData();
 
         }
       });
@@ -160,18 +165,64 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
 
       this.authorizationInProgress = true;
       this.isWaitingForPinpad = true;
-      this._cposWebSvc.captureMsrSwipe('Please swipe card', 0)
+      this._cposWebSvc.captureMsrSwipe('Please swipe card')
         .pipe(
           take(1), // Ensure only one response is processed
           takeUntil(this.destroy$) // Automatically unsubscribe when component is destroyed
         )
         .subscribe({
-          next: (data) => {
+          next: async (data) => {
             this.isWaitingForPinpad = false;
             this.authorizationInProgress = false;
+            // Fetch the updated tender from store state that has ticketTenderId from DB
+            var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+            if (tktObjData == null) {
+              console.error('Unable to fetch ticket object');
+              this.route.navigate(['/splitpay']);
+              return;
+            }
+
+            // Get the saved tender from the ticket's tender list (it has ticketTenderId from DB)
+            const savedTender = tktObjData.ticketTenderList.find(tndr => tndr.rrn === this.InvoiceId);
+            if (!savedTender) {
+              console.error('Tender not found in state');
+              this.authorizationInProgress = false;
+              this.route.navigate(['/splitpay']);
+              return;
+            }
+
+            const duplicateTndr = tktObjData.ticketTenderList.find(tndr => tndr.cardEndingNbr === data.CardEndingNbr);
+            if (duplicateTndr) {
+              // The in-progress tender created for this inquiry must be explicitly cancelled.
+              // We persist the cancellation first so DB and client state remain consistent.
+              const cancelledTender = TenderUtil.copyTenderObj(savedTender);
+              cancelledTender.tenderStatus = TenderStatusType.Cancelled;
+              cancelledTender.tndMaintTimestamp = new Date(Date.now());
+
+              this._store.dispatch(saveTenderObj({ tndrObj: cancelledTender }));
+
+              // Wait for save result before mutating local store entry.
+              const saveResult = await firstValueFrom(
+                this.actions$.pipe(
+                  ofType(saveTenderObjSuccess, saveTenderObjFailed),
+                  filter(action => !('data' in action) || !action.data?.data?.rrn || action.data.data.rrn === cancelledTender.rrn),
+                  take(1)
+                )
+              );
+
+              // Remove only after successful persistence so refresh/load does not resurrect it.
+              if (saveResult.type === saveTenderObjSuccess.type) {
+                this._store.dispatch(deleteDeclinedTenderFromStore({ rrn: cancelledTender.rrn }));
+              }
+
+              this._toastSvc.warning('This gift card "' + data.CardEndingNbr + '" has already been used for payment. Please use another gift card or tender method.');
+              this.authorizationInProgress = false;
+              this.route.navigate(['/splitpay']);
+              return;
+            }
             // Handle the MSR card data here
             if(data.rslt.IsSuccessful) {
-              
+              this.getGiftCardBalanceFromApi(data.AcctNumFIPS, data.CardExpiryYear, data.CardExpiryMonth);
             }
           },
           error: (err) => {
@@ -193,7 +244,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
     this.authorizationInProgress = true;
     this.isWaitingForPinpad = true;
 
-    this._cposWebSvc.giftCardInquiry(
+    this._cposWebSvc.giftCardInquiryPinpad(
       this._tndrObj.tenderTransactionId,
       this._ticketTenderId,
       Number(this._logonDataSvc.getLTVendorLogonData().individualUID),
@@ -315,6 +366,112 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
         }
       }
     });
+  }
+
+  getGiftCardBalanceFromApi(CardNumber: string, expiryYear: number, expiryMonth: number): void {
+    if (this.authorizationInProgress) {
+      console.warn('Authorization already in progress. Ignoring duplicate call.');
+      return;
+    }
+
+    this.authorizationInProgress = true;
+    this.isWaitingForPinpad = true;
+
+    const guid = GlobalConstants.POST_GUID;
+    const uid = this._logonDataSvc.getLTVendorLogonData().individualUID;
+    const facilityNumber = this._logonDataSvc.getLTVendorLogonData().facilityNumber;
+
+    this._salesTranSvc.aurusGiftCardInquiry(
+      guid,
+      uid,
+      facilityNumber,
+      this.tenderAmountDC,
+      CardNumber,
+      expiryYear,
+      expiryMonth)
+      .pipe(
+        take(1),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: async (data: LTC_GC_BalanceDetialsResultModel) => {
+          this.isWaitingForPinpad = false;
+          this.authorizationInProgress = false;
+          this._gcBalanceDetails = data;
+
+          if(data.Results.success) {
+
+          var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+          if (tktObjData == null) {
+            console.error('Unable to fetch ticket object');
+            this.route.navigate(['/splitpay']);
+            return;
+          }
+
+          // Get the saved tender from the ticket's tender list (it has ticketTenderId from DB)
+          const savedTender = tktObjData.ticketTenderList.find(tndr => tndr.rrn === this.InvoiceId);
+          if (!savedTender) {
+            console.error('Tender not found in state');
+            this.authorizationInProgress = false;
+            this.route.navigate(['/splitpay']);
+            return;
+          }          
+          // Transaction was approved
+          this._toastSvc.success('Gift Card Inquiry Successful. Balance Amount: ' + data.balance.toCPOSFixed(2));
+          var tndrCopy = TenderUtil.copyTenderObj(savedTender);
+
+          tndrCopy.rrn = this.InvoiceId;
+          tndrCopy.isAuthorized = true;
+          tndrCopy.authNbr = data.stAuth;
+          tndrCopy.tenderAmount = data.balance;
+          tndrCopy.fcTenderAmount = tndrCopy.tenderAmount * this._logonDataSvc.getExchangeRate();
+          tndrCopy.tndMaintTimestamp = new Date(Date.now());
+          tndrCopy.tndrTimeStamp = new Date(Date.now());
+          tndrCopy.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+
+          this._store.dispatch(addTender({ tndrObj: tndrCopy }));
+          this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
+
+          //this._toastSvc.success('Gift Card Tender Added Successfully.');
+          var tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+
+          if (TenderUtil.IsTicketComplete(tktObjData1, this._logonDataSvc.getAllowPartPay())) {
+            if (tktObjData1.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0) {
+              // Redeem Gift Card Tenders
+              this._redeemGiftCardTndrsSvc.redeem(tktObjData1.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false)).subscribe({
+                next: () => {
+                  this.markTicketComplete();
+                  return true;
+                },
+                error: (error) => {
+                  console.error('Error during gift card redemption: ', error);
+                  this._toastSvc.error('Gift Card Redemption Failed: ' + error.message + '.<br/>Please complete the transaction using another tender method.');
+                  this.route.navigate(['/splitpay']);
+                  return false;
+                }
+              });
+            }
+            else {
+              this.markTicketComplete();
+            }
+          }
+          else {
+            this._store.dispatch(isSplitPayR5({ isSplitPayR5: true }));
+            this.route.navigate(['/splitpay']);
+          }
+          }
+          else {
+            this._toastSvc.error('Gift Card Inquiry Failed: ' + data.Results.returnMsg + '.<br/>Please complete the transaction using another tender method.');
+            this.route.navigate(['/splitpay']);
+          }
+        },
+        error: (error) => {
+          this.isWaitingForPinpad = false;
+          this.authorizationInProgress = false;
+          console.error('Gift Card Inquiry API failed:', error);
+          this._toastSvc.error('Gift Card Inquiry API call failed. Please try again.');
+        }
+      });
   }
 
   private async markTicketComplete() {

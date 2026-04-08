@@ -110,13 +110,22 @@ export class CPOSWebSvcService {
     );
   }
 
-  captureMsrSwipe(displayMsg: string, appType: number): Observable<MSRSwipeData> {    
+  captureMsrSwipe(displayMsg: string): Observable<MSRSwipeData> {    
 
-    return this.httpClient.get<MSRSwipeData>(this.cposWebSvcUrl + 'msr/CaptureCardData?DisplayMsg='+ displayMsg + '&AppType=' + appType.toString(),
+    return this.httpClient.get<MSRSwipeData>(this.cposWebSvcUrl + 'msr/CaptureCardData?DisplayMsg='+ displayMsg,
     { headers: this.headerObjs }).pipe(
       catchError(error => this.handleMSRSwipeDataError(error))
     );   
 
+  }
+
+  CaptureCardData(): Observable<MSRSwipeData> {
+    return this.httpClient.get<MSRSwipeData>(
+      this.cposWebSvcUrl + 'msr/CaptureCardData',
+      { headers: this.headerObjs }
+    ).pipe(
+      catchError(error => this.handleMSRSwipeDataError(error))
+    );
   }
 
   captureSigpadSignature(val: string): Observable<SigCapture> {
@@ -133,9 +142,19 @@ export class CPOSWebSvcService {
     );
   }
 
-  giftCardInquiry(TranId: number, TndrId: number, IndivId: number, sDisplayMsg: string, manualCardNbr: string): Observable<AurusGiftCardInquiryResp> {
+  giftCardInquiryPinpad(TranId: number, TndrId: number, IndivId: number, sDisplayMsg: string, manualCardNbr: string): Observable<AurusGiftCardInquiryResp> {
     return this.httpClient.get<AurusGiftCardInquiryResp>(this.cposWebSvcUrl + 'pinpad/GiftBalInquiry?tranId=' + TranId + '&tndrId=' + TndrId + '&indivId=' + IndivId + '&displayMsg=' + sDisplayMsg + '&manualCardNbr=' + manualCardNbr,
       { headers: this.headerObjs }).pipe(
+      catchError(error => this.handleGiftcardInquiryError(error))
+    );
+  }
+
+  giftCardInquiryApi(requestBody: any): Observable<AurusGiftCardInquiryResp> {
+    return this.httpClient.post<AurusGiftCardInquiryResp>(
+      this.cposWebSvcUrl + 'pinpad/GiftCardInquiry/',
+      requestBody,
+      { headers: this.headerObjs }
+    ).pipe(
       catchError(error => this.handleGiftcardInquiryError(error))
     );
   }
