@@ -16,6 +16,7 @@ import { ItemButtonPageComponent } from '../itembuttonmenu/item-button-page/item
 import { AdminMenuComponent } from '../admin-menu/admin-menu.component';
 import { CanDeactivateGuard } from 'src/app/shared/can-component-deactivate';
 import { GiftCardInquiryComponent } from './tender/gift-card-inquiry/gift-card-inquiry.component';
+import { MainMenuComponent } from '../menu/main-menu/main-menu.component';
 
 const routes: Routes = [
     { path: 'salestran', component: ItemSelectionBasePageComponent },
@@ -28,7 +29,8 @@ const routes: Routes = [
     { path: 'cashcheck', component:CashTndrComponent},
     { path: 'itembtnmenu', component: ItemButtonPageComponent, canDeactivate: [CanDeactivateGuard]},
     { path: 'adminmenu', component: AdminMenuComponent },
-    { path: 'gcinquiry', component: GiftCardInquiryComponent}
+    { path: 'gcinquiry', component: GiftCardInquiryComponent },
+    { path: 'mainmenu', component: MainMenuComponent }
 ];
 
 /*export const routing: ModuleWithProviders = RouterModule.forChild(routes)*/

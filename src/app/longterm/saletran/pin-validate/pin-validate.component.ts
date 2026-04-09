@@ -40,7 +40,7 @@ export class PinValidateComponent implements OnInit {
 
     goToMainMenu(): void {
       this.modal.dismissAll();
-      this.router.navigate(['/adminmenu']);
+      this.router.navigate(['/mainmenu']);
     }
 
     logout(): void {

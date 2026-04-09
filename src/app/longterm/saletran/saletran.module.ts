@@ -51,6 +51,7 @@ import { CashTndrComponent } from './tender/cash-tndr/cash-tndr.component';
 import { ConcessionCardTndrComponent } from './tender/concession-card-tndr/concession-card-tndr.component';
 import { EgConcTndrComponent } from './tender/eg-conc-tndr/eg-conc-tndr.component';
 import { GiftCardInquiryComponent } from './tender/gift-card-inquiry/gift-card-inquiry.component';
+import { MainMenuComponent } from '../menu/main-menu/main-menu.component';
 
 @NgModule({
     declarations: [DeptListComponent, ItemSelectionBasePageComponent, SalesCategoryComponent, SaleItemComponent,
@@ -59,7 +60,7 @@ import { GiftCardInquiryComponent } from './tender/gift-card-inquiry/gift-card-i
         TipsModalDlgComponent, SaveTicketSuccessComponent, SplitPayComponent, PinValidateComponent, 
         ItemButtonPageComponent, ItemButtonDeptListComponent, ItemButtonSalesCatListComponent, 
         ItemButtonSalesItemListComponent, CashTndrComponent, ConcessionCardTndrComponent, 
-        DeviceTndrPageComponent, EgConcTndrComponent, GiftCardInquiryComponent],
+        DeviceTndrPageComponent, EgConcTndrComponent, GiftCardInquiryComponent, MainMenuComponent],
     imports: [
         CommonModule,
         ReactiveFormsModule,
