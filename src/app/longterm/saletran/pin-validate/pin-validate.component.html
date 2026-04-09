@@ -1,30 +1,30 @@
-<div class="modal-header">
-    <h4>Validate Pin</h4>
-</div>
-<div class="modal-content">
-    <div class="panel" style="margin-left: 5%;margin-right: 5%;">
-        <div class="panel-title">Pin Validation</div>
-        <div class="panel-body">
-            <table class="table table-striped">
-                <tr>
-                    <td>Enter Pin</td>
-                    <td class="ra"></td>
-                    <td><input class="form-control" type="password" [(ngModel)]="vpin" maxlength="4" placeholder="Enter Pin"  (keyup)="pinKeyUp($event)"
-                        autofocus="autofocus"  name="lpin" id="lpin" /></td>
-                    <td>&nbsp;</td>
-                </tr>
-                <tr>
-                </tr>
-            </table>
-        </div>
+<div class="modal-header pin-modal-header">
+    <div>
+        <h4 class="modal-title">Validate PIN</h4>
+        <div class="pin-modal-subtitle">Enter your 4-digit security PIN to continue.</div>
     </div>
-
 </div>
-<div class="modal-footer">
-    <table class="table table-striped" >
-        <tr>
-            <td style="width: 50%;"></td>
-            <td><button class="btn btn-primary" id="btnMainMenu">Main Menu</button></td>
-            <td><button class="btn btn-primary" id="btnLogout">Logout</button></td>
-</table>
+
+<div class="modal-content pin-modal-content">
+    <div class="pin-panel">
+        <label class="pin-label" for="lpin">PIN Code</label>
+        <input
+            class="form-control pin-input"
+            type="password"
+            [(ngModel)]="vpin"
+            maxlength="4"
+            placeholder="Enter PIN"
+            (keyup)="pinKeyUp($event)"
+            autofocus="autofocus"
+            name="lpin"
+            id="lpin" />
+        <div class="pin-help">Validation is triggered automatically after 4 digits.</div>
+    </div>
+</div>
+
+<div class="modal-footer pin-modal-footer">
+    <div class="pin-actions">
+        <button class="btn btn-primary" id="btnMainMenu" type="button" (click)="goToMainMenu()">Main Menu</button>
+        <button class="btn btn-primary" id="btnLogout" type="button" (click)="logout()">Logout</button>
+    </div>
 </div>

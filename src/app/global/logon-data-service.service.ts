@@ -92,19 +92,19 @@ export class LogonDataService {
             }
         }
 
-        if((locConfig.rgnCode == 'OCONE' || locConfig.rgnCode == 'OCONP') && locConfig.cCDevice) {
-
-            if(locConfig.cCDevice == 'E') {
-                tenderTypeMdl.types = JSON.parse(JSON.stringify(tenderTypeMdl.types.filter((tndr) => tndr.tenderTypeCode != 'CC' && tndr.tenderTypeCode != 'CR')));
-            }
-
-            if(locConfig.cCDevice == 'C') {
-                tenderTypeMdl.types = JSON.parse(JSON.stringify(tenderTypeMdl.types.filter((tndr) => tndr.tenderTypeCode != 'XC' && tndr.tenderTypeCode != 'XR')));
+        if (locConfig.rgnCode == 'OCONE' || locConfig.rgnCode == 'OCONP') {
+            const excludedByDevice: Record<string, Set<string>> = {
+                E: new Set(['CC', 'CR']),
+                C: new Set(['XC', 'XR'])
+            };
+            const excluded = locConfig.cCDevice && excludedByDevice[locConfig.cCDevice];
+            if (excluded) {
+                tenderTypeMdl.types = tenderTypeMdl.types.filter(tndr => !excluded.has(tndr.tenderTypeCode));
             }
         }
-
-        if(locConfig.rgnCode == 'CON') {
-            tenderTypeMdl.types = JSON.parse(JSON.stringify(tenderTypeMdl.types.filter((tndr) => tndr.tenderTypeCode != 'XC' && tndr.tenderTypeCode != 'XR')));
+        else if(locConfig.rgnCode == 'CON') {
+            const excludedCON = new Set(['XC', 'XR', 'MS', 'MR']);
+            tenderTypeMdl.types = tenderTypeMdl.types.filter(tndr => !excludedCON.has(tndr.tenderTypeCode));
         }
 
         sessionStorage.setItem(LogonDataService.LT_TENDER_TYPES_KEY, JSON.stringify(tenderTypeMdl));
@@ -177,14 +177,14 @@ export class LogonDataService {
         sessionStorage.setItem('locationUID', locConfig.configs[0].locationUID.toString());
         sessionStorage.setItem('locationName', locConfig.configs[0].locationName);
         sessionStorage.setItem('storeName', locConfig.configs[0].storeName);
-        sessionStorage.setItem('pINReqdForSalesTran', (locConfig.configs[0].pinReqdForSalesTran ? locConfig.configs[0].pinReqdForSalesTran : false).toString());
+        sessionStorage.setItem('pinReqdForSalesTran', (locConfig.configs[0].pinReqdForSalesTran ? locConfig.configs[0].pinReqdForSalesTran : false).toString());
         sessionStorage.setItem('associateName', locConfig.individuals[0].associateName);
         sessionStorage.setItem('associateRole', locConfig.configs[0].associateRole);
         sessionStorage.setItem('associateRoleDesc', locConfig.configs[0].associateRoleDesc);
         sessionStorage.setItem('contractUID', locConfig.configs[0].contractUID.toString());
         sessionStorage.setItem('contractNumber', locConfig.configs[0].contractNumber);
-        sessionStorage.setItem('vendorNumber', locConfig.configs[0].vendorNumber);
-        sessionStorage.setItem('vendorName', locConfig.configs[0].vendorName);
+        //sessionStorage.setItem('vendorNumber', locConfig.configs[0].vendorNumber);
+        //sessionStorage.setItem('vendorName', locConfig.configs[0].vendorName);
         sessionStorage.setItem('facilityName', locConfig.configs[0].facilityName);
         sessionStorage.setItem('individualUID', (locConfig.individuals[0].individualUID != null ? locConfig.individuals[0].individualUID : '0').toString());
         sessionStorage.setItem('indLocUID', (locConfig.individuals[0].indLocUID != null ? locConfig.individuals[0].indLocUID : '0').toString());

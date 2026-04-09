@@ -8,6 +8,7 @@ import { VLogonModel } from '../../../logon/models/vlogon.model';
 import { GlobalConstants } from 'src/app/global/global.constants';
 import { AlertOptions } from 'src/app/alertmsg/alert-message/alert-message.model';
 import { AlertService } from 'src/app/alertmsg/alert-message/alert-message.service';
+import { ToastService } from 'src/app/services/toast.service';
 
 @Component({
   selector: 'app-pin-validate',
@@ -17,8 +18,12 @@ import { AlertService } from 'src/app/alertmsg/alert-message/alert-message.servi
 })
 export class PinValidateComponent implements OnInit {
 
-  constructor(private modal: NgbModal, private _saleTranSvc: SalesTranService, private _logonSvc: LogonSvc, private _logonDataSvc: LogonDataService,
-    private router: Router, private _alertSvc: AlertService,) { 
+  constructor(private modal: NgbModal, 
+    private _saleTranSvc: SalesTranService, 
+    private _logonSvc: LogonSvc, 
+    private _logonDataSvc: LogonDataService,
+    private router: Router, 
+    private _toastSvc: ToastService,) { 
 
     }
     vpin: string = ''
@@ -31,6 +36,17 @@ export class PinValidateComponent implements OnInit {
       if(this.vpin.length == 4) {
         this.ValidatePin(this.vpin);
       }
+    }
+
+    goToMainMenu(): void {
+      this.modal.dismissAll();
+      this.router.navigate(['/adminmenu']);
+    }
+
+    logout(): void {
+      this.modal.dismissAll();
+      this._logonDataSvc.clearTenderTypes();
+      this.router.navigate(['/vlogon']);
     }
 
     ValidatePin(pin: string) {
@@ -53,19 +69,13 @@ export class PinValidateComponent implements OnInit {
           return;
         }
 
-        if (!data.isAuthorized == false) {
-            //this.errorMsgDisplay = 'block';
-            //this.successMsgDisplay = 'none';
-            let option: AlertOptions = new AlertOptions("", false, false);
-            this._alertSvc.error('Vendor Logon unsuccessful, please retry', option);
+        if (data.isAuthorized == false) {
+            this._toastSvc.error('Vendor Logon unsuccessful, please retry');
             this.vpin = '';
             return; 
         }
         else {
-            //this.errorMsgDisplay = 'none';
-            //this.successMsgDisplay = 'block';
-            let option: AlertOptions = new AlertOptions("", false, false);
-            this._alertSvc.success('Vendor Logon successful, moving on to Sale Transaction...', option);
+            this._toastSvc.success('Vendor Logon successful, moving on to Sale Transaction...');
             this.router.navigate(['/salestran']);    
         }
 

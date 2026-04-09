@@ -67,9 +67,11 @@ export class VendorLTComponent implements OnInit {
     }
 
     DoLogon(event: any) {
+
         let selectedLocId: number = this.selectedLocationId;
         let location = this.LocationList.filter(k => k.locationUID == selectedLocId)[0];
         let locModel = new VLogonModel();
+
         locModel.exchangeNumber = location.exchangeNumber;
         locModel.facilityNumber = location.locationUID.toString();
         locModel.facilityName = location.facilityName;
@@ -89,6 +91,7 @@ export class VendorLTComponent implements OnInit {
         locModel.regionId = "conus";
 
         this.logonSvc.logonUser(locModel).subscribe(data => {
+
             if(data == null) {
                 return;
             }
@@ -115,6 +118,9 @@ export class VendorLTComponent implements OnInit {
             this._localStorageSvc.setItemData('location_facility_number', location.facilityNumber);
             this._localStorageSvc.setItemData('location_ddlContract_Type', true.toString());
             this._localStorageSvc.setItemData('location_facility_name', location.facilityName);
+
+            sessionStorage.setItem('vendorNumber', this.vendornum);
+            sessionStorage.setItem('facilityNumber', location.facilityNumber);
  
             let cstart: Date = new Date(Date.parse(data.contractStart));
             let today: Date = new Date();
@@ -125,9 +131,7 @@ export class VendorLTComponent implements OnInit {
             //console.log('vendorlt sending data to subject');
             this._logonDataSvc.setLTVendorLogonData(data);
 
-            this._saleTranSvc.getTenderTypes(1, 100).subscribe(data => {
-                this._logonDataSvc.setTenderTypes(data);
-            });
+
             locModel.individualUID = +data.individualUID;
 
             if(data.resetPIN == 1) {
@@ -151,7 +155,7 @@ export class VendorLTComponent implements OnInit {
                 });
                 return;
             }
-            if(data.resetPIN == 0 && data.showPrivTrngConfrm == 1) {
+            if(data.resetPIN == 0 && data.showPrivTrngConfrm > 0) {
                 const modalRef = this._modalService.open(MandateTrainingComponent, { backdrop: 'static', keyboard: false, centered: true });
                 modalRef.componentInstance.vendorName = data.associateName;
                 modalRef.componentInstance.businessDate = new Date;
@@ -175,6 +179,10 @@ export class VendorLTComponent implements OnInit {
                 this._locConfigStore.dispatch(setLocationConfig({ locationConfig: locCnfgData }));
                 let locConfig = this._logonDataSvc.getLocationConfig();
                 this._tktObjStore.dispatch(initTktObj({ locConfig: locConfig, individualUID: +data.individualUID}));
+
+                this._saleTranSvc.getTenderTypes(1, 100).subscribe(data => {
+                    this._logonDataSvc.setTenderTypes(data);
+                });
 
                 let today = new Date();
                 today.toDateString()
