@@ -229,10 +229,13 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
               gcTender.cardEndingNbr = data.CardEndingNbr;
               gcTender.inStoreCardNbrTmp = data.AcctNumFIPS;
               gcTender.tracking = data.AcctNumFIPS;
+              gcTender.gcExpiryMonth = data.CardExpiryMonth;
+              gcTender.gcExpiryYear = data.CardExpiryYear;
+
               this._store.dispatch(addTender({ tndrObj: gcTender }))
               this._store.dispatch(saveTenderObj({ tndrObj: gcTender }));
 
-              this.getGiftCardBalanceForConus(data.AcctNumFIPS, data.CardExpiryYear, data.CardExpiryMonth);
+              this.getGiftCardBalanceForConus(gcTender);
             }
           },
           error: (err) => {
@@ -378,7 +381,13 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
     });
   }
 
-  getGiftCardBalanceForConus(CardNumber: string, expiryYear: number, expiryMonth: number): void {
+  regionCodeMap = new Map<string, number>([
+    ['CON', 0],
+    ['OCONE', 1],
+    ['OCONP', 2],
+  ]);
+
+  getGiftCardBalanceForConus(gcTender: TicketTender): void {
     if (this.authorizationInProgress) {
       console.warn('Authorization already in progress. Ignoring duplicate call.');
       return;
@@ -396,9 +405,13 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
       uid,
       facilityNumber,
       this.tenderAmountDC,
-      CardNumber,
-      expiryYear,
-      expiryMonth)
+      gcTender.inStoreCardNbrTmp,
+      gcTender.gcExpiryYear,
+      gcTender.gcExpiryMonth,
+      gcTender.ticketTenderId,
+      gcTender.tenderTransactionId,
+      this.regionCodeMap.get(sessionStorage.getItem('rgnCode') || 'CON') || 0,
+      2)
       .pipe(
         take(1),
         takeUntil(this.destroy$)
@@ -438,8 +451,8 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
           tndrCopy.tndMaintTimestamp = new Date(Date.now());
           tndrCopy.tndrTimeStamp = new Date(Date.now());
           tndrCopy.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
-          tndrCopy.gcExpiryYear = expiryYear;
-          tndrCopy.gcExpiryMonth = expiryMonth;
+          tndrCopy.gcExpiryYear = gcTender.gcExpiryYear;
+          tndrCopy.gcExpiryMonth = gcTender.gcExpiryMonth;
 
           this._store.dispatch(addTender({ tndrObj: tndrCopy }));
           this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));

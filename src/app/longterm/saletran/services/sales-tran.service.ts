@@ -187,7 +187,11 @@ export class SalesTranService {
         transactionAmount: number,
         cardNumberEncrypted: string,
         cardExpiryYear: number,
-        cardExpiryMonth: number
+        cardExpiryMonth: number,
+        ticketTenderId: number,
+        transactionId: number,
+        regionId: number,
+        appType: number
     ): Observable<Conus_GC_Balance_Model> {
         const url = GlobalConstants.CPOS_SVCS_URL + '/common/AurusGiftCardInquiry'
             + '?guid=' + encodeURIComponent(guid)
@@ -198,7 +202,11 @@ export class SalesTranService {
             TransactionAmount: transactionAmount,
             CardNumberEncrypted: cardNumberEncrypted,
             CardExpiryYear: cardExpiryYear,
-            CardExpiryMonth: cardExpiryMonth
+            CardExpiryMonth: cardExpiryMonth,
+            TicketTenderId: ticketTenderId,
+            TransactionId: transactionId,
+            RegionId: regionId,
+            AppType: appType
         };
 
         return this.httpClient.post<Conus_GC_Balance_Model>(url, JSON.stringify(request), { headers: this.headerObjs });
@@ -211,8 +219,13 @@ export class SalesTranService {
         transactionAmount: number,
         cardNumberEncrypted: string,
         cardExpiryYear: number,
-        cardExpiryMonth: number
+        cardExpiryMonth: number,
+        ticketTenderId: number,
+        transactionId: number,
+        regionId: number,
+        appType: number
     ): Observable<Conus_GC_Balance_Model> {
+        
         const url = GlobalConstants.CPOS_SVCS_URL + '/common/AurusGiftCardRedeem'
             + '?guid=' + encodeURIComponent(guid)
             + '&uid=' + encodeURIComponent(uid);
@@ -222,7 +235,12 @@ export class SalesTranService {
             TransactionAmount: transactionAmount,
             CardNumberEncrypted: cardNumberEncrypted,
             CardExpiryYear: cardExpiryYear,
-            CardExpiryMonth: cardExpiryMonth
+            CardExpiryMonth: cardExpiryMonth,
+            TicketTenderId: ticketTenderId,
+            TransactionId: transactionId,
+            RegionId: regionId,
+            AppType: appType
+
         };
 
         return this.httpClient.post<Conus_GC_Balance_Model>(url, JSON.stringify(request), { headers: this.headerObjs });
@@ -432,5 +450,10 @@ export interface AurusGiftCardRequest {
     CardNumberEncrypted: string;
     CardExpiryYear: number;
     CardExpiryMonth: number;
+    TicketTenderId: number;
+    TransactionId: number;
+    RegionId: number;
+    AppType: number;
+
 }
   

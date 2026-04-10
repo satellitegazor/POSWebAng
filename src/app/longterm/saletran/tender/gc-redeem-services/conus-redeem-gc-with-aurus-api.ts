@@ -9,6 +9,7 @@ import { addTender, saveTenderObj } from '../../store/ticketstore/ticket.action'
 import { ToastService } from 'src/app/services/toast.service';
 import { UiBlockService } from 'src/app/services/ui-block.service';
 import { GlobalConstants } from 'src/app/global/global.constants';
+import { CPOSAppType } from 'src/app/services/util.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +24,12 @@ export class ConusRedeemGCwithAurusAPI {
     private _uiBlockSvc: UiBlockService) { }
 
   public redeem(giftCardTenders: TicketTender[]): Observable<void> {
+
+    const regionCodeMap = new Map<string, number>([
+      ['CON', 0],
+      ['OCONE', 1],
+      ['OCONP', 2],
+    ]);
 
     if (giftCardTenders.length === 0) {
       this._toastSvc.info('No gift card tenders to redeem.');
@@ -47,7 +54,11 @@ export class ConusRedeemGCwithAurusAPI {
               tender.tenderAmount,
               tender.inStoreCardNbrTmp,
               tender.gcExpiryYear,
-              tender.gcExpiryMonth
+              tender.gcExpiryMonth,
+              tender.ticketTenderId,
+              tender.tenderTransactionId,
+              regionCodeMap.get(sessionStorage.getItem('rgnCode') || 'CON') || 0,
+              CPOSAppType.LongTerm
             ).pipe(
               tap((response: Conus_GC_Balance_Model) => {
                 if (!response.results.success) {
