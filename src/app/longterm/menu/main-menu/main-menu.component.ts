@@ -13,4 +13,8 @@ export class MainMenuComponent {
   goToSalesTransaction(): void {
     this.router.navigate(['/salestran']);
   }
+
+  goToReports(): void {
+    this.router.navigate(['/reportsmenu']);
+  }
 }
