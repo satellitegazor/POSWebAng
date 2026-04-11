@@ -6,10 +6,11 @@ import { AppModule } from './app.module';
 const appRoutes: Routes = [
     { path: 'vlogon', loadChildren: () => import('./logon/logon.module').then(mod => mod.LogonModule)  },
     { path: 'rlogon', loadChildren: () => import('./logon/logon.module').then(mod => mod.LogonModule) },
-    { path: 'salestran', loadChildren: () => import('./longterm/saletran/saletran.module').then(mod => mod.SalesTranModule) },
+    { path: '', loadChildren: () => import('./longterm/long-term-route/long-term-route.module').then(mod => mod.LongTermRouteModule) },
+    { path: 'salestranrpt', loadComponent: () => import('./reports/salestranrpt/sales-tran-rpt-page/sales-tran-rpt-page.component').then(mod => mod.SalesTranRptPageComponent) },
     { path: 'misc', loadChildren: () => import('./misc-module/misc.module').then(mod => mod.MiscModule) },
     { path: 'lrcpt', loadChildren: () => import('./rcpt/rcpt.module').then(mod => mod.RcptModule) },
-    { path: 'itembtnmenu', loadChildren: () => import('./longterm/saletran/saletran.module').then(mod => mod.SalesTranModule) },
+    { path: 'itembtnmenu', loadChildren: () => import('./longterm/long-term/long-term.module').then(mod => mod.LongTermModule) },
     
 ];
 

@@ -20,9 +20,8 @@ import { GetAuthLoginReducer } from './authstate/auth.reducer';
 import { LOGIN_AUTH_STATE } from './authstate/auth.selector';
 import { LogonDataService } from './global/logon-data-service.service';
 import { LogonSvc } from './logon/logonsvc.service';
-import { SummaryComponent } from './reports/salestran/summary/summary.component';
-import { DetailComponent } from './reports/salestran/detail/detail.component';
-import { SalestranComponent } from './reports/salestran/salestran/salestran.component';
+import { SummaryComponent } from './reports/salestranrpt/summary/summary.component';
+import { DetailComponent } from './reports/salestranrpt/detail/detail.component';
 import { LtcTicketReceiptComponent } from './rcpt/ltc-ticket-receipt/ltc-ticket-receipt.component';
 import { AlertMessageModule } from './alertmsg/alert-message/alert-message.module';
 import { RcptModule } from './rcpt/rcpt.module';
@@ -30,9 +29,9 @@ import { InactiveLogoutInterceptor } from './auth/inactive-logout.interceptor';
 import { AlertMessageComponent } from './alertmsg/alert-message/alert-message.component';
 import { PosCurrencyDirective } from './directives/pos-currency.directive';
 import { PosCurrency3Directive } from './directives/pos-currency.directive.3';
-import { SalesTranModule } from './longterm/saletran/saletran.module';
 import { ConfirmDialogComponent } from './shared/confirm-dialog';
 import { ToastComponent } from "./shared/toast/toast.component";
+import { LongTermModule } from './longterm/long-term/long-term.module';
 
  
 @NgModule({
@@ -45,14 +44,14 @@ import { ToastComponent } from "./shared/toast/toast.component";
     HomeComponent,
     SummaryComponent,
     DetailComponent,
-    SalestranComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
     
     //AlertMessageComponent
     
   ],
   exports: [
   ConfirmDialogComponent
+  
   ],
   imports: [
     BrowserModule,
@@ -62,7 +61,7 @@ import { ToastComponent } from "./shared/toast/toast.component";
     FormsModule,
     AlertMessageModule,
     LogonModule,
-    SalesTranModule,
+    LongTermModule,
     SharedSubjectModule,
     NgbModalModule,
     HttpClientModule,
@@ -74,8 +73,7 @@ import { ToastComponent } from "./shared/toast/toast.component";
         autoPause: true,
         connectInZone: true
     }),
-    RcptModule,
-    ToastComponent
+    RcptModule
 ],
   providers: [{provide: LogonDataService}, {
         provide: HTTP_INTERCEPTORS,

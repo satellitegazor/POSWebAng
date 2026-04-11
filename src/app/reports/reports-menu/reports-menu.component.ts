@@ -1,0 +1,17 @@
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-reports-menu',
+  imports: [],
+  templateUrl: './reports-menu.component.html',
+  styleUrl: './reports-menu.component.css'
+})
+export class ReportsMenuComponent {
+  constructor(private router: Router) {}
+
+  goToSalesTransactionReport(): void {
+    this.router.navigate(['/salestranrpt']);
+  }
+
+}
