@@ -14,5 +14,23 @@ export const getLocCnfgIsAllowTipsSelector = createSelector(getLocConfigState,
         if(state.locationCnfg == null)
             return;
 
-        return state && state.locationCnfg && state.locationCnfg.configs && state.locationCnfg.configs.length > 0 ? state.locationCnfg.configs[0].allowTips : false;
+        return state && state.locationCnfg && state.locationCnfg != null && state.locationCnfg.allowTips != null ? state.locationCnfg.allowTips : false;
     })
+
+export const getLocCnfgHeaderContextSelector = createSelector(getLocConfigState,
+    (state) => {
+        const config = state && state.locationCnfg 
+            ? state.locationCnfg
+            : null;
+
+        return {
+            associateName: config ? config.associateName : '',
+            associateRole: config ? config.associateRole : '',
+            associateRoleDesc: config ? config.associateRoleDesc : '',
+            contractNumber: config ? config.contractNumber : '',
+            contractUID: config ? config.contractUID : 0,
+            facilityName: config ? config.facilityName : '',
+            locationName: config ? config.locationName : '',
+            facilityNumber: config ? config.facilityNumber : ''
+        };
+    });

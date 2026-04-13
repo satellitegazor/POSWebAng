@@ -16,12 +16,12 @@ export class LocationConfigEffects {
             ofType(getLocationConfigStart),
             exhaustMap((action) => {
                 return this.salesTranSvc.getLocationConfig(action.locationId, action.individualUID).pipe(
-                    map(locationCnfg => {
-                        return getLocationConfigSuccess({ locationCnfg });
+                    map(locCnfgMdl => {
+                        return getLocationConfigSuccess({ locationCnfg: locCnfgMdl.configs[0] });
                     }),
                     catchError((errResp) => {
                         const errMessage = errResp + "Unable to load LocationConfig. Please logoff and logon again";
-                        return of(getLocationConfigFail(errResp));
+                        return of(getLocationConfigFail({errMessage: errMessage}));
                     })
                 )
             }),

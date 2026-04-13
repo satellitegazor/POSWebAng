@@ -148,6 +148,8 @@ export class ItemSelectionBasePageComponent implements OnInit, OnDestroy {
 
             this.locationConfig = data.configs[0];
             this.locationIndividuals = data.individuals;
+            this._locConfigStore.dispatch(setLocationConfig({ locationConfig: data.configs[0] }));
+            
         });
 
         this._cposWebSvc.pinpadHeartbeat("PING").subscribe(data => {

@@ -1,9 +1,9 @@
-import { LocationConfigModel } from "../../../models/location-config";
+import { LocationConfig } from "../../../models/location-config";
 
 export interface LocationConfigState {
-    locationCnfg: LocationConfigModel | null;
+    locationCnfg: LocationConfig | null;
 }
  
 export const initialLocationConfigState: LocationConfigState = {
-    locationCnfg: null
+    locationCnfg: new LocationConfig()
 }

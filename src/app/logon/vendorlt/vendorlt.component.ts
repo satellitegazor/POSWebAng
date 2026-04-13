@@ -10,7 +10,7 @@ import { AlertService } from 'src/app/alertmsg/alert-message/alert-message.servi
 import { AlertOptions } from 'src/app/alertmsg/alert-message/alert-message.model';
 import { LocationConfigState } from 'src/app/longterm/saletran/store/locationconfigstore/locationconfig.state';
 import { props, Store } from '@ngrx/store';
-import { setLocationConfig } from 'src/app/longterm/saletran/store/locationconfigstore/locationconfig.action';
+import { setLocationConfig, updateLocationConfigPostLogon } from 'src/app/longterm/saletran/store/locationconfigstore/locationconfig.action';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ResetPinDlgComponent } from './reset-pin-dlg/reset-pin-dlg.component';
 import { MandateTrainingComponent } from './mandate-training/mandate-training.component';
@@ -121,15 +121,19 @@ export class VendorLTComponent implements OnInit {
 
             sessionStorage.setItem('vendorNumber', this.vendornum);
             sessionStorage.setItem('facilityNumber', location.facilityNumber);
+            sessionStorage.setItem("vendorName", data.userIdentity.fullName);
+            sessionStorage.setItem("loggedInUserName", data.associateName);
+            sessionStorage.setItem("loggedInUserRole", data.associateRoleDesc);
+            sessionStorage.setItem("locationName", location.facilityName);
  
             let cstart: Date = new Date(Date.parse(data.contractStart));
             let today: Date = new Date();
             this._localStorageSvc.setItemData('isFutureContract', (cstart > today ? true: false).toString());
             this._localStorageSvc.setItemData('jwtToken', data.tokenString);
-
             this._localStorageSvc.setItemData('apptype', 'longterm')
             //console.log('vendorlt sending data to subject');
             this._logonDataSvc.setLTVendorLogonData(data);
+
 
 
             locModel.individualUID = +data.individualUID;
@@ -176,9 +180,21 @@ export class VendorLTComponent implements OnInit {
             this._saleTranSvc.getLocationConfig(+data.locationUID, +data.individualUID).subscribe(locCnfgData => {
 
                 this._logonDataSvc.setLocationConfig(locCnfgData);
-                this._locConfigStore.dispatch(setLocationConfig({ locationConfig: locCnfgData }));
+                
                 let locConfig = this._logonDataSvc.getLocationConfig();
                 this._tktObjStore.dispatch(initTktObj({ locConfig: locConfig, individualUID: +data.individualUID}));
+                this._locConfigStore.dispatch(setLocationConfig({ locationConfig: locCnfgData.configs[0] }));
+
+                this._locConfigStore.dispatch(updateLocationConfigPostLogon({
+                    associateName: data.associateName,
+                    associateRole: data.associateRole,
+                    associateRoleDesc: data.associateRoleDesc,
+                    contractNumber: this.vendornum,
+                    contractUID: +data.contractUID,
+                    facilityName: location.facilityName,
+                    locationName: location.facilityName,
+                    facilityNumber: location.facilityNumber
+                }));
 
                 this._saleTranSvc.getTenderTypes(1, 100).subscribe(data => {
                     this._logonDataSvc.setTenderTypes(data);
@@ -194,7 +210,7 @@ export class VendorLTComponent implements OnInit {
                 if(inProgTranId > 0) {
                     
                     this._toastSvc.info("An incomplete ticket has been found. Please complete it or void it!!");
-                    this._locConfigStore.dispatch(loadTicket({ tranId: inProgTranId, locationId: locModel.locationUID, indivId: locModel.individualUID }))
+                    this._tktObjStore.dispatch(loadTicket({ tranId: inProgTranId, locationId: locModel.locationUID, indivId: locModel.individualUID }))
 
                     this._cposWebSvc.pinpadHeartbeat("PING").subscribe(data => {
                         if (data.IsSuccess) {
@@ -203,10 +219,10 @@ export class VendorLTComponent implements OnInit {
                     });
 
                     this.actions$.pipe(ofType(loadTicketSuccess)).subscribe(() => {
-                        setTimeout((logonDataSvc, locConfigStore, routr) => {
+                        setTimeout((logonDataSvc, tktObjStore, routr) => {
                             routr.navigate(['/checkout']);
-                            locConfigStore.dispatch(updateCheckoutTotals({ logonDataSvc: logonDataSvc }))
-                        }, 800, this._logonDataSvc, this._locConfigStore, this.router);                           
+                            tktObjStore.dispatch(updateCheckoutTotals({ logonDataSvc: logonDataSvc }))
+                        }, 800, this._logonDataSvc, this._tktObjStore, this.router);                           
                     });                 
                 }
                 else {

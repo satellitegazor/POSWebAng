@@ -28,7 +28,7 @@ export class LogonDataService {
         sessionStorage.setItem('contractStart', ltVendorLogonData.contractStart);
         sessionStorage.setItem('userIdentity', ltVendorLogonData.userIdentity.toString());
         sessionStorage.setItem('userRoles', ltVendorLogonData.userRoles.toString());
-        sessionStorage.setItem('asociateRole', ltVendorLogonData.asociateRole);
+        sessionStorage.setItem('asociateRole', ltVendorLogonData.associateRole);
         sessionStorage.setItem('associateRoleDesc', ltVendorLogonData.associateRoleDesc);
         sessionStorage.setItem('associateName', ltVendorLogonData.associateName);
         sessionStorage.setItem('locationUID', ltVendorLogonData.locationUID);
@@ -124,7 +124,7 @@ export class LogonDataService {
         ltVndrLgnData.contractStart = String(sessionStorage.getItem('contractStart') ? sessionStorage.getItem('contractStart') :  '0' )
         //ltVndrLgnData.userIdentity = Number(sessionStorage.getItem('userIdentity') ? sessionStorage.getItem('userIdentity') :  '0' )
         //ltVndrLgnData.userRoles = Number(sessionStorage.getItem('userRoles') ? sessionStorage.getItem('userRoles') :  '0' )
-        ltVndrLgnData.asociateRole = String(sessionStorage.getItem('asociateRole') ? sessionStorage.getItem('asociateRole') :  '0' )
+        ltVndrLgnData.associateRole = String(sessionStorage.getItem('asociateRole') ? sessionStorage.getItem('asociateRole') :  '0' )
         ltVndrLgnData.associateRoleDesc = String(sessionStorage.getItem('associateRoleDesc') ? sessionStorage.getItem('associateRoleDesc') :  '0' )
         ltVndrLgnData.associateName = String(sessionStorage.getItem('associateName') ? sessionStorage.getItem('associateName') :  '0' )
         ltVndrLgnData.locationUID = String(sessionStorage.getItem('locationUID') ? sessionStorage.getItem('locationUID') :  '0' )

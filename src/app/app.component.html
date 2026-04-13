@@ -1,34 +1,41 @@
 <div class="font-wrapper" [class.app-busy-cursor]="isUiBlocked">
   <nav class="navbar navbar-expand-md navbar-light bg-light">
-    <div class="container">
-      <a class="navbar-brand" href="#">Concession POS - {{Region}}</a>
-      <button class="navbar-toggler hidden-lg-up" type="button" data-toggle="collapse" data-target="#collapsibleNavId" aria-controls="collapsibleNavId"
-        aria-expanded="false" aria-label="Toggle navigation"></button>
-      <div class="collapse navbar-collapse" id="collapsibleNavId">
-        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-          <li class="nav-item active">
-            <label>Application Sign-in</label>
-            <!-- <a class="nav-link" href="#">Home
-              <span class="sr-only">(current)</span>
-            </a> --> 
-          </li>
-          <li class="nav-item">
-            <!-- <a class="nav-link" href="#">About</a> -->
-          </li> 
-          <li class="nav-item">
-            <!-- <a class="nav-link" href="#">Contact</a> -->
-          </li>
-        </ul>
-        <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
-            <label class="navbar-brand">{{TicketNumber > 0 ? 'Ticket# ' + TicketNumber : ''}}</label>
-        </ul>
+    <div class="container-fluid py-2">
+      <div class="row align-items-center w-100 g-3">
+        <div class="col-12 col-md-2 d-flex justify-content-center justify-content-md-start">
+          <svg class="btnGotoMainMenu text-primary" viewBox="0 0 24 24" role="img" aria-label="Go To Main Menu" style="height: 36px; width: 36px;">
+            <path fill="currentColor" d="M4 6.75A2.75 2.75 0 0 1 6.75 4h10.5A2.75 2.75 0 0 1 20 6.75v10.5A2.75 2.75 0 0 1 17.25 20H6.75A2.75 2.75 0 0 1 4 17.25zm3.25.25a.75.75 0 0 0-.75.75v2.5c0 .41.34.75.75.75h2.5a.75.75 0 0 0 .75-.75v-2.5A.75.75 0 0 0 9.75 7zm7 0a.75.75 0 0 0-.75.75v2.5c0 .41.34.75.75.75h2.5a.75.75 0 0 0 .75-.75v-2.5a.75.75 0 0 0-.75-.75zm-7 6a.75.75 0 0 0-.75.75v2.5c0 .41.34.75.75.75h2.5a.75.75 0 0 0 .75-.75v-2.5a.75.75 0 0 0-.75-.75zm7 0a.75.75 0 0 0-.75.75v2.5c0 .41.34.75.75.75h2.5a.75.75 0 0 0 .75-.75v-2.5a.75.75 0 0 0-.75-.75z"/>
+          </svg>
+          Main Menu
+        </div>
 
+        <div class="col-12 col-md-6 text-center">
+          <div class="border rounded p-2 h-100 d-inline-block text-start bg-white">
+            <div class="fw-bold text-dark">{{VendorName || 'Vendor Name'}}</div>
+            <div class="small navbar-data-secondary">{{LocationName || 'Location Name'}}</div>
+          </div>
+          <div class="mt-2">
+            <label class="navbar-brand mb-0 text-dark">{{TicketNumber > 0 ? 'Ticket# ' + TicketNumber : 'Ticket# --'}}</label>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-4 d-flex flex-column align-items-center align-items-md-end gap-2">
+          <div class="border rounded p-2 h-100 bg-white">
+            <div class="d-flex align-items-center gap-2">
+              <svg class="assImage text-primary" viewBox="0 0 24 24" role="img" aria-label="Logged in user" style="height: 32px; width: 32px;">
+                <path fill="currentColor" d="M12 12a4.25 4.25 0 1 0 0-8.5a4.25 4.25 0 0 0 0 8.5m0 1.5c-4.14 0-7.5 2.8-7.5 6.25c0 .41.34.75.75.75h13.5c.41 0 .75-.34.75-.75c0-3.45-3.36-6.25-7.5-6.25"/>
+              </svg>
+              <div>
+                <div id="AssocName" class="fw-bold text-dark">{{logonUserName || 'User Name'}}</div>
+                <div class="small navbar-data-secondary">{{logonUserRole || 'User Role'}}</div>
+              </div>
+            </div>
+          </div>
+          <a class="nav-link p-0" href="#" id="lnkLogout" (click)="vlogout()">Logout</a>
+        </div>
       </div>
     </div>
-    <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
-      <a class="nav-link" href="#" id="lnkLogout" (click)="vlogout()" >Logout</a>
-    </ul>
-</nav>
+  </nav>
 
   <div class="container-fluid">
       <router-outlet></router-outlet>

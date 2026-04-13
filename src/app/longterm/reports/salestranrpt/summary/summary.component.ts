@@ -8,6 +8,7 @@ import { ContractSummaryGrouped } from 'src/app/models/sales.tran.report.models'
     standalone: false
 })
 export class SummaryComponent implements OnInit {
+CategorizedBy: any;
 
   constructor() { }
   summaryList: ContractSummaryGrouped[] = [];

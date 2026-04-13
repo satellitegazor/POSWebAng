@@ -6,6 +6,7 @@ import { getTktObjSelector } from './longterm/saletran/store/ticketstore/ticket.
 import { saleTranDataInterface } from './longterm/saletran/store/ticketstore/ticket.state';
 import { LogonDataService } from './global/logon-data-service.service';
 import { UiBlockService } from './services/ui-block.service';
+import { getLocCnfgHeaderContextSelector } from './longterm/saletran/store/locationconfigstore/locationconfig.selector';
 
 @Component({
     selector: 'app-root',
@@ -16,6 +17,10 @@ import { UiBlockService } from './services/ui-block.service';
 export class AppComponent implements OnInit, OnDestroy {
 
   private _destroy$ = new Subject<void>();
+VendorName: any;
+LocationName: any;
+logonUserName: any;
+logonUserRole: any;
 
   constructor(
     private route: Router,
@@ -51,6 +56,19 @@ export class AppComponent implements OnInit, OnDestroy {
     this._uiBlockSvc.message$.pipe(takeUntil(this._destroy$)).subscribe((message) => {
       this.uiBlockMessage = message;
     });
+
+    this._store.pipe(
+      select(getLocCnfgHeaderContextSelector),
+      takeUntil(this._destroy$)
+    ).subscribe((headerContext) => {
+      this.VendorName = headerContext.associateName;
+      this.LocationName = headerContext.locationName;
+      this.logonUserName = headerContext.associateName;
+      this.logonUserRole = headerContext.associateRole;
+    });
+
+
+
   }
 
   public ngOnDestroy(): void {
@@ -59,6 +77,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   DisplayAlertMsg(msg: string) {
-
+    alert(msg);
   }
 }

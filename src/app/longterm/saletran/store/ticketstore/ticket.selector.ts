@@ -62,6 +62,12 @@ export interface AmountUSDFC {
 
   export const getRemainingBal = createSelector(getTktObjState,
   (state) => {
+    if (!state || !state.tktObj) {
+      return {
+        amountUSD: 0,
+        amountFC: 0
+      } as AmountUSDFC;
+    }
     
     let tenderTotalUSD: number = 0;
     let tipTotalUSD: number = 0;

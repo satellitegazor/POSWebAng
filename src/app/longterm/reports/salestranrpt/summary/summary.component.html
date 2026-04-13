@@ -1,5 +1,291 @@
-<table class="table">
-    <tr><td>Txn Type</td><td># Trans</td><td># Tenders</td><td>Tip</td><td>Total</td><td>Percentage %</td></tr>
-    
-    <tr *ngFor="let smry of summaryList"><td>smry.TenderTypeCode</td><td>smry.NbrTrans</td><td>smry.NbrTender</td><td>smry.TipAmount</td><td>smry.Sales</td><td>smry.</td></tr>
-</table>
+<div class="container-fluid py-3 sales-tran-summary-page">
+	<header class="card shadow-sm mb-3">
+		<div class="card-body p-2 p-md-3">
+			<div class="row align-items-center g-2">
+				<div class="col-12 col-md-3 d-flex justify-content-center justify-content-md-start gap-2">
+					<button id="aMainMenuButton" type="button" class="btn btn-outline-secondary btn-sm" style="display: none;">
+						Menu
+					</button>
+					<button id="aMainBackButton" type="button" class="btn btn-outline-secondary btn-sm" style="display: none;">
+						Back
+					</button>
+				</div>
+
+				<div class="col-12 col-md-6 text-center">
+					<img src="/LTCPOS/Images/title_image.png" alt="Concessionaire" class="img-fluid" style="max-height: 44px;">
+				</div>
+
+				<div class="col-12 col-md-3 d-flex justify-content-center justify-content-md-end align-items-center gap-2">
+					<span class="timeRemain fw-semibold" style="display: none;"></span>
+					<button id="aMainActionButton" type="button" class="btn btn-primary btn-sm" style="display: none;">
+						Save
+					</button>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<section id="divUCRHeader" class="card border-primary-subtle mb-3">
+		<div id="divUCRHeaderTitleBar" class="card-body py-2">
+			<div class="row align-items-center g-2">
+				<div class="col-6 col-md-1 text-start">
+					<svg class="btnGotoMainMenu text-primary" viewBox="0 0 24 24" role="img" aria-label="Go To Main Menu" style="height: 36px; width: 36px;">
+						<path fill="currentColor" d="M4 6.75A2.75 2.75 0 0 1 6.75 4h10.5A2.75 2.75 0 0 1 20 6.75v10.5A2.75 2.75 0 0 1 17.25 20H6.75A2.75 2.75 0 0 1 4 17.25zm3.25.25a.75.75 0 0 0-.75.75v2.5c0 .41.34.75.75.75h2.5a.75.75 0 0 0 .75-.75v-2.5A.75.75 0 0 0 9.75 7zm7 0a.75.75 0 0 0-.75.75v2.5c0 .41.34.75.75.75h2.5a.75.75 0 0 0 .75-.75v-2.5a.75.75 0 0 0-.75-.75zm-7 6a.75.75 0 0 0-.75.75v2.5c0 .41.34.75.75.75h2.5a.75.75 0 0 0 .75-.75v-2.5a.75.75 0 0 0-.75-.75zm7 0a.75.75 0 0 0-.75.75v2.5c0 .41.34.75.75.75h2.5a.75.75 0 0 0 .75-.75v-2.5a.75.75 0 0 0-.75-.75z"/>
+					</svg>
+				</div>
+
+				<div class="col-12 col-md-3 order-3 order-md-2">
+					<div class="border rounded p-2 h-100">
+						<div class="fw-bold">=GENO MORENA ENTERPRIS</div>
+						<div class="text-muted small">Laundry Conus</div>
+					</div>
+				</div>
+
+				<div id="rptTitle" class="col-12 col-md-4 order-2 order-md-3 text-center fw-bold fs-5 text-primary">
+					Sales Transaction Report
+				</div>
+
+				<div class="col-12 col-md-3 order-4">
+					<div class="border rounded p-2 h-100">
+						<div class="d-flex align-items-center gap-2">
+							<img class="assImage" src="/LTCPOS/Images/ltc/Faces_Users-20.png" alt="Vendor Manager" style="height: 32px; width: 32px;">
+							<div>
+								<div id="AssocName" class="fw-bold">Mark Labushne</div>
+								<div class="text-muted small">Concession Manager</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-6 col-md-1 order-5 text-end">
+					<button type="button" class="btn p-0 border-0 bg-transparent" aria-label="Logout" onclick="logOut()">
+						<img src="/LTCPOS/Images/ltc/Vendor_Logout.png" alt="Logout" class="img-fluid" style="max-height: 36px;">
+					</button>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="card mb-3">
+		<div class="card-body py-2">
+			<div class="row align-items-center g-2">
+				<div class="col-12 col-md-3 fw-bold">Transaction Summary By</div>
+				<div class="col-12 col-md-9">
+					<div class="btn-group w-100" role="group" aria-label="Transaction summary by">
+						<button class="ucrNav F btn btn-outline-secondary" data-summaryby="F" type="button">Facility</button>
+						<button class="ucrNav L btn btn-outline-secondary" data-summaryby="L" type="button">Location</button>
+						<button class="ucrNav A btn btn-primary" data-summaryby="A" type="button">Associate</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section id="divUsrCnfgRprtParms" class="accordion mb-3" data-contract-uid="2005">
+		<div class="accordion-item">
+			<h2 class="accordion-header" id="headingReportParameters">
+				<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseReportParameters" aria-expanded="true" aria-controls="collapseReportParameters">
+					Report Parameters
+				</button>
+			</h2>
+			<div id="collapseReportParameters" class="accordion-collapse collapse show" aria-labelledby="headingReportParameters">
+				<div class="accordion-body">
+					<div class="row g-3 align-items-end mb-2">
+						<div class="col-12 col-md-2">
+							<label class="form-label fw-semibold mb-1">Location Name</label>
+						</div>
+						<div class="col-12 col-md-4">
+							<div id="ucrFacInfoBlock" class="border rounded p-2">
+								<span id="ucrFacName">Laundry Conus</span>
+								<span class="ucrFacNumberGarnish" style="display: none;"> (</span>
+								<span id="ucrFacNumber" style="display: none;">All</span>
+								<span class="ucrFacNumberGarnish" style="display: none;">)</span>
+							</div>
+						</div>
+						<div class="col-12 col-md-2">
+							<label class="form-label fw-semibold mb-1">Vendor Number</label>
+						</div>
+						<div class="col-12 col-md-4">
+							<div id="vendInfoBlock" class="border rounded p-2">
+								<span id="vendorName">=GENO MORENA ENTERPRIS</span>
+								<span class="vendDispGarnish"> (</span>
+								<span id="vendDispNbr">000024305210</span>
+								<span class="vendDispGarnish">)</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="row g-3 align-items-end mb-3">
+						<div class="col-12 col-md-2 locInfoBlockSBM" style="display: none;">
+							<label class="form-label fw-semibold mb-1">Select Location</label>
+						</div>
+						<div class="col-12 col-md-4 locInfoBlockSBM" style="display: none;">
+							<button id="ucrLocationNum" type="button" class="btn btn-outline-primary w-100 text-start" data-new-val="3007" data-org-val="3007" data-org-name="Laundry Conus">
+								<span id="salesRptLocNo">Laundry Conus</span>
+							</button>
+						</div>
+
+						<div class="col-12 col-md-2 locInfoBlockVdr" style="display: none;">
+							<label class="form-label fw-semibold mb-1">Location</label>
+						</div>
+						<div class="col-12 col-md-4 locInfoBlockVdr" style="display: none;">
+							<button id="ucrLocationNumV" type="button" class="btn btn-outline-primary w-100 text-start" data-new-val="3007" data-org-val="3007">
+								<span id="salesRptLocNoV">Laundry Conus</span>
+							</button>
+						</div>
+
+						<div class="col-12 col-md-2">
+							<label class="form-label fw-semibold mb-1">Associate</label>
+						</div>
+						<div class="col-12 col-md-4">
+							<button id="ucrAssociateName" type="button" class="btn btn-outline-primary w-100 text-start" data-new-val="0" data-org-val="0">
+								<span id="associateName">ALL</span>
+							</button>
+						</div>
+
+						<div class="col-12 col-md-2">
+							<label class="form-label fw-semibold mb-1">Contract Number</label>
+						</div>
+						<div class="col-12 col-md-4">
+							<div id="ucrContractNumber" class="border rounded p-2">LAUNDRYCONUS</div>
+						</div>
+					</div>
+
+					<div class="row g-3 align-items-end">
+						<div class="col-12 col-md-3">
+							<label for="ucrFrom" class="form-label fw-semibold mb-1">From</label>
+							<div class="input-group" id="fromtd">
+								<input type="text" id="ucrFrom" name="ucrFrom" class="form-control ltc-dp" value="04/01/2026" data-org-val="2026-04-12" readonly>
+								<span class="input-group-text">
+									<img src="/LTCPOS/Images/ltc/office-11.png" alt="Calendar" style="height: 20px; width: 20px;">
+								</span>
+							</div>
+						</div>
+
+						<div class="col-12 col-md-3">
+							<label for="ucrTo" class="form-label fw-semibold mb-1">To</label>
+							<div class="input-group" id="totd">
+								<input type="text" id="ucrTo" name="ucrTo" class="form-control ltc-dp" value="04/30/2026" data-org-val="2026-04-12" readonly>
+								<span class="input-group-text">
+									<img src="/LTCPOS/Images/ltc/office-11.png" alt="Calendar" style="height: 20px; width: 20px;">
+								</span>
+							</div>
+						</div>
+
+						<div class="col-12 col-md-3">
+							<label for="selTransType" class="form-label fw-semibold mb-1">Transaction Type</label>
+							<button id="selTransType" type="button" class="btn btn-outline-primary w-100 text-start" data-new-val="All Transactions" data-org-val="All Transactions">
+								<span id="rptBTranType">All Transactions</span>
+							</button>
+						</div>
+
+						<div class="col-12 col-md-3 text-md-end" id="refresh">
+							<button type="button" class="btn btn-primary w-100 w-md-auto" onclick="refreshAssocusrCnfRpt(false)">
+								Refresh
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="card">
+		<div class="card-body p-0">
+			<div class="p-3 border-bottom bg-light">
+				<div id="salescatag" class="fw-bold fs-6 text-primary">{{CategorizedBy}}</div>
+			</div>
+
+			<div class="table-responsive">
+				<table class="table table-striped table-hover align-middle mb-0">
+					<thead class="table-secondary">
+						<tr>
+							<th scope="col" class="text-start" style="min-width: 220px;">Txn Type</th>
+							<th scope="col" class="text-center"># Trans</th>
+							<th scope="col" class="text-center"># Tenders</th>
+							<th scope="col" class="text-end d-none">Merchandise Sales</th>
+							<th scope="col" class="text-end d-none">Tax</th>
+							<th scope="col" class="text-end d-none">Concession Discounts</th>
+							<th scope="col" class="text-end d-none">Exchange Coupons</th>
+							<th scope="col" class="text-end d-none">KATUSA Coupons</th>
+							<th scope="col" class="text-center d-none">Tip</th>
+							<th scope="col" class="text-end">Total</th>
+							<th scope="col" class="text-end">Percentage %</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="fw-semibold">Concession Credit Card</td>
+							<td class="text-center">15</td>
+							<td class="text-center">15</td>
+							<td class="text-end d-none">$237.56</td>
+							<td class="text-end d-none">$19.56</td>
+							<td class="text-end d-none">$0.00</td>
+							<td class="text-end d-none">$0.00</td>
+							<td class="text-end d-none">$(0.00)</td>
+							<td class="text-center d-none">$0.00</td>
+							<td class="text-end">$257.12</td>
+							<td class="text-end">21.58%</td>
+						</tr>
+
+						<tr>
+							<td class="fw-semibold">Cash</td>
+							<td class="text-center">4</td>
+							<td class="text-center">5</td>
+							<td class="text-end d-none">$72.76</td>
+							<td class="text-end d-none">$5.99</td>
+							<td class="text-end d-none">$0.00</td>
+							<td class="text-end d-none">$0.00</td>
+							<td class="text-end d-none">$(0.00)</td>
+							<td class="text-center d-none">$0.00</td>
+							<td class="text-end">$78.75</td>
+							<td class="text-end">6.61%</td>
+						</tr>
+
+						<tr>
+							<td class="fw-semibold">Exchange Gift Card</td>
+							<td class="text-center">11</td>
+							<td class="text-center">34</td>
+							<td class="text-end d-none">$737.67</td>
+							<td class="text-end d-none">$60.70</td>
+							<td class="text-end d-none">$0.00</td>
+							<td class="text-end d-none">$0.00</td>
+							<td class="text-end d-none">$(0.00)</td>
+							<td class="text-center d-none">$0.00</td>
+							<td class="text-end">$798.37</td>
+							<td class="text-end">67.01%</td>
+						</tr>
+
+						<tr>
+							<td class="fw-semibold">Eagle Cash</td>
+							<td class="text-center">4</td>
+							<td class="text-center">4</td>
+							<td class="text-end d-none">$52.79</td>
+							<td class="text-end d-none">$4.35</td>
+							<td class="text-end d-none">$0.00</td>
+							<td class="text-end d-none">$0.00</td>
+							<td class="text-end d-none">$(0.00)</td>
+							<td class="text-center d-none">$0.00</td>
+							<td class="text-end">$57.14</td>
+							<td class="text-end">4.80%</td>
+						</tr>
+
+						<tr class="table-primary fw-bold">
+							<td>Totals</td>
+							<td class="text-center">34</td>
+							<td class="text-center">58</td>
+							<td class="text-end d-none">$1,100.78</td>
+							<td class="text-end d-none">$90.60</td>
+							<td class="text-end d-none">$0.00</td>
+							<td class="text-end d-none">$0.00</td>
+							<td class="text-end d-none">$0.00</td>
+							<td class="text-center d-none">$0.00</td>
+							<td class="text-end">$1,191.38</td>
+							<td class="text-end">100.00%</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</section>
+</div>

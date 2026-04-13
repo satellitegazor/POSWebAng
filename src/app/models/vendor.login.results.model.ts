@@ -10,7 +10,7 @@ export class VendorLoginResultsModel {
     public contractStart: string = '';
     public userIdentity: MobClientIdentity = {} as MobClientIdentity;
     public userRoles: string[] = [];
-    public asociateRole: string = '';
+    public associateRole: string = '';
     public associateRoleDesc: string = '';
     public associateName: string = '';
     public locationUID: string = '';
