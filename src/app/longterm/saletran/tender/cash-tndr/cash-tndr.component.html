@@ -15,7 +15,7 @@
         </p>
     </div>
 </div>
-<!-- Fast Cash Panel – 80% width, centered -->
+<!-- Fast Cash Panel - 80% width, centered -->
 <div class="fast-cash-panel">
     <h3 class="panel-title">Fast Cash Tender</h3>
 
@@ -44,7 +44,7 @@
 
     <!-- Optional: Exact Amount Button (outside grid for prominence) -->
     <div class="exact-amount-wrapper">
-        <button class="exact-btn" (click)="onExactCash()">
+        <button data-testid="qa-button-onexactcash" class="exact-btn" (click)="onExactCash()">
             Exact Amount: {{dcCurrSymbl}}{{ tenderAmountDC!.toFixed(2) }}
         </button>
     </div>

@@ -8,7 +8,7 @@
 		<div class="row g-3 align-items-end">
 			<div class="col-12 col-md-6">
 				<label for="miscDepartment" class="form-label">Department</label>
-				<select
+				<select data-testid="qa-select-action"
 					id="miscDepartment"
 					class="form-select"
 					name="miscDepartment"
@@ -21,7 +21,7 @@
 
 			<div class="col-12 col-md-6">
 				<label for="miscDescription" class="form-label">Item Description</label>
-				<input
+				<input data-testid="qa-input-action"
 					id="miscDescription"
 					class="form-control"
 					type="text"
@@ -34,7 +34,7 @@
 
 			<div class="col-12 col-sm-4">
 				<label for="miscPrice" class="form-label">Price ({{defaultCurrSymbl}}): </label>
-				<input
+				<input data-testid="qa-input-action-2"
 					id="miscPrice"
 					class="form-control"
 					type="number"
@@ -49,7 +49,7 @@
 
 			<div class="col-12 col-sm-4">
 				<label for="miscTaxPct" class="form-label">Tax %</label>
-				<input
+				<input data-testid="qa-input-action-3"
 					id="miscTaxPct"
 					class="form-control"
 					type="text"
@@ -64,7 +64,7 @@
 
 			<div class="col-12 col-sm-4" *ngIf="showEnvTax">
 				<label for="miscEnvTaxPct" class="form-label">Env. Tax %</label>
-				<input
+				<input data-testid="qa-input-action-4"
 					id="miscEnvTaxPct"
 					class="form-control"
 					type="text"
@@ -79,7 +79,7 @@
 
 			<div class="col-12 col-sm-4" *ngIf="showTags">
 				<label for="miscTags" class="form-label">Tags</label>
-				<input
+				<input data-testid="qa-input-action-5"
 					id="miscTags"
 					class="form-control"
 					type="number"
@@ -107,5 +107,5 @@
 		(click)="confirm()">
 		Confirm
 	</button>
-	<button type="button" class="btn btn-outline-secondary" (click)="cancel()">Cancel</button>
+	<button data-testid="qa-button-cancel" type="button" class="btn btn-outline-secondary" (click)="cancel()">Cancel</button>
 </div>

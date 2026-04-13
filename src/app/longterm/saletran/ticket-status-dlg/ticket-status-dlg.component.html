@@ -20,7 +20,7 @@
 
 					<div class="col-md-4">
 						<label for="paymentduebydate" class="form-label field-label">Next Payment Due</label>
-						<input
+						<input data-testid="qa-input-action"
 							id="paymentduebydate"
 							name="paymentduebydate"
 							type="date"
@@ -36,7 +36,7 @@
 				<div class="row g-3 align-items-start">
 					<div class="col-md-4">
 						<label for="rdybydate" class="form-label field-label">Ready by Date</label>
-						<input
+						<input data-testid="qa-input-action-2"
 							id="rdybydate"
 							name="rdybydate"
 							type="date"
@@ -56,7 +56,7 @@
 								aria-haspopup="dialog"
 								(click)="toggleReadyByTimePopup()">
 								<span>{{ readyByTimeValue || 'Select time' }}</span>
-								<span class="ready-time-trigger-icon" aria-hidden="true">▾</span>
+								<span class="ready-time-trigger-icon" aria-hidden="true">v</span>
 							</button>
 
 							<div class="ready-time-popup shadow-sm" *ngIf="isReadyByTimePopupOpen">
@@ -81,7 +81,7 @@
 
 					<div class="col-md-5">
 						<label for="pickupStatus" class="form-label field-label">Pickup Status</label>
-						<select
+						<select data-testid="qa-select-action"
 							id="pickupStatus"
 							name="pickupStatus"
 							class="form-select"
@@ -96,7 +96,7 @@
 
 					<div class="col-12">
 						<label for="rckLoc" class="form-label field-label">Rack Location</label>
-						<input
+						<input data-testid="qa-input-action-3"
 							id="rckLoc"
 							name="rckLoc"
 							type="text"
@@ -117,6 +117,6 @@
 </div>
 
 <div class="modal-footer border-0 pt-0">
-	<button type="button" class="btn btn-primary px-4" [disabled]="!hasChanges" (click)="save()">Save</button>
-	<button type="button" class="btn btn-outline-secondary px-4" (click)="cancel()">Cancel</button>
+	<button data-testid="qa-button-save" type="button" class="btn btn-primary px-4" [disabled]="!hasChanges" (click)="save()">Save</button>
+	<button data-testid="qa-button-cancel" type="button" class="btn btn-outline-secondary px-4" (click)="cancel()">Cancel</button>
 </div>

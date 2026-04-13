@@ -5,7 +5,7 @@
     <div class="modal-content">
         <div class="form-group">
             <label for="locationname">Location</label>
-            <input type="text" class="form-control" boename="locationname" readonly value="{{locationName}}"/>
+            <input data-testid="qa-input-action" type="text" class="form-control" boename="locationname" readonly value="{{locationName}}"/>
             <!-- <label name="locationname">{{locationName}}</label> -->
             <!-- <input type="text" readonly class="form-control" [(ngModel)]="locationName"  name="LocationName" /> -->
         </div>
@@ -35,8 +35,8 @@
     </div>
     <div class="modal-footer">
         <div class="row">
-            <button class="btn btn-info" (click)="search()">Search</button>&nbsp;
-            <button class="btn btn-info" (click)="cancel()">Cancel</button>&nbsp;
+            <button data-testid="qa-button-search" class="btn btn-info" (click)="search()">Search</button>&nbsp;
+            <button data-testid="qa-button-cancel" class="btn btn-info" (click)="cancel()">Cancel</button>&nbsp;
         </div>
     </div>
     <div *ngIf="showErrMsg">

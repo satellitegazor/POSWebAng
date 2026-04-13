@@ -28,10 +28,10 @@
 </div>
 
 <div class="modal-footer justify-content-center gap-3">
-    <button type="button" class="btn btn-success btn-lg px-5" [disabled]="!confirmed" (click)="continue()">
+    <button data-testid="qa-button-continue" type="button" class="btn btn-success btn-lg px-5" [disabled]="!confirmed" (click)="continue()">
         <i class="bi bi-check-lg me-2"></i>Continue
     </button>
-    <button type="button" class="btn btn-secondary btn-lg px-5" (click)="activeModal.dismiss('cancel')">
+    <button data-testid="qa-button-activemodal" type="button" class="btn btn-secondary btn-lg px-5" (click)="activeModal.dismiss('cancel')">
         <i class="bi bi-arrow-left me-2"></i>Cancel
     </button>
 </div>

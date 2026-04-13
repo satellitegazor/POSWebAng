@@ -14,8 +14,8 @@
                 <p>Do you want to void the Sale Transaction Payments?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" [disabled]="isVoidingPayments" (click)="dismissVoidPaymentsDialog()">No</button>
-                <button type="button" class="btn btn-danger" [disabled]="isVoidingPayments" (click)="confirmVoidPayments()">
+                <button data-testid="qa-button-dismissvoidpaymentsdialog" type="button" class="btn btn-secondary" [disabled]="isVoidingPayments" (click)="dismissVoidPaymentsDialog()">No</button>
+                <button data-testid="qa-button-confirmvoidpayments" type="button" class="btn btn-danger" [disabled]="isVoidingPayments" (click)="confirmVoidPayments()">
                     {{ isVoidingPayments ? 'Voiding...' : 'Yes' }}
                 </button>
             </div>
@@ -86,7 +86,7 @@
 
         <div class="instruction-message-container">
             <div class="instruction-message">
-                <div class="instruction-icon">ℹ️</div>
+                <div class="instruction-icon">i</div>
                 <div class="instruction-text">
                     <strong>Split Payment Instructions:</strong> {{splitPayMsg}}
                 </div>

@@ -9,7 +9,7 @@
 					<td style="width:40%;">Enter Shipping/Handling (optional):&nbsp;</td>
 					<td><span class="dfltCurSymbl">{{dfltCurrSymbl}}</span></td>
 					<td style="text-align:left;">
-						<input
+						<input data-testid="qa-input-action"
 							id="txtShipHandling"
 							type="text"
 							placeholder="Shipping/Handling"
@@ -22,7 +22,7 @@
 							appPosCurrency />
 					</td>
 					<td style="text-align:left;">
-						<input
+						<input data-testid="qa-input-action-2"
 							id="txtShipHandlingTaxPct"
 							type="text"
 							placeholder="Tax Percent"
@@ -46,7 +46,7 @@
 </div>
 <div class="modal-footer">
 	<div class="row">
-		<button class="btn btn-info" (click)="Continue()">Continue</button>&nbsp;
-		<button class="btn btn-info" (click)="Cancel()">Cancel</button>&nbsp;
+		<button data-testid="qa-button-continue" class="btn btn-info" (click)="Continue()">Continue</button>&nbsp;
+		<button data-testid="qa-button-cancel" class="btn btn-info" (click)="Cancel()">Cancel</button>&nbsp;
 	</div>
 </div>

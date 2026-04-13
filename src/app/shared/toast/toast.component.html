@@ -15,7 +15,7 @@
                 <strong>{{ toast.type.charAt(0).toUpperCase() + toast.type.slice(1) }}</strong>
                 <div>{{ toast.message }}</div>
             </div>
-            <button type="button" class="btn-close btn-close-white ms-3"
+            <button aria-label="Close" type="button" class="btn-close btn-close-white ms-3"
                 (click)="remove(toast); $event.stopPropagation()"></button>
         </div>
     </div>

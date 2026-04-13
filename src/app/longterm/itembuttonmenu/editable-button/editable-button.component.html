@@ -12,13 +12,13 @@
         </span>
 
         <!-- Edit Mode -->
-        <input *ngIf="isEditing" type="text" [(ngModel)]="editName" (blur)="save()" (keyup.enter)="save()"
+        <input data-testid="qa-input-action" *ngIf="isEditing" type="text" [(ngModel)]="editName" (blur)="save()" (keyup.enter)="save()"
             (keyup.escape)="cancel()" class="form-control form-control-lg" style="height: 100%;" #inputElement />
 
         <!-- Pencil Icon (always visible or on hover) -->
         <span class="ms-2 pencil-icon" style="font-size: 1.6rem; cursor: pointer; opacity: 0.75;"
-            (click)="startEditing($event)">✏️</span>
+            (click)="startEditing($event)">*</span>
         <!-- <span class="ms-2 pencil-icon" [class.opacity-0]="!isEditing && !isHovered" [class.opacity-75]="isHovered || !isEditing"
-            style="font-size: 1.6rem;">✏️</span> -->
+            style="font-size: 1.6rem;">*</span> -->
     </button>
 </div>
