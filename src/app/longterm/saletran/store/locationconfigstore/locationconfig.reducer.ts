@@ -55,7 +55,9 @@ export const _getLocationConfigReducer = createReducer(
                 contractUID: action.contractUID,
                 facilityName: action.facilityName,
                 locationName: action.locationName,
-                facilityNumber: action.facilityNumber
+                facilityNumber: action.facilityNumber,
+                vendorNumber: action.vendorNumber,
+                vendorName: action.vendorName
             }
         };
     })

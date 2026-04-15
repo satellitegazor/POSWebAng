@@ -31,6 +31,8 @@ export const updateLocationConfigPostLogon = createAction(UPDATE_LOCATION_CONFIG
         contractUID: number,
         facilityName: string,
         locationName: string,
-        facilityNumber: string
+        facilityNumber: string,
+        vendorNumber: string,
+        vendorName: string
     }>());
 

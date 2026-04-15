@@ -20,6 +20,8 @@ import { LTC_SaveSalesItemModel, LTC_SaveSalesItemModelParameters } from '../../
 import { MobileBase } from 'src/app/models/mobile.base';
 import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
 import { LoadTicketStatLocRequest, LoadTicketStatLocResultModel } from '../../models/ticket.status.location.models';
+import { ContractSummaryReport } from 'src/app/models/sales.tran.report.models';
+import { VendorContractSummaryResultsModel } from 'src/app/models/saletran.report.model';
 
 
 @Injectable({
@@ -178,6 +180,32 @@ export class SalesTranService {
         return this.httpClient.get<TenderTypeModel>(GlobalConstants.CPOS_SVCS_URL + '/common/GetTenderTypes?guid=' + GlobalConstants.GET_GUID +
             '&uid=' + individualUID.toString() + '&AppType=' + appType.toString(),
             { headers: this.headerObjs });
+    }
+
+    public getSaleTranReport(
+        cid: number,
+        lid: number,
+        assocUID: number,
+        fNum: string,
+        fDt: string,
+        tDt: string,
+        uid: string,
+        DBVal: number,
+        FrgnCurr: boolean = false
+    ): Observable<VendorContractSummaryResultsModel> {
+        return this.httpClient.get<VendorContractSummaryResultsModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/GetSaleTranReport?guid=' + GlobalConstants.GET_GUID
+                + '&cid=' + cid.toString()
+                + '&lid=' + lid.toString()
+                + '&assocUID=' + assocUID.toString()
+                + '&fNum=' + fNum
+                + '&fDt=' + fDt
+                + '&tDt=' + tDt
+                + '&uid=' + uid
+                + '&DBVal=' + DBVal.toString()
+                + '&FrgnCurr=' + FrgnCurr,
+            { headers: this.headerObjs }
+        );
     }
 
     public aurusGiftCardInquiryForConus(

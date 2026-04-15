@@ -31,6 +31,9 @@ export const getLocCnfgHeaderContextSelector = createSelector(getLocConfigState,
             contractUID: config ? config.contractUID : 0,
             facilityName: config ? config.facilityName : '',
             locationName: config ? config.locationName : '',
-            facilityNumber: config ? config.facilityNumber : ''
+            facilityNumber: config ? config.facilityNumber : '',
+            vendorNumber: config ? config.vendorNumber : '',
+            vendorName: config ? config.vendorName : ''
+
         };
     });

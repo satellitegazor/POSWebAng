@@ -1,12 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { ContractTransactionDetail } from 'src/app/models/saletran.report.model';
 
 @Component({
-    selector: 'app-detail',
+    selector: 'app-sales-tran-rpt-detail',
     templateUrl: './detail.component.html',
     styleUrls: ['./detail.component.css'],
     standalone: false
 })
-export class DetailComponent implements OnInit {
+export class SalesTranRptDetailComponent implements OnInit {
+
+  @Input() rptDetail: ContractTransactionDetail[] = [];
+  @Input() categorizedBy: string = '';
 
   constructor() { }
 
