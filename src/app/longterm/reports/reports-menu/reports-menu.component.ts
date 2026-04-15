@@ -11,7 +11,7 @@ export class ReportsMenuComponent {
   constructor(private router: Router) {}
 
   goToSalesTransactionReport(): void {
-    this.router.navigate(['/salestranrpt']);
+    this.router.navigate(['/rptsalestran']);
   }
 
 }

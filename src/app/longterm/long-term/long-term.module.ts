@@ -46,6 +46,9 @@ import { DecimalDirective } from 'src/app/directives/decimal-directive';
 import { PosCurrencyDirective } from 'src/app/directives/pos-currency.directive';
 import { PosCurrency3Directive } from 'src/app/directives/pos-currency.directive.3';
 import { EditableButtonComponent } from '../itembuttonmenu/editable-button/editable-button.component';
+import { SalesTranRptDetailComponent } from '../reports/salestranrpt/detail/detail.component';
+import { SalesTranRptSummaryComponent } from '../reports/salestranrpt/summary/summary.component';
+import { SalesTranRptPageComponent } from '../reports/salestranrpt/sales-tran-rpt-page/sales-tran-rpt-page.component';
 
 @NgModule({
   declarations: [DeptListComponent, ItemSelectionBasePageComponent, SalesCategoryComponent, SaleItemComponent,
@@ -53,7 +56,8 @@ import { EditableButtonComponent } from '../itembuttonmenu/editable-button/edita
     CheckoutPageComponent, CheckoutItemsComponent, TipsModalDlgComponent, SaveTicketSuccessComponent,
     SplitPayComponent, PinValidateComponent,ItemButtonPageComponent, ItemButtonDeptListComponent,
     ItemButtonSalesCatListComponent, ItemButtonSalesItemListComponent, CashTndrComponent,
-    ConcessionCardTndrComponent, DeviceTndrPageComponent, EgConcTndrComponent,GiftCardInquiryComponent, MainMenuComponent
+    ConcessionCardTndrComponent, DeviceTndrPageComponent, EgConcTndrComponent,GiftCardInquiryComponent, MainMenuComponent,
+    SalesTranRptDetailComponent, SalesTranRptSummaryComponent, SalesTranRptPageComponent
   ],
   imports: [
     CommonModule,

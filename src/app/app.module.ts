@@ -20,8 +20,6 @@ import { GetAuthLoginReducer } from './authstate/auth.reducer';
 import { LOGIN_AUTH_STATE } from './authstate/auth.selector';
 import { LogonDataService } from './global/logon-data-service.service';
 import { LogonSvc } from './logon/logonsvc.service';
-import { SummaryComponent } from './longterm/reports/salestranrpt/summary/summary.component';
-import { DetailComponent } from './longterm/reports/salestranrpt/detail/detail.component';
 import { LtcTicketReceiptComponent } from './rcpt/ltc-ticket-receipt/ltc-ticket-receipt.component';
 import { AlertMessageModule } from './alertmsg/alert-message/alert-message.module';
 import { RcptModule } from './rcpt/rcpt.module';
@@ -42,8 +40,6 @@ import { LongTermModule } from './longterm/long-term/long-term.module';
     AppComponent,
     NavMenuComponent,
     HomeComponent,
-    SummaryComponent,
-    DetailComponent,
     ConfirmDialogComponent,
     
     //AlertMessageComponent

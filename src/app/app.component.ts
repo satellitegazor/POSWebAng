@@ -21,6 +21,7 @@ VendorName: any;
 LocationName: any;
 logonUserName: any;
 logonUserRole: any;
+logonUserRoleType: string = '';
 
   constructor(
     private route: Router,
@@ -34,11 +35,19 @@ logonUserRole: any;
     this._logonDataSvc.clearTenderTypes();
     this.route.navigate(['/vlogon']);
   }
+
+  gotoMainMenu() {
+    this.route.navigate(['/mainmenu']);
+  }
+
   Region: String = 'Europe';
   title = 'CPOSWeb';
   TicketNumber: number = 0
   isUiBlocked: boolean = false;
   uiBlockMessage: string = 'Please wait...';
+  isUserLoggedIn: boolean = false;
+  VendorNumber: any;
+  facilityNumber: any;
 
   public ngOnInit(): void {
     this._store.pipe(
@@ -61,14 +70,15 @@ logonUserRole: any;
       select(getLocCnfgHeaderContextSelector),
       takeUntil(this._destroy$)
     ).subscribe((headerContext) => {
-      this.VendorName = headerContext.associateName;
+      this.VendorName = headerContext.vendorName;
       this.LocationName = headerContext.locationName;
       this.logonUserName = headerContext.associateName;
-      this.logonUserRole = headerContext.associateRole;
+      this.logonUserRole = headerContext.associateRoleDesc;
+      this.logonUserRoleType = headerContext.associateRole;
+      this.isUserLoggedIn = !!headerContext.associateName;
+      this.VendorNumber = headerContext.vendorNumber;
+      this.facilityNumber = headerContext.facilityNumber;
     });
-
-
-
   }
 
   public ngOnDestroy(): void {

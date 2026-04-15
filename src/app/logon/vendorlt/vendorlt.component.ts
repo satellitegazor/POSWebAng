@@ -193,7 +193,10 @@ export class VendorLTComponent implements OnInit {
                     contractUID: +data.contractUID,
                     facilityName: location.facilityName,
                     locationName: location.facilityName,
-                    facilityNumber: location.facilityNumber
+                    facilityNumber: location.facilityNumber,
+                    vendorNumber: this.vendornum,
+                    vendorName: data.userIdentity.fullName
+
                 }));
 
                 this._saleTranSvc.getTenderTypes(1, 100).subscribe(data => {

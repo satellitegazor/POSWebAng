@@ -16,6 +16,10 @@ import { ItemButtonPageComponent } from '../itembuttonmenu/item-button-page/item
 import { AdminMenuComponent } from '../admin-menu/admin-menu.component';
 import { GiftCardInquiryComponent } from '../saletran/tender/gift-card-inquiry/gift-card-inquiry.component';
 import { MainMenuComponent } from '../menu/main-menu/main-menu.component';
+import { SalesTranRptPageComponent } from '../reports/salestranrpt/sales-tran-rpt-page/sales-tran-rpt-page.component';
+import { SettlementReportPageComponent } from '../reports/settlement/settlement-report-page/settlement-report-page.component';
+import { NoSaleReportPageComponent } from '../reports/nosalerpt/no-sale-report-page/no-sale-report-page.component';
+import { ReportsMenuComponent } from '../reports/reports-menu/reports-menu.component';
 
 const routes: Routes = [
   { path: 'salestran', component: ItemSelectionBasePageComponent },
@@ -29,7 +33,11 @@ const routes: Routes = [
   { path: 'itembtnmenu', component: ItemButtonPageComponent, canDeactivate: [CanDeactivateGuard] },
   { path: 'adminmenu', component: AdminMenuComponent },
   { path: 'gcinquiry', component: GiftCardInquiryComponent },
-  { path: 'mainmenu', component: MainMenuComponent }
+  { path: 'mainmenu', component: MainMenuComponent },
+  { path: 'rptmenu', component: ReportsMenuComponent },
+  { path: 'rptsalestran', component: SalesTranRptPageComponent },
+  { path: 'rptsettlement', component: SettlementReportPageComponent },
+  { path: 'rptnosale', component: NoSaleReportPageComponent }
 ];
 @NgModule({
     imports: [RouterModule.forChild(routes)],
