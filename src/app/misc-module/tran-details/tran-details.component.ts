@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { LTC_TransactionDetails } from 'src/app/longterm/models/ticket.list';
-import { SalesTranService } from 'src/app/longterm/saletran/services/sales-tran.service';
+import { PosApiService } from 'src/app/longterm/saletran/services/pos-api-service';
 
 @Component({
     selector: 'app-tran-details',
@@ -18,7 +18,7 @@ export class TranDetailsComponent implements OnInit {
   constructor(private activatedRoute: ActivatedRoute,
     private _router: Router,
     private _logonDataSvc: LogonDataService,
-    private _saleTranSvc: SalesTranService) { 
+    private _saleTranSvc: PosApiService) { 
 
     }
 

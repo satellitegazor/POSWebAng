@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { LTC_Ticket } from 'src/app/longterm/models/ticket.list';
-import { SalesTranService } from 'src/app/longterm/saletran/services/sales-tran.service';
+import { PosApiService } from 'src/app/longterm/saletran/services/pos-api-service';
 import { TicketLookupComponent } from 'src/app/shared/ticket-lookup/ticket-lookup.component';
 
 @Component({
@@ -24,7 +24,7 @@ export class LtcTicketReceiptComponent implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private _logonDataSvc: LogonDataService,
-    private _saleTranSvc: SalesTranService,
+    private _saleTranSvc: PosApiService,
     private _tktLookup: TicketLookupComponent,
     private _router: Router,
     private _modalService: NgbModal) { 

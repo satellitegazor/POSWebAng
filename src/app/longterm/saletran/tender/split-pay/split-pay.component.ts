@@ -4,7 +4,7 @@ import { select, Store } from '@ngrx/store';
 import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
 import { getBalanceDue, getTktObjSelector, getTicketTendersSelector, getBalanceDueFC, getTicketTotalToPayUSD, getTicketTotalToPayFC } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
-import { SalesTranService } from '../../services/sales-tran.service';
+import { PosApiService } from '../../services/pos-api-service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
@@ -67,7 +67,7 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
   }
 
 
-  constructor(private _saleTranSvc: SalesTranService,
+  constructor(private _saleTranSvc: PosApiService,
     private _logonDataSvc: LogonDataService,
     private _sharedSubSvc: SharedSubjectService,
     private modalService: NgbModal,

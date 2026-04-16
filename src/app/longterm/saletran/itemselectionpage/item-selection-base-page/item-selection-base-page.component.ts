@@ -6,7 +6,7 @@ import { VendorLoginResultsModel } from '../../../../models/vendor.login.results
 import { SharedSubjectService } from '../../../../shared-subject/shared-subject.service';
 import { Dept, SaleItem, SalesCat } from '../../../models/sale.item';
 import { SaleItemResultsModel } from '../../../models/sale.item.results.model';
-import { SalesTranService } from '../../services/sales-tran.service';
+import { PosApiService } from '../../services/pos-api-service';
 import { TktSaleItemComponent } from '../tkt-sale-item/tkt-sale-item.component';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { CustomerSearchComponent } from '../../../../shared/customer-search/customer-search.component';
@@ -48,7 +48,7 @@ export class ItemSelectionBasePageComponent implements OnInit, OnDestroy {
     transactionId: number = 0;
     individualId: number = 0;
         
-    constructor(private _saleTranSvc: SalesTranService, 
+    constructor(private _saleTranSvc: PosApiService, 
         private _logonDataSvc: LogonDataService,
         private _sharedSubSvc: SharedSubjectService, 
         private modalService: NgbModal, 

@@ -27,7 +27,7 @@ import { VendorContractSummaryResultsModel } from 'src/app/models/saletran.repor
 @Injectable({
   providedIn: 'root'
 })
-export class SalesTranService {
+export class PosApiService {
 
     headerObjs: HttpHeaders;
     vendorLoginResult: VendorLoginResultsModel = {} as VendorLoginResultsModel;

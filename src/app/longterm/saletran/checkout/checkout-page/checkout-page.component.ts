@@ -10,7 +10,7 @@ import { SharedSubjectService } from 'src/app/shared-subject/shared-subject.serv
 import { CustomerSearchComponent } from '../../../../shared/customer-search/customer-search.component';
 import { LocationConfig } from '../../../models/location-config';
 import { TenderType, TenderTypeModel } from '../../../models/tender.type';
-import { SalesTranService } from '../../services/sales-tran.service';
+import { PosApiService } from '../../services/pos-api-service';
 import { addTender, removeTndrWithSaveCode, saveTicketForGuestCheck, updateCheckoutTotals, saveTicketForGuestCheckSuccess, isSplitPayR5 } from '../../store/ticketstore/ticket.action';
 import { getCheckoutItemsSelector, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
@@ -38,7 +38,7 @@ export class CheckoutPageComponent implements OnInit {
   private _clickDebounceMs: number = 2000; // 2 second debounce window
   private _lastClickTime: number = 0;
 
-  constructor(private _saleTranSvc: SalesTranService,
+  constructor(private _saleTranSvc: PosApiService,
     private _logonDataSvc: LogonDataService,
     private _sharedSubSvc: SharedSubjectService,
     private modalService: NgbModal,

@@ -5,7 +5,7 @@ import { AbbrLocationsModel, VLogonModel } from '../models/vlogon.model';
 import { Router } from "@angular/router";
 import { LogonDataService } from '../../global/logon-data-service.service';
 import { LocalStorageService } from '../../global/local-storage.service';
-import { SalesTranService } from 'src/app/longterm/saletran/services/sales-tran.service';
+import { PosApiService } from 'src/app/longterm/saletran/services/pos-api-service';
 import { AlertService } from 'src/app/alertmsg/alert-message/alert-message.service';
 import { AlertOptions } from 'src/app/alertmsg/alert-message/alert-message.model';
 import { LocationConfigState } from 'src/app/longterm/saletran/store/locationconfigstore/locationconfig.state';
@@ -47,7 +47,7 @@ export class VendorLTComponent implements OnInit {
         private router: Router,
         private _logonDataSvc: LogonDataService, 
         private _localStorageSvc: LocalStorageService, 
-        private _saleTranSvc: SalesTranService,
+        private _saleTranSvc: PosApiService,
         private _toastSvc: ToastService,
         private _locConfigStore: Store<LocationConfigState>,
         private _modalService: NgbModal,

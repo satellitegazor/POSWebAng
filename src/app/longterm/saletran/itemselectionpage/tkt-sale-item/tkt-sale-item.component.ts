@@ -8,7 +8,7 @@ import { SaleItem } from '../../../models/sale.item';
 import { TktSaleItem } from '../../../../models/ticket.detail';
 import { getLocationAssocSelector } from '../../store/localtionassociates/locationassociates.selector';
 import { getLocCnfgIsAllowTipsSelector } from '../../store/locationconfigstore/locationconfig.selector';
-import { SalesTranService } from '../../services/sales-tran.service';
+import { PosApiService } from '../../services/pos-api-service';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { addSaleItem, updateServedByAssociate, decSaleitemQty, delSaleitemZeroQty, incSaleitemQty, updateAssocInAssocTips, updateCheckoutTotals, inactiveTicketDetail } from '../../store/ticketstore/ticket.action';
 import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCheckoutItem';
@@ -27,7 +27,7 @@ import { currSymbls } from 'src/app/models/CurrencySymbols';
 })
 export class TktSaleItemComponent implements OnInit {
 
-    constructor(private _saleTranSvc: SalesTranService,
+    constructor(private _saleTranSvc: PosApiService,
         private _logonDataSvc: LogonDataService,
         private _store: Store<saleTranDataInterface>,
         private _router: Router) { }

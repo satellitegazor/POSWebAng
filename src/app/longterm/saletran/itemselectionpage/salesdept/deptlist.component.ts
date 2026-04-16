@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, EventEmitter, Output, SimpleChanges } from '@angular/core';
 import { Dept } from '../../../models/sale.item';
-import { SalesTranService } from '../../services/sales-tran.service';
+import { PosApiService } from '../../services/pos-api-service';
 import { Subject } from 'rxjs';
  
 @Component({
@@ -11,7 +11,7 @@ import { Subject } from 'rxjs';
 })
 export class DeptListComponent implements OnInit {
 
-    constructor(private _saleTranSvc: SalesTranService) { }
+    constructor(private _saleTranSvc: PosApiService) { }
     @Input() deptList: Dept[] = [];
     @Output() deptClicked: EventEmitter<number> = new EventEmitter();
     @Input() deptListRefreshEvent: Subject<boolean> = new Subject<boolean>();

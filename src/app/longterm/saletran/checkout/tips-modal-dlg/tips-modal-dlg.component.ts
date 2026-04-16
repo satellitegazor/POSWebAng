@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
 import { LTC_Associates } from '../../../models/location.associates';
-import { SalesTranService } from '../../services/sales-tran.service';
+import { PosApiService } from '../../services/pos-api-service';
 import { removeTndrWithSaveCode, upsertAssocTips } from '../../store/ticketstore/ticket.action';
 import { getCheckoutItemsSelector, getTicketTotals, getAssocTipList } from '../../store/ticketstore/ticket.selector';
 
@@ -21,7 +21,7 @@ import { UtilService } from 'src/app/services/util.service';
 export class TipsModalDlgComponent implements OnInit {
   private readonly MAX_TIP_USD = 100;
 
-  constructor(private modal: NgbModal, private _saleTranSvc: SalesTranService, 
+  constructor(private modal: NgbModal, private _saleTranSvc: PosApiService, 
     private _logonDataSvc: LogonDataService,
     private _store: Store<saleTranDataInterface>, 
     private router: Router, private utilSvc: UtilService) { 

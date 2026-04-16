@@ -10,7 +10,7 @@ import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCh
 import { ExchCardTndr, SaveExchCardTndrResult } from 'src/app/models/exch.card.tndr';
 import { LTC_Ticket } from 'src/app/longterm/models/ticket.list';
 import { DailyExchRate } from 'src/app/models/exchange.rate';
-import { InactiveTicketDetailRequest, InactiveTicketDetailResultModel, SaveTicketDetailRequest, SaveTicketDetailResultModel } from '../../services/sales-tran.service';
+import { InactiveTicketDetailRequest, InactiveTicketDetailResultModel, SaveTicketDetailRequest, SaveTicketDetailResultModel } from '../../services/pos-api-service';
  
 export const ADD_SALE_ITEM = 'addSaleItem';
 export const INC_SALE_ITEM_QTY = 'incSaleItemQty';

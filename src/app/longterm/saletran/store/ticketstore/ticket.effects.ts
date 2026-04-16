@@ -3,7 +3,7 @@ import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { select, State, Store } from "@ngrx/store";
 import { EMPTY, from, of } from "rxjs";
 import { catchError, concatMap, exhaustMap, map, mergeMap, take, tap, withLatestFrom } from 'rxjs/operators';
-import { SalesTranService } from "../../services/sales-tran.service";
+import { PosApiService } from "../../services/pos-api-service";
 import { saveTicketForGuestCheck, saveTicketForGuestCheckSuccess, saveTicketForGuestCheckFailed, saveCompleteTicketSplit, saveCompleteTicketSplitSuccess, saveCompleteTicketSplitFailed, saveTenderObj, saveTenderObjSuccess, saveTenderObjFailed, saveTicketDetail, saveTicketDetailSuccess, saveTicketDetailFailed, inactiveTicketDetail, inactiveTicketDetailSuccess, inactiveTicketDetailFailed, savePinpadResponse, savePinpadResponseFailed, savePinpadResponseSuccess, loadTicket, loadTicketSuccess, loadTicketFail, loadInProgressTenders, loadInProgressTendersSuccess, loadInProgressTendersFail, deleteDeclinedTenderFromStore } from "./ticket.action";
 import { saleTranDataInterface } from "./ticket.state";
 import { getTktObjSelector } from './ticket.selector';
@@ -13,7 +13,7 @@ import { TenderStatusType, TranStatusType } from "src/app/models/ticket.tender";
 
 @Injectable()
 export class TicketObjectEffects {
-    constructor(private action$: Actions, private saleTranSvc: SalesTranService, private store: Store<saleTranDataInterface>) {    }
+    constructor(private action$: Actions, private saleTranSvc: PosApiService, private store: Store<saleTranDataInterface>) {    }
 
     saveTicketForGuestCheckEffect$ = createEffect(() => {
         return this.action$.pipe(

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PosCurrencyDirective } from '../../../../directives/pos-currency.directive';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { SalesTranService } from '../../services/sales-tran.service';
+import { PosApiService } from '../../services/pos-api-service';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Store } from '@ngrx/store';
@@ -32,7 +32,7 @@ export class ShipHandlingComponent {
   shipHandlingAmountNDC: number = 0;
   shipHandlingTaxNDC: number = 0;
 
-  constructor(private modal: NgbModal, private _saleTranSvc: SalesTranService, 
+  constructor(private modal: NgbModal, private _saleTranSvc: PosApiService, 
     private _logonDataSvc: LogonDataService,
     private _store: Store<saleTranDataInterface>, 
     private router: Router, private utilSvc: UtilService,

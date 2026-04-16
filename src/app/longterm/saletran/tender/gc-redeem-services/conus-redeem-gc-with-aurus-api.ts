@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { SalesTranService, Conus_GC_Balance_Model } from '../../services/sales-tran.service';
+import { PosApiService, Conus_GC_Balance_Model } from '../../services/pos-api-service';
 import { TicketTender } from 'src/app/models/ticket.tender';
 import { catchError, concatMap, delay, finalize, from, map, Observable, of, switchMap, tap, toArray } from 'rxjs';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
@@ -18,7 +18,7 @@ export class ConusRedeemGCwithAurusAPI {
 
   constructor(
     private _logonDataSvc: LogonDataService,
-    private _salesTranSvc: SalesTranService,
+    private _salesTranSvc: PosApiService,
     private _store: Store<saleTranDataInterface>,
     private _toastSvc: ToastService,
     private _uiBlockSvc: UiBlockService) { }

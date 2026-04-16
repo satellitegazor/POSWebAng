@@ -3,14 +3,14 @@ import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
 import { of } from "rxjs";
 import { catchError, concatMap, exhaustMap, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
-import { SalesTranService } from "../../services/sales-tran.service";
+import { PosApiService } from "../../services/pos-api-service";
 import { getLocationAssocStart, getLocationAssocSuccess, getLocationAssocFail } from "./locationassociates.action";
 import { LocationAssocState } from "./locationassociates.state";
 
  
 @Injectable()
 export class LocationAssocEffects {
-    constructor(private action$: Actions, private locCnfgSvc: SalesTranService, private store: Store<LocationAssocState>) {    }
+    constructor(private action$: Actions, private locCnfgSvc: PosApiService, private store: Store<LocationAssocState>) {    }
 
     loadLocationAssoc$ = createEffect(() => {
         return this.action$.pipe(

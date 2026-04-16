@@ -18,7 +18,7 @@ import { AurusGiftCardRedeemResp, GCRedeemInput } from '../../services/models/au
 import { OConusRedeemGCWithPinPadService } from '../gc-redeem-services/oconus-redeeem-gc-with-pin-pad';
 import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
 import { HTTP_TRANSFER_CACHE_ORIGIN_MAP } from '@angular/common/http';
-import { SalesTranService, Conus_GC_Balance_Model } from '../../services/sales-tran.service';
+import { PosApiService, Conus_GC_Balance_Model } from '../../services/pos-api-service';
 import { GlobalConstants } from 'src/app/global/global.constants';
 @Component({
   selector: 'app-gift-card-inquiry',
@@ -59,7 +59,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
     private _toastSvc: ToastService,
     private _redeemGiftCardTndrsSvc: OConusRedeemGCWithPinPadService,
     private _conusRedeemGCWithAurusAPI: ConusRedeemGCwithAurusAPI,
-    private _salesTranSvc: SalesTranService) { 
+    private _salesTranSvc: PosApiService) { 
       this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
     }
 

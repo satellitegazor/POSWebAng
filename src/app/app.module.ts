@@ -29,7 +29,7 @@ import { PosCurrencyDirective } from './directives/pos-currency.directive';
 import { PosCurrency3Directive } from './directives/pos-currency.directive.3';
 import { ConfirmDialogComponent } from './shared/confirm-dialog';
 import { ToastComponent } from "./shared/toast/toast.component";
-import { LongTermModule } from './longterm/long-term/long-term.module';
+import { LongTermModule } from './longterm/long-term.module';
 
  
 @NgModule({

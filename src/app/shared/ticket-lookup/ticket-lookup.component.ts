@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { SalesTranService } from '../../longterm/saletran/services/sales-tran.service';
+import { PosApiService } from '../../longterm/saletran/services/pos-api-service';
 import { saleTranDataInterface } from '../../longterm/saletran/store/ticketstore/ticket.state';
 import { LTC_Customer } from 'src/app/models/customer';
 import { Router } from '@angular/router';
@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
 export class TicketLookupComponent implements OnInit {
 
   constructor(private modal: NgbModal, 
-    private _saleSvc: SalesTranService, 
+    private _saleSvc: PosApiService, 
     private _logonDataSvc: LogonDataService,
     private _store: Store<saleTranDataInterface>,
     private _route: Router) { }

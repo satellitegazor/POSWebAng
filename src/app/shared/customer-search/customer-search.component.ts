@@ -3,7 +3,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { first } from 'rxjs';
 import { LTC_Customer } from 'src/app/models/customer';
-import { SalesTranService } from '../../longterm/saletran/services/sales-tran.service'; 
+import { PosApiService } from '../../longterm/saletran/services/pos-api-service'; 
 import { addCustomerId } from '../../longterm/saletran/store/ticketstore/ticket.action';
 import { saleTranDataInterface } from '../../longterm/saletran/store/ticketstore/ticket.state';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
@@ -18,7 +18,7 @@ import { LogonDataService } from 'src/app/global/logon-data-service.service';
 export class CustomerSearchComponent implements OnInit {
 
   data: string = '';
-  constructor(private modal: NgbModal, private _saleSvc: SalesTranService, 
+  constructor(private modal: NgbModal, private _saleSvc: PosApiService, 
     private _store: Store<saleTranDataInterface>,
     private _logonSvc: LogonDataService) { }
   CustomerList: LTC_Customer[] = [];

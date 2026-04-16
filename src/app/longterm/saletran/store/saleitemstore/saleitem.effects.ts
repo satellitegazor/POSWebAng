@@ -5,7 +5,7 @@ import { EmptyError } from 'rxjs';
 import { catchError, concatMap, exhaustMap, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
 import { SaleItem } from '../../../models/sale.item';
 import { SaleItemResultsModel } from '../../../models/sale.item.results.model';
-import { SalesTranService } from '../../services/sales-tran.service';
+import { PosApiService } from '../../services/pos-api-service';
 import { 
     getSaleItemsActionSuccess, getSaleItemsStart, getSaleitemsFail
 } from "./saleitem.action";
@@ -16,7 +16,7 @@ import { getSaleItemListSelector } from './saleitem.selector';
 @Injectable()
 export class SaleItemEffects {
 
-    constructor(private action$: Actions, private saleItemSvc: SalesTranService, private store: Store<SaleItemsState>) { }
+    constructor(private action$: Actions, private saleItemSvc: PosApiService, private store: Store<SaleItemsState>) { }
 
     loadSaleItems$ = createEffect(() => {
         return this.action$.pipe(

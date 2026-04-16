@@ -11,7 +11,7 @@ import {
   LTC_TicketStatus,
   TicketStatusLocationData,
 } from '../../models/ticket.status.location.models';
-import { SalesTranService, UpdateTicketStatusLocationRequest } from '../services/sales-tran.service';
+import { PosApiService, UpdateTicketStatusLocationRequest } from '../services/pos-api-service';
 import { Store } from '@ngrx/store';
 import { TktObjState } from 'src/app/app.state';
 import { getSavedTicketResult, getTktObjSelector } from '../store/ticketstore/ticket.selector';
@@ -60,7 +60,7 @@ export class TicketStatusDlgComponent implements OnInit, OnDestroy {
   businessFunctionCode: string = '';
 
   constructor(public activeModal: NgbActiveModal, 
-    private _salesTranSvc: SalesTranService,
+    private _salesTranSvc: PosApiService,
     private _store: Store<TktObjState>,
     private _toastService: ToastService) {}
 

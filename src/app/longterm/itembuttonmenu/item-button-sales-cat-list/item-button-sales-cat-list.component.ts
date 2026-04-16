@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { SaleItem, SalesCat, SalesCategorySaveResponse } from '../../models/sale.item';
 import { Observable, Subject } from 'rxjs';
-import { SalesTranService } from '../../saletran/services/sales-tran.service';
+import { PosApiService } from '../../saletran/services/pos-api-service';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { LogonSvc } from 'src/app/logon/logonsvc.service';
 import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheckoutItem';
@@ -17,7 +17,7 @@ export class ItemButtonSalesCatListComponent {
 
   isHovered: any;
 
-  constructor(private salesSvc: SalesTranService, private logonSvc: LogonDataService) {
+  constructor(private salesSvc: PosApiService, private logonSvc: LogonDataService) {
     this.activeId = 0;
   }
   @Input() saleCatList: SalesCat[] = [];

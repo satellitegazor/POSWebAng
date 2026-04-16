@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { SalesTranService } from 'src/app/longterm/saletran/services/sales-tran.service';
+import { PosApiService } from 'src/app/longterm/saletran/services/pos-api-service';
 import { LogonSvc } from '../../../logon/logonsvc.service';
 import { VLogonModel } from '../../../logon/models/vlogon.model';
 import { GlobalConstants } from 'src/app/global/global.constants';
@@ -21,7 +21,7 @@ export class PinValidateComponent implements OnInit {
 
   constructor(private modal: NgbModal, 
     public activeModal: NgbActiveModal,
-    private _saleTranSvc: SalesTranService, 
+    private _saleTranSvc: PosApiService, 
     private _logonSvc: LogonSvc, 
     private _logonDataSvc: LogonDataService,
     private router: Router, 

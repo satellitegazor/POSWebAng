@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, SimpleChange, SimpleChanges } from '@angular/core';
-import { SalesTranService } from '../../saletran/services/sales-tran.service';
+import { PosApiService } from '../../saletran/services/pos-api-service';
 import { Dept } from '../../models/sale.item';
 import { Subject } from 'rxjs';
 
@@ -11,7 +11,7 @@ import { Subject } from 'rxjs';
 })
 export class ItemButtonDeptListComponent {
 
-  constructor(private _saleTranSvc: SalesTranService) { 
+  constructor(private _saleTranSvc: PosApiService) { 
 
   }
 

@@ -7,7 +7,7 @@ import { NgbModalOptions, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { SharedSubjectService } from 'src/app/shared-subject/shared-subject.service';
-import { SalesTranService } from '../../saletran/services/sales-tran.service';
+import { PosApiService } from '../../saletran/services/pos-api-service';
 import { LocationConfigState } from '../../saletran/store/locationconfigstore/locationconfig.state';
 import { saleTranDataInterface } from '../../saletran/store/ticketstore/ticket.state';
 import { Subject } from 'rxjs';
@@ -50,7 +50,7 @@ import { Router } from '@angular/router';
     centered: true
   };
 
-  constructor(private _saleTranSvc: SalesTranService, 
+  constructor(private _saleTranSvc: PosApiService, 
     private _logonDataSvc: LogonDataService,
     private _sharedSubSvc: SharedSubjectService, 
     private modalService: NgbModal, 

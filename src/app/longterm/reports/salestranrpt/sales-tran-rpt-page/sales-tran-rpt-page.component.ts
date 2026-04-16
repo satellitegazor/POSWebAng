@@ -5,12 +5,12 @@ import { SalesTranRptDetailComponent } from '../detail/detail.component';
 import { SalesTranRptSummaryComponent } from '../summary/summary.component';
 import { getLocationConfigSelector } from 'src/app/longterm/saletran/store/locationconfigstore/locationconfig.selector';
 import { filter, take } from 'rxjs';
-import { SalesTranService } from 'src/app/longterm/saletran/services/sales-tran.service';
+import { PosApiService } from 'src/app/longterm/saletran/services/pos-api-service';
 import { ContractSummaryGrouped, ContractTransactionDetail, SalesTranRptSummaryByFacility, VendorContractSummaryResultsModel } from 'src/app/models/saletran.report.model';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { Router } from '@angular/router';
 import { LTC_Associates } from 'src/app/longterm/models/location.associates';
-import { SendEmailRequest } from 'src/app/longterm/saletran/services/sales-tran.service';
+import { SendEmailRequest } from 'src/app/longterm/saletran/services/pos-api-service';
 
 @Component({
   selector: 'app-sales-tran-rpt-page',
@@ -71,7 +71,7 @@ export class SalesTranRptPageComponent implements OnInit {
   }
 
   constructor(private locationConfigStore: Store<LocationConfigState>, 
-    private salesTranSvc: SalesTranService,
+    private salesTranSvc: PosApiService,
     private _logonDataSvc: LogonDataService,
     private router: Router) {
   }
