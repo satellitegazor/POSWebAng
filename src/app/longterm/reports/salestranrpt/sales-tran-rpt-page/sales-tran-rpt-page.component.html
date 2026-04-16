@@ -186,18 +186,12 @@
 
                         <div class="col-12 col-md-3">
                             <label for="selTransType" class="form-label fw-semibold mb-1">Transaction Type</label>
-                            <div class="dropdown">
-                                <button id="selTransType" type="button"
-                                    class="btn btn-outline-primary w-100 text-start dropdown-toggle"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                    {{transTypeLabel}}
-                                </button>
-                                <ul class="dropdown-menu w-100" aria-labelledby="selTransType">
-                                    <li><a class="dropdown-item" [class.active]="transType === 'A'" (click)="onTransTypeChange('A')">All Transactions</a></li>
-                                    <li><a class="dropdown-item" [class.active]="transType === 'S'" (click)="onTransTypeChange('S')">Sale Only</a></li>
-                                    <li><a class="dropdown-item" [class.active]="transType === 'R'" (click)="onTransTypeChange('R')">Refund Only</a></li>
-                                </ul>
-                            </div>
+                            <select id="selTransType" name="selTransType" class="form-select"
+                                [ngModel]="transType" (ngModelChange)="onTransTypeChange($event)">
+                                <option value="A">All Transactions</option>
+                                <option value="S">Sale Only</option>
+                                <option value="R">Refund Only</option>
+                            </select>
                         </div>
 
                         <div class="col-12 col-md-3 text-md-end" id="refresh">
@@ -270,6 +264,19 @@
                             <td class="text-end">{{summary.sales| currency}}</td>
                             <td class="text-end">{{summary.pct| number:'1.2-2'}}%</td>
                         </tr>
+                        <tr class="table-secondary fw-bold">
+                            <td>Total</td>
+                            <td class="text-center">{{summaryTotals.nbrTrans}}</td>
+                            <td class="text-center">{{summaryTotals.nbrTender}}</td>
+                            <td class="text-end d-none">{{summaryTotals.sales | currency}}</td>
+                            <td class="text-end d-none">{{summaryTotals.salesTax | currency}}</td>
+                            <td class="text-end d-none">{{summaryTotals.vendorCoupons | currency}}</td>
+                            <td class="text-end d-none">{{summaryTotals.exchangeCoupons | currency}}</td>
+                            <td class="text-end d-none">{{summaryTotals.lineItmKatsaCpnAmt | currency}}</td>
+                            <td class="text-center d-none">{{summaryTotals.tipAmount | currency}}</td>
+                            <td class="text-end">{{summaryTotals.sales | currency}}</td>
+                            <td class="text-end">{{summaryTotals.pct | number:'1.2-2'}}%</td>
+                        </tr>
 
                     </tbody>
                 </table>
@@ -278,5 +285,89 @@
     </section>
 </div>
 
-<app-sales-tran-rpt-detail [rptDetail]="rptDetail" [categorizedBy]="CategorizedBy">
+<app-sales-tran-rpt-detail [rptDetail]="rptDetail" [categorizedBy]="summaryBy">
 </app-sales-tran-rpt-detail>
+
+<div *ngIf="showEmailPopup" class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="emailReportModalTitle">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="emailReportModalTitle">Email Sales Transaction Report</h5>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeEmailPopup()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="radio" name="emailOption" id="emailOptionSelf" value="self" [(ngModel)]="selectedEmailOption">
+                    <label class="form-check-label" for="emailOptionSelf">
+                        Option 1: My email ({{selfAssociateEmail || 'Not Available'}})
+                    </label>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="radio" name="emailOption" id="emailOptionManager" value="manager" [(ngModel)]="selectedEmailOption">
+                    <label class="form-check-label" for="emailOptionManager">
+                        Option 2: Concession Manager email ({{managerAssociateEmail || 'Not Available'}})
+                    </label>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="radio" name="emailOption" id="emailOptionCustom" value="custom" [(ngModel)]="selectedEmailOption">
+                    <label class="form-check-label" for="emailOptionCustom">Option 3: Enter an email address</label>
+                </div>
+
+                <input type="email" class="form-control" placeholder="Enter email address"
+                    [(ngModel)]="customEmailAddress" [disabled]="selectedEmailOption !== 'custom'">
+
+                <div *ngIf="emailSubmitError" class="alert alert-danger mt-3 mb-0">{{emailSubmitError}}</div>
+                <div *ngIf="emailSubmitSuccess" class="alert alert-success mt-3 mb-0">{{emailSubmitSuccess}}</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" (click)="closeEmailPopup()">Cancel</button>
+                <button type="button" class="btn btn-primary" [disabled]="isSendingEmail" (click)="submitEmailPopup()">
+                    {{isSendingEmail ? 'Sending...' : 'Submit'}}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="showEmailPopup" class="modal-backdrop fade show"></div>
+
+<div class="footer fixed-bottom cncsnFooter">   
+    <div id="stButtonBottomBar" class="row g-0">
+        <div class="col-12 col-md-4">
+            <button class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2" id="btnEmailSalesTranRpt"
+                aria-label="Email Sales Transaction Report" (click)="btnEmailClick($event)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-fill"
+                    viewBox="0 0 16 16">
+                    <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414z"></path>
+                    <path d="M0 4.697v7.104l5.803-3.558z"></path>
+                    <path d="M6.761 8.83 0 12.97A2 2 0 0 0 2 14h12a2 2 0 0 0 2-1.03L9.239 8.83 8 9.586z"></path>
+                    <path d="M16 4.697v7.104l-5.803-3.558z"></path>
+                </svg>
+                <span>Email</span>
+            </button>
+        </div>
+        <div class="col-12 col-md-4">
+            <button class="border border-white btn btn-info btn-lg ftrbtn goToST w-100 d-flex align-items-center justify-content-center gap-2" id="btnReportsMenu"
+                aria-label="Go To Reports Menu" (click)="btnReportsMenu($event)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-fill"
+                    viewBox="0 0 16 16">
+                    <path d="M0 0h1v15h15v1H0z"></path>
+                    <path d="M2 10h2v5H2zm4-6h2v11H6zm4 3h2v8h-2zm4-5h2v13h-2z"></path>
+                </svg>
+                <span>Reports</span>
+            </button>
+        </div>
+        <div class="col-12 col-md-4">
+            <button class="border border-white btn btn-info btn-lg ftrbtn goToST w-100 d-flex align-items-center justify-content-center gap-2" id="btnSalesTran"
+                aria-label="Go To Sales Transaction" (click)="btnSalesTran($event)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-fill"
+                    viewBox="0 0 16 16">
+                    <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5A.5.5 0 0 1 0 1.5"></path>
+                    <path d="M5 12a2 2 0 1 0 0 4a2 2 0 0 0 0-4m5 0a2 2 0 1 0 0 4a2 2 0 0 0 0-4"></path>
+                </svg>
+                <span>Sales Transaction</span>
+            </button>
+        </div>
+    </div>
+</div>

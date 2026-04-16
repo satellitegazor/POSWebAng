@@ -6,7 +6,8 @@
                     <tr>
                         <th scope="col" class="text-center">Ticket ID</th>
                         <th scope="col" class="text-center">Date</th>
-                        <th scope="col" class="text-start">Facility</th>
+                        <th *ngIf="categorizedBy == 'L' || categorizedBy == 'F'" scope="col" class="text-start">Facility</th>
+                        <th *ngIf="categorizedBy == 'A'" scope="col" class="text-start">Associate</th>
                         <th scope="col" class="text-end">Mdse Sales</th>
                         <th scope="col" class="text-end">Tax</th>
                         <th scope="col" class="text-end">Env. Tax</th>
@@ -22,7 +23,8 @@
                     <tr *ngFor="let detail of rptDetail">
                         <td class="text-center">{{detail.ticketNumber}}</td>
                         <td class="text-center">{{detail.transactionDate | date:'MM/dd/yyyy'}}</td>
-                        <td class="text-start">{{detail.facilityNumber}}</td>
+                        <td *ngIf="categorizedBy == 'L' || categorizedBy == 'F'" class="text-start">{{detail.facilityNumber}}</td>
+                        <td *ngIf="categorizedBy == 'A'" class="text-start">{{detail.associate}}</td>
                         <td class="text-end">{{detail.sales | currency}}</td>
                         <td class="text-end">{{detail.salesTax | currency}}</td>
                         <td class="text-end">{{detail.envTax | currency}}</td>

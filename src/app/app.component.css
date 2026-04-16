@@ -39,4 +39,42 @@
 	color: #334155;
 	font-weight: 500;
 }
+
+.main-menu-grid {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	grid-template-rows: auto auto;
+	align-items: center;
+	column-gap: 12px;
+	row-gap: 4px;
+	min-height: 100%;
+}
+
+.main-menu-icon-cell,
+.main-menu-label-cell {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+}
+
+.main-menu-vendor-cell,
+.main-menu-location-cell {
+	min-width: 0;
+	word-break: break-word;
+}
+
+.main-menu-vendor-cell,
+.CenterHeading {
+	font-size: 1rem;
+}
+
+.CenterHeading,
+.CenterHeading .navbar-data-secondary {
+	color: #ffffff;
+}
+
+.CenterHeading .navbar-data-secondary {
+	font-size: inherit;
+}
  

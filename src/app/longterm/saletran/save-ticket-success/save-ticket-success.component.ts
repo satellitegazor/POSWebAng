@@ -12,6 +12,7 @@ import { TicketStatusDlgComponent } from '../ticket-status-dlg/ticket-status-dlg
 import { TicketStatusLocationData } from '../../models/ticket.status.location.models';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { VendorLoginResultsModel } from 'src/app/models/vendor.login.results.model';
 
 @Component({
     selector: 'app-save-ticket-success',
@@ -85,7 +86,12 @@ export class SaveTicketSuccessComponent implements OnInit, OnDestroy {
     this._store.dispatch(resetTktObj({ locConfig: locConfig }));
 
     if(locConfig.pinReqdForSalesTran) {
-      this._modalService.open(PinValidateComponent);
+      const modalRef = this._modalService.open(PinValidateComponent);
+      modalRef.result.then((loginResult?: VendorLoginResultsModel) => {
+        if (loginResult?.isAuthorized) {
+          this.route.navigate(['/salestran']);
+        }
+      }).catch(() => undefined);
     }
     else {
       this.route.navigate(['/salestran'])

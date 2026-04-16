@@ -10,7 +10,7 @@ import { ContractTransactionDetail } from 'src/app/models/saletran.report.model'
 export class SalesTranRptDetailComponent implements OnInit {
 
   @Input() rptDetail: ContractTransactionDetail[] = [];
-  @Input() categorizedBy: string = '';
+  @Input() categorizedBy: string = 'L';
 
   constructor() { }
 

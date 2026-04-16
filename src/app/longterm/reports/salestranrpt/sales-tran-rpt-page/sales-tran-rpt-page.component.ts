@@ -4,10 +4,13 @@ import { LocationConfigState } from '../../../saletran/store/locationconfigstore
 import { SalesTranRptDetailComponent } from '../detail/detail.component';
 import { SalesTranRptSummaryComponent } from '../summary/summary.component';
 import { getLocationConfigSelector } from 'src/app/longterm/saletran/store/locationconfigstore/locationconfig.selector';
-import { filter, switchMap, take } from 'rxjs';
+import { filter, take } from 'rxjs';
 import { SalesTranService } from 'src/app/longterm/saletran/services/sales-tran.service';
 import { ContractSummaryGrouped, ContractTransactionDetail, SalesTranRptSummaryByFacility, VendorContractSummaryResultsModel } from 'src/app/models/saletran.report.model';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
+import { Router } from '@angular/router';
+import { LTC_Associates } from 'src/app/longterm/models/location.associates';
+import { SendEmailRequest } from 'src/app/longterm/saletran/services/sales-tran.service';
 
 @Component({
   selector: 'app-sales-tran-rpt-page',
@@ -15,6 +18,7 @@ import { LogonDataService } from 'src/app/global/logon-data-service.service';
   styleUrls: ['./sales-tran-rpt-page.component.css']
 })
 export class SalesTranRptPageComponent implements OnInit {
+
 
   locationId: number = 0;
   contractId: number = 0;
@@ -27,11 +31,31 @@ export class SalesTranRptPageComponent implements OnInit {
   locationName: string = '';
   contractNumber: string = '';
   associateName: string = '';
+  indivId: number = 0;
+  public SaleAssocList: LTC_Associates[] = [];
+  showEmailPopup: boolean = false;
+  selectedEmailOption: 'self' | 'manager' | 'custom' = 'self';
+  customEmailAddress: string = '';
+  emailSubmitError: string = '';
+  emailSubmitSuccess: string = '';
+  isSendingEmail: boolean = false;
+
 
   rptSummary: ContractSummaryGrouped[] = [];
   rptDetail: ContractTransactionDetail[] = [];
+  summaryTotals = {
+    nbrTrans: 0,
+    nbrTender: 0,
+    sales: 0,
+    salesTax: 0,
+    vendorCoupons: 0,
+    exchangeCoupons: 0,
+    lineItmKatsaCpnAmt: 0,
+    tipAmount: 0,
+    pct: 0
+  };
   
-  summaryBy: 'F' | 'L' | 'A' = 'A';
+  summaryBy: 'F' | 'L' | 'A' = 'L';
   transType: 'A' | 'S' | 'R' = 'A';
   categorizedByCode: 'F' | 'L' | 'A' = 'L';  rptSummaryByFacility: SalesTranRptSummaryByFacility[] = [];
   readonly transTypeLabels: Record<'A' | 'S' | 'R', string> = {
@@ -48,7 +72,8 @@ export class SalesTranRptPageComponent implements OnInit {
 
   constructor(private locationConfigStore: Store<LocationConfigState>, 
     private salesTranSvc: SalesTranService,
-    private _logonDataSvc: LogonDataService) {
+    private _logonDataSvc: LogonDataService,
+    private router: Router) {
   }
 
   public ngOnInit(): void {
@@ -57,8 +82,8 @@ export class SalesTranRptPageComponent implements OnInit {
 
     this.locationConfigStore.select(getLocationConfigSelector).pipe(
       filter(cfg => cfg != null),          // skip until store is populated
-      take(1),                             // complete after first valid emission
-      switchMap(cfg => {
+      take(1)                              // complete after first valid emission
+    ).subscribe(cfg => {
         this.locationId = cfg!.locationUID || 0;
         this.contractId = cfg!.contractUID || 0;
         this.facilityNumber = cfg!.facilityNumber || '';
@@ -68,26 +93,34 @@ export class SalesTranRptPageComponent implements OnInit {
         this.locationName = cfg!.locationName || '';
         this.contractNumber = cfg!.contractNumber || '';
         this.associateName = cfg!.associateName || '';
-        this.updateCategorizedBy(this.summaryBy);
+        this.indivId = cfg!.individualUID || 0;
+        this.updateCategorizedBy('L');
 
-        return this.salesTranSvc.getSaleTranReport(
-          this.contractId,
-          this.locationId,
-          cfg!.individualUID || 0,
-          this.facilityNumber,
-          this.fromDate,
-          this.toDate,
-          this.uid,
-          0   // DBVal — set as needed
-        );
-      })
+        this.loadSaleTranReport();
+      });
+  }
+
+  private loadSaleTranReport(): void {
+    this.salesTranSvc.getSaleTranReport(
+      this.contractId,
+      this.locationId,
+      this.indivId,
+      this.facilityNumber,
+      this.fromDate,
+      this.toDate,
+      this.uid,
+      0   // DBVal — set as needed
     ).subscribe(reportObj => {
 
       this.saleTranReportData = reportObj;
       this.onTransTypeChange('A');
+
+      this.salesTranSvc.getLocationAssociates(this.locationId, this.indivId).subscribe(data => {
+        this.SaleAssocList = data.associates
+      })
+
+      this.RenderSummaryReport();
     });
-
-
   }
 
   private RenderSummaryReport(): void {
@@ -102,7 +135,38 @@ export class SalesTranRptPageComponent implements OnInit {
       summary.pct = totalSales > 0 ? (summary.sales / totalSales) * 100 : 0;
     });
 
+    this.summaryTotals = this.rptSummary.reduce((totals, summary) => {
+      totals.nbrTrans += summary.nbrTrans || 0;
+      totals.nbrTender += summary.nbrTender || 0;
+      totals.sales += summary.sales || 0;
+      totals.salesTax += summary.salesTax || 0;
+      totals.vendorCoupons += summary.vendorCoupons || 0;
+      totals.exchangeCoupons += summary.exchangeCoupons || 0;
+      totals.lineItmKatsaCpnAmt += summary.lineItmKatsaCpnAmt || 0;
+      totals.tipAmount += summary.tipAmount || 0;
+      totals.pct += summary.pct || 0;
+      return totals;
+    }, {
+      nbrTrans: 0,
+      nbrTender: 0,
+      sales: 0,
+      salesTax: 0,
+      vendorCoupons: 0,
+      exchangeCoupons: 0,
+      lineItmKatsaCpnAmt: 0,
+      tipAmount: 0,
+      pct: 0
+    });
 
+
+  }
+
+  onSummaryByChange(value: 'F' | 'L' | 'A'): void {
+    if (this.summaryBy === value) return;
+    this.summaryBy = value;
+    this.updateCategorizedBy(value);
+    this.RenderSummaryReport();
+    // TODO: reload report data filtered by summaryBy
   }
 
   private initializeDateRange(): void {
@@ -133,13 +197,7 @@ export class SalesTranRptPageComponent implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
-  onSummaryByChange(value: 'F' | 'L' | 'A'): void {
-    if (this.summaryBy === value) return;
-    this.summaryBy = value;
-    this.updateCategorizedBy(value);
 
-    // TODO: reload report data filtered by summaryBy
-  }
 
   private updateCategorizedBy(value: 'F' | 'L' | 'A'): void {
     this.categorizedByCode = value;
@@ -207,5 +265,218 @@ export class SalesTranRptPageComponent implements OnInit {
       return item;
     });
   }
+
+  btnSalesTran($event: Event) {
+    $event.preventDefault();
+    this.router.navigate(['/salestran']);
+  }
+  btnReportsMenu($event: Event) {
+    $event.preventDefault();
+    this.router.navigate(['/reportsmenu']);
+  }
+  btnEmailClick($event: Event) {
+    $event.preventDefault();
+    this.selectedEmailOption = this.selfAssociateEmail ? 'self' : (this.managerAssociateEmail ? 'manager' : 'custom');
+    this.customEmailAddress = '';
+    this.emailSubmitError = '';
+    this.emailSubmitSuccess = '';
+    this.showEmailPopup = true;
+  }
+
+  closeEmailPopup(): void {
+    this.showEmailPopup = false;
+    this.isSendingEmail = false;
+  }
+
+  submitEmailPopup(): void {
+    this.emailSubmitError = '';
+    this.emailSubmitSuccess = '';
+
+    const recipientEmail = this.getSelectedRecipientEmail();
+    if (!recipientEmail) {
+      this.emailSubmitError = 'Please select a valid email option.';
+      return;
+    }
+
+    if (!this.isValidEmail(recipientEmail)) {
+      this.emailSubmitError = 'Please enter a valid email address.';
+      return;
+    }
+
+    const request: SendEmailRequest = {
+      EmailAddress: recipientEmail,
+      Subject: this.buildEmailSubject(),
+      EmailContent: this.buildSalesTranReportHtml()
+    };
+
+    this.isSendingEmail = true;
+    this.salesTranSvc.sendEmail(this.uid || this.indivId.toString(), request).subscribe({
+      next: result => {
+        this.isSendingEmail = false;
+        if (result?.success) {
+          this.emailSubmitSuccess = 'Email sent successfully.';
+          this.showEmailPopup = false;
+          return;
+        }
+
+        this.emailSubmitError = result?.returnMsg || 'Unable to send email.';
+      },
+      error: () => {
+        this.isSendingEmail = false;
+        this.emailSubmitError = 'Unable to send email.';
+      }
+    });
+  }
+
+  get selfAssociateEmail(): string {
+    return this.SaleAssocList.find(assoc => assoc.individualUID === this.indivId)?.emailAddress?.trim() || '';
+  }
+
+  get managerAssociateEmail(): string {
+    return this.SaleAssocList.find(assoc => (assoc.cODE || '').toUpperCase() === 'RLTYP_CONC_MNGR')?.emailAddress?.trim() || '';
+  }
+
+  private getSelectedRecipientEmail(): string {
+    if (this.selectedEmailOption === 'self') {
+      return this.selfAssociateEmail;
+    }
+    if (this.selectedEmailOption === 'manager') {
+      return this.managerAssociateEmail;
+    }
+    return (this.customEmailAddress || '').trim();
+  }
+
+  private isValidEmail(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  private buildEmailSubject(): string {
+    return `Sales Transaction Report - ${this.locationName} (${this.fromDate} to ${this.toDate})`;
+  }
+
+  private buildSalesTranReportHtml(): string {
+    const safe = (val: string) => this.escapeHtml(val || '');
+    const asCurrency = (val: number) => `$${(Number(val) || 0).toFixed(2)}`;
+    const asPct = (val: number) => `${(Number(val) || 0).toFixed(2)}%`;
+
+    const summaryRows = this.rptSummary.map(summary => `
+      <tr>
+        <td>${safe(summary.tenderTypeDescription)}</td>
+        <td style="text-align:center;">${summary.nbrTrans || 0}</td>
+        <td style="text-align:center;">${summary.nbrTender || 0}</td>
+        <td style="text-align:right;">${asCurrency(summary.sales)}</td>
+        <td style="text-align:right;">${asCurrency(summary.salesTax)}</td>
+        <td style="text-align:right;">${asCurrency(summary.vendorCoupons)}</td>
+        <td style="text-align:right;">${asCurrency(summary.exchangeCoupons)}</td>
+        <td style="text-align:right;">${asCurrency(summary.lineItmKatsaCpnAmt)}</td>
+        <td style="text-align:right;">${asCurrency(summary.tipAmount)}</td>
+        <td style="text-align:right;">${asCurrency(summary.sales)}</td>
+        <td style="text-align:right;">${asPct(summary.pct)}</td>
+      </tr>`).join('');
+
+    const detailRows = this.rptDetail.map(detail => `
+      <tr>
+        <td style="text-align:center;">${detail.ticketNumber || 0}</td>
+        <td style="text-align:center;">${safe(this.formatDateForEmail(detail.transactionDate))}</td>
+        <td>${safe(detail.facilityNumber || '')}</td>
+        <td style="text-align:right;">${asCurrency(detail.sales)}</td>
+        <td style="text-align:right;">${asCurrency(detail.salesTax)}</td>
+        <td style="text-align:right;">${asCurrency(detail.envTax)}</td>
+        <td style="text-align:right;">${asCurrency(detail.vendorCoupons)}</td>
+        <td style="text-align:right;">${asCurrency(detail.exchangeCoupons)}</td>
+        <td style="text-align:right;">${asCurrency((detail.sales || 0) - (detail.salesTax || 0) - (detail.envTax || 0) - (detail.vendorCoupons || 0) - (detail.exchangeCoupons || 0))}</td>
+        <td style="text-align:center;">${safe(detail.tenderTypeDescription || '')}</td>
+      </tr>`).join('');
+
+    return `
+      <div style="font-family: Arial, Helvetica, sans-serif; color:#1f2937;">
+        <div style="padding:12px; border:1px solid #d1d5db; border-radius:8px; margin-bottom:16px; background:#f8fafc;">
+          <h2 style="margin:0 0 8px 0; color:#0d6efd;">Sales Transaction Report</h2>
+          <div><strong>Location:</strong> ${safe(this.locationName)} (${safe(this.facilityNumber)})</div>
+          <div><strong>Vendor:</strong> ${safe(this.vendorName)} (${safe(this.vendorNumber)})</div>
+          <div><strong>Contract:</strong> ${safe(this.contractNumber)}</div>
+          <div><strong>Date Range:</strong> ${safe(this.fromDate)} to ${safe(this.toDate)}</div>
+          <div><strong>Summary By:</strong> ${safe(this.summaryBy)} | <strong>Transaction Type:</strong> ${safe(this.transTypeLabel)}</div>
+        </div>
+
+        <h3 style="margin:0 0 8px 0; color:#0d6efd;">Summary</h3>
+        <table style="width:100%; border-collapse:collapse; margin-bottom:16px;">
+          <thead>
+            <tr style="background:#e9ecef;">
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:left;">Txn Type</th>
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:center;"># Trans</th>
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:center;"># Tenders</th>
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:right;">Sales</th>
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:right;">Sales Tax</th>
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:right;">Vendor Coupons</th>
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:right;">Exchange Coupons</th>
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:right;">KATUSA Coupons</th>
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:right;">Tip</th>
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:right;">Total</th>
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:right;">Percentage</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${summaryRows}
+            <tr style="background:#f1f5f9; font-weight:700;">
+              <td style="border:1px solid #dee2e6; padding:8px;">Total</td>
+              <td style="border:1px solid #dee2e6; padding:8px; text-align:center;">${this.summaryTotals.nbrTrans}</td>
+              <td style="border:1px solid #dee2e6; padding:8px; text-align:center;">${this.summaryTotals.nbrTender}</td>
+              <td style="border:1px solid #dee2e6; padding:8px; text-align:right;">${asCurrency(this.summaryTotals.sales)}</td>
+              <td style="border:1px solid #dee2e6; padding:8px; text-align:right;">${asCurrency(this.summaryTotals.salesTax)}</td>
+              <td style="border:1px solid #dee2e6; padding:8px; text-align:right;">${asCurrency(this.summaryTotals.vendorCoupons)}</td>
+              <td style="border:1px solid #dee2e6; padding:8px; text-align:right;">${asCurrency(this.summaryTotals.exchangeCoupons)}</td>
+              <td style="border:1px solid #dee2e6; padding:8px; text-align:right;">${asCurrency(this.summaryTotals.lineItmKatsaCpnAmt)}</td>
+              <td style="border:1px solid #dee2e6; padding:8px; text-align:right;">${asCurrency(this.summaryTotals.tipAmount)}</td>
+              <td style="border:1px solid #dee2e6; padding:8px; text-align:right;">${asCurrency(this.summaryTotals.sales)}</td>
+              <td style="border:1px solid #dee2e6; padding:8px; text-align:right;">${asPct(this.summaryTotals.pct)}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 style="margin:0 0 8px 0; color:#0d6efd;">Details</h3>
+        <table style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr style="background:#e9ecef;">
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:center;">Ticket ID</th>
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:center;">Date</th>
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:left;">Facility</th>
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:right;">Mdse Sales</th>
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:right;">Tax</th>
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:right;">Env. Tax</th>
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:right;">Concession Discount</th>
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:right;">Exchange Cpns</th>
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:right;">Total</th>
+              <th style="border:1px solid #dee2e6; padding:8px; text-align:center;">Tender</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${detailRows}
+          </tbody>
+        </table>
+      </div>`;
+  }
+
+  private formatDateForEmail(value: Date | string): string {
+    const dt = value ? new Date(value) : null;
+    if (!dt || isNaN(dt.getTime())) {
+      return '';
+    }
+    const mm = String(dt.getMonth() + 1).padStart(2, '0');
+    const dd = String(dt.getDate()).padStart(2, '0');
+    const yyyy = dt.getFullYear();
+    return `${mm}/${dd}/${yyyy}`;
+  }
+
+  private escapeHtml(text: string): string {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+
 
 }

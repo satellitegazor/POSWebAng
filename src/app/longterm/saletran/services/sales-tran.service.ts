@@ -353,6 +353,15 @@ export class SalesTranService {
         );
     }
 
+    public sendEmail(uid: string, request: SendEmailRequest, guid: string = GlobalConstants.POST_GUID): Observable<MobileBase> {
+        return this.httpClient.post<MobileBase>(
+            GlobalConstants.CPOS_SVCS_URL + '/common/SendEmail?guid=' + encodeURIComponent(guid)
+                + '&uid=' + encodeURIComponent(uid),
+            JSON.stringify(request),
+            { headers: this.headerObjs }
+        );
+    }
+
 }
 
 export interface InProgressTendersResultModel {
@@ -483,5 +492,11 @@ export interface AurusGiftCardRequest {
     RegionId: number;
     AppType: number;
 
+}
+
+export interface SendEmailRequest {
+    EmailAddress: string;
+    EmailContent: string;
+    Subject: string;
 }
   

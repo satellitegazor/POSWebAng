@@ -2,26 +2,23 @@
   <nav class="navbar navbar-expand-md navbar-light bg-light">
     <div class="container-fluid py-2">
       <div class="row align-items-center w-100 g-3" *ngIf="isUserLoggedIn">
-        <div class="divMainMenu border rounded col-12 col-md-2 d-flex justify-content-center justify-content-md-start bg-white">
-          
-            <svg class="btnGotoMainMenu text-primary" viewBox="0 0 24 24" role="button" tabindex="0" aria-label="Go To Main Menu" style="height: 36px; width: 36px; cursor: pointer;" (click)="gotoMainMenu()">
-              <path fill="currentColor" d="M4 6.75A2.75 2.75 0 0 1 6.75 4h10.5A2.75 2.75 0 0 1 20 6.75v10.5A2.75 2.75 0 0 1 17.25 20H6.75A2.75 2.75 0 0 1 4 17.25zm3.25.25a.75.75 0 0 0-.75.75v2.5c0 .41.34.75.75.75h2.5a.75.75 0 0 0 .75-.75v-2.5A.75.75 0 0 0 9.75 7zm7 0a.75.75 0 0 0-.75.75v2.5c0 .41.34.75.75.75h2.5a.75.75 0 0 0 .75-.75v-2.5a.75.75 0 0 0-.75-.75zm-7 6a.75.75 0 0 0-.75.75v2.5c0 .41.34.75.75.75h2.5a.75.75 0 0 0 .75-.75v-2.5a.75.75 0 0 0-.75-.75zm7 0a.75.75 0 0 0-.75.75v2.5c0 .41.34.75.75.75h2.5a.75.75 0 0 0 .75-.75v-2.5a.75.75 0 0 0-.75-.75z"/>
-            </svg>
-            <div class="text-dark fw-bold">Main Menu</div>
-          
+        <div class="divMainMenu border rounded col-12 col-md-2 bg-white">
+          <div class="main-menu-grid w-100 p-2">
+            <div class="main-menu-icon-cell" (click)="gotoMainMenu()" style="cursor: pointer;">
+              <svg class="btnGotoMainMenu text-primary" viewBox="0 0 24 24" role="button" tabindex="0" aria-label="Go To Main Menu" style="height: 36px; width: 36px; cursor: pointer;" >
+                <path fill="currentColor" d="M4 6.75A2.75 2.75 0 0 1 6.75 4h10.5A2.75 2.75 0 0 1 20 6.75v10.5A2.75 2.75 0 0 1 17.25 20H6.75A2.75 2.75 0 0 1 4 17.25zm3.25.25a.75.75 0 0 0-.75.75v2.5c0 .41.34.75.75.75h2.5a.75.75 0 0 0 .75-.75v-2.5A.75.75 0 0 0 9.75 7zm7 0a.75.75 0 0 0-.75.75v2.5c0 .41.34.75.75.75h2.5a.75.75 0 0 0 .75-.75v-2.5a.75.75 0 0 0-.75-.75zm-7 6a.75.75 0 0 0-.75.75v2.5c0 .41.34.75.75.75h2.5a.75.75 0 0 0 .75-.75v-2.5a.75.75 0 0 0-.75-.75zm7 0a.75.75 0 0 0-.75.75v2.5c0 .41.34.75.75.75h2.5a.75.75 0 0 0 .75-.75v-2.5a.75.75 0 0 0-.75-.75z"/>
+              </svg>
+            </div>
+            <div class="main-menu-vendor-cell fw-bold text-dark">{{VendorName + ' (' + VendorNumber + ')' || 'Vendor Name'}}</div>
+            <div class="main-menu-label-cell text-dark fw-bold" (click)="gotoMainMenu()" style="cursor: pointer;">Main Menu</div>
+            <div class="main-menu-location-cell small navbar-data-secondary">{{LocationName + ' (' + facilityNumber + ')' || 'Location Name'}}</div>
+          </div>
         </div>
-        <div class="col-12 col-md-3"></div>
 
-        <div class="divVendorInfo col-12 col-md-2 text-center">
-          <div class="border rounded p-2 h-100 d-inline-block text-start bg-white">
-            <div class="fw-bold text-dark">{{VendorName + ' (' + VendorNumber + ')' || 'Vendor Name'}}</div>
-            <div class="small navbar-data-secondary">{{LocationName + ' (' + facilityNumber + ')' || 'Location Name'}}</div>
-          </div>
-          <div class="mt-2">
-            <label class="navbar-brand mb-0 text-dark">{{TicketNumber > 0 ? ('Ticket# ' + TicketNumber) : ''}}</label>
-          </div>
+
+        <div class="CenterHeading text-center d-flex flex-column justify-content-center col-12 col-md-8">Point of Sale
+          <div class="small navbar-data-secondary">{{TicketNumber > 0 ? ('Ticket# ' + TicketNumber) : ''}}</div>
         </div>
-        <div class="col-12 col-md-3"></div>
 
         <div class="divUserInfo col-12 col-md-2 d-flex flex-column align-items-center align-items-md-end gap-2">
           <div class="border rounded p-2 h-100 bg-white w-100">

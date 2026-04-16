@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { SalesTranService } from 'src/app/longterm/saletran/services/sales-tran.service';
 import { LogonSvc } from '../../../logon/logonsvc.service';
@@ -9,6 +9,7 @@ import { GlobalConstants } from 'src/app/global/global.constants';
 import { AlertOptions } from 'src/app/alertmsg/alert-message/alert-message.model';
 import { AlertService } from 'src/app/alertmsg/alert-message/alert-message.service';
 import { ToastService } from 'src/app/services/toast.service';
+import { VendorLoginResultsModel } from 'src/app/models/vendor.login.results.model';
 
 @Component({
   selector: 'app-pin-validate',
@@ -19,6 +20,7 @@ import { ToastService } from 'src/app/services/toast.service';
 export class PinValidateComponent implements OnInit {
 
   constructor(private modal: NgbModal, 
+    public activeModal: NgbActiveModal,
     private _saleTranSvc: SalesTranService, 
     private _logonSvc: LogonSvc, 
     private _logonDataSvc: LogonDataService,
@@ -39,12 +41,12 @@ export class PinValidateComponent implements OnInit {
     }
 
     goToMainMenu(): void {
-      this.modal.dismissAll();
+      this.activeModal.dismiss('main-menu');
       this.router.navigate(['/mainmenu']);
     }
 
     logout(): void {
-      this.modal.dismissAll();
+      this.activeModal.dismiss('logout');
       this._logonDataSvc.clearTenderTypes();
       this.router.navigate(['/vlogon']);
     }
@@ -57,7 +59,7 @@ export class PinValidateComponent implements OnInit {
       logonMdl.exchangeNumber = this._logonDataSvc.getLocationConfig().facilityNumber.substring(0, 4);
       logonMdl.facilityNumber = this._logonDataSvc.getLocationConfig().facilityNumber;
       logonMdl.facilityName = this._logonDataSvc.getLocationConfig().facilityName;
-      logonMdl.individualUID = this._logonDataSvc.getLocationConfig().individualUID;
+      //logonMdl.individualUID = this._logonDataSvc.getLocationConfig().individualUID;
       logonMdl.guid = GlobalConstants.POST_GUID;
       logonMdl.cliTimeVar = GlobalConstants.GetClientTimeVariance();
       logonMdl.contractType = true;
@@ -75,8 +77,8 @@ export class PinValidateComponent implements OnInit {
             return; 
         }
         else {
-            this._toastSvc.success('Vendor Logon successful, moving on to Sale Transaction...');
-            this.router.navigate(['/salestran']);    
+          this._toastSvc.success('Vendor Logon successful.');
+          this.activeModal.close(data as VendorLoginResultsModel);
         }
 
       });
