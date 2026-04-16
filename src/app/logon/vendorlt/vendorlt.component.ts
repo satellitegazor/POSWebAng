@@ -5,7 +5,7 @@ import { AbbrLocationsModel, VLogonModel } from '../models/vlogon.model';
 import { Router } from "@angular/router";
 import { LogonDataService } from '../../global/logon-data-service.service';
 import { LocalStorageService } from '../../global/local-storage.service';
-import { PosApiService } from 'src/app/longterm/saletran/services/pos-api-service';
+import { PosApiService } from 'src/app/longterm/services/pos-api-service';
 import { AlertService } from 'src/app/alertmsg/alert-message/alert-message.service';
 import { AlertOptions } from 'src/app/alertmsg/alert-message/alert-message.model';
 import { LocationConfigState } from 'src/app/longterm/saletran/store/locationconfigstore/locationconfig.state';
@@ -19,7 +19,7 @@ import { HttpClient } from '@angular/common/http';
 import { addTabSerialToTktObj, initTktObj, loadTicket, loadTicketSuccess, updateCheckoutTotals } from 'src/app/longterm/saletran/store/ticketstore/ticket.action';
 import { TktObjState } from 'src/app/app.state';
 import { Actions, ofType } from '@ngrx/effects';
-import { CPOSWebSvcService } from 'src/app/longterm/saletran/services/cposweb-svc.service';
+import { CPOSWebSvcService } from 'src/app/longterm/services/cposweb-svc.service';
 
 @Component({
     selector: 'app-logon-vendorlt',

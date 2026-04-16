@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 
 import { TktReceiptComponent } from './tkt-receipt.component';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { PosApiService } from '../../saletran/services/pos-api-service';
+import { PosApiService } from '../../services/pos-api-service';
 
 describe('TktReceiptComponent', () => {
   let component: TktReceiptComponent;

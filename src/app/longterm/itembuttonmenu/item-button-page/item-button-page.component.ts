@@ -7,7 +7,7 @@ import { NgbModalOptions, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { SharedSubjectService } from 'src/app/shared-subject/shared-subject.service';
-import { PosApiService } from '../../saletran/services/pos-api-service';
+import { PosApiService } from '../../services/pos-api-service';
 import { LocationConfigState } from '../../saletran/store/locationconfigstore/locationconfig.state';
 import { saleTranDataInterface } from '../../saletran/store/ticketstore/ticket.state';
 import { Subject } from 'rxjs';

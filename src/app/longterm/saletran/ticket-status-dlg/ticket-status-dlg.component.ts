@@ -11,7 +11,7 @@ import {
   LTC_TicketStatus,
   TicketStatusLocationData,
 } from '../../models/ticket.status.location.models';
-import { PosApiService, UpdateTicketStatusLocationRequest } from '../services/pos-api-service';
+import { PosApiService, UpdateTicketStatusLocationRequest } from '../../services/pos-api-service';
 import { Store } from '@ngrx/store';
 import { TktObjState } from 'src/app/app.state';
 import { getSavedTicketResult, getTktObjSelector } from '../store/ticketstore/ticket.selector';

@@ -7,7 +7,7 @@ import { resetTktObj, saveTicketForGuestCheckSuccess } from '../store/ticketstor
 import { SaveTicketResultsModel } from 'src/app/models/ticket.split';
 import { getSavedTicketResult } from '../store/ticketstore/ticket.selector';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
-import { PinValidateComponent } from '../pin-validate/pin-validate.component';
+import { PinValidateComponent } from '../../pin-validate/pin-validate.component';
 import { TicketStatusDlgComponent } from '../ticket-status-dlg/ticket-status-dlg.component';
 import { TicketStatusLocationData } from '../../models/ticket.status.location.models';
 import { Subject } from 'rxjs';

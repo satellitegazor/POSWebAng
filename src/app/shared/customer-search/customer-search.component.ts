@@ -3,7 +3,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { first } from 'rxjs';
 import { LTC_Customer } from 'src/app/models/customer';
-import { PosApiService } from '../../longterm/saletran/services/pos-api-service'; 
+import { PosApiService } from '../../longterm/services/pos-api-service'; 
 import { addCustomerId } from '../../longterm/saletran/store/ticketstore/ticket.action';
 import { saleTranDataInterface } from '../../longterm/saletran/store/ticketstore/ticket.state';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';

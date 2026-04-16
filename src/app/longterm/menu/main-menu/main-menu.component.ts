@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
-import { PinValidateComponent } from '../../saletran/pin-validate/pin-validate.component';
+import { PinValidateComponent } from '../../pin-validate/pin-validate.component';
 import { VendorLoginResultsModel } from 'src/app/models/vendor.login.results.model';
 import { ToastService } from 'src/app/services/toast.service';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';

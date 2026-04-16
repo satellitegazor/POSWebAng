@@ -11,7 +11,7 @@ export interface CanComponentDeactivate {
   providedIn: 'root'
 })
 export class CanDeactivateGuard implements CanDeactivate<CanComponentDeactivate> {
-  canDeactivate(
+  canDeactivate( 
     component: CanComponentDeactivate,
     currentRoute: ActivatedRouteSnapshot,
     currentState: RouterStateSnapshot,

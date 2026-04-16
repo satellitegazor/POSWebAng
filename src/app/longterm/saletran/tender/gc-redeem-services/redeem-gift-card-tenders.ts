@@ -2,7 +2,7 @@ import { Store } from "@ngrx/store";
 import { forkJoin, Observable, of, take } from "rxjs";
 import { catchError, tap, map } from "rxjs/operators";
 import { saleTranDataInterface } from "../../store/ticketstore/ticket.state";
-import { CPOSWebSvcService } from "../../services/cposweb-svc.service";
+import { CPOSWebSvcService } from "../../../services/cposweb-svc.service";
 import { getTicketTendersSelector, getTicketTotalToPayUSD, getTicketTotalToPayFC } from "../../store/ticketstore/ticket.selector";
 import { TicketTender } from "src/app/models/ticket.tender";
 import { TenderUtil } from "../tender-util";

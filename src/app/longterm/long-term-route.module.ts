@@ -11,7 +11,8 @@ import { DeviceTndrPageComponent } from './saletran/tender/device-tndr-page/devi
 import { CheckoutPageComponent } from './saletran/checkout/checkout-page/checkout-page.component';
 import { EgConcTndrComponent } from './saletran/tender/eg-conc-tndr/eg-conc-tndr.component';
 import { CashTndrComponent } from './saletran/tender/cash-tndr/cash-tndr.component';
-import { CanDeactivateGuard } from 'src/app/shared/can-component-deactivate';
+//import { CanDeactivateGuard } from 'src/app/shared/can-component-deactivate';
+import { CanDeactivateGuard } from '../shared/can-component-deactivate'
 import { ItemButtonPageComponent } from './itembuttonmenu/item-button-page/item-button-page.component';
 import { AdminMenuComponent } from './menu/admin-menu/admin-menu.component';
 import { GiftCardInquiryComponent } from './saletran/tender/gift-card-inquiry/gift-card-inquiry.component';
@@ -20,6 +21,7 @@ import { SalesTranRptPageComponent } from './reports/salestranrpt/sales-tran-rpt
 import { SettlementReportPageComponent } from './reports/settlement/settlement-report-page/settlement-report-page.component';
 import { NoSaleReportPageComponent } from './reports/nosalerpt/no-sale-report-page/no-sale-report-page.component';
 import { ReportsMenuComponent } from './menu/reports-menu/reports-menu.component';
+import { TktReceiptComponent} from './receipt/tkt-receipt/tkt-receipt.component';
 
 const routes: Routes = [
   { path: 'salestran', component: ItemSelectionBasePageComponent },
@@ -37,7 +39,8 @@ const routes: Routes = [
   { path: 'rptmenu', component: ReportsMenuComponent },
   { path: 'rptsalestran', component: SalesTranRptPageComponent },
   { path: 'rptsettlement', component: SettlementReportPageComponent },
-  { path: 'rptnosale', component: NoSaleReportPageComponent }
+  { path: 'rptnosale', component: NoSaleReportPageComponent },
+  { path: 'ltktrcpt', component: TktReceiptComponent }
 ];
 @NgModule({
     imports: [RouterModule.forChild(routes)],

@@ -3,17 +3,17 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { PinPadResult } from './models/pinpad-result';
-import { MSRSwipeData } from './models/msr-swipe-data';
+import { PinPadResult } from '../saletran/services/models/pinpad-result';
+import { MSRSwipeData } from '../saletran/services/models/msr-swipe-data';
 import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
-import { SigCapture } from './models/capture-signature.model';
-import { VerifoneCommStatus } from '../../models/general-classes';
-import { AurusGiftCardInquiryResp } from './models/gift-card-enquiry-response';
-import { AurusGiftCardRedeemResp, GCRedeemInput } from './models/aurus-gift-card-redeem-resp';
-import { VfoneCaptureTran } from './models/capture-tran.model';
-import { MilstarRefundReqData } from './models/milstar-refund-req-data';
-import { VfoneLastTran } from './models/vfone-last-tran';
-import { VoidTranInput } from './models/void-tran-input';
+import { SigCapture } from '../saletran/services/models/capture-signature.model';
+import { VerifoneCommStatus } from '../models/general-classes';
+import { AurusGiftCardInquiryResp } from '../saletran/services/models/gift-card-enquiry-response';
+import { AurusGiftCardRedeemResp, GCRedeemInput } from '../saletran/services/models/aurus-gift-card-redeem-resp';
+import { VfoneCaptureTran } from '../saletran/services/models/capture-tran.model';
+import { MilstarRefundReqData } from '../saletran/services/models/milstar-refund-req-data';
+import { VfoneLastTran } from '../saletran/services/models/vfone-last-tran';
+import { VoidTranInput } from '../saletran/services/models/void-tran-input';
 import { ToastService } from 'src/app/services/toast.service';
 
 @Injectable({

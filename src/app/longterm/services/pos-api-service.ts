@@ -1,27 +1,28 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { GlobalConstants } from '../../../global/global.constants';
-import { Dept, SaleItem, SalesCat, SalesCategorySaveResponse } from '../../models/sale.item';
-import { SaleItemResultsModel } from '../../models/sale.item.results.model';
+import { GlobalConstants } from '../../global/global.constants';
+import { Dept, SaleItem, SalesCat, SalesCategorySaveResponse } from '../models/sale.item';
+import { SaleItemResultsModel } from '../models/sale.item.results.model';
 import { Observable, throwError } from 'rxjs';
-import { SharedSubjectService } from '../../../shared-subject/shared-subject.service';
-import { VendorLoginResultsModel } from '../../../models/vendor.login.results.model';
-import { LogonDataService } from '../../../global/logon-data-service.service';
-import { LTC_CustomerLookupResultsModel } from '../../../models/customer';
-import { LocationConfigModel } from '../../models/location-config';
-import { LTC_LocationAssociatesResultsModel } from '../../models/location.associates';
+import { SharedSubjectService } from '../../shared-subject/shared-subject.service';
+import { VendorLoginResultsModel } from '../../models/vendor.login.results.model';
+import { LogonDataService } from '../../global/logon-data-service.service';
+import { LTC_CustomerLookupResultsModel } from '../../models/customer';
+import { LocationConfigModel } from '../models/location-config';
+import { LTC_LocationAssociatesResultsModel } from '../models/location.associates';
 import { SaveTicketResultsModel, TicketSplit } from 'src/app/models/ticket.split';
 import { DailyExchRateMdl } from 'src/app/models/exchange.rate';
-import { TenderTypeModel } from '../../models/tender.type';
-import { LTC_SingleTransactionResultsModel, LTC_Ticket, LTC_TransactionDetailsModel, SingleTransactionId, TicketLookupResult } from '../../models/ticket.list';
+import { TenderTypeModel } from '../models/tender.type';
+import { LTC_SingleTransactionResultsModel, LTC_Ticket, LTC_TransactionDetailsModel, SingleTransactionId, TicketLookupResult } from '../models/ticket.list';
 import { TicketTender,  SaveTenderResult, SaveTenderResultModel } from 'src/app/models/ticket.tender';
 import { ExchCardTndr, SaveExchCardTndrResult, SaveExchCardTndrResultModel } from 'src/app/models/exch.card.tndr';
-import { LTC_SaveSalesItemModel, LTC_SaveSalesItemModelParameters } from '../../models/long-term-sale-item';
+import { LTC_SaveSalesItemModel, LTC_SaveSalesItemModelParameters } from '../models/long-term-sale-item';
 import { MobileBase } from 'src/app/models/mobile.base';
 import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
-import { LoadTicketStatLocRequest, LoadTicketStatLocResultModel } from '../../models/ticket.status.location.models';
+import { LoadTicketStatLocRequest, LoadTicketStatLocResultModel } from '../models/ticket.status.location.models';
 import { ContractSummaryReport } from 'src/app/models/sales.tran.report.models';
 import { VendorContractSummaryResultsModel } from 'src/app/models/saletran.report.model';
+import { LTC_StoreLocation_Result } from '../models/store.location';
 
 
 @Injectable({
@@ -95,6 +96,15 @@ export class PosApiService {
         return this.httpClient.get<LTC_LocationAssociatesResultsModel>(GlobalConstants.CPOS_SVCS_URL + '/ltc/GetLocationAssociates?guid=' + GlobalConstants.GET_GUID +
             '&lid=' + locationId.toString() + '&uid=' + individualUID.toString() + '&active=1',
             { headers: this.headerObjs });
+    }
+
+    public getLTCStoreLocation(guid: string, locationId: number, uid: string): Observable<LTC_StoreLocation_Result> {
+        return this.httpClient.get<LTC_StoreLocation_Result>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/GetLTCStoreLocation?guid=' + encodeURIComponent(guid)
+                + '&locationId=' + locationId.toString()
+                + '&uid=' + encodeURIComponent(uid),
+            { headers: this.headerObjs }
+        );
     }
 
     public saveTicketForGuestCheck(model: TicketSplit) {

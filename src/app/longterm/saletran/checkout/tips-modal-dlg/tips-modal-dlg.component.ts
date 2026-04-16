@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
 import { LTC_Associates } from '../../../models/location.associates';
-import { PosApiService } from '../../services/pos-api-service';
+import { PosApiService } from '../../../services/pos-api-service';
 import { removeTndrWithSaveCode, upsertAssocTips } from '../../store/ticketstore/ticket.action';
 import { getCheckoutItemsSelector, getTicketTotals, getAssocTipList } from '../../store/ticketstore/ticket.selector';
 

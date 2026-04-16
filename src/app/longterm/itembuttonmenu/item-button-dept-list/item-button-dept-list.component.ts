@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, SimpleChange, SimpleChanges } from '@angular/core';
-import { PosApiService } from '../../saletran/services/pos-api-service';
+import { PosApiService } from '../../services/pos-api-service';
 import { Dept } from '../../models/sale.item';
 import { Subject } from 'rxjs';
 

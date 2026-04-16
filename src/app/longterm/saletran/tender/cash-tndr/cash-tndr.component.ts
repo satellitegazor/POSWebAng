@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
-import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
+import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { ActivatedRoute, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';

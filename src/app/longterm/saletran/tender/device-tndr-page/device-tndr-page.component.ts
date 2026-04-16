@@ -13,7 +13,7 @@ import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCh
 import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
 import { getLocCnfgIsAllowTipsSelector } from '../../store/locationconfigstore/locationconfig.selector';
 import { combineLatest, filter, firstValueFrom, forkJoin, map, Observable, Subscription, take, Subject, takeUntil } from 'rxjs';
-import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
+import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
 import { UtilService } from 'src/app/services/util.service';
 import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
 import { Actions, ofType } from '@ngrx/effects';

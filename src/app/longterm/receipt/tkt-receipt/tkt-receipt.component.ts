@@ -1,12 +1,31 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { TicketTender } from 'src/app/models/ticket.tender';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import {
   LTC_SingleTransactionResultsModel,
   LTC_Ticket
 } from '../../models/ticket.list';
-import { PosApiService } from '../../saletran/services/pos-api-service';
+import { PosApiService } from '../../services/pos-api-service';
+
+type TicketItem = LTC_Ticket['items'][number];
+
+interface DepartmentGroup {
+  id: number;
+  name: string;
+  items: TicketItem[];
+}
+
+interface ReceiptTotals {
+  totalItems: number;
+  itemTotal: number;
+  totalSalesTax: number;
+  totalEnvTax: number;
+  totalSavings: number;
+  grandTotal: number;
+  tipAmount: number;
+}
 
 @Component({
   selector: 'app-tkt-receipt',
@@ -19,8 +38,9 @@ export class TktReceiptComponent implements OnInit {
   transactionId = 0;
   frmSalesTrnRpt = false;
   src = '';
-  ticket: LTC_Ticket = {} as LTC_Ticket;
-  signature: LTC_SingleTransactionResultsModel['SignatureData'] =
+  readonly refundTenderTypes = ['XR', 'RC', 'CR', 'MR'];
+  public ticket: LTC_Ticket = {} as LTC_Ticket;
+  public signature: LTC_SingleTransactionResultsModel['SignatureData'] =
     {} as LTC_SingleTransactionResultsModel['SignatureData'];
 
   constructor(
@@ -55,6 +75,227 @@ export class TktReceiptComponent implements OnInit {
           this.signature = data.SignatureData;
         });
     });
+  }
+
+  get hasTicketData(): boolean {
+    return Number(this.ticket?.transactionID ?? 0) > 0;
+  }
+
+  get busFunUID(): number {
+    return this.ticket?.items?.[0]?.businessFunctionUID ?? 0;
+  }
+
+  get numOfPiecesLabel(): string {
+    const totalTags = this.ticket.items.reduce((sum, item) => {
+      return sum + (item.noOfTags ?? 0) * (item.quantity ?? 0);
+    }, 0);
+
+    return totalTags > 0 ? `${totalTags} Pieces` : '';
+  }
+
+  get isRefund(): boolean {
+    return (this.ticket.tenders ?? []).some((tender: TicketTender) =>
+      this.refundTenderTypes.includes((tender.tenderTypeCode ?? '').toUpperCase())
+    );
+  }
+
+  get hasCancelledTicket(): boolean {
+    return (this.ticket.ticketCancel?.ticketCancelId ?? 0) !== 0;
+  }
+
+  get isSysCancelled(): boolean {
+    const cancelCode = this.ticket.ticketCancel?.ticketCancelTypeCode ?? '';
+    return cancelCode === 'SC' || cancelCode === 'TO';
+  }
+
+  get groupedItems(): DepartmentGroup[] {
+    const groups = new Map<number, DepartmentGroup>();
+
+    (this.ticket.items ?? []).forEach((item) => {
+      const id = item.departmentUID ?? 0;
+      if (!groups.has(id)) {
+        groups.set(id, {
+          id,
+          name: item.deptName ?? '',
+          items: []
+        });
+      }
+
+      groups.get(id)?.items.push(item);
+    });
+
+    return Array.from(groups.values());
+  }
+
+  get receiptTotals(): ReceiptTotals {
+    let totalItems = 0;
+    let itemTotal = 0;
+    let totalSalesTax = 0;
+    let totalEnvTax = 0;
+    let totalSavings = 0;
+    let grandTotal = 0;
+
+    (this.ticket.items ?? []).forEach((item) => {
+      totalItems += item.quantity ?? 0;
+      itemTotal +=
+        (item.lineItemDollarDisplayAmount ?? 0) -
+        (item.lineItemTaxAmount ?? 0) -
+        (item.lineItemEnvTaxAmount ?? 0);
+      totalSalesTax += item.lineItemTaxAmount ?? 0;
+      totalEnvTax += item.lineItemEnvTaxAmount ?? 0;
+      totalSavings +=
+        (item.couponLineItemDollarAmount ?? 0) +
+        (item.discountAmount ?? 0) +
+        (item.lineItmKatsaCpnAmt ?? 0);
+      grandTotal += item.lineItemDollarDisplayAmount ?? 0;
+    });
+
+    grandTotal += (this.ticket.shipHandling ?? 0) + (this.ticket.shipHandlingTaxAmt ?? 0);
+
+    const tipAmount = (this.ticket.tenders ?? []).reduce((sum, tender) => {
+      return sum + (tender.tipAmount ?? 0);
+    }, 0);
+
+    return {
+      totalItems,
+      itemTotal,
+      totalSalesTax,
+      totalEnvTax,
+      totalSavings,
+      grandTotal,
+      tipAmount
+    };
+  }
+
+  get hasSignatureImage(): boolean {
+    return Boolean(this.ticket.isSignCaptured && this.signature?.SignData?.SignData);
+  }
+
+  get signatureImageSrc(): string {
+    const signData = this.signature?.SignData?.SignData ?? '';
+    return signData ? `data:image/jpg;base64,${signData}` : '';
+  }
+
+  get signatureStatement(): string {
+    const tenderWithSignStatement = (this.ticket.tenders ?? []).find(
+      (tender) => (tender.signatureType ?? '').trim().length > 0
+    );
+
+    return tenderWithSignStatement?.signatureType ?? '';
+  }
+
+  getAddressLines(): string[] {
+    const address1 = this.ticket.location?.AddressLine1 ?? '';
+    const suite = this.ticket.location?.SuiteNbr?.trim() ?? '';
+    const fullAddress = `${address1}${suite ? `, Suite: ${suite},` : ''}`;
+    const lines: string[] = [];
+
+    let working = fullAddress;
+    while (working.length > 52) {
+      lines.push(working.substring(0, 49));
+      working = working.substring(49);
+    }
+
+    if (working.length > 0) {
+      lines.push(working);
+    }
+
+    return lines;
+  }
+
+  getCityStateZip(): string {
+    const city = this.ticket.location?.City ?? '';
+    const state = this.ticket.location?.StateProvice ?? '';
+    const postalCode = this.ticket.location?.PostalCode ?? '';
+    return [city, state, postalCode].filter(Boolean).join(', ');
+  }
+
+  getHoursText(hours: LTC_Ticket['hoursOfOperations'][number]): string {
+    if (!hours) {
+      return '';
+    }
+
+    const dayFrom = (hours.DayFrom ?? '').substring(0, 3);
+    const dayTo = hours.DayTo ? ` - ${(hours.DayTo ?? '').substring(0, 3)}: ` : ': ';
+    const timeRange =
+      hours.TimeFrom !== 'ByAptOnly'
+        ? `${hours.TimeFrom ?? ''} - ${hours.TimeTo ?? ''}`
+        : 'By Appointment Only';
+
+    return `${dayFrom}${dayTo}${timeRange}`;
+  }
+
+  getInstructionLines(): string[] {
+    const lines: string[] = [];
+    let markerIndex = 0;
+
+    this.groupedItems.forEach((group) => {
+      group.items.forEach((item) => {
+        const instruction = (item.instruction ?? '').trim();
+        if (instruction) {
+          markerIndex += 1;
+          lines.push(`[*${markerIndex}] ${instruction}`);
+        }
+
+        const addlInstruction = (item.addlInstruction ?? '').trim();
+        if (addlInstruction) {
+          if (!instruction) {
+            markerIndex += 1;
+            lines.push(`[*${markerIndex}] ${addlInstruction}`);
+          } else {
+            lines.push(addlInstruction);
+          }
+        }
+      });
+    });
+
+    return lines;
+  }
+
+  itemMarker(item: TicketItem, index: number): string {
+    const hasInstruction = (item.instruction ?? '').trim().length > 0;
+    const hasAddlInstruction = (item.addlInstruction ?? '').trim().length > 0;
+
+    if (!hasInstruction && !hasAddlInstruction) {
+      return '';
+    }
+
+    return `[*${index}]`;
+  }
+
+  displayTenderName(tender: TicketTender): string {
+    if (tender.tenderTypeCode === 'XC') {
+      return tender.exchCardType || tender.tenderTypeDesc;
+    }
+
+    if (tender.tenderTypeCode === 'CC') {
+      return 'Credit Card';
+    }
+
+    if (tender.tenderTypeCode === 'XR') {
+      return `${tender.exchCardType || 'Exchange Card'} Refund`;
+    }
+
+    if (tender.tenderTypeCode === 'RC') {
+      return 'Credit Card Refund';
+    }
+
+    return tender.tenderTypeDesc;
+  }
+
+  formatCurrency(value: number): string {
+    return new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(value ?? 0);
+  }
+
+  formatMaskedCard(cardEndingNbr: string): string {
+    if (!cardEndingNbr) {
+      return '';
+    }
+
+    return `************${cardEndingNbr}`;
   }
 
 }

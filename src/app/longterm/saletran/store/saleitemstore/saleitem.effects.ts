@@ -5,7 +5,7 @@ import { EmptyError } from 'rxjs';
 import { catchError, concatMap, exhaustMap, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
 import { SaleItem } from '../../../models/sale.item';
 import { SaleItemResultsModel } from '../../../models/sale.item.results.model';
-import { PosApiService } from '../../services/pos-api-service';
+import { PosApiService } from '../../../services/pos-api-service';
 import { 
     getSaleItemsActionSuccess, getSaleItemsStart, getSaleitemsFail
 } from "./saleitem.action";

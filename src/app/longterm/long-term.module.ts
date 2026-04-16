@@ -14,7 +14,7 @@ import { CheckoutItemsComponent } from './saletran/checkout/checkout-items/check
 import { TipsModalDlgComponent } from './saletran/checkout/tips-modal-dlg/tips-modal-dlg.component';
 import { SaveTicketSuccessComponent } from './saletran/save-ticket-success/save-ticket-success.component';
 import { SplitPayComponent } from './saletran/tender/split-pay/split-pay.component';
-import { PinValidateComponent } from './saletran/pin-validate/pin-validate.component';
+import { PinValidateComponent } from './pin-validate/pin-validate.component';
 import { ItemButtonPageComponent } from './itembuttonmenu/item-button-page/item-button-page.component';
 import { ItemButtonDeptListComponent } from './itembuttonmenu/item-button-dept-list/item-button-dept-list.component';
 import { ItemButtonSalesCatListComponent } from './itembuttonmenu/item-button-sales-cat-list/item-button-sales-cat-list.component';
@@ -27,7 +27,8 @@ import { GiftCardInquiryComponent } from './saletran/tender/gift-card-inquiry/gi
 import { MainMenuComponent } from './menu/main-menu/main-menu.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LongTermRouteModule } from './long-term-route.module';
-import { SharedSubjectModule } from 'src/app/shared-subject/shared-subject.module';
+//import { SharedSubjectModule } from 'src/app/shared-subject/shared-subject.module';
+import { SharedSubjectModule } from '../shared-subject/shared-subject.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { StoreModule } from '@ngrx/store';
 import { TKT_OBJ_STATE } from './saletran/store/ticketstore/ticket.selector';
@@ -41,13 +42,13 @@ import { LOC_Assoc_STATE } from './saletran/store/localtionassociates/locationas
 import { GetLocationAssocReducer } from './saletran/store/localtionassociates/locationassociates.reducer';
 import { LocationAssocEffects } from './saletran/store/localtionassociates/locationassociates.effects';
 import { TicketObjectEffects } from './saletran/store/ticketstore/ticket.effects';
-import { SharedModule } from 'src/app/shared/shared.module';
-import { DecimalDirective } from 'src/app/directives/decimal-directive';
-import { PosCurrencyDirective } from 'src/app/directives/pos-currency.directive';
-import { PosCurrency3Directive } from 'src/app/directives/pos-currency.directive.3';
+import { PosCurrency3Directive } from '../directives/pos-currency.directive.3';
+import { PosCurrencyDirective } from '../directives/pos-currency.directive';
+import { SharedModule} from '../shared/shared.module'
+
+import { DecimalDirective } from '../directives/decimal-directive';
 import { EditableButtonComponent } from './itembuttonmenu/editable-button/editable-button.component';
 import { SalesTranRptDetailComponent } from './reports/salestranrpt/detail/detail.component';
-import { SalesTranRptSummaryComponent } from './reports/salestranrpt/summary/summary.component';
 import { SalesTranRptPageComponent } from './reports/salestranrpt/sales-tran-rpt-page/sales-tran-rpt-page.component';
 
 @NgModule({
@@ -57,7 +58,7 @@ import { SalesTranRptPageComponent } from './reports/salestranrpt/sales-tran-rpt
     SplitPayComponent, PinValidateComponent,ItemButtonPageComponent, ItemButtonDeptListComponent,
     ItemButtonSalesCatListComponent, ItemButtonSalesItemListComponent, CashTndrComponent,
     ConcessionCardTndrComponent, DeviceTndrPageComponent, EgConcTndrComponent,GiftCardInquiryComponent, MainMenuComponent,
-    SalesTranRptDetailComponent, SalesTranRptSummaryComponent, SalesTranRptPageComponent
+    SalesTranRptDetailComponent,  SalesTranRptPageComponent
   ],
   imports: [
     CommonModule,
@@ -73,8 +74,9 @@ import { SalesTranRptPageComponent } from './reports/salestranrpt/sales-tran-rpt
     StoreModule.forFeature(LOC_Assoc_STATE, GetLocationAssocReducer),
     EffectsModule.forFeature([LocationAssocEffects]),
     EffectsModule.forFeature([TicketObjectEffects]),
-    SharedModule,
-    DecimalDirective, PosCurrencyDirective, PosCurrency3Directive,
+    
+    PosCurrencyDirective, PosCurrency3Directive,
+    DecimalDirective,
     EditableButtonComponent    
   ]
 })

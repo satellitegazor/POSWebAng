@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
+import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { select, Store } from '@ngrx/store';
 import { ActivatedRoute, Router } from '@angular/router';

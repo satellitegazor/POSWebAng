@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { SaleItem, SalesCat, SalesCategorySaveResponse } from '../../models/sale.item';
 import { Observable, Subject } from 'rxjs';
-import { PosApiService } from '../../saletran/services/pos-api-service';
+import { PosApiService } from '../../services/pos-api-service';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { LogonSvc } from 'src/app/logon/logonsvc.service';
 import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheckoutItem';

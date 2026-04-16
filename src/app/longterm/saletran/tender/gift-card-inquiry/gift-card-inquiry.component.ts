@@ -2,7 +2,7 @@ import { AfterContentInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { ToastService } from 'src/app/services/toast.service';
-import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
+import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { UtilService } from 'src/app/services/util.service';
 import { Actions, ofType } from '@ngrx/effects';
@@ -18,7 +18,7 @@ import { AurusGiftCardRedeemResp, GCRedeemInput } from '../../services/models/au
 import { OConusRedeemGCWithPinPadService } from '../gc-redeem-services/oconus-redeeem-gc-with-pin-pad';
 import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
 import { HTTP_TRANSFER_CACHE_ORIGIN_MAP } from '@angular/common/http';
-import { PosApiService, Conus_GC_Balance_Model } from '../../services/pos-api-service';
+import { PosApiService, Conus_GC_Balance_Model } from '../../../services/pos-api-service';
 import { GlobalConstants } from 'src/app/global/global.constants';
 @Component({
   selector: 'app-gift-card-inquiry',

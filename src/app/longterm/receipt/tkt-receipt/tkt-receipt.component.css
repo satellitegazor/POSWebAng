@@ -1,0 +1,55 @@
+.receipt-wrap {
+	max-width: 200px;
+	width: 200px;
+	font-size: 8pt;
+}
+
+.receipt-table {
+	width: 100%;
+	margin-left: 10px;
+	margin-top: 10px;
+	font-size: 8pt;
+	line-height: 1.25;
+}
+
+.receipt-table td {
+	border: 0;
+	padding: 1px 2px;
+	vertical-align: top;
+}
+
+.receipt-title {
+	font-size: 9pt;
+}
+
+.receipt-subtitle {
+	font-size: 7pt;
+}
+
+.ticket-number {
+	font-size: 16pt;
+	line-height: 1;
+}
+
+.spacer-row {
+	padding-bottom: 10px;
+}
+
+.dashed-line {
+	letter-spacing: 0.2px;
+}
+
+.refund-heading {
+	font-size: 12pt;
+}
+
+.refund-detail {
+	font-size: 10pt;
+}
+
+.receipt-signature {
+	width: 325px;
+	height: 75px;
+	padding-top: 10px;
+	max-width: none;
+}

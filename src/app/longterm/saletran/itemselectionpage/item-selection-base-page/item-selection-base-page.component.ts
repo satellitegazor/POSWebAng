@@ -6,7 +6,7 @@ import { VendorLoginResultsModel } from '../../../../models/vendor.login.results
 import { SharedSubjectService } from '../../../../shared-subject/shared-subject.service';
 import { Dept, SaleItem, SalesCat } from '../../../models/sale.item';
 import { SaleItemResultsModel } from '../../../models/sale.item.results.model';
-import { PosApiService } from '../../services/pos-api-service';
+import { PosApiService } from '../../../services/pos-api-service';
 import { TktSaleItemComponent } from '../tkt-sale-item/tkt-sale-item.component';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { CustomerSearchComponent } from '../../../../shared/customer-search/customer-search.component';
@@ -25,7 +25,7 @@ import { TicketLookupComponent } from '../../../../shared/ticket-lookup/ticket-l
 import { getCheckoutItemsCount, getTicketTotals, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import {initialLocationConfigState, LocationConfigState} from '../../store/locationconfigstore/locationconfig.state';
 import { Router } from '@angular/router';
-import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
+import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
 import { VerifoneCommStatus } from '../../../models/general-classes';
 import { AddMiscItemDlgComponent } from '../add-misc-item-dlg/add-misc-item-dlg.component';
 import { DailyExchRate } from 'src/app/models/exchange.rate';

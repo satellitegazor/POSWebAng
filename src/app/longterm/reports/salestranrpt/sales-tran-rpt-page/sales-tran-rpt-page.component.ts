@@ -2,15 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { LocationConfigState } from '../../../saletran/store/locationconfigstore/locationconfig.state';
 import { SalesTranRptDetailComponent } from '../detail/detail.component';
-import { SalesTranRptSummaryComponent } from '../summary/summary.component';
 import { getLocationConfigSelector } from 'src/app/longterm/saletran/store/locationconfigstore/locationconfig.selector';
 import { filter, take } from 'rxjs';
-import { PosApiService } from 'src/app/longterm/saletran/services/pos-api-service';
+import { PosApiService } from 'src/app/longterm/services/pos-api-service';
 import { ContractSummaryGrouped, ContractTransactionDetail, SalesTranRptSummaryByFacility, VendorContractSummaryResultsModel } from 'src/app/models/saletran.report.model';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { Router } from '@angular/router';
 import { LTC_Associates } from 'src/app/longterm/models/location.associates';
-import { SendEmailRequest } from 'src/app/longterm/saletran/services/pos-api-service';
+import { SendEmailRequest } from 'src/app/longterm/services/pos-api-service';
 
 @Component({
   selector: 'app-sales-tran-rpt-page',
@@ -20,7 +19,7 @@ import { SendEmailRequest } from 'src/app/longterm/saletran/services/pos-api-ser
 export class SalesTranRptPageComponent implements OnInit {
 
 
-  locationId: number = 0;
+  locationId: number = 0;  
   contractId: number = 0;
   facilityNumber: string = '';
   fromDate: string = '';

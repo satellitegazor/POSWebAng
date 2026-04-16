@@ -10,7 +10,7 @@ import { SharedSubjectService } from 'src/app/shared-subject/shared-subject.serv
 import { CustomerSearchComponent } from '../../../../shared/customer-search/customer-search.component';
 import { LocationConfig } from '../../../models/location-config';
 import { TenderType, TenderTypeModel } from '../../../models/tender.type';
-import { PosApiService } from '../../services/pos-api-service';
+import { PosApiService } from '../../../services/pos-api-service';
 import { addTender, removeTndrWithSaveCode, saveTicketForGuestCheck, updateCheckoutTotals, saveTicketForGuestCheckSuccess, isSplitPayR5 } from '../../store/ticketstore/ticket.action';
 import { getCheckoutItemsSelector, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';

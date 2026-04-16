@@ -3,7 +3,7 @@ import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
 import { of } from "rxjs";
 import { catchError, concatMap, exhaustMap, filter, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
-import { PosApiService } from "../../services/pos-api-service";
+import { PosApiService } from "../../../services/pos-api-service";
 import { getLocationConfigStart, getLocationConfigSuccess, getLocationConfigFail} from "./locationconfig.action";
 import { LocationConfigState } from "./locationconfig.state";
 

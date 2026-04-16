@@ -1,1 +1,323 @@
-<p>tkt-receipt works!</p>
+<div id="printArea" class="receipt-wrap" *ngIf="hasTicketData">
+	<input type="hidden" id="hdnContractId" [value]="ticket.contractUID" />
+	<input type="hidden" id="txnId" [value]="ticket.transactionID" />
+
+	<table class="table table-borderless receipt-table mb-0">
+		<tbody>
+			<tr>
+				<td colspan="6" class="text-center text-nowrap receipt-title">
+					<strong>{{ ticket.location.StoreName }}</strong>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="6" class="text-center text-nowrap receipt-subtitle">{{ ticket.location.FacilityNumber }}</td>
+			</tr>
+
+			<tr>
+				<td colspan="6" class="text-center text-nowrap">
+					<ng-container *ngFor="let addrLine of getAddressLines()">
+						{{ addrLine }}<br />
+					</ng-container>
+					<span id="spnAddrCtyStZip">{{ getCityStateZip() }}</span><br />
+					<span id="spnVendPhone">{{ ticket.location.PhoneNumber }}</span><br />
+				</td>
+			</tr>
+
+			<tr *ngFor="let hrs of ticket.hoursOfOperations">
+				<td colspan="6" class="text-center text-nowrap">{{ getHoursText(hrs) }}</td>
+			</tr>
+
+			<tr><td colspan="6" class="spacer-row">&nbsp;</td></tr>
+
+			<tr>
+				<td colspan="6" class="text-center text-nowrap pb-2">
+					<strong *ngIf="busFunUID < 4">
+						TICKET #&nbsp;&nbsp;<span class="ticket-number">{{ ticket.ticketNumber }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+					</strong>
+					{{ numOfPiecesLabel }}
+				</td>
+			</tr>
+
+			<tr><td colspan="6" class="spacer-row">&nbsp;</td></tr>
+
+			<ng-container *ngIf="ticket.customer.customerUID > 0">
+				<tr>
+					<td class="text-start text-nowrap"><strong>Customer:</strong></td>
+					<td colspan="5" class="text-start text-nowrap">
+						<strong>{{ ticket.customer.cLastName }}, {{ ticket.customer.cFirstName }}</strong>
+					</td>
+				</tr>
+				<tr>
+					<td class="text-start text-nowrap">Phone#:</td>
+					<td colspan="5" class="text-start text-nowrap" id="spnCustPhone">{{ ticket.customer.cPhoneNumber }}</td>
+				</tr>
+			</ng-container>
+
+			<tr *ngIf="isRefund">
+				<td colspan="6" class="text-center text-nowrap pt-5"><strong>*** REFUND ***</strong></td>
+			</tr>
+
+			<tr *ngIf="hasCancelledTicket">
+				<td colspan="6" class="text-center text-nowrap pt-5">
+					<strong>{{ isSysCancelled ? '*** SYS CANCEL ***' : '*** CANCELLED ***' }}</strong>
+				</td>
+			</tr>
+
+			<tr><td colspan="6" class="spacer-row">&nbsp;</td></tr>
+
+			<tr>
+				<td colspan="3" class="text-start text-nowrap"><strong>Item</strong></td>
+				<td class="text-center text-nowrap"><strong>Qty</strong></td>
+				<td class="text-start text-nowrap"></td>
+				<td class="text-end text-nowrap"><strong>Amount</strong></td>
+			</tr>
+
+			<ng-container *ngFor="let group of groupedItems">
+				<tr>
+					<td colspan="6" class="text-start text-nowrap pb-1"><strong>{{ group.name }}</strong></td>
+				</tr>
+
+				<ng-container *ngFor="let item of group.items; let itemIndex = index">
+					<tr>
+						<td colspan="3" class="text-start text-nowrap">{{ item.salesItemDesc }}</td>
+						<td class="text-center text-nowrap">{{ item.quantity }}</td>
+						<td class="text-start text-nowrap">{{ itemMarker(item, itemIndex + 1) }}</td>
+						<td class="text-end text-nowrap">
+							${{ formatCurrency(item.quantity * item.unitPrice) }}
+							<span *ngIf="isRefund">-</span>
+						</td>
+					</tr>
+
+					<tr *ngIf="item.businessFuncCode === 'BUSFNC_PSVCS_W_TIPS'">
+						<td colspan="6" class="text-start text-nowrap ps-2">
+							[By {{ (item.srvdByAssociateText || 'Unknown') }}]
+						</td>
+					</tr>
+
+					<tr *ngIf="item.discountAmount > 0">
+						<td colspan="3" class="text-start text-nowrap ps-2">Concession Discount</td>
+						<td class="text-center text-nowrap"></td>
+						<td class="text-center text-nowrap"></td>
+						<td class="text-end text-nowrap">${{ formatCurrency(item.discountAmount) }}-</td>
+					</tr>
+
+					<tr *ngIf="item.lineItmKatsaCpnAmt > 0">
+						<td colspan="3" class="text-start text-nowrap ps-2">KATUSA Coupon</td>
+						<td class="text-center text-nowrap"></td>
+						<td class="text-center text-nowrap"></td>
+						<td class="text-end text-nowrap">${{ formatCurrency(item.lineItmKatsaCpnAmt) }}-</td>
+					</tr>
+
+					<tr *ngIf="item.couponLineItemDollarAmount > 0">
+						<td colspan="3" class="text-start text-nowrap ps-2">Exchange Coupon</td>
+						<td class="text-center text-nowrap"></td>
+						<td class="text-center text-nowrap"></td>
+						<td class="text-end text-nowrap">${{ formatCurrency(item.couponLineItemDollarAmount) }}-</td>
+					</tr>
+				</ng-container>
+			</ng-container>
+
+			<tr><td colspan="6" class="spacer-row">&nbsp;</td></tr>
+			<tr><td colspan="6" class="spacer-row">&nbsp;</td></tr>
+
+			<tr>
+				<td colspan="3" class="text-start text-nowrap"><strong>Item Total</strong></td>
+				<td class="text-center text-nowrap"><strong>{{ receiptTotals.totalItems }}</strong></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-end text-nowrap"><strong>${{ formatCurrency(receiptTotals.itemTotal) }}<span *ngIf="isRefund">-</span></strong></td>
+			</tr>
+
+			<tr>
+				<td colspan="3" class="text-start text-nowrap">Sales Tax</td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-end text-nowrap">${{ formatCurrency(receiptTotals.totalSalesTax + ticket.shipHandlingTaxAmt) }}<span *ngIf="isRefund">-</span></td>
+			</tr>
+
+			<tr *ngIf="receiptTotals.totalEnvTax !== 0">
+				<td colspan="3" class="text-start text-nowrap">Environmental Tax</td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-end text-nowrap">${{ formatCurrency(receiptTotals.totalEnvTax) }}<span *ngIf="isRefund">-</span></td>
+			</tr>
+
+			<tr *ngIf="ticket.shipHandling > 0">
+				<td colspan="3" class="text-start text-nowrap"><strong>Shipping &amp; Handling</strong></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-end text-nowrap"><strong>${{ formatCurrency(ticket.shipHandling) }}<span *ngIf="isRefund">-</span></strong></td>
+			</tr>
+
+			<tr>
+				<td colspan="3" class="text-start text-nowrap"><strong>Grand Total</strong></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-end text-nowrap"><strong>${{ formatCurrency(receiptTotals.grandTotal) }}<span *ngIf="isRefund">-</span></strong></td>
+			</tr>
+
+			<tr *ngIf="busFunUID === 9 && !isRefund">
+				<td colspan="3" class="text-start text-nowrap"><strong>Tip</strong></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-end text-nowrap"><strong>${{ formatCurrency(receiptTotals.tipAmount) }}</strong></td>
+			</tr>
+
+			<tr *ngIf="busFunUID === 9 && !isRefund">
+				<td colspan="3" class="text-start text-nowrap"><strong>Grand Total</strong></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-end text-nowrap"><strong>${{ formatCurrency(receiptTotals.grandTotal + receiptTotals.tipAmount) }}</strong></td>
+			</tr>
+
+			<tr><td colspan="6" class="spacer-row">&nbsp;</td></tr>
+
+			<ng-container *ngFor="let tender of ticket.tenders">
+				<tr>
+					<td colspan="3" class="text-start text-nowrap pt-2"><strong>{{ displayTenderName(tender) }}</strong></td>
+					<td class="text-center text-nowrap"></td>
+					<td class="text-start text-nowrap"></td>
+					<td class="text-end text-nowrap pt-2">
+						<strong>
+							${{ formatCurrency(tender.tenderAmount + tender.changeDue) }}
+							<span *ngIf="isRefund">-</span>
+						</strong>
+					</td>
+				</tr>
+
+				<tr *ngIf="tender.changeDue > 0 || tender.fcChangeDue > 0">
+					<td colspan="3" class="text-start text-nowrap pt-2"><strong>Change Due (Cash)</strong></td>
+					<td class="text-center text-nowrap"></td>
+					<td class="text-center text-nowrap"></td>
+					<td class="text-end text-nowrap pt-2"><strong>${{ formatCurrency(tender.changeDue) }}</strong></td>
+				</tr>
+
+				<tr *ngIf="tender.cardEndingNbr.trim().length > 0">
+					<td colspan="6" class="text-start text-nowrap">
+						<ng-container *ngIf="tender.tenderTypeCode === 'XC' || tender.tenderTypeCode === 'XR'; else basicMaskedCard">
+							Account:&nbsp;{{ tender.exchCardType }}&nbsp;{{ formatMaskedCard(tender.cardEndingNbr) }}
+						</ng-container>
+						<ng-template #basicMaskedCard>{{ formatMaskedCard(tender.cardEndingNbr) }}</ng-template>
+					</td>
+				</tr>
+
+				<tr *ngIf="tender.authNbr.trim().length > 0">
+					<td colspan="6" class="text-start text-nowrap">Authorization Code:&nbsp;{{ tender.authNbr }}</td>
+				</tr>
+
+				<tr *ngIf="tender.milstarPlanNum.trim().length > 0 && (tender.tenderTypeCode === 'MS' || tender.tenderTypeCode === 'MR')">
+					<td colspan="6" class="text-start text-nowrap">Promo Plan #&nbsp;{{ tender.milstarPlanNum }}</td>
+				</tr>
+			</ng-container>
+
+			<tr><td colspan="6" class="spacer-row">&nbsp;</td></tr>
+
+			<tr *ngIf="!isRefund && ticket.balanceDue > 0">
+				<td colspan="3" class="text-start text-nowrap"><strong>Amount Due</strong></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-end text-nowrap"><strong>${{ formatCurrency(ticket.balanceDue) }}</strong></td>
+			</tr>
+
+			<tr *ngIf="!isRefund && receiptTotals.totalSavings > 0">
+				<td colspan="3" class="text-start text-nowrap pb-1"><strong>Total Savings</strong></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-end text-nowrap"><strong>${{ formatCurrency(receiptTotals.totalSavings) }}</strong></td>
+			</tr>
+
+			<tr *ngIf="!isRefund && ticket.ticketInstructions.trim().length > 0 && busFunUID !== 4">
+				<td colspan="6" class="text-start pt-1">
+					<strong>Special Instructions:</strong><br />
+					{{ ticket.ticketInstructions }}
+				</td>
+			</tr>
+
+			<ng-container *ngIf="!isRefund && busFunUID !== 4 && getInstructionLines().length > 0">
+				<tr>
+					<td colspan="6" class="text-start pb-1"><strong>Special Instructions:</strong></td>
+				</tr>
+				<tr *ngFor="let instructionLine of getInstructionLines()">
+					<td colspan="6" class="text-start text-nowrap">{{ instructionLine }}</td>
+				</tr>
+			</ng-container>
+
+			<tr><td colspan="6" class="spacer-row">&nbsp;</td></tr>
+
+			<tr>
+				<td colspan="6" id="dispDate" class="text-center text-nowrap pb-2">
+					{{ ticket.transactionDate | date: 'dd MMM yyyy HH:mm' }}
+				</td>
+			</tr>
+
+			<tr>
+				<td colspan="6" class="text-center text-nowrap pb-2">
+					<strong>
+						TICKET #&nbsp;&nbsp;<span class="ticket-number">{{ ticket.ticketNumber }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+					</strong>
+					{{ numOfPiecesLabel }}
+				</td>
+			</tr>
+
+			<tr *ngIf="!isRefund && busFunUID !== 4 && ticket.ticketStatus.readyByDate">
+				<td colspan="6" class="text-center text-nowrap pb-1">
+					<strong>Ready By:&nbsp;</strong>{{ ticket.ticketStatus.readyByDate | date: 'dd MMM yyyy HH:mm' }}
+				</td>
+			</tr>
+
+			<tr *ngIf="!isRefund && !hasCancelledTicket && busFunUID > 4 && ticket.ticketStatus.payByDueDate">
+				<td colspan="6" class="text-center text-nowrap pb-1">
+					<strong>Payment Due By:&nbsp;</strong>{{ ticket.ticketStatus.payByDueDate | date: 'dd MMM yyyy' }}
+				</td>
+			</tr>
+
+			<ng-container *ngIf="!isRefund && busFunUID !== 4 && busFunUID !== 9 && busFunUID !== 10">
+				<tr>
+					<td colspan="6" class="text-start pt-3 text-nowrap"><strong>Property Clause:</strong></td>
+				</tr>
+				<tr>
+					<td colspan="6" class="text-start text-nowrap">
+						If the property identified on this order is not picked up within<br />
+						{{ ticket.prprtyClausDays }} days after the item is ready, the customer donated and<br />
+						transfers all rights, title, and interest in the property to the<br />
+						Army and Air Force Exchange Service.
+					</td>
+				</tr>
+			</ng-container>
+
+			<tr>
+				<td colspan="6" class="text-center text-nowrap pb-3 dashed-line">
+					- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+				</td>
+			</tr>
+
+			<ng-container *ngIf="isRefund">
+				<tr>
+					<td colspan="6" class="text-start text-nowrap pt-3 refund-heading"><strong>Refund Reason:</strong></td>
+				</tr>
+				<tr>
+					<td colspan="6" class="text-start text-nowrap refund-detail">{{ ticket.refundReasonText || 'Reason Not Captured' }}</td>
+				</tr>
+			</ng-container>
+
+			<ng-container *ngIf="hasCancelledTicket">
+				<tr>
+					<td colspan="6" class="text-start text-nowrap pt-3 refund-heading"><strong>Cancellation Reason:</strong></td>
+				</tr>
+				<tr>
+					<td colspan="6" class="text-start text-nowrap refund-detail">{{ ticket.ticketCancel.otherReason || 'Reason Not Captured' }}</td>
+				</tr>
+			</ng-container>
+
+			<tr *ngIf="!hasSignatureImage && signatureStatement.trim().length > 0">
+				<td colspan="6" class="text-center text-nowrap pt-3 pb-1"><strong>{{ signatureStatement }}</strong></td>
+			</tr>
+
+			<tr *ngIf="hasSignatureImage">
+				<td colspan="6" class="text-start text-nowrap pt-3 refund-heading">
+					<strong>Customer Signature:</strong><br />
+					<img id="imgSign" [src]="signatureImageSrc" alt="Customer Signature" class="receipt-signature" />
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

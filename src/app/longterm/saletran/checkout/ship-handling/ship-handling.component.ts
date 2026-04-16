@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PosCurrencyDirective } from '../../../../directives/pos-currency.directive';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { PosApiService } from '../../services/pos-api-service';
+import { PosApiService } from '../../../services/pos-api-service';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Store } from '@ngrx/store';

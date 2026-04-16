@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { LTC_TransactionDetails } from 'src/app/longterm/models/ticket.list';
-import { PosApiService } from 'src/app/longterm/saletran/services/pos-api-service';
+import { PosApiService } from 'src/app/longterm/services/pos-api-service';
 
 @Component({
     selector: 'app-tran-details',

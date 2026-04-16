@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
+import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
 import { TicketTender } from 'src/app/models/ticket.tender';
 import { catchError, concatMap, delay, finalize, forkJoin, from, map, Observable, of, switchMap, tap, toArray } from 'rxjs';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';

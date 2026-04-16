@@ -13,7 +13,6 @@ import { SharedSubjectModule } from './shared-subject/shared-subject.module';
 import { NgbModalModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import { environment } from 'src/environments/environment';
 import { EffectsModule } from '@ngrx/effects';
 import { LoginAuthEffects } from './authstate/auth.effects';
 import { GetAuthLoginReducer } from './authstate/auth.reducer';
@@ -65,7 +64,7 @@ import { LongTermModule } from './longterm/long-term.module';
     StoreModule.forRoot({}),
     StoreDevtoolsModule.instrument({
         maxAge: 25,
-        logOnly: environment.production,
+        logOnly: true,
         autoPause: true,
         connectInZone: true
     }),

@@ -4,7 +4,7 @@ import { select, Store } from '@ngrx/store';
 import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
 import { getBalanceDue, getTktObjSelector, getTicketTendersSelector, getBalanceDueFC, getTicketTotalToPayUSD, getTicketTotalToPayFC } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
-import { PosApiService } from '../../services/pos-api-service';
+import { PosApiService } from '../../../services/pos-api-service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
@@ -15,7 +15,7 @@ import { TipsModalDlgComponent } from '../../checkout/tips-modal-dlg/tips-modal-
 import { updateCheckoutTotals, addTender, saveTicketForGuestCheck, saveTicketForGuestCheckSuccess, saveTicketForGuestCheckFailed, removeTndrWithSaveCode, saveTenderObj, saveCompleteTicketSplit, markTendersComplete, markTicketComplete, saveTenderObjSuccess, saveTenderObjFailed, resetTktObj } from '../../store/ticketstore/ticket.action';
 import { AlertModalComponent } from 'src/app/alert-modal/alert-modal.component';
 import { UtilService } from 'src/app/services/util.service';
-import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
+import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
 import { TenderUtil } from '../tender-util';
 import { RedeemGiftCardTenders } from '../gc-redeem-services/redeem-gift-card-tenders';
 import { ToastService } from 'src/app/services/toast.service';
