@@ -225,12 +225,12 @@ export class SalesTranRptPageComponent implements OnInit {
     //Filter data based on Sale or Refund transactions
     if (this.transType === 'A') {
       this.rptSummary = this.saleTranReportData.summary.heading;
-      this.rptDetail = this.saleTranReportData.summary.details;
+      this.rptDetail = this.saleTranReportData.summary.details.sort((a, b) => b.ticketNumber - a.ticketNumber);
     } else {
       const isRefund = this.transType === 'R';
       let tenderTypes = this._logonDataSvc.getTenderTypes().types.filter(t => t.isRefundType === isRefund);
       this.rptSummary = this.saleTranReportData.summary.heading.filter(summary => tenderTypes.some(t => t.tenderTypeCode === summary.tenderTypeCode));
-      this.rptDetail = this.saleTranReportData.summary.details.filter(detail => tenderTypes.some(t => t.tenderTypeCode === detail.tenderTypeCode));
+      this.rptDetail = this.saleTranReportData.summary.details.filter(detail => tenderTypes.some(t => t.tenderTypeCode === detail.tenderTypeCode)).sort((a, b) => b.ticketNumber - a.ticketNumber);
     }
     this.RenderSummaryReport();
   }
