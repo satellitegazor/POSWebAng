@@ -98,9 +98,9 @@ export class PosApiService {
             { headers: this.headerObjs });
     }
 
-    public getLTCStoreLocation(guid: string, locationId: number, uid: string): Observable<LTC_StoreLocation_Result> {
+    public getLTCStoreLocation(locationId: number, uid: string): Observable<LTC_StoreLocation_Result> {
         return this.httpClient.get<LTC_StoreLocation_Result>(
-            GlobalConstants.CPOS_SVCS_URL + '/ltc/GetLTCStoreLocation?guid=' + encodeURIComponent(guid)
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/GetLTCStoreLocation?guid=' + encodeURIComponent(GlobalConstants.GET_GUID)
                 + '&locationId=' + locationId.toString()
                 + '&uid=' + encodeURIComponent(uid),
             { headers: this.headerObjs }

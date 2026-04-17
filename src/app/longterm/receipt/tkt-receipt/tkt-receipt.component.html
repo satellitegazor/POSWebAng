@@ -6,24 +6,29 @@
 		<tbody>
 			<tr>
 				<td colspan="6" class="text-center text-nowrap receipt-title">
-					<strong>{{ ticket.location.StoreName }}</strong>
+					<strong>{{ ticket.location.storeName }}</strong>
 				</td>
 			</tr>
 			<tr>
-				<td colspan="6" class="text-center text-nowrap receipt-subtitle">{{ ticket.location.FacilityNumber }}</td>
+				<td colspan="6" class="text-center text-nowrap receipt-subtitle">{{ ticket.location.facilityNumber }}</td>
 			</tr>
 
 			<tr>
 				<td colspan="6" class="text-center text-nowrap">
-					<ng-container *ngFor="let addrLine of getAddressLines()">
-						{{ addrLine }}<br />
-					</ng-container>
-					<span id="spnAddrCtyStZip">{{ getCityStateZip() }}</span><br />
-					<span id="spnVendPhone">{{ ticket.location.PhoneNumber }}</span><br />
+					
+                        <ng-container *ngIf="ticket.location.addressLine1 != null">
+                            {{ ticket.location.addressLine1 }}<br />
+                        </ng-container>
+						<ng-container *ngIf="ticket.location.addressLine2 != null">
+							{{ ticket.location.addressLine2 }}<br />
+						</ng-container>
+					
+					<span id="spnAddrCtyStZip">{{ ticket.location.city }}, {{ ticket.location.stateProvice }} {{ ticket.location.postalCode }}</span><br />
+					<span id="spnVendPhone">{{ ticket.location.phoneNumber }}</span><br />
 				</td>
 			</tr>
 
-			<tr *ngFor="let hrs of ticket.hoursOfOperations">
+			<tr *ngFor="let hrs of ticket.location.hoursOfOperations">
 				<td colspan="6" class="text-center text-nowrap">{{ getHoursText(hrs) }}</td>
 			</tr>
 
@@ -32,7 +37,7 @@
 			<tr>
 				<td colspan="6" class="text-center text-nowrap pb-2">
 					<strong *ngIf="busFunUID < 4">
-						TICKET #&nbsp;&nbsp;<span class="ticket-number">{{ ticket.ticketNumber }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+						TICKET #&nbsp;&nbsp;{{ ticket.ticketNumber }}&nbsp;&nbsp;&nbsp;&nbsp;
 					</strong>
 					{{ numOfPiecesLabel }}
 				</td>

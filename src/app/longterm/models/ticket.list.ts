@@ -3,6 +3,7 @@ import { MobileBase } from "src/app/models/mobile.base";
 import { LTC_Customer } from "src/app/models/customer";
 import { TicketTender } from "src/app/models/ticket.tender";
 import { SalesTransactionCheckoutItem } from "./salesTransactionCheckoutItem";
+import { LTC_HoursOfOperation, LTC_StoreLocation } from "./store.location";
 
 export class TicketList {
     public ticketNum: string = '';
@@ -432,63 +433,63 @@ class LTC_Department {
     }
 }
 
-class LTC_HoursOfOperation {
-    HrsOfOperationID: number = 0;
-    LocationUID: number = 0;
-    DayFrom: string = '';
-    DayTo: string = '';
-    TimeFrom: string = '';
-    TimeTo: string = '';
-    DisplayOrder: string = '';
-    HasUpdates: boolean = false;;
+// class LTC_HoursOfOperation {
+//     HrsOfOperationID: number = 0;
+//     LocationUID: number = 0;
+//     DayFrom: string = '';
+//     DayTo: string = '';
+//     TimeFrom: string = '';
+//     TimeTo: string = '';
+//     DisplayOrder: string = '';
+//     HasUpdates: boolean = false;;
 
-    constructor() {
-        this.HasUpdates = false;
-    }
-}
+//     constructor() {
+//         this.HasUpdates = false;
+//     }
+// }
 
 
-class LTC_StoreLocation {
-    LocationUID: number = 0;
-    ContractUID: number = 0;
-    VendorNumber: string= '';
-    FacilityNumber: string= '';
-    Facility: FacilityModel = {} as FacilityModel;
-    StoreName: string= '';
-    LocationName: string= '';
-    AddressLine1: string= '';
-    AddressLine2: string= '';
-    City: string= '';
-    StateProvice: string= '';
-    PostalCode: string= '';
-    PhoneNumber: string= '';
-    LocCountryDialCode: string= '';
-    TerminalID: string= '';
-    RegionUID: string= '';
-    LocationTimeStamp: Date = {} as Date;
-    Facilities: LTC_Facility[] = [];
-    Associates: LTC_Individual[] = [];
-    HoursOfOperations: LTC_HoursOfOperation[] = [];
-    CCDevice: string= '';
-    CCDeviceDesc: string= '';
-    SuiteNbr: string= '';
-    HasUpdates: boolean = false;
-    ExchCouponsAfterTax: boolean | null = false;
-    VendCouponsAfterTax: boolean | null = false;
-    AllowTaxExemption: boolean | null = false;
-    OpenCashDrwForTips: boolean | null = false;
-    PINReqdForSalesTran: boolean = false;
-    BusinessModel: string= '';
-    DfltCurrCode: string= '';
-    DfltCurrSymbol: string= '';
-    CliTimeVar: number = 0;
-    StoreClosureDate: Date | null = {} as Date;
-    LocTranCount: number = 0;
-    EagleCashOptn: boolean | null = false;
-    UseShipHndlng: boolean = false;
+// class LTC_StoreLocation {
+//     LocationUID: number = 0;
+//     ContractUID: number = 0;
+//     VendorNumber: string= '';
+//     FacilityNumber: string= '';
+//     Facility: FacilityModel = {} as FacilityModel;
+//     StoreName: string= '';
+//     LocationName: string= '';
+//     AddressLine1: string= '';
+//     AddressLine2: string= '';
+//     City: string= '';
+//     StateProvice: string= '';
+//     PostalCode: string= '';
+//     PhoneNumber: string= '';
+//     LocCountryDialCode: string= '';
+//     TerminalID: string= '';
+//     RegionUID: string= '';
+//     LocationTimeStamp: Date = {} as Date;
+//     Facilities: LTC_Facility[] = [];
+//     Associates: LTC_Individual[] = [];
+//     HoursOfOperations: LTC_HoursOfOperation[] = [];
+//     CCDevice: string= '';
+//     CCDeviceDesc: string= '';
+//     SuiteNbr: string= '';
+//     HasUpdates: boolean = false;
+//     ExchCouponsAfterTax: boolean | null = false;
+//     VendCouponsAfterTax: boolean | null = false;
+//     AllowTaxExemption: boolean | null = false;
+//     OpenCashDrwForTips: boolean | null = false;
+//     PINReqdForSalesTran: boolean = false;
+//     BusinessModel: string= '';
+//     DfltCurrCode: string= '';
+//     DfltCurrSymbol: string= '';
+//     CliTimeVar: number = 0;
+//     StoreClosureDate: Date | null = {} as Date;
+//     LocTranCount: number = 0;
+//     EagleCashOptn: boolean | null = false;
+//     UseShipHndlng: boolean = false;
 
-    constructor() {
-        this.HasUpdates = false;
-    }
-}
+//     constructor() {
+//         this.HasUpdates = false;
+//     }
+// }
 

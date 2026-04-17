@@ -2,7 +2,7 @@
   <nav class="navbar navbar-expand-md navbar-light bg-light">
     <div class="container-fluid py-2">
       <div class="row align-items-center w-100 g-3" *ngIf="isUserLoggedIn">
-        <div class="divMainMenu border rounded col-12 col-md-2 bg-white">
+        <div class="divMainMenu border rounded col-12 col-md-3 bg-white">
           <div class="main-menu-grid w-100 p-2">
             <div class="main-menu-icon-cell" (click)="gotoMainMenu()" style="cursor: pointer;">
               <svg class="btnGotoMainMenu text-primary" viewBox="0 0 24 24" role="button" tabindex="0" aria-label="Go To Main Menu" style="height: 36px; width: 36px; cursor: pointer;" >
@@ -16,7 +16,7 @@
         </div>
 
 
-        <div class="CenterHeading text-center d-flex flex-column justify-content-center col-12 col-md-8">Point of Sale
+        <div class="CenterHeading text-center d-flex flex-column justify-content-center col-12 col-md-7">Point of Sale
           <div class="small navbar-data-secondary">{{TicketNumber > 0 ? ('Ticket# ' + TicketNumber) : ''}}</div>
         </div>
 

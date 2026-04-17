@@ -8,6 +8,7 @@ import {
   LTC_Ticket
 } from '../../models/ticket.list';
 import { PosApiService } from '../../services/pos-api-service';
+import { LTC_HoursOfOperation } from '../../models/store.location';
 
 type TicketItem = LTC_Ticket['items'][number];
 
@@ -71,10 +72,60 @@ export class TktReceiptComponent implements OnInit {
           0
         )
         .subscribe((data: LTC_SingleTransactionResultsModel) => {
-          this.ticket = data.ticket;
-          this.signature = data.SignatureData;
+          this.ticket = this.ensureTicketDefaults(this.toCamelCaseKeys<LTC_Ticket>(data.ticket));
+          this.signature = this.toCamelCaseKeys<LTC_SingleTransactionResultsModel['SignatureData']>(
+            data.SignatureData
+          );
+
+          this.posApiService.getLTCStoreLocation(data.ticket.locationUID, String(data.ticket.individualLocationUID))
+            .subscribe((storeLocation) => {
+              const normalizedLocation = this.toCamelCaseKeys<LTC_Ticket['location']>(storeLocation.location);
+              this.ticket.location = normalizedLocation ?? this.ticket.location;
+            });
         });
     });
+  }
+
+  private ensureTicketDefaults(ticket: LTC_Ticket): LTC_Ticket {
+    const safeTicket = (ticket ?? {}) as LTC_Ticket;
+
+    safeTicket.location = (safeTicket.location ?? {}) as LTC_Ticket['location'];
+    safeTicket.customer = (safeTicket.customer ?? {}) as LTC_Ticket['customer'];
+    safeTicket.ticketCancel = (safeTicket.ticketCancel ?? {}) as LTC_Ticket['ticketCancel'];
+    safeTicket.ticketStatus = (safeTicket.ticketStatus ?? {}) as LTC_Ticket['ticketStatus'];
+    safeTicket.items = safeTicket.items ?? [];
+    safeTicket.tenders = safeTicket.tenders ?? [];
+
+    safeTicket.location.hoursOfOperations = safeTicket.location.hoursOfOperations ?? [];
+
+    return safeTicket;
+  }
+
+  private toCamelCaseKeys<T>(value: unknown): T {
+    if (Array.isArray(value)) {
+      return value.map((item) => this.toCamelCaseKeys(item)) as T;
+    }
+
+    if (value instanceof Date || value === null || value === undefined || typeof value !== 'object') {
+      return value as T;
+    }
+
+    const result: Record<string, unknown> = {};
+
+    Object.entries(value as Record<string, unknown>).forEach(([key, nestedValue]) => {
+      const normalizedKey = this.camelKey(key);
+      result[normalizedKey] = this.toCamelCaseKeys(nestedValue);
+    });
+
+    return result as T;
+  }
+
+  private camelKey(key: string): string {
+    if (!key) {
+      return key;
+    }
+
+    return key.charAt(0).toLowerCase() + key.slice(1);
   }
 
   get hasTicketData(): boolean {
@@ -185,8 +236,9 @@ export class TktReceiptComponent implements OnInit {
   }
 
   getAddressLines(): string[] {
-    const address1 = this.ticket.location?.AddressLine1 ?? '';
-    const suite = this.ticket.location?.SuiteNbr?.trim() ?? '';
+
+    const address1 = this.ticket.location?.addressLine1 ?? '';
+    const suite = this.ticket.location?.suiteNbr?.trim() ?? '';
     const fullAddress = `${address1}${suite ? `, Suite: ${suite},` : ''}`;
     const lines: string[] = [];
 
@@ -204,22 +256,22 @@ export class TktReceiptComponent implements OnInit {
   }
 
   getCityStateZip(): string {
-    const city = this.ticket.location?.City ?? '';
-    const state = this.ticket.location?.StateProvice ?? '';
-    const postalCode = this.ticket.location?.PostalCode ?? '';
+    const city = this.ticket.location?.city ?? '';
+    const state = this.ticket.location?.stateProvice ?? '';
+    const postalCode = this.ticket.location?.postalCode ?? '';
     return [city, state, postalCode].filter(Boolean).join(', ');
   }
 
-  getHoursText(hours: LTC_Ticket['hoursOfOperations'][number]): string {
+  getHoursText(hours: LTC_HoursOfOperation): string {
     if (!hours) {
       return '';
     }
 
-    const dayFrom = (hours.DayFrom ?? '').substring(0, 3);
-    const dayTo = hours.DayTo ? ` - ${(hours.DayTo ?? '').substring(0, 3)}: ` : ': ';
+    const dayFrom = (hours.dayFrom ?? '').substring(0, 3);
+    const dayTo = hours.dayTo ? ` - ${(hours.dayTo ?? '').substring(0, 3)}: ` : ': ';
     const timeRange =
-      hours.TimeFrom !== 'ByAptOnly'
-        ? `${hours.TimeFrom ?? ''} - ${hours.TimeTo ?? ''}`
+      hours.timeFrom !== 'ByAptOnly'
+        ? `${hours.timeFrom ?? ''} - ${hours.timeTo ?? ''}`
         : 'By Appointment Only';
 
     return `${dayFrom}${dayTo}${timeRange}`;
@@ -264,23 +316,14 @@ export class TktReceiptComponent implements OnInit {
   }
 
   displayTenderName(tender: TicketTender): string {
-    if (tender.tenderTypeCode === 'XC') {
-      return tender.exchCardType || tender.tenderTypeDesc;
-    }
 
-    if (tender.tenderTypeCode === 'CC') {
-      return 'Credit Card';
-    }
+    let tenderTypes = this.logonDataService.getTenderTypes();
 
-    if (tender.tenderTypeCode === 'XR') {
-      return `${tender.exchCardType || 'Exchange Card'} Refund`;
+    const tenderType = tenderTypes.types.find(tt => tt.tenderTypeCode === tender.tenderTypeCode);
+    if (tenderType) {
+      return tenderType.tenderTypeDesc;
     }
-
-    if (tender.tenderTypeCode === 'RC') {
-      return 'Credit Card Refund';
-    }
-
-    return tender.tenderTypeDesc;
+    return '';
   }
 
   formatCurrency(value: number): string {
