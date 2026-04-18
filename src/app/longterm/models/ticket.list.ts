@@ -1,7 +1,7 @@
 import { RouterEvent } from "@angular/router";
-import { MobileBase } from "src/app/models/mobile.base";
-import { LTC_Customer } from "src/app/models/customer";
-import { TicketTender } from "src/app/models/ticket.tender";
+import { MobileBase } from "../../models/mobile.base";
+import { LTC_Customer } from "../../models/customer";
+import { TicketTender } from "../../models/ticket.tender";
 import { SalesTransactionCheckoutItem } from "./salesTransactionCheckoutItem";
 import { LTC_HoursOfOperation, LTC_StoreLocation } from "./store.location";
 

@@ -10,19 +10,20 @@ import { LogonDataService } from '../../global/logon-data-service.service';
 import { LTC_CustomerLookupResultsModel } from '../../models/customer';
 import { LocationConfigModel } from '../models/location-config';
 import { LTC_LocationAssociatesResultsModel } from '../models/location.associates';
-import { SaveTicketResultsModel, TicketSplit } from 'src/app/models/ticket.split';
-import { DailyExchRateMdl } from 'src/app/models/exchange.rate';
+import { SaveTicketResultsModel, TicketSplit } from '../../models/ticket.split';
+import { DailyExchRateMdl } from '../../models/exchange.rate'
 import { TenderTypeModel } from '../models/tender.type';
 import { LTC_SingleTransactionResultsModel, LTC_Ticket, LTC_TransactionDetailsModel, SingleTransactionId, TicketLookupResult } from '../models/ticket.list';
-import { TicketTender,  SaveTenderResult, SaveTenderResultModel } from 'src/app/models/ticket.tender';
-import { ExchCardTndr, SaveExchCardTndrResult, SaveExchCardTndrResultModel } from 'src/app/models/exch.card.tndr';
+import { TicketTender,  SaveTenderResult, SaveTenderResultModel } from '../../models/ticket.tender';
+import { ExchCardTndr, SaveExchCardTndrResult, SaveExchCardTndrResultModel } from '../../models/exch.card.tndr';
 import { LTC_SaveSalesItemModel, LTC_SaveSalesItemModelParameters } from '../models/long-term-sale-item';
-import { MobileBase } from 'src/app/models/mobile.base';
-import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
+import { MobileBase } from '../../models/mobile.base';
+import { AssociateSaleTips } from '../../models/associate.sale.tips';
 import { LoadTicketStatLocRequest, LoadTicketStatLocResultModel } from '../models/ticket.status.location.models';
-import { ContractSummaryReport } from 'src/app/models/sales.tran.report.models';
-import { VendorContractSummaryResultsModel } from 'src/app/models/saletran.report.model';
+import { ContractSummaryReport } from '../../models/sales.tran.report.models';
+import { VendorContractSummaryResultsModel } from '../../models/saletran.report.model';
 import { LTC_StoreLocation_Result } from '../models/store.location';
+import { SettlementReportResultModel } from '../reports/settlement/models';
 
 
 @Injectable({
@@ -214,6 +215,29 @@ export class PosApiService {
                 + '&uid=' + uid
                 + '&DBVal=' + DBVal.toString()
                 + '&FrgnCurr=' + FrgnCurr,
+            { headers: this.headerObjs }
+        );
+    }
+
+    public getSettlementReport(
+        cid: number,
+        month: string,
+        uid: string,
+        lid: number = 0,
+        showPmntDueDate: string = '',
+        DBVal: number = 0,
+        CliTimeVar: number = 0,
+        guid: string = GlobalConstants.GET_GUID
+    ): Observable<SettlementReportResultModel> {
+        return this.httpClient.get<SettlementReportResultModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/GetSettlementReport?guid=' + encodeURIComponent(guid)
+                + '&cid=' + cid.toString()
+                + '&month=' + encodeURIComponent(month)
+                + '&uid=' + encodeURIComponent(uid)
+                + '&lid=' + lid.toString()
+                + '&showPmntDueDate=' + encodeURIComponent(showPmntDueDate)
+                + '&DBVal=' + DBVal.toString()
+                + '&CliTimeVar=' + CliTimeVar.toString(),
             { headers: this.headerObjs }
         );
     }

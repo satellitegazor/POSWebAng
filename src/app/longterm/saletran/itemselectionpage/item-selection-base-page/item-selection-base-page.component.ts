@@ -17,7 +17,7 @@ import { Observable, Subject } from 'rxjs';
 import { getSaleItemListSelector } from '../../store/saleitemstore/saleitem.selector';
 import { getLocationConfigSelector } from '../../store/locationconfigstore/locationconfig.selector';
 import { getLocationConfigStart, setLocationConfig } from '../../store/locationconfigstore/locationconfig.action';
-import { getAuthLoginSelector } from 'src/app/authstate/auth.selector';
+import { getAuthLoginSelector } from '../../../../authstate/auth.selector';
 import { LocationConfig, LocationIndividual } from '../../../models/location-config';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { addTabSerialToTktObj, initTktObj } from '../../store/ticketstore/ticket.action';
@@ -28,8 +28,8 @@ import { Router } from '@angular/router';
 import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
 import { VerifoneCommStatus } from '../../../models/general-classes';
 import { AddMiscItemDlgComponent } from '../add-misc-item-dlg/add-misc-item-dlg.component';
-import { DailyExchRate } from 'src/app/models/exchange.rate';
-import { UtilService } from 'src/app/services/util.service';
+import { DailyExchRate } from '../../../../models/exchange.rate';
+import { UtilService } from '../../../../services/util.service';
 
 @Component({
     selector: 'app-item-selection-base-page',
@@ -149,15 +149,24 @@ export class ItemSelectionBasePageComponent implements OnInit, OnDestroy {
             this.locationConfig = data.configs[0];
             this.locationIndividuals = data.individuals;
             this._locConfigStore.dispatch(setLocationConfig({ locationConfig: data.configs[0] }));
-            
-        });
 
-        this._cposWebSvc.pinpadHeartbeat("PING").subscribe(data => {
-            if (data.IsSuccess) {
-                pinpadStatus = data;
-                console.log("Pinpad Heartbeat Success: ", pinpadStatus);
-                this._store.dispatch(addTabSerialToTktObj({ tabSerialNum: pinpadStatus.TabMachineName, ipAddress: pinpadStatus.IpAddress }));
+            if(this.locationConfig.rgnCode == "CON") {
+                this._cposWebSvc.getsysinfo("asdf").subscribe((data) => {
+                    if (data.IsSuccess) {
+                        console.log("SysInfo Success: ", data);
+                        this._store.dispatch(addTabSerialToTktObj({ tabSerialNum: data.TabMachineName, ipAddress: data.IPAddress }));
+                    }
+                });
             }
+            else {
+                this._cposWebSvc.pinpadHeartbeat("PING").subscribe(data => {
+                    if (data.IsSuccess) {
+                        pinpadStatus = data;
+                        console.log("Pinpad Heartbeat Success: ", pinpadStatus);
+                        this._store.dispatch(addTabSerialToTktObj({ tabSerialNum: pinpadStatus.TabMachineName, ipAddress: pinpadStatus.IpAddress }));
+                    }
+                });   
+            }         
         });
 
         this._store.select(getCheckoutItemsCount).subscribe(itemCount => {

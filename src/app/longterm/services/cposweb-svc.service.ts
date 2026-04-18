@@ -5,7 +5,7 @@ import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { PinPadResult } from '../saletran/services/models/pinpad-result';
 import { MSRSwipeData } from '../saletran/services/models/msr-swipe-data';
-import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
+import { ExchCardTndr } from '../../models/exch.card.tndr';
 import { SigCapture } from '../saletran/services/models/capture-signature.model';
 import { VerifoneCommStatus } from '../models/general-classes';
 import { AurusGiftCardInquiryResp } from '../saletran/services/models/gift-card-enquiry-response';
@@ -14,7 +14,8 @@ import { VfoneCaptureTran } from '../saletran/services/models/capture-tran.model
 import { MilstarRefundReqData } from '../saletran/services/models/milstar-refund-req-data';
 import { VfoneLastTran } from '../saletran/services/models/vfone-last-tran';
 import { VoidTranInput } from '../saletran/services/models/void-tran-input';
-import { ToastService } from 'src/app/services/toast.service';
+import { ToastService } from '../../services/toast.service';
+import { SysInfoResponse } from '../saletran/services/models/sysinfo-response';
 
 @Injectable({
   providedIn: 'root'
@@ -140,6 +141,26 @@ export class CPOSWebSvcService {
       { headers: this.headerObjs }).pipe(
       catchError(error => this.handleVerifoneCommStatusError(error))
     );
+  }
+
+  getsysinfo(val: string): Observable<SysInfoResponse> {
+    return this.httpClient.get<SysInfoResponse>(
+      this.cposWebSvcUrl + 'sysinfo/getinfo?val=' + encodeURIComponent(val),
+      { headers: this.headerObjs }
+    ).pipe(
+      catchError(error => this.handleSysInfoError(error))
+    );
+  }
+
+  private handleSysInfoError(error: any): Observable<SysInfoResponse> {
+    const { msg, statusCode } = this.getErrorMessage(error);
+    const errorResult = new SysInfoResponse();
+    errorResult.rslt.IsSuccessful = false;
+    errorResult.rslt.ReturnMsg = `Error (${statusCode}): ${msg}`;
+    errorResult.rslt.VersionNum = '';
+    errorResult.IsSuccess = false;
+    errorResult.ResultData = `Error (${statusCode}): ${msg}`;
+    return of(errorResult);
   }
 
   giftCardInquiryPinpad(TranId: number, TndrId: number, IndivId: number, sDisplayMsg: string, manualCardNbr: string): Observable<AurusGiftCardInquiryResp> {

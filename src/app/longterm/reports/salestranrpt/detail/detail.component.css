@@ -1,0 +1,15 @@
+.sort-header {
+	cursor: pointer;
+	user-select: none;
+}
+
+.sort-header:hover {
+	background-color: rgba(0, 0, 0, 0.06);
+}
+
+.sort-indicator {
+	display: inline-block;
+	min-width: 12px;
+	margin-left: 4px;
+	font-size: 11px;
+}

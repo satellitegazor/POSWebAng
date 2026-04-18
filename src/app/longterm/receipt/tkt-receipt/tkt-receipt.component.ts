@@ -1,14 +1,23 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { TicketTender } from 'src/app/models/ticket.tender';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { EMPTY, of } from 'rxjs';
+import { catchError, finalize, map, switchMap } from 'rxjs/operators';
+import { TicketTender } from '../../../models/ticket.tender';
+import { LogonDataService } from '../../../global/logon-data-service.service';
+import { ToastService } from '../../../services/toast.service';
 import {
   LTC_SingleTransactionResultsModel,
   LTC_Ticket
 } from '../../models/ticket.list';
+import {
+  LoadTicketStatLocRequest,
+  TicketStatusLocationData
+} from '../../models/ticket.status.location.models';
 import { PosApiService } from '../../services/pos-api-service';
 import { LTC_HoursOfOperation } from '../../models/store.location';
+import { TicketStatusDlgComponent } from '../../saletran/ticket-status-dlg/ticket-status-dlg.component';
 
 type TicketItem = LTC_Ticket['items'][number];
 
@@ -39,6 +48,7 @@ export class TktReceiptComponent implements OnInit {
   transactionId = 0;
   frmSalesTrnRpt = false;
   src = '';
+  isLoading = true;
   readonly refundTenderTypes = ['XR', 'RC', 'CR', 'MR'];
   public ticket: LTC_Ticket = {} as LTC_Ticket;
   public signature: LTC_SingleTransactionResultsModel['SignatureData'] =
@@ -46,44 +56,82 @@ export class TktReceiptComponent implements OnInit {
 
   constructor(
     private readonly activatedRoute: ActivatedRoute,
+    private readonly router: Router,
+    private readonly modalService: NgbModal,
     private readonly posApiService: PosApiService,
-    private readonly logonDataService: LogonDataService
+    private readonly logonDataService: LogonDataService,
+    private readonly toastService: ToastService
   ) {}
 
   ngOnInit(): void {
-    this.activatedRoute.queryParams.subscribe((params) => {
-      this.transactionId = Number(params['TxnId'] ?? 0);
-      this.frmSalesTrnRpt =
-        String(params['frmSalesTrnRpt'] ?? '').toLowerCase() === 'true';
-      this.src = String(params['src'] ?? '').toUpperCase();
+    this.isLoading = true;
 
-      if (!this.transactionId) {
-        return;
-      }
+    this.activatedRoute.queryParams
+      .pipe(
+        switchMap((params) => {
+          this.transactionId = Number(params['TxnId'] ?? 0);
+          this.frmSalesTrnRpt =
+            String(params['frmSalesTrnRpt'] ?? '').toLowerCase() === 'true';
+          this.src = String(params['src'] ?? '').toUpperCase();
 
-      this.posApiService
-        .getSingleTransaction(
-          this.logonDataService.getLocationConfig().individualUID,
-          this.transactionId,
-          false,
-          0,
-          '',
-          0,
-          0
-        )
-        .subscribe((data: LTC_SingleTransactionResultsModel) => {
-          this.ticket = this.ensureTicketDefaults(this.toCamelCaseKeys<LTC_Ticket>(data.ticket));
-          this.signature = this.toCamelCaseKeys<LTC_SingleTransactionResultsModel['SignatureData']>(
-            data.SignatureData
-          );
+          if (!this.transactionId) {
+            return EMPTY;
+          }
 
-          this.posApiService.getLTCStoreLocation(data.ticket.locationUID, String(data.ticket.individualLocationUID))
-            .subscribe((storeLocation) => {
-              const normalizedLocation = this.toCamelCaseKeys<LTC_Ticket['location']>(storeLocation.location);
-              this.ticket.location = normalizedLocation ?? this.ticket.location;
-            });
-        });
-    });
+          return this.posApiService
+            .getSingleTransaction(
+              this.logonDataService.getLocationConfig().individualUID,
+              this.transactionId,
+              false,
+              0,
+              '',
+              0,
+              0
+            )
+            .pipe(
+              switchMap((data: LTC_SingleTransactionResultsModel) => {
+                const ticket = this.ensureTicketDefaults(
+                  this.toCamelCaseKeys<LTC_Ticket>(data.ticket)
+                );
+                const signature =
+                  this.toCamelCaseKeys<LTC_SingleTransactionResultsModel['SignatureData']>(
+                    data.SignatureData
+                  );
+
+                return this.posApiService
+                  .getLTCStoreLocation(data.ticket.locationUID, String(data.ticket.individualLocationUID))
+                  .pipe(
+                    map((storeLocation) => {
+                      const normalizedLocation = this.toCamelCaseKeys<LTC_Ticket['location']>(
+                        storeLocation.location
+                      );
+
+                      return {
+                        ticket: {
+                          ...ticket,
+                          location: normalizedLocation ?? ticket.location
+                        },
+                        signature
+                      };
+                    }),
+                    catchError(() =>
+                      of({
+                        ticket,
+                        signature
+                      })
+                    )
+                  );
+              }),
+              finalize(() => {
+                this.isLoading = false;
+              })
+            );
+        })
+      )
+      .subscribe(({ ticket, signature }) => {
+        this.ticket = ticket;
+        this.signature = signature;
+      });
   }
 
   private ensureTicketDefaults(ticket: LTC_Ticket): LTC_Ticket {
@@ -319,7 +367,7 @@ export class TktReceiptComponent implements OnInit {
 
     let tenderTypes = this.logonDataService.getTenderTypes();
 
-    const tenderType = tenderTypes.types.find(tt => tt.tenderTypeCode === tender.tenderTypeCode);
+    const tenderType = tenderTypes.types.find((tt) => tt.tenderTypeCode === tender.tenderTypeCode);
     if (tenderType) {
       return tenderType.tenderTypeDesc;
     }
@@ -339,6 +387,123 @@ export class TktReceiptComponent implements OnInit {
     }
 
     return `************${cardEndingNbr}`;
+  }
+
+  btnPrintReceiptClick(event: Event): void {
+    event.preventDefault();
+
+    if (!this.hasTicketData) {
+      this.toastService.warning('Receipt is not ready to print yet.');
+      return;
+    }
+
+    window.print();
+  }
+
+  btnEReceiptClick(event: Event): void {
+    event.preventDefault();
+
+    if (!this.hasTicketData) {
+      this.toastService.warning('Receipt data is not available yet.');
+      return;
+    }
+
+    const defaultEmail = (this.ticket.customer as any)?.cEmailAddress?.trim()
+      || this.logonDataService.getLocationConfig().assocEmail?.trim()
+      || '';
+    const emailAddress = window.prompt('Enter email address for the e-receipt.', defaultEmail);
+
+    if (emailAddress === null) {
+      return;
+    }
+
+    const normalizedEmail = emailAddress.trim();
+    if (!normalizedEmail) {
+      this.toastService.warning('Email address is required to send an e-receipt.');
+      return;
+    }
+
+    const individualUid = String(this.logonDataService.getLocationConfig().individualUID ?? '');
+    this.posApiService.sendEmail(individualUid, {
+      EmailAddress: normalizedEmail,
+      Subject: `Receipt ${this.ticket.ticketNumber || this.ticket.transactionID}`,
+      EmailContent: this.buildReceiptEmailContent()
+    }).subscribe({
+      next: (result) => {
+        if (result?.success) {
+          this.toastService.success('E-receipt sent successfully.');
+          return;
+        }
+
+        this.toastService.error(result?.returnMsg || 'Failed to send e-receipt.');
+      },
+      error: () => {
+        this.toastService.error('Failed to send e-receipt.');
+      }
+    });
+  }
+
+  btnTicketStatusClick(event: Event): void {
+    event.preventDefault();
+
+    if (!this.hasTicketData) {
+      this.toastService.warning('Ticket status is unavailable until the receipt loads.');
+      return;
+    }
+
+    const request = new LoadTicketStatLocRequest();
+    request.locationId = Number(this.ticket.locationUID ?? this.logonDataService.getLocationId() ?? 0);
+    request.tranId = Number(this.ticket.transactionID ?? this.transactionId ?? 0);
+
+    const userId = Number(this.logonDataService.getLocationConfig().individualUID ?? 0);
+    this.posApiService.loadTicketStatLoc(userId, request).subscribe({
+      next: (result) => {
+        if (!result?.results?.success || !result.tickets?.length) {
+          this.toastService.warning(result?.results?.returnMsg || 'No ticket status data found.');
+          return;
+        }
+
+        const modalRef = this.modalService.open(TicketStatusDlgComponent, {
+          backdrop: 'static',
+          keyboard: false
+        });
+        modalRef.componentInstance.title = 'Ticket Status';
+        modalRef.componentInstance.ticketStatus = Object.assign(new TicketStatusLocationData(), result.tickets[0]);
+        modalRef.componentInstance.ticketStatuses = result.ticketStatuses?.length
+          ? result.ticketStatuses
+          : modalRef.componentInstance.ticketStatuses;
+        modalRef.componentInstance.rackLocations = result.rackLocations ?? [];
+        modalRef.componentInstance.showBalanceFields = (result.tickets[0].balanceDue ?? 0) > 0;
+        modalRef.result.catch(() => undefined);
+      },
+      error: () => {
+        this.toastService.error('Failed to load ticket status.');
+      }
+    });
+  }
+
+  btnSalesTranReportClick(event: Event): void {
+    event.preventDefault();
+    this.router.navigate(['/rptsalestran']);
+  }
+
+  btnSalesTranClick(event: Event): void {
+    event.preventDefault();
+    this.router.navigate(['/salestran']);
+  }
+
+  private buildReceiptEmailContent(): string {
+    const transactionDate = this.ticket.transactionDate
+      ? new Date(this.ticket.transactionDate).toLocaleString()
+      : '';
+
+    return [
+      `${this.ticket.location?.storeName ?? 'Store Receipt'}`,
+      `Ticket #: ${this.ticket.ticketNumber ?? ''}`,
+      `Transaction #: ${this.ticket.transactionID ?? ''}`,
+      transactionDate ? `Date: ${transactionDate}` : '',
+      `Grand Total: $${this.formatCurrency(this.receiptTotals.grandTotal + (this.busFunUID === 9 && !this.isRefund ? this.receiptTotals.tipAmount : 0))}`
+    ].filter(Boolean).join('\n');
   }
 
 }

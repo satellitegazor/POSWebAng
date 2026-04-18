@@ -5,21 +5,21 @@ import { AbbrLocationsModel, VLogonModel } from '../models/vlogon.model';
 import { Router } from "@angular/router";
 import { LogonDataService } from '../../global/logon-data-service.service';
 import { LocalStorageService } from '../../global/local-storage.service';
-import { PosApiService } from 'src/app/longterm/services/pos-api-service';
-import { AlertService } from 'src/app/alertmsg/alert-message/alert-message.service';
-import { AlertOptions } from 'src/app/alertmsg/alert-message/alert-message.model';
-import { LocationConfigState } from 'src/app/longterm/saletran/store/locationconfigstore/locationconfig.state';
+import { PosApiService } from '../../longterm/services/pos-api-service';
+import { AlertService } from '../../alertmsg/alert-message/alert-message.service';
+import { AlertOptions } from '../../alertmsg/alert-message/alert-message.model';
+import { LocationConfigState } from '../../longterm/saletran/store/locationconfigstore/locationconfig.state';
 import { props, Store } from '@ngrx/store';
-import { setLocationConfig, updateLocationConfigPostLogon } from 'src/app/longterm/saletran/store/locationconfigstore/locationconfig.action';
+import { setLocationConfig, updateLocationConfigPostLogon } from '../../longterm/saletran/store/locationconfigstore/locationconfig.action';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ResetPinDlgComponent } from './reset-pin-dlg/reset-pin-dlg.component';
 import { MandateTrainingComponent } from './mandate-training/mandate-training.component';
-import { ToastService } from 'src/app/services/toast.service';
+import { ToastService } from '../../services/toast.service';
 import { HttpClient } from '@angular/common/http';
-import { addTabSerialToTktObj, initTktObj, loadTicket, loadTicketSuccess, updateCheckoutTotals } from 'src/app/longterm/saletran/store/ticketstore/ticket.action';
-import { TktObjState } from 'src/app/app.state';
+import { addTabSerialToTktObj, initTktObj, loadTicket, loadTicketSuccess, updateCheckoutTotals } from '../../longterm/saletran/store/ticketstore/ticket.action';
+import { TktObjState } from '../../app.state';
 import { Actions, ofType } from '@ngrx/effects';
-import { CPOSWebSvcService } from 'src/app/longterm/services/cposweb-svc.service';
+import { CPOSWebSvcService } from '../../longterm/services/cposweb-svc.service';
 
 @Component({
     selector: 'app-logon-vendorlt',
@@ -134,6 +134,20 @@ export class VendorLTComponent implements OnInit {
             //console.log('vendorlt sending data to subject');
             this._logonDataSvc.setLTVendorLogonData(data);
 
+            // Keep app header/login state in sync even when reset-PIN or training flows short-circuit.
+            this._locConfigStore.dispatch(updateLocationConfigPostLogon({
+                associateName: data.associateName,
+                associateRole: data.associateRole,
+                associateRoleDesc: data.associateRoleDesc,
+                contractNumber: this.vendornum,
+                contractUID: +data.contractUID,
+                facilityName: location.facilityName,
+                locationName: location.facilityName,
+                facilityNumber: location.facilityNumber,
+                vendorNumber: this.vendornum,
+                vendorName: data.userIdentity.fullName
+            }));
+
 
 
             locModel.individualUID = +data.individualUID;
@@ -184,20 +198,6 @@ export class VendorLTComponent implements OnInit {
                 let locConfig = this._logonDataSvc.getLocationConfig();
                 this._tktObjStore.dispatch(initTktObj({ locConfig: locConfig, individualUID: +data.individualUID}));
                 this._locConfigStore.dispatch(setLocationConfig({ locationConfig: locCnfgData.configs[0] }));
-
-                this._locConfigStore.dispatch(updateLocationConfigPostLogon({
-                    associateName: data.associateName,
-                    associateRole: data.associateRole,
-                    associateRoleDesc: data.associateRoleDesc,
-                    contractNumber: this.vendornum,
-                    contractUID: +data.contractUID,
-                    facilityName: location.facilityName,
-                    locationName: location.facilityName,
-                    facilityNumber: location.facilityNumber,
-                    vendorNumber: this.vendornum,
-                    vendorName: data.userIdentity.fullName
-
-                }));
 
                 this._saleTranSvc.getTenderTypes(1, 100).subscribe(data => {
                     this._logonDataSvc.setTenderTypes(data);

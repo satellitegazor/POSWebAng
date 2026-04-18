@@ -2,6 +2,7 @@
 	max-width: 200px;
 	width: 200px;
 	font-size: 8pt;
+	padding-bottom: 92px;
 }
 
 .receipt-table {
@@ -52,4 +53,41 @@
 	height: 75px;
 	padding-top: 10px;
 	max-width: none;
+}
+
+.receipt-footer {
+	padding: 6px;
+}
+
+.receipt-footer-grid {
+	display: grid;
+	grid-template-columns: repeat(6, minmax(0, 1fr));
+	gap: 3px;
+	align-items: stretch;
+}
+
+.receipt-footer-btn {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	min-height: 58px;
+	font-size: 12px;
+	line-height: 1.05;
+	padding: 5px 3px;
+	text-align: center;
+}
+
+.receipt-footer-btn svg {
+	width: 14px;
+	height: 14px;
+	flex-shrink: 0;
+}
+
+.receipt-footer-btn span {
+	white-space: normal;
+	font-size: 16px;
+	font-weight: 400;
+	line-height: 1.05;
 }
