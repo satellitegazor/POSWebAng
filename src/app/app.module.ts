@@ -58,6 +58,7 @@ import { LongTermModule } from './longterm/long-term.module';
     LogonModule,
     LongTermModule,
     SharedSubjectModule,
+    ToastComponent,
     NgbModalModule,
     HttpClientModule,
     EffectsModule.forRoot([]),
