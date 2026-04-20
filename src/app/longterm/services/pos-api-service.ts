@@ -225,18 +225,17 @@ export class PosApiService {
         uid: string,
         lid: number = 0,
         showPmntDueDate: string = '',
-        DBVal: number = 0,
-        CliTimeVar: number = 0,
-        guid: string = GlobalConstants.GET_GUID
+        RgnCode: string = "",
+        CliTimeVar: number = 0
     ): Observable<SettlementReportResultModel> {
         return this.httpClient.get<SettlementReportResultModel>(
-            GlobalConstants.CPOS_SVCS_URL + '/ltc/GetSettlementReport?guid=' + encodeURIComponent(guid)
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/GetSettlementReport?guid=' + encodeURIComponent(GlobalConstants.GET_GUID)
                 + '&cid=' + cid.toString()
                 + '&month=' + encodeURIComponent(month)
                 + '&uid=' + encodeURIComponent(uid)
                 + '&lid=' + lid.toString()
+                + '&rgnCode=' + encodeURIComponent(RgnCode)
                 + '&showPmntDueDate=' + encodeURIComponent(showPmntDueDate)
-                + '&DBVal=' + DBVal.toString()
                 + '&CliTimeVar=' + CliTimeVar.toString(),
             { headers: this.headerObjs }
         );

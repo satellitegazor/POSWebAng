@@ -1,4 +1,5 @@
 import { MobileBase } from '../../../models/mobile.base';
+import { LTC_Contract } from '../../models/contract.models';
 
 export class LTC_SettlementDetails {
 	facilityNumber: string = '';
@@ -47,8 +48,6 @@ export class LTC_SettlementReportSummary {
 }
 
 // Placeholder until contract fields are provided from the backend DTO.
-export class LTC_Contract {
-}
 
 export class SettlementReportResultModel {
 	results: MobileBase = {} as MobileBase;

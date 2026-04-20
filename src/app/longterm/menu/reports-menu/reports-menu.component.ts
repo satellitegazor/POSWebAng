@@ -14,4 +14,8 @@ export class ReportsMenuComponent {
     this.router.navigate(['/rptsalestran']);
   }
 
+  goToSettlementReport(): void {
+    this.router.navigate(['/rptsettlement']);
+  }
+
 }

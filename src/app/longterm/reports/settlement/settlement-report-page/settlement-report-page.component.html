@@ -1,1 +1,531 @@
-<p>settlement-report-page works!</p>
+<div class="container-fluid py-3 settlement-report-page">
+
+	<!-- Page Title -->
+	<div class="d-flex align-items-center justify-content-center mb-3">
+		<h4 class="mb-0 fw-bold text-primary">Settlement Report</h4>
+	</div>
+
+	<!-- Report Parameters Accordion -->
+	<section class="accordion mb-3" id="accordionReportParams">
+		<div class="accordion-item">
+			<h2 class="accordion-header" id="headingReportParams">
+				<button class="accordion-button" type="button" data-bs-toggle="collapse"
+					data-bs-target="#collapseReportParams" aria-expanded="true"
+					aria-controls="collapseReportParams">
+					Report Parameters
+				</button>
+			</h2>
+			<div id="collapseReportParams" class="accordion-collapse collapse show"
+				aria-labelledby="headingReportParams">
+				<div class="accordion-body">
+
+					<!-- Row 1: Location Name / Vendor Number -->
+					<div class="row g-3 align-items-end mb-2">
+						<div class="col-12 col-md-2">
+							<label class="form-label fw-semibold mb-1">Location Name</label>
+						</div>
+						<div class="col-12 col-md-4">
+							<div class="border rounded p-2 bg-light">
+								<span id="ucrFacName">{{ displayLocationName }}</span>
+							</div>
+						</div>
+						<div class="col-12 col-md-2">
+							<label class="form-label fw-semibold mb-1">Vendor Number</label>
+						</div>
+						<div class="col-12 col-md-4">
+							<div class="border rounded p-2 bg-light">
+								<span id="ucrVendorNumber">{{ displayVendorNumber }}</span>
+							</div>
+						</div>
+					</div>
+					<div class="row g-3 align-items-end mb-2">
+						<div class="col-12 col-md-2 offset-md-6">
+							<label class="form-label fw-semibold mb-1">Contract Number</label>
+						</div>
+						<div class="col-12 col-md-4">
+							<div class="border rounded p-2 bg-light">
+								<span id="ucrContractNumberDisplay">{{ stlmtRptDataMdl?.contract.contractNumber }}</span>
+							</div>
+						</div>
+					</div>
+					<!-- Row 2: Time Period -->
+					<div class="row g-3 align-items-end mb-2">
+						<div class="col-12 col-md-2">
+							<label class="form-label fw-semibold mb-1">Time Period</label>
+						</div>
+						<div class="col-12 col-md-2">
+							<label for="selMonth" class="form-label mb-1">Month</label>
+							<select id="selMonth" class="form-select form-select-sm" [(ngModel)]="selectedMonth">
+								<option *ngFor="let m of months" [value]="m.value">{{ m.label }}</option>
+							</select>
+						</div>
+						<div class="col-12 col-md-2">
+							<label for="selYear" class="form-label mb-1">Year</label>
+							<select id="selYear" class="form-select form-select-sm" [(ngModel)]="selectedYear">
+								<option *ngFor="let y of years" [value]="y">{{ y }}</option>
+							</select>
+						</div>
+						<div class="col-12 col-md-3">
+							<div class="d-flex gap-3 align-items-center pt-1">
+								<span class="text-muted small">
+									From: <strong>{{ stlmtRptDataMdl?.fromDate }}</strong>
+								</span>
+								<span class="text-muted small">
+									To: <strong>{{ stlmtRptDataMdl?.toDate }}</strong>
+								</span>
+							</div>
+						</div>
+						<div class="col-12 col-md-3 text-md-end">
+							<button type="button" class="btn btn-primary btn-sm" (click)="refreshReport()">
+								Refresh
+							</button>
+						</div>
+					</div>
+
+					<div class="text-end text-muted small mt-2">
+						Exchange fee due date is always the 15th of the following month, unless otherwise stated in the terms of the contract.
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- No Data State -->
+	<div *ngIf="stlmtRptDataMdl && !hasSettlementData" class="text-center py-5">
+		<p class="text-danger fw-semibold">
+			*** VENDOR DOES NOT HAVE INFORMATION FOR THIS TIME PERIOD AND/OR FOR THIS CONTRACT ***
+		</p>
+	</div>
+
+	<!-- Settlement Summary -->
+	<ng-container *ngIf="hasSettlementData">
+
+		<h6 class="fw-bold text-uppercase text-secondary border-bottom pb-1 mb-3">Settlement Summary</h6>
+
+		<!-- Per-facility tables -->
+		<div *ngFor="let group of facilityGroups" class="mb-4">
+			<div class="d-flex align-items-center mb-1">
+				<span class="badge bg-secondary me-2">Fac# {{ group.facilityNumber }}</span>
+			</div>
+			<div class="table-responsive">
+				<table class="table table-sm table-bordered align-middle settlement-table">
+					<thead class="table-secondary">
+						<tr>
+							<th class="text-start">Department</th>
+							<th class="text-end">Net Merchandise Sales</th>
+							<th class="text-end">Less Net Concession Discounts</th>
+							<th class="text-end">Fee Based Sales</th>
+							<th *ngIf="group.feeId !== 2" class="text-end">Exchange Flat Fee</th>
+							<th *ngIf="group.feeId !== 1" class="text-end">Exchange Fee %</th>
+							<th *ngIf="group.feeId !== 1" class="text-end">Exchange Fee $</th>
+							<th class="text-end">Exchange Coupons</th>
+							<th *ngIf="group.feeId !== 2" class="text-end">Net Exchange Fee (Flat)</th>
+							<th *ngIf="group.feeId !== 1" class="text-end">Net Exchange Fee (%)</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr *ngFor="let d of group.details; let odd = odd"
+								[class.row-alt-1]="!odd" [class.row-alt-2]="odd">
+							<td class="text-start">{{ d.businessDescription }}</td>
+							<td class="text-end">{{ formatCurrency(d.grossSales) }}</td>
+							<td class="text-end">{{ formatDeduction(d.less) }}</td>
+							<td class="text-end">{{ formatCurrency(d.netSales) }}</td>
+							<td *ngIf="group.feeId !== 2" class="text-end">{{ d.exchangeFeeFlat | currency }}</td>
+							<td *ngIf="group.feeId !== 1" class="text-end">{{ d.feeType | number:'1.2-2' }}%</td>
+							<td *ngIf="group.feeId !== 1" class="text-end">{{ formatCurrency(d.exchangeFeePrcnt) }}</td>
+							<td class="text-end">{{ formatDeduction(d.exchangeCoupons) }}</td>
+							<td *ngIf="group.feeId !== 2" class="text-end">{{ formatCurrency(d.netExchangeFeeFlat) }}</td>
+							<td *ngIf="group.feeId !== 1" class="text-end">{{ formatCurrency(d.netExchangeFeePrcnt) }}</td>
+						</tr>
+						<!-- Facility Totals Row -->
+						<tr class="row-total">
+							<td class="text-start fw-semibold">Totals</td>
+							<td class="text-end">{{ formatCurrency(group.totGrSales) }}</td>
+							<td class="text-end">{{ formatDeduction(group.totLess) }}</td>
+							<td class="text-end">{{ formatCurrency(group.totNSales) }}</td>
+							<ng-container *ngIf="group.feeId !== 3">
+								<td *ngIf="group.feeId !== 2" class="text-end">{{ formatCurrency(group.totExFee) }}</td>
+								<td *ngIf="group.feeId !== 1" class="text-end"></td>
+								<td *ngIf="group.feeId !== 1" class="text-end">{{ formatCurrency(group.totExFee) }}</td>
+							</ng-container>
+							<ng-container *ngIf="group.feeId === 3">
+								<td class="text-end">{{ formatCurrency(group.totExFeeFlat) }}</td>
+								<td class="text-end"></td>
+								<td class="text-end">{{ formatCurrency(group.totExFeePrcnt) }}</td>
+							</ng-container>
+							<td class="text-end">{{ formatDeduction(group.totExCou) }}</td>
+							<ng-container *ngIf="group.feeId !== 3">
+								<td *ngIf="group.feeId !== 2" class="text-end">{{ formatCurrency(group.totNExFee) }}</td>
+								<td *ngIf="group.feeId !== 1" class="text-end">{{ formatCurrency(group.totNExFee) }}</td>
+							</ng-container>
+							<ng-container *ngIf="group.feeId === 3">
+								<td class="text-end">{{ formatCurrency(group.totNExFeeFlat) }}</td>
+								<td class="text-end">{{ formatCurrency(group.totNExFeePrcnt) }}</td>
+							</ng-container>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<!-- Grand Totals (only when >1 facility) -->
+		<div *ngIf="facilityGroups.length > 1" class="table-responsive mb-4">
+			<table class="table table-sm table-bordered align-middle settlement-table">
+				<thead class="table-primary">
+					<tr>
+						<th class="text-start">Grand Totals</th>
+						<th class="text-end">Net Merchandise Sales</th>
+						<th class="text-end">Less Net Concession Discounts</th>
+						<th class="text-end">Fee Based Sales</th>
+						<th *ngIf="grandTotals.feeId !== 2" class="text-end">Exchange Flat Fee</th>
+						<th *ngIf="grandTotals.feeId !== 1" class="text-end">Exchange Fee %</th>
+						<th *ngIf="grandTotals.feeId !== 1" class="text-end">Exchange Fee $</th>
+						<th class="text-end">Exchange Coupons</th>
+						<th *ngIf="grandTotals.feeId !== 2" class="text-end">Net Exchange Fee (Flat)</th>
+						<th *ngIf="grandTotals.feeId !== 1" class="text-end">Net Exchange Fee (%)</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="row-total fw-semibold">
+						<td class="text-start">Location Totals</td>
+						<td class="text-end">{{ grandTotals.totGrSales | currency }}</td>
+						<td class="text-end">{{ grandTotals.totLess | currency }}</td>
+						<td class="text-end">{{ grandTotals.totNSales | currency }}</td>
+						<ng-container *ngIf="grandTotals.feeId !== 3">
+							<td *ngIf="grandTotals.feeId !== 2" class="text-end">{{ grandTotals.totExFee | currency }}</td>
+							<td *ngIf="grandTotals.feeId !== 1" class="text-end"></td>
+							<td *ngIf="grandTotals.feeId !== 1" class="text-end">{{ grandTotals.totExFee | currency }}</td>
+						</ng-container>
+						<ng-container *ngIf="grandTotals.feeId === 3">
+							<td class="text-end">{{ grandTotals.totExFeeFlat | currency }}</td>
+							<td class="text-end"></td>
+							<td class="text-end">{{ grandTotals.totExFeePrcnt | currency }}</td>
+						</ng-container>
+						<td class="text-end">{{ grandTotals.totExCou | currency }}</td>
+						<ng-container *ngIf="grandTotals.feeId !== 3">
+							<td *ngIf="grandTotals.feeId !== 2" class="text-end">{{ grandTotals.totNExFee | currency }}</td>
+							<td *ngIf="grandTotals.feeId !== 1" class="text-end">{{ grandTotals.totNExFee | currency }}</td>
+						</ng-container>
+						<ng-container *ngIf="grandTotals.feeId === 3">
+							<td class="text-end">{{ grandTotals.totNExFeeFlat | currency }}</td>
+							<td class="text-end">{{ grandTotals.totNExFeePrcnt | currency }}</td>
+						</ng-container>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<!-- OCONUS / PAC Tender Summary -->
+		<ng-container *ngIf="isPACRegion">
+			<h6 class="fw-bold text-uppercase text-secondary border-bottom pb-1 mb-3">Amount Due Concession</h6>
+			<div class="table-responsive mb-4">
+				<table class="table table-sm table-bordered align-middle settlement-table">
+					<thead class="table-secondary">
+						<tr>
+							<th class="text-start">Payment Type</th>
+							<th class="text-end">Transaction Count</th>
+							<th class="text-end">Tender Count</th>
+							<th class="text-end">Total</th>
+							<th class="text-end">Amount Due to Concession</th>
+							<th class="text-end">2% Processing Fee</th>
+							<th class="text-end">Net Amount Due Concession (B)</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="row-alt-1">
+							<td class="text-start fw-semibold">Military Star (107-01)</td>
+							<td class="text-end">{{ tenderSummary.msTranCnt }}</td>
+							<td class="text-end">{{ tenderSummary.msTndrCnt }}</td>
+							<td class="text-end">{{ tenderSummary.msTotals | currency }}</td>
+							<td class="text-end">{{ tenderSummary.msTotals | currency }}</td>
+							<td class="text-end">{{ tenderSummary.percMSfee | currency }}</td>
+							<td class="text-end">{{ tenderSummary.netMSTotals | currency }}</td>
+						</tr>
+						<tr class="row-alt-2">
+							<td class="text-start fw-semibold">Exchange Gift Card (107-05)</td>
+							<td class="text-end">{{ tenderSummary.gcTranCnt }}</td>
+							<td class="text-end">{{ tenderSummary.gcTndrCnt }}</td>
+							<td class="text-end">{{ tenderSummary.gcTotals | currency }}</td>
+							<td class="text-end">{{ tenderSummary.gcTotals | currency }}</td>
+							<td class="text-end">N/A</td>
+							<td class="text-end">{{ tenderSummary.gcTotals | currency }}</td>
+						</tr>
+						<tr class="row-alt-1">
+							<td class="text-start fw-semibold">Credit Card (107-06)</td>
+							<td class="text-end">{{ tenderSummary.xcTranCnt }}</td>
+							<td class="text-end">{{ tenderSummary.xcTndrCnt }}</td>
+							<td class="text-end">{{ tenderSummary.xcTotals | currency }}</td>
+							<td class="text-end">{{ tenderSummary.xcTotals | currency }}</td>
+							<td class="text-end">{{ tenderSummary.percXCfee | currency }}</td>
+							<td class="text-end">{{ tenderSummary.netXCTotals | currency }}</td>
+						</tr>
+						<tr class="row-alt-2">
+							<td class="text-start fw-semibold">Concession Credit Card</td>
+							<td class="text-end">{{ tenderSummary.ccTranCnt }}</td>
+							<td class="text-end">{{ tenderSummary.ccTndrCnt }}</td>
+							<td class="text-end">{{ tenderSummary.ccTotals | currency }}</td>
+							<td class="text-end">N/A</td>
+							<td class="text-end">N/A</td>
+							<td class="text-end">N/A</td>
+						</tr>
+						<tr class="row-alt-1">
+							<td class="text-start fw-semibold">Cash</td>
+							<td class="text-end">{{ tenderSummary.caTranCnt }}</td>
+							<td class="text-end">{{ tenderSummary.caTndrCnt }}</td>
+							<td class="text-end">{{ tenderSummary.caTotals | currency }}</td>
+							<td class="text-end">N/A</td>
+							<td class="text-end">N/A</td>
+							<td class="text-end">N/A</td>
+						</tr>
+						<tr class="row-alt-2">
+							<td class="text-start fw-semibold">Check (106-01)</td>
+							<td class="text-end">{{ tenderSummary.ckTranCnt }}</td>
+							<td class="text-end">{{ tenderSummary.ckTndrCnt }}</td>
+							<td class="text-end">{{ tenderSummary.ckTotals | currency }}</td>
+							<td class="text-end">{{ tenderSummary.ckTotals | currency }}</td>
+							<td class="text-end">N/A</td>
+							<td class="text-end">{{ tenderSummary.ckTotals | currency }}</td>
+						</tr>
+								<tr *ngIf="businessModels.includes('5') && showKatusa" class="row-alt-1">
+							<td class="text-start fw-semibold">KATUSA Coupon</td>
+							<td class="text-end"></td>
+							<td class="text-end">{{ stlmtRptDataMdl?.settlementReport?.katusaCount }}</td>
+							<td class="text-end">{{ stlmtRptDataMdl?.settlementReport?.katusaTotals | currency }}</td>
+							<td class="text-end">{{ stlmtRptDataMdl?.settlementReport?.katusaTotals | currency }}</td>
+							<td class="text-end">N/A</td>
+							<td class="text-end">{{ stlmtRptDataMdl?.settlementReport?.katusaTotals | currency }}</td>
+						</tr>
+						<tr class="row-total fw-semibold">
+							<td class="text-start">Totals</td>
+							<td class="text-end">{{ tenderSummary.tranCntTot }}</td>
+							<td class="text-end">{{ tenderSummary.tndrCntTot }}</td>
+							<td class="text-end">{{ tenderSummary.gTndrTot | currency }}</td>
+							<td class="text-end">{{ tenderSummary.dueCncsn | currency }}</td>
+							<td class="text-end">{{ (tenderSummary.percMSfee + tenderSummary.percXCfee) | currency }}</td>
+							<td class="text-end">{{ tenderSummary.netAmtDueCncsn | currency }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</ng-container>
+
+		<!-- Tax Info + Fee Summary Cards -->
+		<div class="row g-3 mb-4 settlement-summary-panels">
+
+			<!-- Tax Info (left) -->
+			<div class="col-12 sales-tax-panel">
+				<div class="card h-100">
+					<div class="card-header fw-semibold summary-panel-header">Sales Tax (For Information Purpose Only)</div>
+					<div class="card-body p-0">
+						<table class="table table-sm mb-0">
+							<tbody>
+								<tr>
+									<td>Tax Collected:</td>
+									<td class="text-end">{{ formatCurrency(grandTotals.taxCollected) }}</td>
+								</tr>
+								<tr>
+									<td>Tax Refunded:</td>
+									<td class="text-end">{{ formatDeduction(grandTotals.taxRefunded) }}</td>
+								</tr>
+								<tr>
+									<td>Net Sales Tax:</td>
+									<td class="text-end">{{ formatCurrency(netTaxes) }}</td>
+								</tr>
+								<tr>
+									<td>Tax-Exempt Sales:</td>
+									<td class="text-end">{{ formatCurrency(grandTotals.noTaxSales) }}</td>
+								</tr>
+								<tr *ngIf="grandTotals.envTax !== 0">
+									<td>Environmental Tax:</td>
+									<td class="text-end">{{ grandTotals.envTax | currency }}</td>
+								</tr>
+								<tr *ngIf="businessModels.includes('5')">
+									<td colspan="2" class="fw-semibold pt-2">Tips <small class="text-muted">(For Information Purpose Only)</small></td>
+								</tr>
+								<tr *ngIf="businessModels.includes('5')">
+									<td>Tips**:</td>
+									<td class="text-end">{{ stlmtRptDataMdl?.settlementReport?.tips | currency }}</td>
+								</tr>
+								<tr *ngIf="(stlmtRptDataMdl?.settlementReport?.shipHandling ?? 0) !== 0">
+									<td>Shipping/Handling Charges:</td>
+									<td class="text-end">{{ stlmtRptDataMdl?.settlementReport?.shipHandling | currency }}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<!-- Fee Summary (right) -->
+			<div class="col-12 fee-summary-panel">
+				<div class="card h-100">
+					<div class="card-header fw-semibold summary-panel-header">Fee Summary</div>
+					<div class="card-body p-0">
+						<table class="table table-sm mb-0">
+							<tbody>
+								<tr>
+									<td>Refund Transaction Count:</td>
+									<td class="text-end">{{ stlmtRptDataMdl?.settlementReport?.rfndTranCount }}</td>
+								</tr>
+								<tr>
+									<td>Cancelled Tickets Count:</td>
+									<td class="text-end">{{ stlmtRptDataMdl?.settlementReport?.cnclTktsCount }}</td>
+								</tr>
+								<tr>
+									<td>Exchange Coupons Count:</td>
+									<td class="text-end">{{ stlmtRptDataMdl?.settlementReport?.exchCpnsCount }}</td>
+								</tr>
+								<tr *ngIf="businessModels.includes('5') && showKatusa && isPACRegion">
+									<td>KATUSA Coupons Count:</td>
+									<td class="text-end">{{ stlmtRptDataMdl?.settlementReport?.katusaCount }}</td>
+								</tr>
+								<tr><td colspan="2" class="pt-1"></td></tr>
+								<!-- Non-PAC fee summary -->
+								<ng-container *ngIf="!isPACRegion">
+									<tr *ngIf="grandTotals.feeId !== 3">
+										<td>Net Exchange Fee (A):</td>
+										<td class="text-end">{{ formatCurrency(grandTotals.totNExFee) }}</td>
+									</tr>
+									<tr *ngIf="grandTotals.feeId === 3">
+										<td>Net Exchange Flat Fee (A):</td>
+										<td class="text-end">{{ formatCurrency(grandTotals.totNExFeeFlat) }}</td>
+									</tr>
+									<tr *ngIf="grandTotals.feeId === 3">
+										<td>Net Exchange Percentage Fee (A):</td>
+										<td class="text-end">{{ formatCurrency(grandTotals.totNExFeePrcnt) }}</td>
+									</tr>
+									<tr>
+										<td>Equipment Rental (A1):</td>
+										<td class="text-end">{{ formatCurrency(grandTotals.totEqipfee) }}</td>
+									</tr>
+									<tr *ngIf="isNBFF && (stlmtRptDataMdl?.settlementReport?.camChrgAmt ?? 0) !== 0">
+										<td>CAM Charges (A2):</td>
+										<td class="text-end">{{ formatCurrency(stlmtRptDataMdl?.settlementReport?.camChrgAmt ?? 0) }}</td>
+									</tr>
+									<tr class="fw-semibold table-warning">
+										<td>Payment Due AAFES (A+A1{{ isNBFF ? '+A2' : '' }}):</td>
+										<td class="text-end">
+											<ng-container *ngIf="grandTotals.feeId !== 3">{{ formatCurrency(paymentDueAafes) }}</ng-container>
+											<ng-container *ngIf="grandTotals.feeId === 3">***</ng-container>
+										</td>
+									</tr>
+									<tr *ngIf="nonPacAccountingRows.length > 0">
+										<td class="fw-semibold" colspan="2">For Accounting Purpose:</td>
+									</tr>
+									<tr *ngFor="let row of nonPacAccountingRows" [class.d-none]="row.concessionPayment === 0 && !row.concessionPaymentConditional">
+										<td>
+											<div class="d-flex justify-content-between gap-2">
+												<span>Facility: {{ row.facilityNumber }}</span>
+												<span>Concession Payments (223-01):</span>
+											</div>
+										</td>
+										<td class="text-end">{{ row.concessionPaymentConditional ? '***' : formatCurrency(row.concessionPayment) }}</td>
+									</tr>
+									<tr *ngFor="let row of nonPacAccountingRows" [class.d-none]="row.otherPayment <= 0">
+										<td>
+											<div class="d-flex justify-content-between gap-2">
+												<span>Facility: {{ row.facilityNumber }}</span>
+												<span>Other Payments (223-02):</span>
+											</div>
+										</td>
+										<td class="text-end">{{ formatCurrency(row.otherPayment) }}</td>
+									</tr>
+								</ng-container>
+								<!-- PAC / OCONUS fee summary -->
+								<ng-container *ngIf="isPACRegion">
+									<tr>
+										<td>Net Exchange Fee (A):</td>
+										<td class="text-end">{{ grandTotals.totNExFee | currency }}</td>
+									</tr>
+									<tr>
+										<td>Equipment Rental (A1):</td>
+										<td class="text-end">{{ grandTotals.totEqipfee | currency }}</td>
+									</tr>
+									<tr>
+										<td>Insurance Amount (A2):</td>
+										<td class="text-end">{{ stlmtRptDataMdl?.settlementReport?.insuranceFee | currency }}</td>
+									</tr>
+									<tr *ngIf="isNBFF && (stlmtRptDataMdl?.settlementReport?.camChrgAmt ?? 0) !== 0">
+										<td>CAM Charges (A3):</td>
+										<td class="text-end">{{ stlmtRptDataMdl?.settlementReport?.camChrgAmt | currency }}</td>
+									</tr>
+									<tr>
+										<td>Net Amount Due Concession (B):</td>
+										<td class="text-end">{{ tenderSummary.netAmtDueCncsn | currency }}</td>
+									</tr>
+									<tr class="fw-semibold" [class.table-success]="isReimbursementDue" [class.table-warning]="!isReimbursementDue">
+										<td>
+											<ng-container *ngIf="isReimbursementDue">Reimbursement Due Concession:</ng-container>
+											<ng-container *ngIf="!isReimbursementDue">Payment Due AAFES (A+A1+A2) - B:</ng-container>
+										</td>
+										<td class="text-end">{{ paymentDueAafesPac | currency }}</td>
+									</tr>
+								</ng-container>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Footnotes -->
+		<div *ngIf="businessModels.includes('5')" class="text-muted small fst-italic mb-1">
+			** Does not include cash tips that may have been separately reported by associates.
+		</div>
+		<div *ngIf="isNBFF" class="text-muted small fst-italic mb-1">
+			^ Amounts listed do not include additional supply charges, invoices, shared drink stations, late fees or other amounts due to the Exchange.
+		</div>
+		<div *ngIf="grandTotals.feeId === 3" class="text-muted small fst-italic mb-1">
+			*** This contract has a conditional fee. Please verify the conditions specified in the contract, which may expand across multiple facilities and pay the correct amount due.
+		</div>
+
+		<!-- Footer Actions -->
+		<div class="footer fixed-bottom cncsnFooter">
+			<div id="stButtonBottomBar" class="row g-0">
+				<div class="col-12 col-md-4">
+					<button
+						class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
+						id="btnEmailSettlementRpt"
+						aria-label="Email Settlement Report"
+						(click)="onEmail()">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-fill" viewBox="0 0 16 16">
+							<path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414z"></path>
+							<path d="M0 4.697v7.104l5.803-3.558z"></path>
+							<path d="M6.761 8.83 0 12.97A2 2 0 0 0 2 14h12a2 2 0 0 0 2-1.03L9.239 8.83 8 9.586z"></path>
+							<path d="M16 4.697v7.104l-5.803-3.558z"></path>
+						</svg>
+						<span>Email</span>
+					</button>
+				</div>
+				<div class="col-12 col-md-4">
+					<button
+						class="border border-white btn btn-info btn-lg ftrbtn goToST w-100 d-flex align-items-center justify-content-center gap-2"
+						id="btnReportsMenu"
+						aria-label="Go To Reports Menu"
+						(click)="goToReportsMenu()">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-fill" viewBox="0 0 16 16">
+							<path d="M0 0h1v15h15v1H0z"></path>
+							<path d="M2 10h2v5H2zm4-6h2v11H6zm4 3h2v8h-2zm4-5h2v13h-2z"></path>
+						</svg>
+						<span>Reports</span>
+					</button>
+				</div>
+				<div class="col-12 col-md-4">
+					<button
+						class="border border-white btn btn-info btn-lg ftrbtn goToST w-100 d-flex align-items-center justify-content-center gap-2"
+						id="btnSalesTran"
+						aria-label="Go To Sales Transaction"
+						(click)="goToSalesTransaction()">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-fill" viewBox="0 0 16 16">
+							<path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5A.5.5 0 0 1 0 1.5"></path>
+							<path d="M5 12a2 2 0 1 0 0 4a2 2 0 0 0 0-4m5 0a2 2 0 1 0 0 4a2 2 0 0 0 0-4"></path>
+						</svg>
+						<span>Sales Transaction</span>
+					</button>
+				</div>
+			</div>
+		</div>
+
+	</ng-container>
+
+</div>
