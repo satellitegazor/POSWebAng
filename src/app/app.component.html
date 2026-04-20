@@ -16,7 +16,7 @@
         </div>
 
 
-        <div class="CenterHeading text-center d-flex flex-column justify-content-center col-12 col-md-7">Point of Sale
+        <div class="CenterHeading text-center d-flex flex-column justify-content-center col-12 col-md-7"><span class="center-heading-title">{{ centerHeadingTitle }}</span>
           <div class="small navbar-data-secondary">{{TicketNumber > 0 ? ('Ticket# ' + TicketNumber) : ''}}</div>
         </div>
 
@@ -47,7 +47,7 @@
       <div class="row align-items-center w-100 g-3" *ngIf="!isUserLoggedIn">
         <div class="col-12 col-md-6 d-flex flex-column align-items-center align-items-md-end gap-2">
           <div class="border rounded p-2 h-100 bg-white">
-            <div class="d-flex align-items-center gap-2">Point of Sale</div>
+            <div class="d-flex align-items-center gap-2"><span class="center-heading-title">{{ centerHeadingTitle }}</span></div>
           </div>
         </div>
       </div>

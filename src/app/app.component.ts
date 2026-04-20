@@ -49,6 +49,24 @@ logonUserRoleType: string = '';
   VendorNumber: any;
   facilityNumber: any;
 
+  get centerHeadingTitle(): string {
+    const path = (this.route.url || '').split('?')[0].toLowerCase();
+
+    if (path.includes('/rptsettlement')) {
+      return 'Settlement Report';
+    }
+
+    if (path.includes('/rptsalestran') || path.includes('/salestranrpt')) {
+      return 'Sales Transaction Report';
+    }
+
+    if (path.includes('/rptmenu') || path.includes('/reportsmenu')) {
+      return 'Reports Menu';
+    }
+
+    return 'Point of Sale';
+  }
+
   public ngOnInit(): void {
     this._store.pipe(
       select(getTktObjSelector),

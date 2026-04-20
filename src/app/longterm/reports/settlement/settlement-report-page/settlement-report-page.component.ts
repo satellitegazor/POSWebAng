@@ -98,15 +98,25 @@ export class SettlementReportPageComponent implements OnInit {
   }
 
   getSettlmntRptData(cid: number = 0, month: string = '', uid: string = '', lid: number = 0): void {
-    
-    const locCnfg = this.logonDataSvc.getLocationConfig();
-    this.posApiService.getSettlementReport(cid, month, uid, lid, locCnfg.rgnCode)
-      .subscribe(result => {
-        this.stlmtRptDataMdl = result;
-        if (result.selectedMonth) this.selectedMonth = result.selectedMonth;
-        if (result.selectedYear) this.selectedYear = result.selectedYear;
 
-        this.loadAssociateEmails(lid, Number(uid) || this.indivId);
+    const locCnfg = this.logonDataSvc.getLocationConfig();
+    // Clear previous results so stale Fee Summary data is not displayed during/after refresh.
+    this.stlmtRptDataMdl = null;
+    this.SaleAssocList = [];
+
+    this.posApiService.getSettlementReport(cid, month, uid, lid, locCnfg.rgnCode)
+      .subscribe({
+        next: result => {
+          this.stlmtRptDataMdl = result;
+          if (result.selectedMonth) this.selectedMonth = result.selectedMonth;
+          if (result.selectedYear) this.selectedYear = result.selectedYear;
+
+          this.loadAssociateEmails(lid, Number(uid) || this.indivId);
+        },
+        error: () => {
+          this.stlmtRptDataMdl = null;
+          this.toastService.error('Unable to refresh settlement report for the selected month.');
+        }
       });
   }
 

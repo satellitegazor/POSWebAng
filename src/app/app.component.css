@@ -69,12 +69,18 @@
 	font-size: 1rem;
 }
 
+.center-heading-title {
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 1.1;
+}
+
 .CenterHeading,
 .CenterHeading .navbar-data-secondary {
 	color: #ffffff;
 }
 
 .CenterHeading .navbar-data-secondary {
-	font-size: inherit;
+	font-size: 0.875rem;
 }
  
