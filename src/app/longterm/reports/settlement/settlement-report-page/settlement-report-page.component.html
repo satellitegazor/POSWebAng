@@ -479,6 +479,50 @@
 			*** This contract has a conditional fee. Please verify the conditions specified in the contract, which may expand across multiple facilities and pay the correct amount due.
 		</div>
 
+		<div *ngIf="showEmailPopup" class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="emailSettlementReportModalTitle">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="emailSettlementReportModalTitle">Email Settlement Report</h5>
+						<button type="button" class="btn-close" aria-label="Close" (click)="closeEmailPopup()"></button>
+					</div>
+					<div class="modal-body">
+						<div class="form-check mb-3">
+							<input class="form-check-input" type="radio" name="emailOption" id="emailOptionSelf" value="self" [(ngModel)]="selectedEmailOption">
+							<label class="form-check-label" for="emailOptionSelf">
+								Option 1: My email ({{ selfAssociateEmail || 'Not Available' }})
+							</label>
+						</div>
+
+						<div class="form-check mb-3">
+							<input class="form-check-input" type="radio" name="emailOption" id="emailOptionManager" value="manager" [(ngModel)]="selectedEmailOption">
+							<label class="form-check-label" for="emailOptionManager">
+								Option 2: Concession Manager email ({{ managerAssociateEmail || 'Not Available' }})
+							</label>
+						</div>
+
+						<div class="form-check mb-3">
+							<input class="form-check-input" type="radio" name="emailOption" id="emailOptionCustom" value="custom" [(ngModel)]="selectedEmailOption">
+							<label class="form-check-label" for="emailOptionCustom">Option 3: Enter an email address</label>
+						</div>
+
+						<input type="email" class="form-control" placeholder="Enter email address"
+							[(ngModel)]="customEmailAddress" [disabled]="selectedEmailOption !== 'custom'">
+
+						<div *ngIf="emailSubmitError" class="alert alert-danger mt-3 mb-0">{{ emailSubmitError }}</div>
+						<div *ngIf="emailSubmitSuccess" class="alert alert-success mt-3 mb-0">{{ emailSubmitSuccess }}</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-secondary" (click)="closeEmailPopup()">Cancel</button>
+						<button type="button" class="btn btn-primary" [disabled]="isSendingEmail" (click)="submitEmailPopup()">
+							{{ isSendingEmail ? 'Sending...' : 'Submit' }}
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div *ngIf="showEmailPopup" class="modal-backdrop fade show"></div>
+
 		<!-- Footer Actions -->
 		<div class="footer fixed-bottom cncsnFooter">
 			<div id="stButtonBottomBar" class="row g-0">

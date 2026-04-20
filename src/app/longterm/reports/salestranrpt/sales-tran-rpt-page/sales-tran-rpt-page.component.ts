@@ -10,6 +10,7 @@ import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { Router } from '@angular/router';
 import { LTC_Associates } from 'src/app/longterm/models/location.associates';
 import { SendEmailRequest } from 'src/app/longterm/services/pos-api-service';
+import { ToastService } from '../../../../services/toast.service';
 
 @Component({
   selector: 'app-sales-tran-rpt-page',
@@ -72,7 +73,8 @@ export class SalesTranRptPageComponent implements OnInit {
   constructor(private locationConfigStore: Store<LocationConfigState>, 
     private salesTranSvc: PosApiService,
     private _logonDataSvc: LogonDataService,
-    private router: Router) {
+    private router: Router,
+    private toastService: ToastService) {
   }
 
   public ngOnInit(): void {
@@ -315,6 +317,7 @@ export class SalesTranRptPageComponent implements OnInit {
         if (result?.success) {
           this.emailSubmitSuccess = 'Email sent successfully.';
           this.showEmailPopup = false;
+          this.toastService.success('Email sent successfully.');
           return;
         }
 

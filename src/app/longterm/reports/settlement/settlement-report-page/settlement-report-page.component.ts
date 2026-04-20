@@ -2,9 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { PosApiService } from '../../../services/pos-api-service';
+import { LTC_Associates } from '../../../models/location.associates';
+import { PosApiService, SendEmailRequest } from '../../../services/pos-api-service';
 import { LTC_SettlementDetails, SettlementReportResultModel } from '../models';
 import { LogonDataService } from '../../../../global/logon-data-service.service';
+import { ToastService } from '../../../../services/toast.service';
 
 export interface FacilityGroup {
   facilityNumber: string;
@@ -58,6 +60,14 @@ export class SettlementReportPageComponent implements OnInit {
   stlmtRptDataMdl: SettlementReportResultModel | null = null;
   selectedMonth: number = new Date().getMonth() + 1;
   selectedYear: number = new Date().getFullYear();
+  indivId: number = 0;
+  public SaleAssocList: LTC_Associates[] = [];
+  showEmailPopup: boolean = false;
+  selectedEmailOption: 'self' | 'manager' | 'custom' = 'self';
+  customEmailAddress: string = '';
+  emailSubmitError: string = '';
+  emailSubmitSuccess: string = '';
+  isSendingEmail: boolean = false;
 
   readonly months = [
     { value: 1, label: 'January' },  { value: 2, label: 'February' },
@@ -76,11 +86,13 @@ export class SettlementReportPageComponent implements OnInit {
   constructor(
     private posApiService: PosApiService,
     private logonDataSvc: LogonDataService,
-    private router: Router
+    private router: Router,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
     const locCnfg = this.logonDataSvc.getLocationConfig();
+    this.indivId = locCnfg.individualUID || 0;
     const month = this.getMonthToken();
     this.getSettlmntRptData(locCnfg.contractUID, month, String(locCnfg.individualUID), locCnfg.locationUID);
   }
@@ -93,7 +105,20 @@ export class SettlementReportPageComponent implements OnInit {
         this.stlmtRptDataMdl = result;
         if (result.selectedMonth) this.selectedMonth = result.selectedMonth;
         if (result.selectedYear) this.selectedYear = result.selectedYear;
+
+        this.loadAssociateEmails(lid, Number(uid) || this.indivId);
       });
+  }
+
+  private loadAssociateEmails(locationId: number, individualUID: number): void {
+    this.posApiService.getLocationAssociates(locationId, individualUID).subscribe({
+      next: data => {
+        this.SaleAssocList = data?.associates ?? [];
+      },
+      error: () => {
+        this.SaleAssocList = [];
+      }
+    });
   }
 
   refreshReport(): void {
@@ -359,7 +384,226 @@ export class SettlementReportPageComponent implements OnInit {
   }
 
   onEmail(): void {
-    window.location.href = 'mailto:?subject=Settlement Report';
+    this.selectedEmailOption = this.selfAssociateEmail ? 'self' : (this.managerAssociateEmail ? 'manager' : 'custom');
+    this.customEmailAddress = '';
+    this.emailSubmitError = '';
+    this.emailSubmitSuccess = '';
+    this.showEmailPopup = true;
+  }
+
+  closeEmailPopup(): void {
+    this.showEmailPopup = false;
+    this.isSendingEmail = false;
+  }
+
+  submitEmailPopup(): void {
+    this.emailSubmitError = '';
+    this.emailSubmitSuccess = '';
+
+    const recipientEmail = this.getSelectedRecipientEmail();
+    if (!recipientEmail) {
+      this.emailSubmitError = 'Please select a valid email option.';
+      return;
+    }
+
+    if (!this.isValidEmail(recipientEmail)) {
+      this.emailSubmitError = 'Please enter a valid email address.';
+      return;
+    }
+
+    const request: SendEmailRequest = {
+      EmailAddress: recipientEmail,
+      Subject: this.buildEmailSubject(),
+      EmailContent: this.buildSettlementReportHtml()
+    };
+
+    const uid = this.logonDataSvc.getLocationConfig()?.individualUID || this.indivId;
+    this.isSendingEmail = true;
+    this.posApiService.sendEmail(String(uid), request).subscribe({
+      next: result => {
+        this.isSendingEmail = false;
+        if (result?.success) {
+          this.emailSubmitSuccess = 'Email sent successfully.';
+          this.showEmailPopup = false;
+          this.toastService.success('Email sent successfully.');
+          return;
+        }
+
+        this.emailSubmitError = result?.returnMsg || 'Unable to send email.';
+      },
+      error: () => {
+        this.isSendingEmail = false;
+        this.emailSubmitError = 'Unable to send email.';
+      }
+    });
+  }
+
+  get selfAssociateEmail(): string {
+    return this.SaleAssocList.find(assoc => assoc.individualUID === this.indivId)?.emailAddress?.trim() || '';
+  }
+
+  get managerAssociateEmail(): string {
+    return this.SaleAssocList.find(assoc => (assoc.cODE || '').toUpperCase() === 'RLTYP_CONC_MNGR')?.emailAddress?.trim() || '';
+  }
+
+  private getSelectedRecipientEmail(): string {
+    if (this.selectedEmailOption === 'self') {
+      return this.selfAssociateEmail;
+    }
+    if (this.selectedEmailOption === 'manager') {
+      return this.managerAssociateEmail;
+    }
+    return (this.customEmailAddress || '').trim();
+  }
+
+  private isValidEmail(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  private buildEmailSubject(): string {
+    const fromDate = this.stlmtRptDataMdl?.fromDate || '';
+    const toDate = this.stlmtRptDataMdl?.toDate || '';
+    return `Settlement Report - ${this.displayLocationName} (${fromDate} to ${toDate})`;
+  }
+
+  private buildSettlementReportHtml(): string {
+    const safe = (val: string) => this.escapeHtml(val || '');
+    const gt = this.grandTotals;
+    const sr = this.stlmtRptDataMdl?.settlementReport;
+    const groups = this.facilityGroups;
+    const fromDate = this.stlmtRptDataMdl?.fromDate || '';
+    const toDate = this.stlmtRptDataMdl?.toDate || '';
+    const paymentDueLabel = this.isPACRegion
+      ? (this.isReimbursementDue ? 'Reimbursement Due Concession' : 'Payment Due AAFES (A+A1+A2) - B')
+      : `Payment Due AAFES (A+A1${this.isNBFF ? '+A2' : ''})`;
+    const paymentDueValue = this.isPACRegion ? this.paymentDueAafesPac : this.paymentDueAafes;
+
+    const settlementSummaryRows = groups.map(group => {
+      const detailRows = group.details.map(d => `
+        <tr>
+          <td style="border:1px solid #dee2e6; padding:6px;">${safe(group.facilityNumber)}</td>
+          <td style="border:1px solid #dee2e6; padding:6px;">${safe(d.businessDescription)}</td>
+          <td style="border:1px solid #dee2e6; padding:6px; text-align:right;">${safe(this.formatCurrency(d.grossSales))}</td>
+          <td style="border:1px solid #dee2e6; padding:6px; text-align:right;">${safe(this.formatDeduction(d.less))}</td>
+          <td style="border:1px solid #dee2e6; padding:6px; text-align:right;">${safe(this.formatCurrency(d.netSales))}</td>
+          <td style="border:1px solid #dee2e6; padding:6px; text-align:right;">${safe(this.formatCurrency(d.feeId === 1 ? d.netExchangeFeeFlat : d.netExchangeFeePrcnt))}</td>
+        </tr>`).join('');
+
+      const totalRow = `
+        <tr style="background:#f1f5f9; font-weight:700;">
+          <td style="border:1px solid #dee2e6; padding:6px;">${safe(group.facilityNumber)}</td>
+          <td style="border:1px solid #dee2e6; padding:6px;">Totals</td>
+          <td style="border:1px solid #dee2e6; padding:6px; text-align:right;">${safe(this.formatCurrency(group.totGrSales))}</td>
+          <td style="border:1px solid #dee2e6; padding:6px; text-align:right;">${safe(this.formatDeduction(group.totLess))}</td>
+          <td style="border:1px solid #dee2e6; padding:6px; text-align:right;">${safe(this.formatCurrency(group.totNSales))}</td>
+          <td style="border:1px solid #dee2e6; padding:6px; text-align:right;">${safe(this.formatCurrency(group.totNExFee))}</td>
+        </tr>`;
+
+      return `${detailRows}${totalRow}`;
+    }).join('');
+
+    const accountingRows = this.nonPacAccountingRows.map(row => {
+      const concessionVal = row.concessionPaymentConditional ? '***' : this.formatCurrency(row.concessionPayment);
+      const otherVal = row.otherPayment > 0 ? this.formatCurrency(row.otherPayment) : 'N/A';
+
+      return `
+        <tr>
+          <td style="border:1px solid #dee2e6; padding:6px;">${safe(row.facilityNumber)}</td>
+          <td style="border:1px solid #dee2e6; padding:6px; text-align:right;">${safe(concessionVal)}</td>
+          <td style="border:1px solid #dee2e6; padding:6px; text-align:right;">${safe(otherVal)}</td>
+        </tr>`;
+    }).join('');
+
+    const feeSummaryRows = this.isPACRegion
+      ? `
+        <tr><td style="padding:6px; border:1px solid #dee2e6;">Net Exchange Fee (A)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(gt.totNExFee))}</td></tr>
+        <tr><td style="padding:6px; border:1px solid #dee2e6;">Equipment Rental (A1)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(gt.totEqipfee))}</td></tr>
+        <tr><td style="padding:6px; border:1px solid #dee2e6;">Insurance Amount (A2)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(sr?.insuranceFee ?? 0))}</td></tr>
+        <tr><td style="padding:6px; border:1px solid #dee2e6;">Net Amount Due Concession (B)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(this.tenderSummary.netAmtDueCncsn))}</td></tr>`
+      : `
+        <tr><td style="padding:6px; border:1px solid #dee2e6;">Net Exchange Fee (A)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(gt.totNExFee))}</td></tr>
+        <tr><td style="padding:6px; border:1px solid #dee2e6;">Equipment Rental (A1)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(gt.totEqipfee))}</td></tr>
+        ${this.isNBFF && (sr?.camChrgAmt ?? 0) !== 0
+          ? `<tr><td style="padding:6px; border:1px solid #dee2e6;">CAM Charges (A2)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(sr?.camChrgAmt ?? 0))}</td></tr>`
+          : ''}`;
+
+    return `
+      <div style="font-family: Arial, Helvetica, sans-serif; color:#1f2937;">
+        <div style="padding:12px; border:1px solid #d1d5db; border-radius:8px; margin-bottom:16px; background:#f8fafc;">
+          <h2 style="margin:0 0 8px 0; color:#0d6efd;">Settlement Report</h2>
+          <div><strong>Location:</strong> ${safe(this.displayLocationName)} (${safe(this.facNumber)})</div>
+          <div><strong>Vendor Number:</strong> ${safe(this.displayVendorNumber)}</div>
+          <div><strong>Contract Number:</strong> ${safe(this.stlmtRptDataMdl?.contract?.contractNumber || '')}</div>
+          <div><strong>Date Range:</strong> ${safe(fromDate)} to ${safe(toDate)}</div>
+        </div>
+
+        <h3 style="margin:0 0 8px 0; color:#0d6efd;">Settlement Summary</h3>
+        <table style="width:100%; border-collapse:collapse; margin-bottom:16px;">
+          <thead>
+            <tr style="background:#e9ecef;">
+              <th style="border:1px solid #dee2e6; padding:6px; text-align:left;">Facility</th>
+              <th style="border:1px solid #dee2e6; padding:6px; text-align:left;">Department</th>
+              <th style="border:1px solid #dee2e6; padding:6px; text-align:right;">Net Merchandise Sales</th>
+              <th style="border:1px solid #dee2e6; padding:6px; text-align:right;">Less Net Concession Discounts</th>
+              <th style="border:1px solid #dee2e6; padding:6px; text-align:right;">Fee Based Sales</th>
+              <th style="border:1px solid #dee2e6; padding:6px; text-align:right;">Net Exchange Fee</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${settlementSummaryRows || `<tr><td colspan="6" style="border:1px solid #dee2e6; padding:8px; text-align:center;">No settlement summary data available.</td></tr>`}
+          </tbody>
+        </table>
+
+        <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:16px;">
+          <div style="flex:1; min-width:320px;">
+            <h3 style="margin:0 0 8px 0; color:#0d6efd;">Sales Tax (For Information Purpose Only)</h3>
+            <table style="width:100%; border-collapse:collapse;">
+              <tbody>
+                <tr><td style="padding:6px; border:1px solid #dee2e6;">Tax Collected</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(gt.taxCollected))}</td></tr>
+                <tr><td style="padding:6px; border:1px solid #dee2e6;">Tax Refunded</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatDeduction(gt.taxRefunded))}</td></tr>
+                <tr><td style="padding:6px; border:1px solid #dee2e6;">Net Sales Tax</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(this.netTaxes))}</td></tr>
+                <tr><td style="padding:6px; border:1px solid #dee2e6;">Tax-Exempt Sales</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(gt.noTaxSales))}</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div style="flex:1; min-width:320px;">
+            <h3 style="margin:0 0 8px 0; color:#0d6efd;">Fee Summary</h3>
+            <table style="width:100%; border-collapse:collapse; margin-bottom:8px;">
+              <tbody>
+                <tr><td style="padding:6px; border:1px solid #dee2e6;">Refund Transaction Count</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${sr?.rfndTranCount ?? 0}</td></tr>
+                <tr><td style="padding:6px; border:1px solid #dee2e6;">Cancelled Tickets Count</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${sr?.cnclTktsCount ?? 0}</td></tr>
+                <tr><td style="padding:6px; border:1px solid #dee2e6;">Exchange Coupons Count</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${sr?.exchCpnsCount ?? 0}</td></tr>
+                ${feeSummaryRows}
+                <tr style="background:#fff3cd; font-weight:700;"><td style="padding:6px; border:1px solid #dee2e6;">${safe(paymentDueLabel)}</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(paymentDueValue))}</td></tr>
+              </tbody>
+            </table>
+
+            ${accountingRows
+              ? `<h4 style="margin:12px 0 8px 0; color:#0d6efd;">For Accounting Purpose</h4>
+                 <table style="width:100%; border-collapse:collapse;">
+                   <thead>
+                     <tr style="background:#e9ecef;">
+                       <th style="border:1px solid #dee2e6; padding:6px; text-align:left;">Facility</th>
+                       <th style="border:1px solid #dee2e6; padding:6px; text-align:right;">Concession Payments (223-01)</th>
+                       <th style="border:1px solid #dee2e6; padding:6px; text-align:right;">Other Payments (223-02)</th>
+                     </tr>
+                   </thead>
+                   <tbody>${accountingRows}</tbody>
+                 </table>`
+              : ''}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  private escapeHtml(value: string): string {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 
   goToReportsMenu(): void {
