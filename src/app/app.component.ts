@@ -64,6 +64,13 @@ logonUserRoleType: string = '';
       return 'Reports Menu';
     }
 
+    if (path.includes('/rptbaldue')) {
+      return 'Balance Due Tickets Report';
+    }
+    if (path.includes('/rptcncld')) {
+      return 'Cancelled Tickets Report';
+    }
+
     return 'Point of Sale';
   }
 

@@ -1,1 +1,137 @@
-<p>balance-due-tickets-page works!</p>
+<div class="container-fluid py-3 balance-due-page">
+	<div class="card shadow-sm border-0 mb-3">
+		<div class="card-header report-header">
+			Report Parameters
+		</div>
+		<div class="card-body">
+			<div class="row g-3 align-items-end">
+				<div class="col-12 col-md-3">
+					<label class="form-label fw-semibold">Select Location</label>
+					<input type="text" class="form-control" [value]="facilityNumber || 'All'" readonly>
+				</div>
+
+				<div class="col-12 col-md-3">
+					<label class="form-label fw-semibold">Location Name</label>
+					<input type="text" class="form-control" [value]="locationName" readonly>
+				</div>
+
+				<div class="col-12 col-md-3">
+					<label class="form-label fw-semibold">Contract Number</label>
+					<input type="text" class="form-control" [value]="contractNumber" readonly>
+				</div>
+
+				<div class="col-12 col-md-3">
+					<label class="form-label fw-semibold">Vendor Number</label>
+					<input type="text" class="form-control" [value]="vendorName + (vendorNumber ? ' (' + vendorNumber + ')' : '')" readonly>
+				</div>
+
+				<div class="col-12 col-md-3">
+					<label class="form-label fw-semibold">From Date</label>
+					<input type="date" class="form-control" [value]="formatDate(fromDate)" (change)="onFromDateChange($any($event.target).value)">
+				</div>
+
+				<div class="col-12 col-md-3">
+					<label class="form-label fw-semibold">To Date</label>
+					<input type="date" class="form-control" [value]="formatDate(toDate)" (change)="onToDateChange($any($event.target).value)">
+				</div>
+
+				<div class="col-12 col-md-3 d-grid d-md-flex justify-content-md-end">
+					<button type="button" class="btn btn-primary px-4" (click)="onRefreshClick()">Refresh</button>
+				</div>
+			</div>
+		</div>
+	</div>
+<!--
+	<div *ngIf="isLoading" class="alert alert-info" role="status">
+		Loading balance due tickets...
+	</div>
+
+	<div *ngIf="!isLoading && !hasTickets" class="alert alert-warning text-center py-4">
+		<div class="fw-semibold">Vendor does not have information for this time period and/or for this contract.</div>
+	</div>
+-->
+	<ng-container>
+		<div class="table-title mb-2">Balance Due Tickets</div>
+
+		<div class="card border-0 shadow-sm mb-3">
+			<div class="table-responsive">
+				<table class="table table-striped table-hover align-middle mb-0">
+					<thead>
+						<tr>
+							<th class="text-center">Ticket ID</th>
+							<th class="text-center">Ticket Date</th>
+							<th class="text-center">Days Elapsed</th>
+							<th class="text-end">Total Amount</th>
+							<th class="text-end">Balance Due</th>
+							<th class="text-center">Payment Due Date</th>
+							<th>Customer Name</th>
+							<th>Customer Email</th>
+							<th>Phone Number</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr *ngFor="let ticket of balDueTickets">
+							<td class="text-center">
+								<a [routerLink]="['/ltktrcpt']" [queryParams]="{ TxnId: ticket.transactionID }" class="link-primary">{{ ticket.ticketID }}</a>
+							</td>
+							<td class="text-center">{{ ticket.dropOffDate | date:'MM/dd/yyyy' }}</td>
+							<td class="text-center">{{ ticket.daysElapsed }}</td>
+							<td class="text-end">{{ getAmount(ticket) | currency:'USD':'symbol':'1.2-2' }}</td>
+							<td class="text-end">{{ getBalanceDue(ticket) | currency:'USD':'symbol':'1.2-2' }}</td>
+							<td class="text-center">{{ isValidDueDate(ticket.payByDueDate) ? (ticket.payByDueDate | date:'MM/dd/yyyy') : 'N/A' }}</td>
+							<td>{{ ticket.customerName || 'N/A' }}</td>
+							<td>{{ ticket.emailAddress ? ticket.emailAddress.toLowerCase() : 'N/A' }}</td>
+							<td>{{ formatPhone(ticket.phoneNumber, ticket.countryDialCode) }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</ng-container>
+
+	<div class="footer fixed-bottom cncsnFooter">
+		<div id="stButtonBottomBar" class="row g-0">
+			<div class="col-12 col-md-4">
+				<button
+					class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
+					id="btnEmailBalanceDueRpt"
+					aria-label="Email Balance Due Tickets Report"
+					(click)="onEmail()">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-fill" viewBox="0 0 16 16">
+						<path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414z"></path>
+						<path d="M0 4.697v7.104l5.803-3.558z"></path>
+						<path d="M6.761 8.83 0 12.97A2 2 0 0 0 2 14h12a2 2 0 0 0 2-1.03L9.239 8.83 8 9.586z"></path>
+						<path d="M16 4.697v7.104l-5.803-3.558z"></path>
+					</svg>
+					<span>Email</span>
+				</button>
+			</div>
+			<div class="col-12 col-md-4">
+				<button
+					class="border border-white btn btn-info btn-lg ftrbtn goToST w-100 d-flex align-items-center justify-content-center gap-2"
+					id="btnReportsMenu"
+					aria-label="Go To Reports Menu"
+					(click)="goToReportsMenu()">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-fill" viewBox="0 0 16 16">
+						<path d="M0 0h1v15h15v1H0z"></path>
+						<path d="M2 10h2v5H2zm4-6h2v11H6zm4 3h2v8h-2zm4-5h2v13h-2z"></path>
+					</svg>
+					<span>Reports</span>
+				</button>
+			</div>
+			<div class="col-12 col-md-4">
+				<button
+					class="border border-white btn btn-info btn-lg ftrbtn goToST w-100 d-flex align-items-center justify-content-center gap-2"
+					id="btnSalesTran"
+					aria-label="Go To Sales Transaction"
+					(click)="goToSalesTransaction()">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-fill" viewBox="0 0 16 16">
+						<path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5A.5.5 0 0 1 0 1.5"></path>
+						<path d="M5 12a2 2 0 1 0 0 4a2 2 0 0 0 0-4m5 0a2 2 0 1 0 0 4a2 2 0 0 0 0-4"></path>
+					</svg>
+					<span>Sales Transaction</span>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>

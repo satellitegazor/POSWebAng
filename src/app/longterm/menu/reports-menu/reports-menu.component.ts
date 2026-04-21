@@ -18,4 +18,13 @@ export class ReportsMenuComponent {
     this.router.navigate(['/rptsettlement']);
   }
 
+  goToBalanceDueTickets(): void {
+    this.router.navigate(['/rptbaldue']);
+  }
+
+  goToCancelledTickets(): void {
+    this.router.navigate(['/rptcncld']);
+  }
+
+
 }

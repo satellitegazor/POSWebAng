@@ -2,15 +2,15 @@ import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angula
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
-import { CouponType } from 'src/app/global/global.constants';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
+import { CouponType } from '../../../../global/global.constants';
+import { LogonDataService } from '../../../../global/logon-data-service.service';
 import { updateCheckoutTotals, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn } from '../../store/ticketstore/ticket.action';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
-import { currSymbls } from 'src/app/models/CurrencySymbols';
-import { ToastService, ToastType } from 'src/app/services/toast.service';
-import { TicketSplit } from 'src/app/models/ticket.split';
+import { currSymbls } from '../../../../models/CurrencySymbols';
+import { ToastService, ToastType } from '../../../../services/toast.service';
+import { TicketSplit } from '../../../../models/ticket.split';
 import { getTktObjSelector } from '../../store/ticketstore/ticket.selector';
-import { UtilService } from 'src/app/services/util.service';
+import { UtilService } from '../../../../services/util.service';
 
 @Component({
     selector: 'app-coupons',

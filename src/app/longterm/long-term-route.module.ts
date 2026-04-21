@@ -22,6 +22,8 @@ import { SettlementReportPageComponent } from './reports/settlement/settlement-r
 import { NoSaleReportPageComponent } from './reports/nosalerpt/no-sale-report-page/no-sale-report-page.component';
 import { ReportsMenuComponent } from './menu/reports-menu/reports-menu.component';
 import { TktReceiptComponent} from './receipt/tkt-receipt/tkt-receipt.component';
+import { BalanceDueTicketsPageComponent } from './reports/balduetkts/balance-due-tickets-page/balance-due-tickets-page.component';
+import { CanceledTicketsPageComponent } from './reports/cncledtkts/canceled-tickets-page/canceled-tickets-page.component';
 
 const routes: Routes = [
   { path: 'salestran', component: ItemSelectionBasePageComponent },
@@ -40,7 +42,10 @@ const routes: Routes = [
   { path: 'rptsalestran', component: SalesTranRptPageComponent },
   { path: 'rptsettlement', component: SettlementReportPageComponent },
   { path: 'rptnosale', component: NoSaleReportPageComponent },
-  { path: 'ltktrcpt', component: TktReceiptComponent }
+  { path: 'ltktrcpt', component: TktReceiptComponent },
+  { path: 'rptbaldue', component: BalanceDueTicketsPageComponent },
+  { path: 'rptcncld', component: CanceledTicketsPageComponent }
+
 ];
 @NgModule({
     imports: [RouterModule.forChild(routes)],

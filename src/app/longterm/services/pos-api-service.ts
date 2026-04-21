@@ -24,6 +24,7 @@ import { ContractSummaryReport } from '../../models/sales.tran.report.models';
 import { VendorContractSummaryResultsModel } from '../../models/saletran.report.model';
 import { LTC_StoreLocation_Result } from '../models/store.location';
 import { SettlementReportResultModel } from '../reports/settlement/models';
+import { LTC_BalanceDueTicketsResultsModel } from '../models/balancedue.tickets.model';
 
 
 @Injectable({
@@ -215,6 +216,27 @@ export class PosApiService {
                 + '&uid=' + uid
                 + '&DBVal=' + DBVal.toString()
                 + '&FrgnCurr=' + FrgnCurr,
+            { headers: this.headerObjs }
+        );
+    }
+
+    public getBalanceDueTickets(
+        cid: number,
+        lid: number,
+        fNum: string,
+        fDt: string,
+        tDt: string,
+        uid: string,
+        guid: string = GlobalConstants.GET_GUID
+    ): Observable<LTC_BalanceDueTicketsResultsModel> {
+        return this.httpClient.get<LTC_BalanceDueTicketsResultsModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/GetBalanceDueTickets?guid=' + encodeURIComponent(guid)
+                + '&cid=' + cid.toString()
+                + '&lid=' + lid.toString()
+                + '&fNum=' + encodeURIComponent(fNum)
+                + '&fDt=' + encodeURIComponent(fDt)
+                + '&tDt=' + encodeURIComponent(tDt)
+                + '&uid=' + encodeURIComponent(uid),
             { headers: this.headerObjs }
         );
     }

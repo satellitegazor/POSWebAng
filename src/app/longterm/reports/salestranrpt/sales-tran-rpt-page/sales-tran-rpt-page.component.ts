@@ -2,14 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { LocationConfigState } from '../../../saletran/store/locationconfigstore/locationconfig.state';
 import { SalesTranRptDetailComponent } from '../detail/detail.component';
-import { getLocationConfigSelector } from 'src/app/longterm/saletran/store/locationconfigstore/locationconfig.selector';
+import { getLocationConfigSelector } from '../../../../longterm/saletran/store/locationconfigstore/locationconfig.selector';
 import { filter, take } from 'rxjs';
-import { PosApiService } from 'src/app/longterm/services/pos-api-service';
+import { PosApiService } from '../../../../longterm/services/pos-api-service';
 import { ContractSummaryGrouped, ContractTransactionDetail, SalesTranRptSummaryByFacility, VendorContractSummaryResultsModel } from 'src/app/models/saletran.report.model';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
+import { LogonDataService } from '../../../../global/logon-data-service.service';
 import { Router } from '@angular/router';
-import { LTC_Associates } from 'src/app/longterm/models/location.associates';
-import { SendEmailRequest } from 'src/app/longterm/services/pos-api-service';
+import { LTC_Associates } from '../../../../longterm/models/location.associates';
+import { SendEmailRequest } from '../../../../longterm/services/pos-api-service';
 import { ToastService } from '../../../../services/toast.service';
 
 @Component({

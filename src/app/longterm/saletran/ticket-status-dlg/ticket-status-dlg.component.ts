@@ -13,10 +13,10 @@ import {
 } from '../../models/ticket.status.location.models';
 import { PosApiService, UpdateTicketStatusLocationRequest } from '../../services/pos-api-service';
 import { Store } from '@ngrx/store';
-import { TktObjState } from 'src/app/app.state';
+import { TktObjState } from '../../../app.state';
 import { getSavedTicketResult, getTktObjSelector } from '../store/ticketstore/ticket.selector';
-import { SaveTicketResultsModel } from 'src/app/models/ticket.split';
-import { ToastService } from 'src/app/services/toast.service';
+import { SaveTicketResultsModel } from '../../../models/ticket.split';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   selector: 'app-ticket-status-dlg',
