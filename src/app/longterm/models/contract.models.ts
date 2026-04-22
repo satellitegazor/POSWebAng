@@ -1,5 +1,6 @@
 import { LTC_Individual, LTC_StoreLocation } from './store.location';
 import { CPOS_RegionCountryCurrencyResultsModel } from './region.currency.models';
+import { MobileBase } from '../../models/mobile.base';
 
 export class Vendor {
 	id: number = 0;
@@ -54,4 +55,9 @@ export class LTC_Contract {
 	hasUpdates: boolean = false;
 	cliTimeVar: number = 0;
 	cntrctTranCount: number = 0;
+}
+
+export class LTC_ContractResultsModel {
+	results: MobileBase = {} as MobileBase;
+	contract: LTC_Contract = new LTC_Contract();
 }

@@ -25,6 +25,11 @@ import { VendorContractSummaryResultsModel } from '../../models/saletran.report.
 import { LTC_StoreLocation_Result } from '../models/store.location';
 import { SettlementReportResultModel } from '../reports/settlement/models';
 import { LTC_BalanceDueTicketsResultsModel } from '../models/balancedue.tickets.model';
+import { LTC_NoSaleResultsModel } from '../models/nosale.report.model';
+import { LTC_CancelledTicketsResultsModel } from '../models/canceled.tickets.model';
+import { CashDrawerSummaryResultsModel, LTC_CashDrawerVariance } from '../models/cash.drawer.model';
+import { LTC_ItemButtonMenuResultsModel } from '../models/item.button.menu.models';
+import { LTC_ContractResultsModel } from '../models/contract.models';
 
 
 @Injectable({
@@ -236,6 +241,120 @@ export class PosApiService {
                 + '&fNum=' + encodeURIComponent(fNum)
                 + '&fDt=' + encodeURIComponent(fDt)
                 + '&tDt=' + encodeURIComponent(tDt)
+                + '&uid=' + encodeURIComponent(uid),
+            { headers: this.headerObjs }
+        );
+    }
+
+    public getNoSaleReport(
+        cid: number,
+        lid: number,
+        fNum: string,
+        fDt: string,
+        tDt: string,
+        uid: string,
+        guid: string = GlobalConstants.GET_GUID
+    ): Observable<LTC_NoSaleResultsModel> {
+        return this.httpClient.get<LTC_NoSaleResultsModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/GetNoSaleReport?guid=' + encodeURIComponent(guid)
+                + '&cid=' + cid.toString()
+                + '&lid=' + lid.toString()
+                + '&fNum=' + encodeURIComponent(fNum)
+                + '&fDt=' + encodeURIComponent(fDt)
+                + '&tDt=' + encodeURIComponent(tDt)
+                + '&uid=' + encodeURIComponent(uid),
+            { headers: this.headerObjs }
+        );
+    }
+
+    public getCancelledTickets(
+        cid: number,
+        lid: number,
+        fNum: string,
+        fDt: string,
+        tDt: string,
+        uid: string,
+        guid: string = GlobalConstants.GET_GUID
+    ): Observable<LTC_CancelledTicketsResultsModel> {
+        return this.httpClient.get<LTC_CancelledTicketsResultsModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/GetCancelledTickets?guid=' + encodeURIComponent(guid)
+                + '&cid=' + cid.toString()
+                + '&lid=' + lid.toString()
+                + '&fNum=' + encodeURIComponent(fNum)
+                + '&fDt=' + encodeURIComponent(fDt)
+                + '&tDt=' + encodeURIComponent(tDt)
+                + '&uid=' + encodeURIComponent(uid),
+            { headers: this.headerObjs }
+        );
+    }
+
+    public getCashDrawerReport(
+        cid: number,
+        lid: number,
+        fNum: string,
+        fDt: string,
+        tDt: string,
+        uid: string,
+        guid: string = GlobalConstants.GET_GUID
+    ): Observable<CashDrawerSummaryResultsModel> {
+        return this.httpClient.get<CashDrawerSummaryResultsModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/GetCashDrawerReport?guid=' + encodeURIComponent(guid)
+                + '&cid=' + cid.toString()
+                + '&lid=' + lid.toString()
+                + '&fNum=' + encodeURIComponent(fNum)
+                + '&fDt=' + encodeURIComponent(fDt)
+                + '&tDt=' + encodeURIComponent(tDt)
+                + '&uid=' + encodeURIComponent(uid),
+            { headers: this.headerObjs }
+        );
+    }
+
+    public getCashDrawerVariance(
+        lid: number,
+        maintTS: string,
+        uid: string,
+        guid: string = GlobalConstants.GET_GUID
+    ): Observable<LTC_CashDrawerVariance> {
+        return this.httpClient.get<LTC_CashDrawerVariance>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/GetCashDrawerVariance?guid=' + encodeURIComponent(guid)
+                + '&lid=' + lid.toString()
+                + '&maintTS=' + encodeURIComponent(maintTS)
+                + '&uid=' + encodeURIComponent(uid),
+            { headers: this.headerObjs }
+        );
+    }
+
+    public getConcessionMenuItem(
+        pLocationUID: number,
+        pContractUID: number,
+        pFacilityUID: number,
+        pBusinessFunctionUID: number,
+        pSalesCatUID: number,
+        pDepartmentUID: number,
+        uid: string,
+        guid: string = GlobalConstants.GET_GUID
+    ): Observable<LTC_ItemButtonMenuResultsModel> {
+        return this.httpClient.get<LTC_ItemButtonMenuResultsModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/GetConcessionMenuItem?guid=' + encodeURIComponent(guid)
+                + '&uid=' + encodeURIComponent(uid)
+                + '&pLocationUID=' + pLocationUID.toString()
+                + '&pContractUID=' + pContractUID.toString()
+                + '&pFacilityUID=' + pFacilityUID.toString()
+                + '&pBusinessFunctionUID=' + pBusinessFunctionUID.toString()
+                + '&pSalesCatUID=' + pSalesCatUID.toString()
+                + '&pDepartmentUID=' + pDepartmentUID.toString(),
+            { headers: this.headerObjs }
+        );
+    }
+
+    public loadLTCContract(
+        contractUID: number,
+        uid: string,
+        guid: string = GlobalConstants.GET_GUID
+    ): Observable<LTC_ContractResultsModel> {
+        return this.httpClient.get<LTC_ContractResultsModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/LoadLTCContract?guid=' + encodeURIComponent(guid)
+                + '&contractUID=' + contractUID.toString()
                 + '&uid=' + encodeURIComponent(uid),
             { headers: this.headerObjs }
         );

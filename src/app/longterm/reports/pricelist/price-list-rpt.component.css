@@ -1,0 +1,43 @@
+/* Report card header */
+.rpt-header {
+  background: linear-gradient(90deg, #0a3559 0%, #0f4c81 100%);
+  color: #fff;
+}
+
+/* Location block */
+.location-header {
+  background-color: #f9f9f9;
+  border: 1px solid #cad6e2;
+  border-radius: 6px;
+}
+
+/* Department header */
+.dept-header {
+  background-color: #e7edf3;
+  border: 1px solid #cad6e2;
+  border-radius: 4px;
+  color: #6495ed;
+}
+
+/* Category card header (set-up) */
+.category-header {
+  background-color: #0f4c81;
+  color: #fff;
+}
+
+/* Category card header (not set up) */
+.category-header-not-setup {
+  background-color: #fff3cd;
+}
+
+/* Table header */
+.rpt-table-head th {
+  background-color: #0a3559;
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+/* Add bottom padding so fixed footer doesn't cover content */
+.container-fluid {
+  padding-bottom: 80px;
+}

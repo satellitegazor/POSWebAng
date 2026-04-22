@@ -52,26 +52,28 @@ logonUserRoleType: string = '';
   get centerHeadingTitle(): string {
     const path = (this.route.url || '').split('?')[0].toLowerCase();
 
-    if (path.includes('/rptsettlement')) {
-      return 'Settlement Report';
+    switch (true) {
+      case path.includes('/rptsettlement'):
+        return 'Settlement Report';
+      case path.includes('/rptsalestran'):
+        return 'Sales Transaction Report';
+      case path.includes('/rptmenu'):
+        return 'Reports Menu';
+      case path.includes('/rptbaldue'):
+        return 'Balance Due Tickets Report';
+      case path.includes('/rptcncld'):
+        return 'Cancelled Tickets Report';
+      case path.includes('/rptnosale'):
+        return 'No Sale Report';
+      case path.includes('/ltktrcpt'):
+        return 'Ticket Receipt';
+      case path.includes('/rptpricelist'):
+        return 'Price List Report';
+      case path.includes('/rptcashdrw'):
+        return 'Cash Drawer Report';
+      default:
+        return 'Point of Sale';
     }
-
-    if (path.includes('/rptsalestran') || path.includes('/salestranrpt')) {
-      return 'Sales Transaction Report';
-    }
-
-    if (path.includes('/rptmenu') || path.includes('/reportsmenu')) {
-      return 'Reports Menu';
-    }
-
-    if (path.includes('/rptbaldue')) {
-      return 'Balance Due Tickets Report';
-    }
-    if (path.includes('/rptcncld')) {
-      return 'Cancelled Tickets Report';
-    }
-
-    return 'Point of Sale';
   }
 
   public ngOnInit(): void {

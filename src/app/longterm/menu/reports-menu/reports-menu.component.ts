@@ -8,6 +8,11 @@ import { Router } from '@angular/router';
   styleUrl: './reports-menu.component.css'
 })
 export class ReportsMenuComponent {
+
+  
+  goToNoSaleReport() {
+    this.router.navigate(['/rptnosale']);
+  }
   constructor(private router: Router) {}
 
   goToSalesTransactionReport(): void {
@@ -26,5 +31,10 @@ export class ReportsMenuComponent {
     this.router.navigate(['/rptcncld']);
   }
 
-
+  goToCashDrawerReport() {
+    this.router.navigate(['/rptcashdrw']);
+  }
+  goToPriceListReport() {
+    this.router.navigate(['/rptpricelist']);
+  }
 }

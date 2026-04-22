@@ -268,13 +268,13 @@
                             <td>Total</td>
                             <td class="text-center">{{summaryTotals.nbrTrans}}</td>
                             <td class="text-center">{{summaryTotals.nbrTender}}</td>
-                            <td class="text-end d-none">{{summaryTotals.sales | currency}}</td>
-                            <td class="text-end d-none">{{summaryTotals.salesTax | currency}}</td>
-                            <td class="text-end d-none">{{summaryTotals.vendorCoupons | currency}}</td>
-                            <td class="text-end d-none">{{summaryTotals.exchangeCoupons | currency}}</td>
-                            <td class="text-end d-none">{{summaryTotals.lineItmKatsaCpnAmt | currency}}</td>
-                            <td class="text-center d-none">{{summaryTotals.tipAmount | currency}}</td>
-                            <td class="text-end">{{summaryTotals.sales | currency}}</td>
+                            <td class="text-end d-none">{{summaryTotals.sales | appPosCurrency}}</td>
+                            <td class="text-end d-none">{{summaryTotals.salesTax | appPosCurrency}}</td>
+                            <td class="text-end d-none">{{summaryTotals.vendorCoupons | appPosCurrency}}</td>
+                            <td class="text-end d-none">{{summaryTotals.exchangeCoupons | appPosCurrency}}</td>
+                            <td class="text-end d-none">{{summaryTotals.lineItmKatsaCpnAmt | appPosCurrency}}</td>
+                            <td class="text-center d-none">{{summaryTotals.tipAmount | appPosCurrency}}</td>
+                            <td class="text-end">{{summaryTotals.sales | appPosCurrency}}</td>
                             <td class="text-end">{{summaryTotals.pct | number:'1.2-2'}}%</td>
                         </tr>
 

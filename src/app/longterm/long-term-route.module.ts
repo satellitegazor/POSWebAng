@@ -24,6 +24,8 @@ import { ReportsMenuComponent } from './menu/reports-menu/reports-menu.component
 import { TktReceiptComponent} from './receipt/tkt-receipt/tkt-receipt.component';
 import { BalanceDueTicketsPageComponent } from './reports/balduetkts/balance-due-tickets-page/balance-due-tickets-page.component';
 import { CanceledTicketsPageComponent } from './reports/cncledtkts/canceled-tickets-page/canceled-tickets-page.component';
+import { CashDrawerReportPageComponent } from './reports/cashdrawrpt/cash-drawer-report-page.component'
+import { PriceListRptComponent } from './reports/pricelist/price-list-rpt.component'
 
 const routes: Routes = [
   { path: 'salestran', component: ItemSelectionBasePageComponent },
@@ -44,7 +46,10 @@ const routes: Routes = [
   { path: 'rptnosale', component: NoSaleReportPageComponent },
   { path: 'ltktrcpt', component: TktReceiptComponent },
   { path: 'rptbaldue', component: BalanceDueTicketsPageComponent },
-  { path: 'rptcncld', component: CanceledTicketsPageComponent }
+  { path: 'rptcncld', component: CanceledTicketsPageComponent },
+  { path: 'rptpricelist', component: PriceListRptComponent },
+  { path: 'rptcashdrw', component: CashDrawerReportPageComponent }
+
 
 ];
 @NgModule({
