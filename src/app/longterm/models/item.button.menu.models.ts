@@ -6,19 +6,19 @@ export class LTC_ItemButtonMenuResultsModel {
 }
 
 export class LTC_ItemButtonMenuResults {
-	locationUid: number = 0;
+	locationUID: number = 0;
 	locationName: string = '';
-	businessFunctionUid: number = 0;
+	businessFunctionUID: number = 0;
 	businessFunctionDescription: string = '';
 	businessModel: string = '';
 	departmentName: string = '';
-	contractUid: string = '';
+	contractUID: string = '';
 	facilityNumber: string = '';
-	facilityUid: number = 0;
-	departmentUid: number = 0;
-	salesCategoryId: number = 0;
+	facilityUID: number = 0;
+	departmentUID: number = 0;
+	salesCategoryID: number = 0;
 	salesCategoryDescription: string = '';
-	salesItemId: number = 0;
+	salesItemID: number = 0;
 	salesItemDescription: string = '';
 	displayOrder: number = 0;
 	displayOrderItem: number = 0;
@@ -49,5 +49,5 @@ export class LTC_ItemButtonMenuResults {
 	defaultCurrency: string = '';
 	currencyCode: string = '';
 	currencyDesc: string = '';
-	salesCatTypeUid: number = 0;
+	salesCatTypeUID: number = 0;
 }

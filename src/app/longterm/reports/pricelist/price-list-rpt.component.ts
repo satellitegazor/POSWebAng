@@ -1,16 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PosApiService } from '../../services/pos-api-service';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
+import { LogonDataService } from '../../../global/logon-data-service.service';
 import { Router } from '@angular/router';
 import { LTC_ItemButtonMenuResults, LTC_ItemButtonMenuResultsModel } from '../../models/item.button.menu.models';
+import { currSymbls } from '../../../models/CurrencySymbols';
+
 
 // View models for grouped menu structure
 export interface LTC_Department {
-  facilityUid: number;
-  departmentUid: number;
+  facilityUID: number;
+  departmentUID: number;
   description: string;
-  locationUid: number;
+  locationUID: number;
   locationName: string;
   allowTags: boolean | null;
   custInfoReq: boolean | null;
@@ -21,25 +23,25 @@ export interface LTC_Department {
 }
 
 export interface SalesCategory {
-  locationUid: number;
-  facilityUid: number;
+  locationUID: number;
+  facilityUID: number;
   displayOrder: number;
-  departmentUid: number;
-  businessFunctionId: number;
-  salesCategoryId: number;
-  salesCatTypeUid: number;
+  departmentUID: number;
+  businessFunctionUID: number;
+  salesCategoryID: number;
+  salesCatTypeUID: number;
   salesCategoryDescription: string;
   price: number | null;
   allowEnvTax: boolean | null;
 }
 
 export interface SalesItem {
-  locationUid: number;
-  facilityUid: number;
+  locationUID: number;
+  facilityUID: number;
   displayOrderItem: number;
-  businessFunctionId: number;
-  salesCategoryId: number;
-  salesItemId: number;
+  businessFunctionUID: number;
+  salesCategoryID: number;
+  salesItemID: number;
   salesItemDescription: string;
   salesCategoryDescription: string;
   salesTax: number;
@@ -55,7 +57,7 @@ export interface SalesItem {
 }
 
 export interface MenuLocationSummary {
-  locationUid: number;
+  locationUID: number;
   locationName: string;
   allowTaxExemption: boolean | null;
   vendCouponsAfterTax: boolean | null;
@@ -84,6 +86,7 @@ export class PriceListRptComponent implements OnInit {
   loading = false;
   menuItems: LTC_ItemButtonMenuResultsModel | null = null;
   menuModel: MenuModel | null = null;
+  private collapsedCategoryKeys = new Set<string>();
 
   // Report parameters
   locationName: string = '';
@@ -137,6 +140,7 @@ export class PriceListRptComponent implements OnInit {
       next: (result: LTC_ItemButtonMenuResultsModel) => {
         this.menuItems = result;
         this.menuModel = this.buildMenuModel(result);
+        this.collapsedCategoryKeys.clear();
         this.loading = false;
       },
       error: (err) => {
@@ -160,20 +164,38 @@ export class PriceListRptComponent implements OnInit {
 
     if (!items.length) return menuModel;
 
-    // Distinct departments by {departmentUid, facilityUid}
+    // Distinct locations by locationUID
+    const locSeen = new Map<number, boolean>();
+    menuModel.locations = items
+      .filter(x => {
+        if (locSeen.has(x.locationUID)) return false;
+        locSeen.set(x.locationUID, true);
+        return true;
+      })
+      .map(x => ({
+        locationUID: x.locationUID,
+        locationName: x.locationName,
+        allowTaxExemption: x.allowTaxExemption,
+        vendCouponsAfterTax: x.vendCouponsAfterTax,
+        exchCouponsAfterTax: x.exchCouponsAfterTax,
+        openCashDrwForTips: x.openCashDrwForTips,
+        businessModel: x.businessModel
+      }));
+
+    // Distinct departments by {locationUID, departmentUID, facilityUID}
     const deptSeen = new Map<string, boolean>();
     menuModel.departments = items
       .filter(x => {
-        const key = `${x.departmentUid}_${x.facilityUid}`;
+        const key = `${x.locationUID}_${x.departmentUID}_${x.facilityUID}`;
         if (deptSeen.has(key)) return false;
         deptSeen.set(key, true);
         return true;
       })
       .map(d => ({
-        facilityUid: d.facilityUid,
-        departmentUid: d.departmentUid,
+        facilityUID: d.facilityUID,
+        departmentUID: d.departmentUID,
         description: d.departmentName,
-        locationUid: d.locationUid,
+        locationUID: d.locationUID,
         locationName: d.locationName,
         allowTags: d.allowTags,
         custInfoReq: d.custInfoReq,
@@ -183,115 +205,116 @@ export class PriceListRptComponent implements OnInit {
         allowEnvTax: d.allowEnvTax ?? false
       }));
 
-    // For each department, build a distinct-by-salesCategoryId list of sales categories
-    const gSalesCategories: SalesCategory[][] = [];
-    for (const _dept of menuModel.departments) {
-      const catSeen = new Map<number, boolean>();
-      const cats: SalesCategory[] = items
-        .filter(x => {
-          if (catSeen.has(x.salesCategoryId)) return false;
-          catSeen.set(x.salesCategoryId, true);
-          return true;
-        })
-        .map(x => ({
-          locationUid: x.locationUid,
-          facilityUid: x.facilityUid,
-          displayOrder: x.displayOrder,
-          departmentUid: x.departmentUid,
-          businessFunctionId: x.businessFunctionUid,
-          salesCategoryId: x.salesCategoryId,
-          salesCatTypeUid: x.salesCatTypeUid,
-          salesCategoryDescription: x.salesCategoryDescription,
-          price: x.price,
-          allowEnvTax: x.allowEnvTax
-        }));
-      menuModel.salesCategories = cats;
-      gSalesCategories.push(cats);
-    }
-    menuModel.gSalesCategories = gSalesCategories;
-
-    // For each sales category in each group, build a distinct-by-salesItemId list of sales items
-    const gSalesItems: SalesItem[][] = [];
-    for (const catGroup of menuModel.gSalesCategories) {
-      if (catGroup) {
-        for (let i = 0; i < catGroup.length; i++) {
-          const itemSeen = new Map<number, boolean>();
-          const salesItems: SalesItem[] = items
-            .filter(x => {
-              if (itemSeen.has(x.salesItemId)) return false;
-              itemSeen.set(x.salesItemId, true);
-              return true;
-            })
-            .map(x => ({
-              locationUid: x.locationUid,
-              facilityUid: x.facilityUid,
-              displayOrderItem: x.displayOrderItem,
-              businessFunctionId: x.businessFunctionUid,
-              salesCategoryId: x.salesCategoryId,
-              salesItemId: x.salesItemId,
-              salesItemDescription: x.salesItemDescription,
-              salesCategoryDescription: x.salesCategoryDescription,
-              salesTax: parseFloat((x.salesTax ?? 0).toFixed(4)),
-              price: (x.price ?? 0).toFixed(2),
-              exchCouponsAfterTax: x.exchCouponsAfterTax,
-              vendCouponsAfterTax: x.vendCouponsAfterTax,
-              allowTaxExemption: x.allowTaxExemption,
-              allowEnvTax: x.allowEnvTax,
-              envTax: x.envTax ?? 0,
-              defaultCurrency: x.defaultCurrency,
-              currencyCode: x.currencyCode,
-              currencyDesc: x.currencyDesc
-            }));
-          menuModel.salesItems = salesItems;
-          gSalesItems.push(salesItems);
-        }
-      }
-    }
-    menuModel.gSalesItems = gSalesItems;
-
-    // Distinct locations by locationUid
-    const locSeen = new Map<number, boolean>();
-    menuModel.locations = items
+    // Distinct sales categories by {locationUID, departmentUID, salesCategoryID, facilityUID}
+    const catSeen = new Map<string, boolean>();
+    menuModel.salesCategories = items
       .filter(x => {
-        if (locSeen.has(x.locationUid)) return false;
-        locSeen.set(x.locationUid, true);
+        const key = `${x.locationUID}_${x.departmentUID}_${x.salesCategoryID}_${x.facilityUID}`;
+        if (catSeen.has(key)) return false;
+        catSeen.set(key, true);
         return true;
       })
       .map(x => ({
-        locationUid: x.locationUid,
-        locationName: x.locationName,
-        allowTaxExemption: x.allowTaxExemption,
-        vendCouponsAfterTax: x.vendCouponsAfterTax,
-        exchCouponsAfterTax: x.exchCouponsAfterTax,
-        openCashDrwForTips: x.openCashDrwForTips,
-        businessModel: x.businessModel
+        locationUID: x.locationUID,
+        facilityUID: x.facilityUID,
+        displayOrder: x.displayOrder,
+        departmentUID: x.departmentUID,
+        businessFunctionUID: x.businessFunctionUID,
+        salesCategoryID: x.salesCategoryID,
+        salesCatTypeUID: x.salesCatTypeUID,
+        salesCategoryDescription: x.salesCategoryDescription,
+        price: x.price,
+        allowEnvTax: x.allowEnvTax
       }));
+
+    // Distinct sale items by {locationUID, departmentUID, salesCategoryID, salesItemID, facilityUID}
+    const itemSeen = new Map<string, boolean>();
+    menuModel.salesItems = items
+      .filter(x => {
+        const key = `${x.locationUID}_${x.departmentUID}_${x.salesCategoryID}_${x.salesItemID}_${x.facilityUID}`;
+        if (itemSeen.has(key)) return false;
+        itemSeen.set(key, true);
+        return true;
+      })
+      .map(x => ({
+        locationUID: x.locationUID,
+        facilityUID: x.facilityUID,
+        displayOrderItem: x.displayOrderItem,
+        businessFunctionUID: x.businessFunctionUID,
+        salesCategoryID: x.salesCategoryID,
+        salesItemID: x.salesItemID,
+        salesItemDescription: x.salesItemDescription,
+        salesCategoryDescription: x.salesCategoryDescription,
+        salesTax: parseFloat((x.salesTax ?? 0).toFixed(4)),
+        price: (x.price ?? 0).toFixed(2),
+        exchCouponsAfterTax: x.exchCouponsAfterTax,
+        vendCouponsAfterTax: x.vendCouponsAfterTax,
+        allowTaxExemption: x.allowTaxExemption,
+        allowEnvTax: x.allowEnvTax,
+        envTax: x.envTax ?? 0,
+        defaultCurrency: x.defaultCurrency,
+        currencyCode: currSymbls.find(c => c.key === x.currencyCode)?.value ?? x.currencyCode,
+        currencyDesc: x.currencyDesc
+      }));
+
+    // Keep grouped arrays aligned to hierarchy for compatibility
+    menuModel.gSalesCategories = menuModel.departments.map((dept) =>
+      menuModel.salesCategories
+        .filter((sc) => sc.locationUID === dept.locationUID && sc.departmentUID === dept.departmentUID)
+        .sort((a, b) => a.displayOrder - b.displayOrder)
+    );
+
+    menuModel.gSalesItems = menuModel.salesCategories.map((cat) =>
+      menuModel.salesItems
+        .filter((si) => si.locationUID === cat.locationUID && si.salesCategoryID === cat.salesCategoryID)
+        .sort((a, b) => a.displayOrderItem - b.displayOrderItem)
+    );
 
     return menuModel;
   }
 
   // Template helper methods
-  getDepartmentsForLocation(locationUid: number): LTC_Department[] {
-    return this.menuModel?.departments.filter(d => d.locationUid === locationUid) ?? [];
+  getDepartmentsForLocation(locationUID: number): LTC_Department[] {
+    return this.menuModel?.departments
+      .filter(d => d.locationUID === locationUID)
+      .sort((a, b) => a.description.localeCompare(b.description)) ?? [];
   }
 
-  getCategoriesForDepartment(departmentUid: number): SalesCategory[] {
+  getCategoriesForDepartment(locationUID: number, departmentUID: number): SalesCategory[] {
     if (!this.menuModel) return [];
     const seen = new Set<number>();
     return this.menuModel.salesCategories
-      .filter(sc => sc.departmentUid === departmentUid && !seen.has(sc.salesCategoryId) && seen.add(sc.salesCategoryId))
+      .filter(sc => sc.locationUID === locationUID && sc.departmentUID === departmentUID && !seen.has(sc.salesCategoryID) && seen.add(sc.salesCategoryID))
       .sort((a, b) => a.displayOrder - b.displayOrder);
   }
 
-  getItemsForCategory(salesCategoryId: number): SalesItem[] {
+  getItemsForCategory(locationUID: number, departmentUID: number, salesCategoryID: number): SalesItem[] {
     return (this.menuModel?.salesItems ?? [])
-      .filter(si => si.salesCategoryId === salesCategoryId && si.price != null);
+      .filter(si => si.locationUID === locationUID && si.salesCategoryID === salesCategoryID && si.price != null)
+      .sort((a, b) => a.displayOrderItem - b.displayOrderItem);
   }
 
-  hasSetupItems(salesCategoryId: number): boolean {
-    return this.getItemsForCategory(salesCategoryId).some(
-      si => si.price !== '0.00' || si.displayOrderItem === 0
+  hasSetupItems(locationUID: number, departmentUID: number, category: SalesCategory): boolean {
+    return this.getItemsForCategory(locationUID, departmentUID, category.salesCategoryID).some(
+      si => si.price !== '0.00' || (si.displayOrderItem === 0 && category.salesCatTypeUID === 3 && si.price === '0.00')
     );
+  }
+
+  private getCategoryKey(locationUID: number, departmentUID: number, salesCategoryID: number): string {
+    return `${locationUID}_${departmentUID}_${salesCategoryID}`;
+  }
+
+  isCategoryCollapsed(locationUID: number, departmentUID: number, salesCategoryID: number): boolean {
+    return this.collapsedCategoryKeys.has(this.getCategoryKey(locationUID, departmentUID, salesCategoryID));
+  }
+
+  toggleCategory(locationUID: number, departmentUID: number, salesCategoryID: number): void {
+    const key = this.getCategoryKey(locationUID, departmentUID, salesCategoryID);
+    if (this.collapsedCategoryKeys.has(key)) {
+      this.collapsedCategoryKeys.delete(key);
+      return;
+    }
+    this.collapsedCategoryKeys.add(key);
   }
 
   get hasData(): boolean {

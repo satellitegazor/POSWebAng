@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 import { LTC_Associates } from '../../../../longterm/models/location.associates';
 import { SendEmailRequest } from '../../../../longterm/services/pos-api-service';
 import { ToastService } from '../../../../services/toast.service';
-import { PosCurrencyDirective } from 'src/app/directives/pos-currency.directive';
+
 
 @Component({
   selector: 'app-sales-tran-rpt-page',

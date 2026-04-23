@@ -82,7 +82,7 @@
       </div>
 
       <!-- For each Department in this Location -->
-      <div *ngFor="let dept of getDepartmentsForLocation(loc.locationUid)" class="mb-4">
+      <div *ngFor="let dept of getDepartmentsForLocation(loc.locationUID)" class="mb-4">
 
         <!-- Department Header -->
         <div class="dept-header text-center py-2 mb-3">
@@ -90,15 +90,22 @@
         </div>
 
         <!-- For each Sales Category in this Department -->
-        <ng-container *ngFor="let sc of getCategoriesForDepartment(dept.departmentUid)">
+        <ng-container *ngFor="let sc of getCategoriesForDepartment(dept.locationUID, dept.departmentUID)">
 
           <!-- Category has items set up -->
-          <ng-container *ngIf="hasSetupItems(sc.salesCategoryId); else noItems">
+          <ng-container *ngIf="hasSetupItems(dept.locationUID, dept.departmentUID, sc); else noItems">
             <div class="card mb-3 category-card">
-              <div class="card-header category-header text-center">
+              <button
+                type="button"
+                class="card-header category-header text-center d-flex justify-content-between align-items-center w-100 border-0"
+                (click)="toggleCategory(dept.locationUID, dept.departmentUID, sc.salesCategoryID)"
+                [attr.aria-expanded]="!isCategoryCollapsed(dept.locationUID, dept.departmentUID, sc.salesCategoryID)">
                 <strong>{{ sc.salesCategoryDescription }}</strong>
-              </div>
-              <div class="card-body p-0">
+                <span class="small">
+                  {{ isCategoryCollapsed(dept.locationUID, dept.departmentUID, sc.salesCategoryID) ? 'Show' : 'Hide' }}
+                </span>
+              </button>
+              <div class="card-body p-0" *ngIf="!isCategoryCollapsed(dept.locationUID, dept.departmentUID, sc.salesCategoryID)">
                 <table class="table table-striped table-hover table-sm mb-0">
                   <thead class="rpt-table-head">
                     <tr>
@@ -109,7 +116,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <ng-container *ngFor="let si of getItemsForCategory(sc.salesCategoryId); let j = index">
+                    <ng-container *ngFor="let si of getItemsForCategory(dept.locationUID, dept.departmentUID, sc.salesCategoryID); let j = index">
                       <tr *ngIf="j < 30 && (si.price !== '0.00' || si.displayOrderItem === 0)">
                         <td class="text-start">{{ si.salesItemDescription }}</td>
                         <td class="text-end">{{ si.currencyCode }} {{ si.price }}</td>
