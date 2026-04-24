@@ -201,6 +201,7 @@ export class CashDrawerReportPageComponent implements OnInit {
   onReportsClick(): void {
     // Navigate to reports menu
     console.log('Navigating to reports menu');
+    this.router.navigate(['/rptmenu']);
   }
 
   onContractListingClick(): void {
@@ -210,7 +211,7 @@ export class CashDrawerReportPageComponent implements OnInit {
 
   onSalesTransactionClick(): void {
     // Navigate to sales transaction
-    this.router.navigate(['/sales-transaction']);
+    this.router.navigate(['/salestran']);
   }
 
   showVariance(tranDate: string, associate: string): void {

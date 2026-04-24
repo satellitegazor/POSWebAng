@@ -30,6 +30,7 @@ import { LTC_CancelledTicketsResultsModel } from '../models/canceled.tickets.mod
 import { CashDrawerSummaryResultsModel, LTC_CashDrawerVariance } from '../models/cash.drawer.model';
 import { LTC_ItemButtonMenuResultsModel } from '../models/item.button.menu.models';
 import { LTC_ContractResultsModel } from '../models/contract.models';
+import { LTC_TicketStatusLocationResult } from '../models/ticket.status.model';
 
 
 @Injectable({
@@ -509,19 +510,36 @@ export class PosApiService {
             { headers: this.headerObjs });
     }
 
-    public loadTicketStatLoc(uid: number, request: LoadTicketStatLocRequest): Observable<LoadTicketStatLocResultModel> {
-        return this.httpClient.post<LoadTicketStatLocResultModel>(
-            GlobalConstants.CPOS_SVCS_URL + '/ltc/LoadTicketStatLoc?guid=' + GlobalConstants.POST_GUID
-                + '&uid=' + uid.toString(),
+
+
+    //This is called from TicketStatus modal dialog after saving transaction for LaundryDrycleaning Business Model
+    public updateTicketStatusLocation(uid: string, request: UpdateTicketStatusLocationRequest): Observable<UpdateTicketStatusLocationResultModel> {
+        return this.httpClient.put<UpdateTicketStatusLocationResultModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/UpdateTicketStatusLocation?guid=' + GlobalConstants.PUT_GUID
+                + '&uid=' + uid,
             JSON.stringify(request),
             { headers: this.headerObjs }
         );
     }
 
-    public updateTicketStatusLocation(uid: string, request: UpdateTicketStatusLocationRequest): Observable<UpdateTicketStatusLocationResultModel> {
-        return this.httpClient.put<UpdateTicketStatusLocationResultModel>(
-            GlobalConstants.CPOS_SVCS_URL + '/ltc/UpdateTicketStatusLocation?guid=' + GlobalConstants.PUT_GUID
-                + '&uid=' + uid,
+    //This is called from Ticket Status Page that can be accessed from Main Menu for Laundry Drycleaning business model.
+    public updateTktStatRacLoc(
+        uid: string,
+        request: UpdateTicketStatusLocationRequest,
+        guid: string = GlobalConstants.PUT_GUID
+    ): Observable<LTC_TicketStatusLocationResult> {
+        return this.httpClient.put<LTC_TicketStatusLocationResult>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/UpdateTktStatRacLoc?guid=' + encodeURIComponent(guid)
+                + '&uid=' + encodeURIComponent(uid),
+            JSON.stringify(request),
+            { headers: this.headerObjs }
+        );
+    }
+    //This is called to populate various ticket status on the Ticket STatus Page accessed from Main Menu
+    public loadTicketStatLoc(uid: number, request: LoadTicketStatLocRequest): Observable<LoadTicketStatLocResultModel> {
+        return this.httpClient.post<LoadTicketStatLocResultModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/LoadTicketStatLoc?guid=' + GlobalConstants.POST_GUID
+                + '&uid=' + uid.toString(),
             JSON.stringify(request),
             { headers: this.headerObjs }
         );

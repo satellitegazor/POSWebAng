@@ -331,6 +331,7 @@ export class PriceListRptComponent implements OnInit {
 
   onReportsClick(): void {
     console.log('Navigate to reports');
+    this.router.navigate(['/rptmenu']);
   }
 
   onContractListingClick(): void {
@@ -338,6 +339,6 @@ export class PriceListRptComponent implements OnInit {
   }
 
   onSalesTransactionClick(): void {
-    this.router.navigate(['/sales-transaction']);
+    this.router.navigate(['/salestran']);
   }
 }

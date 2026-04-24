@@ -108,7 +108,7 @@
               {{ formatCurrency(detail.depositCashCheck) }}
             </td>
             <td class="text-end" [style.color]="getVarianceAmount(detail) < 0 ? 'red' : 'black'">
-              <a href="#" (click)="showVariance(formatDateDisplay(detail.transDate), detail.associate); $event.preventDefault()">
+              <a href="#" (click)="showVariance(formatDateDisplay(detail.transactionDate), detail.associate); $event.preventDefault()">
                 {{ formatCurrency(getVarianceAmount(detail)) }}
               </a>
             </td>

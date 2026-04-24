@@ -26,6 +26,7 @@ import { BalanceDueTicketsPageComponent } from './reports/balduetkts/balance-due
 import { CanceledTicketsPageComponent } from './reports/cncledtkts/canceled-tickets-page/canceled-tickets-page.component';
 import { CashDrawerReportPageComponent } from './reports/cashdrawrpt/cash-drawer-report-page.component'
 import { PriceListRptComponent } from './reports/pricelist/price-list-rpt.component'
+import { TicketStatusComponent } from './ticket-status/ticket-status.component';
 
 const routes: Routes = [
   { path: 'salestran', component: ItemSelectionBasePageComponent },
@@ -48,7 +49,9 @@ const routes: Routes = [
   { path: 'rptbaldue', component: BalanceDueTicketsPageComponent },
   { path: 'rptcncld', component: CanceledTicketsPageComponent },
   { path: 'rptpricelist', component: PriceListRptComponent },
-  { path: 'rptcashdrw', component: CashDrawerReportPageComponent }
+  { path: 'rptcashdrw', component: CashDrawerReportPageComponent },
+  { path: 'ticketstatus', component: TicketStatusComponent }
+
 
 
 ];

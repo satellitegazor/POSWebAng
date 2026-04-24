@@ -1,0 +1,221 @@
+<!-- Report Header -->
+<div class="container-fluid px-2 pt-2 pb-5">
+
+  <div class="row g-0 mb-2">
+    <div class="col-12 text-center rpt-header">
+      Vendor: <strong>{{ vendorName }}</strong>&nbsp;&nbsp;Location: <strong>{{ locationName }}</strong><br />
+    </div>
+  </div> 
+
+  <!-- Filter Bar -->
+  <div class="card mb-2">
+    <div class="card-header">
+            <span class="fs-5 fw-bold">Ticket Status</span>
+    </div>
+    <div class="card-body py-2">
+      <div class="row g-2 align-items-end">
+        <div class="col-6 col-md-2">
+          <label class="form-label mb-0 small fw-bold">Drop Off From</label>
+          <input type="date" class="form-control form-control-sm" [(ngModel)]="fromDate" />
+        </div>
+        <div class="col-6 col-md-2">
+          <label class="form-label mb-0 small fw-bold">Drop Off To</label>
+          <input type="date" class="form-control form-control-sm" [(ngModel)]="toDate" />
+        </div>
+        <div class="col-6 col-md-3">
+          <label class="form-label mb-0 small fw-bold">Last Name</label>
+          <input type="text" class="form-control form-control-sm" [(ngModel)]="lastName" placeholder="Last name" />
+        </div>
+        <div class="col-6 col-md-3">
+          <label class="form-label mb-0 small fw-bold">First Name</label>
+          <input type="text" class="form-control form-control-sm" [(ngModel)]="firstName" placeholder="First name" />
+        </div>
+        <div class="col-12 col-md-2 d-flex align-items-end">
+          <button class="btn btn-primary w-100" (click)="onRefreshClick()" [disabled]="loading">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm me-1" role="status"></span>
+            Refresh
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paging Toolbar -->
+  <div class="row g-0 mb-2 align-items-center">
+    <div class="col-auto me-2">
+      <div class="input-group input-group-sm">
+        <span class="input-group-text">Show</span>
+        <select class="form-select form-select-sm" style="width: auto"
+                [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+          <option *ngFor="let opt of pageSizeOptions" [value]="opt">{{ opt }}</option>
+        </select>
+        <span class="input-group-text">entries</span>
+      </div>
+    </div>
+    <div class="col text-center small text-muted">{{ entryInfo }}</div>
+    <div class="col-auto">
+      <div class="btn-group btn-group-sm">
+        <button class="btn btn-outline-secondary" (click)="previousPage()" [disabled]="!canGoPrevious">
+          &laquo; Prev
+        </button>
+        <button class="btn btn-outline-secondary" (click)="nextPage()" [disabled]="!canGoNext">
+          Next &raquo;
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <div class="ticketstatustable table-responsive">
+    <table class="table table-bordered table-hover ticket-status-table ">
+      <thead>
+        <tr>
+          <th class="ticket-number-cell">Ticket #</th>
+          <th>Drop Off Date</th>
+          <th># Pieces</th>
+          <th>Customer Name</th>
+          <th>Phone Number</th>
+          <th>Ready By Date</th>
+          <th>Time</th>
+          <th>Ticket Status</th>
+          <th>Rack Location</th>
+          <!-- <th>Undo</th> -->
+          <th>Saved</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="loading">
+          <td colspan="11" class="text-center py-3">
+            <span class="spinner-border spinner-border-sm me-2" role="status"></span>Loading&hellip;
+          </td>
+        </tr>
+        <tr *ngIf="!loading && !hasTickets">
+          <td colspan="11" class="text-center py-3 text-muted">No tickets found.</td>
+        </tr>
+        <tr *ngFor="let ticket of tickets">
+          <td class="ticket-number-cell">
+            <a href="javascript:void(0)"
+               [class.balance-due]="ticket.balanceDue > 0"
+               (click)="openTransaction(ticket)">
+              {{ ticket.ticketNumber }}
+            </a>
+          </td>
+          <td>{{ formatShortDate(ticket.dropOffDate) }}</td>
+          <td class="text-center">{{ ticket.quantity }}</td>
+          <td>{{ ticket.customerName || '' }}</td>
+          <td>{{ formatPhone(ticket.phoneNumber) }}</td>
+          <td>
+            <input type="date" class="form-control form-control-sm tbl-input"
+                   [value]="formatDateInput(ticket.readyByDate)"
+                   (change)="onReadyByDateChange(ticket, $any($event.target).value)" />
+          </td>
+          <td>
+            <div class="ready-time-picker" [class.is-open]="isReadyByTimePopupOpen(ticket)">
+              <button
+                type="button"
+                class="form-control form-control-sm tbl-input ready-time-trigger"
+                [attr.aria-expanded]="isReadyByTimePopupOpen(ticket)"
+                aria-haspopup="dialog"
+                (click)="toggleReadyByTimePopup(ticket)">
+                <span>{{ getReadyByTime(ticket) || 'Select time' }}</span>
+                <span class="ready-time-trigger-icon" aria-hidden="true">v</span>
+              </button>
+
+              <div class="ready-time-popup shadow-sm" *ngIf="isReadyByTimePopupOpen(ticket)">
+                <table class="ready-time-table">
+                  <tbody>
+                    <tr *ngFor="let timeRow of readyByTimeOptionRows">
+                      <td *ngFor="let time of timeRow">
+                        <button
+                          type="button"
+                          class="ready-time-option"
+                          [class.is-selected]="time === getReadyByTime(ticket)"
+                          (click)="selectReadyByTime(ticket, time)">
+                          {{ time }}
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="ticket-status-picker" [class.is-open]="isTicketStatusPopupOpen(ticket)">
+              <button
+                type="button"
+                class="form-control form-control-sm tbl-input ticket-status-trigger"
+                [attr.aria-expanded]="isTicketStatusPopupOpen(ticket)"
+                aria-haspopup="dialog"
+                (click)="toggleTicketStatusPopup(ticket)">
+                <span>{{ getTicketStatusDescription(ticket) }}</span>
+                <span class="ticket-status-trigger-icon" aria-hidden="true">v</span>
+              </button>
+
+              <div class="ticket-status-popup shadow-sm" *ngIf="isTicketStatusPopupOpen(ticket)">
+                <div class="ticket-status-list">
+                  <button
+                    *ngFor="let status of ticketStatuses"
+                    type="button"
+                    class="ticket-status-option"
+                    [class.is-selected]="isTicketStatusSelected(ticket, status)"
+                    (click)="selectTicketStatus(ticket, status)">
+                    {{ status.description }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <input type="text" class="form-control form-control-sm tbl-input text-uppercase"
+                   [(ngModel)]="ticket.rckLocDesc" maxlength="20"
+                   (change)="onRackLocationChange(ticket, $any($event.target).value)" />
+          </td>
+          <!-- <td class="text-center"></td> -->
+          <td class="text-center persistentStatus" id="{{ 'persistentStatus' + ticket.transactionID }}">
+            <span class="persisted-tick" *ngIf="persistedStatusByTranId[ticket.transactionID]">&#10003;</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Legend -->
+  <div class="row g-0 mb-5">
+    <div class="col-12">
+      <span class="balance-due small">* Balance Due Ticket(s) are in Red</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<div class="cncsnFooter fixed-bottom">
+  <div class="row g-0">
+    <div class="col-4 d-grid">
+      <button class="border border-white btn btn-info btn-lg ftrbtn" (click)="onRefreshClick()" [disabled]="loading">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+          <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+        </svg>
+        Refresh
+      </button>
+    </div>
+    <div class="col-4 d-grid">
+      <button class="border border-white btn btn-info btn-lg ftrbtn" (click)="previousPage()" [disabled]="!canGoPrevious">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+        </svg>
+        Previous
+      </button>
+    </div>
+    <div class="col-4 d-grid">
+      <button class="border border-white btn btn-info btn-lg ftrbtn" (click)="nextPage()" [disabled]="!canGoNext">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
+        </svg>
+        Next
+      </button>
+    </div>
+  </div>
+</div>

@@ -152,7 +152,7 @@ export class CanceledTicketsPageComponent implements OnInit {
   }
 
   goToSalesTransaction(): void {
-    this.router.navigate(['/salestrans']);
+    this.router.navigate(['/salestran']);
   }
 
   formatDate(date: Date): string {

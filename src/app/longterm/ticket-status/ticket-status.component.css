@@ -1,0 +1,236 @@
+.ticket-status-table {
+  font-size: 1.05rem;
+}
+
+.ticket-status-table thead tr {
+  background-color: #0f4c81;
+  color: white;
+}
+
+.ticket-status-table thead th {
+  white-space: nowrap;
+  vertical-align: middle;
+  padding: 12px 8px;
+}
+
+.ticket-status-table td {
+  vertical-align: middle;
+  padding: 10px 8px;
+}
+
+.ticket-status-table tbody tr {
+  min-height: 56px;
+}
+
+.tbl-input {
+  min-width: 90px;
+  min-height: 38px;
+  padding: 6px 8px;
+  font-size: 0.95rem;
+}
+
+.ready-time-picker {
+  position: relative;
+}
+
+.ready-time-trigger {
+  align-items: center;
+  background: linear-gradient(180deg, #f6f9fd 0%, #dceafb 100%);
+  border: 1px solid #7fa5cf;
+  border-radius: 0.25rem;
+  color: #17365d;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  text-align: left;
+}
+
+.ready-time-trigger:hover,
+.ready-time-trigger:focus {
+  background: linear-gradient(180deg, #ffffff 0%, #d7e5f8 100%);
+  border-color: #5f87b6;
+  color: #102b4b;
+  outline: none;
+}
+
+.ready-time-picker.is-open .ready-time-trigger {
+  background: linear-gradient(180deg, #d8e6f8 0%, #c4d9f2 100%);
+  border-color: #4c7cb2;
+}
+
+.ready-time-trigger-icon {
+  color: #4c7cb2;
+  font-size: 0.9rem;
+  margin-left: 0.5rem;
+  transition: transform 0.2s ease;
+}
+
+.ready-time-picker.is-open .ready-time-trigger-icon {
+  transform: rotate(180deg);
+}
+
+.ready-time-popup {
+  background: #022755;
+  border: 1px solid #bfd0e5;
+  border-radius: 0.75rem;
+  left: 0;
+  margin-top: 0.35rem;
+  min-width: 17rem;
+  padding: 0.5rem;
+  position: absolute;
+  top: 100%;
+  z-index: 30;
+}
+
+.ready-time-table {
+  border-collapse: separate;
+  border-spacing: 0.42rem;
+  width: 100%;
+}
+
+.ready-time-table td {
+  padding: 0;
+  width: 33.3333%;
+}
+
+.ready-time-option {
+  background: #edf4fb;
+  border: 1px solid #bfd0e5;
+  border-radius: 0;
+  color: #17365d;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.56rem 0.4rem;
+  width: 100%;
+}
+
+.ready-time-option:hover,
+.ready-time-option:focus {
+  background: #dceafb;
+  border-color: #8bb0d9;
+  outline: none;
+}
+
+.ready-time-option.is-selected {
+  background: #204772;
+  border-color: #204772;
+  color: #fff;
+}
+
+.ticket-status-picker {
+  position: relative;
+}
+
+.ticket-status-trigger {
+  align-items: center;
+  background: linear-gradient(180deg, #f6f9fd 0%, #dceafb 100%);
+  border: 1px solid #7fa5cf;
+  border-radius: 0.25rem;
+  color: #17365d;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  text-align: left;
+}
+
+.ticket-status-trigger:hover,
+.ticket-status-trigger:focus {
+  background: linear-gradient(180deg, #ffffff 0%, #d7e5f8 100%);
+  border-color: #5f87b6;
+  color: #102b4b;
+  outline: none;
+}
+
+.ticket-status-picker.is-open .ticket-status-trigger {
+  background: linear-gradient(180deg, #d8e6f8 0%, #c4d9f2 100%);
+  border-color: #4c7cb2;
+}
+
+.ticket-status-trigger-icon {
+  color: #4c7cb2;
+  font-size: 0.9rem;
+  margin-left: 0.5rem;
+  transition: transform 0.2s ease;
+}
+
+.ticket-status-picker.is-open .ticket-status-trigger-icon {
+  transform: rotate(180deg);
+}
+
+.ticket-status-popup {
+  background: #022755;
+  border: 1px solid #bfd0e5;
+  border-radius: 0.75rem;
+  left: 0;
+  margin-top: 0.35rem;
+  min-width: 14rem;
+  padding: 0.5rem;
+  position: absolute;
+  top: 100%;
+  z-index: 30;
+}
+
+.ticket-status-list {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.ticket-status-option {
+  background: #edf4fb;
+  border: 1px solid #bfd0e5;
+  border-radius: 0;
+  color: #17365d;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.56rem 0.5rem;
+  text-align: left;
+  width: 100%;
+}
+
+.ticket-status-option:hover,
+.ticket-status-option:focus {
+  background: #dceafb;
+  border-color: #8bb0d9;
+  outline: none;
+}
+
+.ticket-status-option.is-selected {
+  background: #204772;
+  border-color: #204772;
+  color: #fff;
+}
+
+.ticket-status-option:disabled {
+  background: #d7deea;
+  border-color: #b5c2d6;
+  color: #71829a;
+  cursor: not-allowed;
+}
+
+.balance-due {
+  color: red;
+  text-decoration: none;
+}
+
+a.balance-due:hover {
+  color: darkred;
+  text-decoration: underline;
+}
+.ticket-number-cell {
+  text-align: center;
+  font-weight: bold;
+}
+
+.persistentStatus {
+  min-width: 70px;
+}
+
+.persisted-tick {
+  color: #1f9d3a;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
