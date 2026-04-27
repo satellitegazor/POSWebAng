@@ -5,7 +5,6 @@ import { LtcTicketReceiptComponent } from '../rcpt/ltc-ticket-receipt/ltc-ticket
 import { TranDetailsComponent } from './tran-details/tran-details.component';
 
 const routes: Routes = [
-{ path: 'trandtls', component: TranDetailsComponent},
 ];
 
 

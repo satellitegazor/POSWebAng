@@ -4,7 +4,7 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { LTC_Ticket } from 'src/app/longterm/models/ticket.list';
 import { PosApiService } from 'src/app/longterm/services/pos-api-service';
-import { TicketLookupComponent } from 'src/app/shared/ticket-lookup/ticket-lookup.component';
+import { TicketLookupComponent } from 'src/app/longterm/ticket-lookup/ticket-lookup.component';
 
 @Component({
     selector: 'app-ltc-ticket-receipt',

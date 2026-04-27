@@ -27,6 +27,8 @@ import { CanceledTicketsPageComponent } from './reports/cncledtkts/canceled-tick
 import { CashDrawerReportPageComponent } from './reports/cashdrawrpt/cash-drawer-report-page.component'
 import { PriceListRptComponent } from './reports/pricelist/price-list-rpt.component'
 import { TicketStatusComponent } from './ticket-status/ticket-status.component';
+import { TranDetailsComponent } from '../misc-module/tran-details/tran-details.component';
+import { TicketLookupComponent } from './ticket-lookup/ticket-lookup.component';
 
 const routes: Routes = [
   { path: 'salestran', component: ItemSelectionBasePageComponent },
@@ -50,7 +52,9 @@ const routes: Routes = [
   { path: 'rptcncld', component: CanceledTicketsPageComponent },
   { path: 'rptpricelist', component: PriceListRptComponent },
   { path: 'rptcashdrw', component: CashDrawerReportPageComponent },
-  { path: 'ticketstatus', component: TicketStatusComponent }
+  { path: 'ticketstatus', component: TicketStatusComponent },
+  { path: 'trandtls', component: TranDetailsComponent},
+  { path: 'ticketlookup', component: TicketLookupComponent}
 
 
 

@@ -1,27 +1,145 @@
 
-<table class="table table-hover table-striped table-bordered">
-    <thead class="thead-light">
-        <td>Ticket Number</td>
-        <td>Customer Name</td>
-        <td>Customer Phone</td>
-        <td>Ticket Status</td>
-        <td>Total Amount</td>
-        <td>Merchandise Sale</td>
-        <td>Associate</td>
-        <td>Tran Date</td>
-        <td>Tender Type</td>
-    </thead>
-    <tr *ngFor="let tran of tranDtls"  >
-        
-        <td class="calign bold" (click)="tranSelected(tran.transactionID)">{{tran.ticketNumber}}</td>
-        <td class="lalign">{{tran.customerName}}</td>
-        <td class="lalign">{{tran.customerPhone}}</td>
-        <td class="lalign">{{tran.ticketStatusDesc}}</td>
-        <td class="ralign">{{tran.tranTotalAmount}}</td>
-        <td class="ralign">{{tran.merchandiseSale}}</td>
-        <td class="lalign">{{tran.associate}}</td>
-        <td class="lalign">{{tran.dropOffDate}}</td>
-        <td class="lalign">{{tran.tenderType}}</td>
+<div class="container-fluid px-2 pt-2 pb-3">
+    <div class="card border-0 shadow-sm tran-details-card">
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+                <h5 class="mb-0 fw-bold">Transaction Details</h5>
+                <small class="text-light-subtle">Customer ticket history</small>
+            </div>
+            <span class="badge text-bg-light results-badge">{{tranDtls.length}} Result{{tranDtls.length === 1 ? '' : 's'}}</span>
+        </div>
 
-    </tr>
-</table>
+        <div class="card-body p-2 p-md-3">
+            <div class="table-responsive tran-details-table-wrap">
+                <table class="table table-hover align-middle tran-details-table mb-0">
+                    <thead>
+                        <tr>
+                            <th class="text-center">
+                                <button
+                                    type="button"
+                                    class="sort-header"
+                                    (click)="sortBy('ticketNumber')"
+                                    [class.sorted-asc]="activeSortColumn === 'ticketNumber' && sortDirection === 'asc'"
+                                    [class.sorted-desc]="activeSortColumn === 'ticketNumber' && sortDirection === 'desc'"
+                                >
+                                    Ticket Number
+                                    <span class="sort-indicator" aria-hidden="true">
+                                        <span class="tri-up">▲</span>
+                                        <span class="tri-down">▼</span>
+                                    </span>
+                                </button>
+                            </th>
+                            <th>
+                                <button type="button" class="sort-header" (click)="sortBy('dropOffDate')"
+                                    [class.sorted-asc]="activeSortColumn === 'dropOffDate' && sortDirection === 'asc'"
+                                    [class.sorted-desc]="activeSortColumn === 'dropOffDate' && sortDirection === 'desc'">
+                                    Drop-Off Date
+                                    <span class="sort-indicator" aria-hidden="true">
+                                        <span class="tri-up">▲</span>
+                                        <span class="tri-down">▼</span>
+                                    </span>
+                                </button>
+                            </th>
+                            <th>Tender Type</th>
+                            <th class="text-end">
+                                <button type="button" class="sort-header sort-header-right" (click)="sortBy('tranTotalAmount')"
+                                    [class.sorted-asc]="activeSortColumn === 'tranTotalAmount' && sortDirection === 'asc'"
+                                    [class.sorted-desc]="activeSortColumn === 'tranTotalAmount' && sortDirection === 'desc'">
+                                    Total Amount
+                                    <span class="sort-indicator" aria-hidden="true">
+                                        <span class="tri-up">▲</span>
+                                        <span class="tri-down">▼</span>
+                                    </span>
+                                </button>
+                            </th>
+                            <th>
+                                <button
+                                    type="button"
+                                    class="sort-header"
+                                    (click)="sortBy('customerName')"
+                                    [class.sorted-asc]="activeSortColumn === 'customerName' && sortDirection === 'asc'"
+                                    [class.sorted-desc]="activeSortColumn === 'customerName' && sortDirection === 'desc'"
+                                >
+                                    Customer Name
+                                    <span class="sort-indicator" aria-hidden="true">
+                                        <span class="tri-up">▲</span>
+                                        <span class="tri-down">▼</span>
+                                    </span>
+                                </button>
+                            </th>
+                            <th>
+                                <button
+                                    type="button"
+                                    class="sort-header"
+                                    (click)="sortBy('customerPhone')"
+                                    [class.sorted-asc]="activeSortColumn === 'customerPhone' && sortDirection === 'asc'"
+                                    [class.sorted-desc]="activeSortColumn === 'customerPhone' && sortDirection === 'desc'"
+                                >
+                                    Customer Phone
+                                    <span class="sort-indicator" aria-hidden="true">
+                                        <span class="tri-up">▲</span>
+                                        <span class="tri-down">▼</span>
+                                    </span>
+                                </button>
+                            </th>
+                            <th>
+                                <button
+                                    type="button"
+                                    class="sort-header"
+                                    (click)="sortBy('ticketStatusDesc')"
+                                    [class.sorted-asc]="activeSortColumn === 'ticketStatusDesc' && sortDirection === 'asc'"
+                                    [class.sorted-desc]="activeSortColumn === 'ticketStatusDesc' && sortDirection === 'desc'"
+                                >
+                                    Ticket Status
+                                    <span class="sort-indicator" aria-hidden="true">
+                                        <span class="tri-up">▲</span>
+                                        <span class="tri-down">▼</span>
+                                    </span>
+                                </button>
+                            </th>
+                            <!-- <th class="text-end">
+                                <button
+                                    type="button"
+                                    class="sort-header sort-header-right"
+                                    (click)="sortBy('merchandiseSale')"
+                                    [class.sorted-asc]="activeSortColumn === 'merchandiseSale' && sortDirection === 'asc'"
+                                    [class.sorted-desc]="activeSortColumn === 'merchandiseSale' && sortDirection === 'desc'"
+                                >
+                                    Merchandise Sale
+                                    <span class="sort-indicator" aria-hidden="true">
+                                        <span class="tri-up">▲</span>
+                                        <span class="tri-down">▼</span>
+                                    </span>
+                                </button>
+                            </th> 
+                            <th>Associate</th>-->
+                            <th>Rack Location</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="tranDtls.length === 0">
+                            <td colspan="9" class="text-center text-muted py-4">No transactions found for this customer.</td>
+                        </tr>
+
+                        <tr *ngFor="let tran of tranDtls" class="clickable-row" (click)="tranSelected(tran.transactionID)">
+                            <td class="text-center fw-bold">
+                                <span class="ticket-link">
+                                    {{tran.ticketNumber}}
+                                </span>
+                            </td>
+                            <td>{{formatTranDateLocal(tran.dropOffDate)}}</td>
+                            <td>{{tran.tenderType}}</td>
+                            <td class="text-end">{{currSymbl}} {{formatAmount(tran.tranTotalAmount)}}</td>
+                            <td>{{tran.customerName}}</td>
+                            <td>{{tran.customerPhone}}</td>
+                            <td>{{tran.ticketStatusDesc}}</td>
+                            <!-- <td class="text-end">{{formatAmount(tran.merchandiseSale)}}</td>
+                            <td>{{tran.associate}}</td> -->
+                            <td>{{tran.rackLocation}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

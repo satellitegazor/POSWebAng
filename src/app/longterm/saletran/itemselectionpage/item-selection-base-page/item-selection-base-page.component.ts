@@ -9,7 +9,7 @@ import { SaleItemResultsModel } from '../../../models/sale.item.results.model';
 import { PosApiService } from '../../../services/pos-api-service';
 import { TktSaleItemComponent } from '../tkt-sale-item/tkt-sale-item.component';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
-import { CustomerSearchComponent } from '../../../../shared/customer-search/customer-search.component';
+import { CustomerSearchComponent } from '../../../customer-search/customer-search.component';
 
 import { getSaleItemsStart, getSaleItemsActionSuccess, getSaleitemsFail } from '../../store/saleitemstore/saleitem.action';
 import { props, Store } from '@ngrx/store';
@@ -21,7 +21,7 @@ import { getAuthLoginSelector } from '../../../../authstate/auth.selector';
 import { LocationConfig, LocationIndividual } from '../../../models/location-config';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { addTabSerialToTktObj, initTktObj } from '../../store/ticketstore/ticket.action';
-import { TicketLookupComponent } from '../../../../shared/ticket-lookup/ticket-lookup.component';
+import { TicketLookupComponent } from '../../../ticket-lookup/ticket-lookup.component';
 import { getCheckoutItemsCount, getTicketTotals, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import {initialLocationConfigState, LocationConfigState} from '../../store/locationconfigstore/locationconfig.state';
 import { Router } from '@angular/router';

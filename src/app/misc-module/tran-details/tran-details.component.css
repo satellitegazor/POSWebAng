@@ -1,48 +1,144 @@
-.ralign {
-    text-align: right;
+.tran-details-card {
+  border-radius: 0.75rem;
+  overflow: hidden;
 }
 
-.lalign {
-    text-align: left;
+.tran-details-card .card-header {
+  background: linear-gradient(135deg, #0f4c81 0%, #1b639f 100%);
+  color: #fff;
+  border-bottom: none;
+  padding: 1rem 1.2rem;
 }
 
-.calign {
-    text-align: center;
+.tran-details-card .card-header h5 {
+  font-size: 1.45rem;
+  line-height: 1.2;
 }
 
-th, td {
-    padding-top: 2px;
-    padding-bottom: 2px;
-    padding-left: 10px;
-    padding-right: 10px;
+.tran-details-card .card-header small {
+  font-size: 1rem;
+}
+
+.results-badge {
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.45rem 0.7rem;
+}
+
+.tran-details-table-wrap {
+  border: 1px solid #e5e9ef;
+  border-radius: 0.65rem;
+}
+
+.tran-details-table {
+  margin-bottom: 0;
+}
+
+.tran-details-table thead th {
+  background-color: #f6f8fb;
+  border-bottom: 1px solid #dde3ec;
+  color: #2c3e50;
+  font-size: 1.12rem;
+  font-weight: 700;
+  padding: 0.95rem 0.75rem;
+  white-space: nowrap;
+}
+
+.sort-header {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: inherit;
+  font-weight: inherit;
+  gap: 0.35rem;
+  line-height: 1.2;
+  min-height: 34px;
+  padding: 0;
+}
+
+.sort-header-right {
+  margin-left: auto;
+}
+
+.sort-header:hover,
+.sort-header:focus {
+  color: #0d6efd;
+  outline: none;
+}
+
+.sort-indicator {
+  color: #9aa8bb;
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 0.8;
+  margin-left: 0.1rem;
+  min-width: 0.8rem;
+}
+
+.sort-indicator .tri-up,
+.sort-indicator .tri-down {
+  font-size: 0.7rem;
+}
+
+.sort-header.sorted-asc .sort-indicator .tri-up {
+  color: #0d6efd;
+}
+
+.sort-header.sorted-desc .sort-indicator .tri-down {
+  color: #0d6efd;
+}
+
+.tran-details-table tbody td {
+  border-top: 1px solid #edf1f6;
+  font-size: 1.08rem;
+  padding: 0.95rem 0.75rem;
+  vertical-align: middle;
+}
+
+.tran-details-table tbody tr:hover {
+  background-color: #f4f9ff;
+}
+
+.tran-details-table tbody tr.clickable-row {
+  cursor: pointer;
+}
+
+.ticket-link {
+  color: #0d6efd;
+  font-weight: 700;
+  font-size: 1.12rem;
+  line-height: 1.2;
+  min-height: 40px;
+  text-decoration: none;
+}
+
+.ticket-link:hover,
+.ticket-link:focus {
+  color: #084298;
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .tran-details-card .card-header h5 {
+    font-size: 1.25rem;
   }
 
-  table, th, td {
-    border: 1px solid black;
-    border-collapse: collapse;
+  .tran-details-card .card-header small {
+    font-size: 0.95rem;
   }
 
-  .table {
-    --bs-table-color-type: initial;
-    --bs-table-bg-type: initial;
-    --bs-table-color-state: initial;
-    --bs-table-bg-state: initial;
-    --bs-table-color: var(--bs-emphasis-color);
-    --bs-table-bg: var(--bs-body-bg);
-    --bs-table-border-color: var(--bs-border-color);
-    --bs-table-accent-bg: transparent;
-    --bs-table-striped-color: var(--bs-emphasis-color);
-    --bs-table-striped-bg: rgba(var(--bs-emphasis-color-rgb), 0.05);
-    --bs-table-active-color: var(--bs-emphasis-color);
-    --bs-table-active-bg: rgba(var(--bs-emphasis-color-rgb), 0.1);
-    --bs-table-hover-color: var(--bs-emphasis-color);
-    --bs-table-hover-bg: rgba(var(--bs-emphasis-color-rgb), 0.075);
-    width: 100%;
-    margin-bottom: 1rem;
-    vertical-align: top;
-    border-color: var(--bs-table-border-color);
+  .tran-details-table thead th {
+    font-size: 1rem;
   }
 
-  .bold {
-    font-weight: bold;
+  .tran-details-table tbody td {
+    font-size: 1rem;
   }
+
+  .ticket-link {
+    font-size: 1.02rem;
+  }
+}

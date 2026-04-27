@@ -2,7 +2,7 @@
 
 <div id="printArea" class="receipt-wrap" *ngIf="!isLoading && hasTicketData">
 	<input type="hidden" id="hdnContractId" [value]="ticket.contractUID" />
-	<input type="hidden" id="txnId" [value]="ticket.transactionID" />
+	<input type="hidden" id="txnid" [value]="ticket.transactionID" />
 
 	<table class="table table-borderless receipt-table mb-0">
 		<tbody>
@@ -207,13 +207,13 @@
 					</td>
 				</tr>
 
-				<tr *ngIf="tender.authNbr.trim().length > 0">
+				<tr *ngIf="typeof(tender.authNbr) !== 'undefined' && tender.authNbr != null && tender.authNbr.length > 0">
 					<td colspan="6" class="text-start text-nowrap">Authorization Code:&nbsp;{{ tender.authNbr }}</td>
 				</tr>
 
-				<tr *ngIf="tender.milstarPlanNum && tender.milstarPlanNum.trim().length > 0 && (tender.tenderTypeCode === 'MS' || tender.tenderTypeCode === 'MR')">
-					<td colspan="6" class="text-start text-nowrap">Promo Plan #&nbsp;{{ tender.milstarPlanNum }}</td>
-				</tr>
+				<!-- <tr *ngIf="((typeof(tender.milstarPlanNum) !== 'undefined' && tender.milstarPlanNum != null && tender.milstarPlanNum.length || 0) > 0) && (tender.tenderTypeCode === 'MS' || tender.tenderTypeCode === 'MR')">
+					<td colspan="6" class="text-start text-nowrap">Promo Plan #&nbsp;{{ $any(tender).milstarPlanNum || '' }}</td>
+				</tr> -->
 			</ng-container>
 
 			<tr><td colspan="6" class="spacer-row">&nbsp;</td></tr>

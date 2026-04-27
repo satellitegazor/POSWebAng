@@ -323,7 +323,7 @@ export class TicketStatusComponent implements OnInit {
 
     this.router.navigate(['/ltktrcpt'], {
       queryParams: {
-        TxnId: transactionId,
+        txnid: transactionId,
         frmSalesTrnRpt: false
       }
     });
@@ -356,8 +356,8 @@ export class TicketStatusComponent implements OnInit {
     request.tranId = 0;
     request.fromDate = this.fromDate;
     request.toDate = this.toDate;
-    request.lastName = this.lastName.trim();
-    request.firstName = this.firstName.trim();
+    request.lastName = this.lastName.toLowerCase().trim();
+    request.firstName = this.firstName.toLowerCase().trim();
     request.pageSize = this.pageSize;
     request.pageNum = this.pageNum;
 

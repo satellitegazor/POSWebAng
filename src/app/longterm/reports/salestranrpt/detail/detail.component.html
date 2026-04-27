@@ -42,7 +42,7 @@
                 <tbody>
                     <tr *ngFor="let detail of sortedRptDetail">
                         <td class="text-center">
-                            <a [routerLink]="['/ltktrcpt']" [queryParams]="{ TxnId: detail.transactionId, frmSalesTrnRpt: true, src: 'V' }">{{detail.ticketNumber}}</a>
+                            <a [routerLink]="['/ltktrcpt']" [queryParams]="{ txnid: detail.transactionId, frmSalesTrnRpt: true, src: 'V' }">{{detail.ticketNumber}}</a>
                         </td>
                         <td class="text-center">{{detail.transactionDate | date:'MM/dd/yyyy'}}</td>
                         <td *ngIf="categorizedBy == 'L' || categorizedBy == 'F'" class="text-start">{{detail.facilityNumber}}</td>

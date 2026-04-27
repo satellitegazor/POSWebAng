@@ -7,7 +7,7 @@ import { select, Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { TenderStatusType, TicketTender } from 'src/app/models/ticket.tender';
 import { SharedSubjectService } from 'src/app/shared-subject/shared-subject.service';
-import { CustomerSearchComponent } from '../../../../shared/customer-search/customer-search.component';
+import { CustomerSearchComponent } from '../../../customer-search/customer-search.component';
 import { LocationConfig } from '../../../models/location-config';
 import { TenderType, TenderTypeModel } from '../../../models/tender.type';
 import { PosApiService } from '../../../services/pos-api-service';

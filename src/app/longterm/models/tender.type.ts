@@ -4,6 +4,7 @@ export class TenderType {
     public tenderTypeCode: string = '';
     public tenderTypeDesc: string = '';
     public isRefundType: boolean = false;
+    public displayOrder: number = 0;
     public displayThisTender: boolean = true;
     public active: boolean = false;
 }

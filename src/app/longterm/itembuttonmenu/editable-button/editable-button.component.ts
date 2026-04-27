@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-editable-button',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './editable-button.component.html',
   styleUrl: './editable-button.component.css'

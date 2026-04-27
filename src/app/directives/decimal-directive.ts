@@ -1,7 +1,8 @@
 import { Directive, HostListener, ElementRef, Input } from '@angular/core';
 
 @Directive({
-  selector: '[appdecimal]'
+  selector: '[appdecimal]',
+  standalone: true
 })
 export class DecimalDirective {
   @Input() decimalSeparator: string = '.';

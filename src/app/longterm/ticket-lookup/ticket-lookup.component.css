@@ -1,0 +1,67 @@
+.ticket-lookup-card {
+	border: 1px solid #e5e9ef;
+	border-radius: 0.75rem;
+	background: #ffffff;
+	padding: 1rem;
+}
+
+.modal-title {
+	font-weight: 600;
+}
+
+.results-panel {
+	border: 1px solid #e5e9ef;
+	border-radius: 0.75rem;
+	overflow: hidden;
+	background-color: #fff;
+}
+
+.results-header {
+	padding: 0.65rem 0.9rem;
+	font-weight: 600;
+	border-bottom: 1px solid #e5e9ef;
+	background-color: #f8f9fb;
+}
+
+.customer-list-scrollbar {
+	max-height: 280px;
+	overflow-y: auto;
+}
+
+.customer-item {
+	border: none;
+	border-bottom: 1px solid #e9ecef;
+	padding: 0.7rem 0.9rem;
+	transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.customer-item:last-child {
+	border-bottom: none;
+}
+
+.customer-item:hover,
+.customer-item:focus {
+	background-color: #0d6efd;
+	color: #ffffff;
+}
+
+.customer-item:hover .text-muted,
+.customer-item:focus .text-muted {
+	color: #e9ecef !important;
+}
+
+.form-control:focus {
+	box-shadow: none;
+	border-color: #0d6efd;
+}
+
+@media (max-width: 576px) {
+	.modal-content {
+		padding-left: 0.75rem !important;
+		padding-right: 0.75rem !important;
+	}
+
+	.ticket-lookup-card {
+		padding: 0.75rem;
+	}
+}

@@ -3,10 +3,12 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { first } from 'rxjs';
 import { LTC_Customer } from 'src/app/models/customer';
-import { PosApiService } from '../../longterm/services/pos-api-service'; 
-import { addCustomerId } from '../../longterm/saletran/store/ticketstore/ticket.action';
-import { saleTranDataInterface } from '../../longterm/saletran/store/ticketstore/ticket.state';
+import { PosApiService } from '../services/pos-api-service'; 
+import { addCustomerId } from '../saletran/store/ticketstore/ticket.action';
+import { saleTranDataInterface } from '../saletran/store/ticketstore/ticket.state';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-customer-search',
@@ -17,15 +19,15 @@ import { LogonDataService } from 'src/app/global/logon-data-service.service';
 
 export class CustomerSearchComponent implements OnInit {
 
-  data: string = '';
+  public data: string = '';
   constructor(private modal: NgbModal, private _saleSvc: PosApiService, 
     private _store: Store<saleTranDataInterface>,
     private _logonSvc: LogonDataService) { }
-  CustomerList: LTC_Customer[] = [];
+  public CustomerList: LTC_Customer[] = [];
 
-  firstName: string = '';
-  lastName: string = '';
-  telephone: string = '';
+  public firstName: string = '';
+  public lastName: string = '';
+  public telephone: string = '';
 
   public strongErrMessage: string = '';
   public errMessage: string = '';

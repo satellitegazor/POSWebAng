@@ -70,7 +70,7 @@
 					<tbody>
 						<tr *ngFor="let ticket of noSaleTickets">
 							<td class="text-center">
-								<a [routerLink]="['/ltktrcpt']" [queryParams]="{ TxnId: ticket.transactionId }" class="link-primary">
+								<a [routerLink]="['/ltktrcpt']" [queryParams]="{ txnid: ticket.transactionId }" class="link-primary">
 									{{ ticket.ticketId }}
 								</a>
 							</td>

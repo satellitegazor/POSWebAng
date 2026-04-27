@@ -125,8 +125,8 @@ export class NoSaleReportPageComponent implements OnInit {
 
   private normalizeNoSaleTickets(tickets: LTC_NoSaleTicket[] | any[]): NoSaleTicketView[] {
     return (tickets || []).map((ticket: any) => ({
-      ticketId: Number(ticket.ticketID ?? ticket.ticketId ?? ticket.txnID ?? ticket.txnId ?? 0),
-      transactionId: Number(ticket.transactionID ?? ticket.transactionId ?? ticket.txnID ?? ticket.txnId ?? 0),
+      ticketId: Number(ticket.ticketID ?? ticket.ticketId ?? ticket.txnid ?? ticket.txnid ?? 0),
+      transactionId: Number(ticket.transactionID ?? ticket.transactionId ?? ticket.txnid ?? ticket.txnid ?? 0),
       date: ticket.date ?? ticket.dropOffDate ?? ticket.transactionDate ?? '',
       time: String(ticket.time ?? this.extractTime(ticket.transactionDate) ?? ''),
       associate: String(ticket.associate ?? ''),

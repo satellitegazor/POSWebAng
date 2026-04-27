@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { PosApiService } from '../../longterm/services/pos-api-service';
-import { saleTranDataInterface } from '../../longterm/saletran/store/ticketstore/ticket.state';
+import { PosApiService } from '../services/pos-api-service';
+import { saleTranDataInterface } from '../saletran/store/ticketstore/ticket.state';
 import { LTC_Customer } from 'src/app/models/customer';
 import { Router } from '@angular/router';
 
@@ -24,7 +24,7 @@ export class TicketLookupComponent implements OnInit {
     displayMsg: string = '';
 
   locationName: string = '';
-  ticketNum: number = 0; 
+  public ticketNum: number = 0; 
   firstName: string = '';
   lastName: string = '';
   telephone: string = '';
@@ -41,7 +41,7 @@ export class TicketLookupComponent implements OnInit {
 
   customerSelected(customerId: number) {
     this.modal.dismissAll();
-    this._route.navigateByUrl('/misc/trandtls?custid=' + customerId);
+    this._route.navigateByUrl('/trandtls?custid=' + customerId);
   }
 
   search() {

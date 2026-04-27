@@ -1,0 +1,123 @@
+
+<div class="modal-header border-0 pb-2">
+    <div>
+        <h4 class="modal-title mb-0">Ticket Lookup</h4>
+        <small class="text-muted">Search by ticket number or customer details</small>
+    </div>
+</div>
+
+<div class="modal-content border-0 px-3 pb-3">
+    <div class="ticket-lookup-card">
+        <div class="row g-3">
+            <div class="col-12">
+                <label for="locationName" class="form-label fw-bold">Location</label>
+                <input
+                    id="locationName"
+                    data-testid="qa-input-action"
+                    type="text"
+                    class="form-control"
+                    name="locationname"
+                    [value]="locationName"
+                    readonly
+                />
+            </div>
+
+            <div class="col-md-6">
+                <label for="ticketNum" class="form-label fw-bold">Ticket #</label>
+                <input
+                    id="ticketNum"
+                    type="number"
+                    class="form-control"
+                    [value]="ticketNum"
+                    (input)="ticketNum = +$any($event.target).value || 0"
+                    name="TicketNum"
+                    min="0"
+                    (keyup.enter)="search()"
+                />
+            </div>
+
+            <div class="col-md-6">
+                <label for="telephone" class="form-label fw-bold">Customer Phone #</label>
+                <input
+                    id="telephone"
+                    type="text"
+                    class="form-control"
+                    [value]="telephone"
+                    (input)="telephone = $any($event.target).value"
+                    name="telephone"
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                    (keyup.enter)="search()"
+                />
+            </div>
+
+            <div class="col-md-6">
+                <label for="firstName" class="form-label fw-bold">First Name</label>
+                <input
+                    id="firstName"
+                    type="text"
+                    class="form-control"
+                    [value]="firstName"
+                    (input)="firstName = $any($event.target).value"
+                    name="firstName"
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                    (keyup.enter)="search()"
+                />
+            </div>
+
+            <div class="col-md-6">
+                <label for="lastName" class="form-label fw-bold">Last Name</label>
+                <input
+                    id="lastName"
+                    type="text"
+                    class="form-control"
+                    [value]="lastName"
+                    (input)="lastName = $any($event.target).value"
+                    name="lastName"
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                    (keyup.enter)="search()"
+                />
+            </div>
+        </div>
+
+        <div class="results-panel mt-3">
+            <div class="results-header">Matching Customers</div>
+
+            <div class="customer-list-scrollbar">
+                <div *ngIf="customerList.length === 0 && !showErrMsg" class="text-muted text-center py-3 px-2">
+                    No customers to display yet.
+                </div>
+
+                <div class="list-group list-group-flush" *ngIf="customerList.length > 0">
+                    <button
+                        type="button"
+                        *ngFor="let cust of customerList"
+                        class="list-group-item list-group-item-action customer-item"
+                        (click)="customerSelected(cust.customerUID)"
+                    >
+                        <div class="fw-semibold">{{cust.cFirstName}} {{cust.cLastName}}</div>
+                        <div class="text-muted small" *ngIf="cust.cPhoneNumber">{{cust.cPhoneNumber}}</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="showErrMsg" class="alert alert-danger mt-3 mb-0" role="alert">
+            <strong>{{strongErrMessage}}</strong>
+            <div>{{errMessage}}</div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer border-0 pt-2 justify-content-end gap-2">
+    <button data-testid="qa-button-cancel" class="btn btn-light" (click)="cancel()">Cancel</button>
+    <button data-testid="qa-button-search" class="btn btn-primary" (click)="search()">Search</button>
+</div>

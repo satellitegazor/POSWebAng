@@ -50,6 +50,10 @@ import { DecimalDirective } from '../directives/decimal-directive';
 import { EditableButtonComponent } from './itembuttonmenu/editable-button/editable-button.component';
 import { SalesTranRptDetailComponent } from './reports/salestranrpt/detail/detail.component';
 import { SalesTranRptPageComponent } from './reports/salestranrpt/sales-tran-rpt-page/sales-tran-rpt-page.component';
+import { CustomerSearchComponent } from './customer-search/customer-search.component';
+import { TicketLookupComponent } from './ticket-lookup/ticket-lookup.component';
+import { CustomerNewComponent } from './customer-new/customer-new.component';
+import { TranDetailsComponent } from '../misc-module/tran-details/tran-details.component';
 
 @NgModule({
   declarations: [DeptListComponent, ItemSelectionBasePageComponent, SalesCategoryComponent, SaleItemComponent,
@@ -58,8 +62,9 @@ import { SalesTranRptPageComponent } from './reports/salestranrpt/sales-tran-rpt
     SplitPayComponent, PinValidateComponent,ItemButtonPageComponent, ItemButtonDeptListComponent,
     ItemButtonSalesCatListComponent, ItemButtonSalesItemListComponent, CashTndrComponent,
     ConcessionCardTndrComponent, DeviceTndrPageComponent, EgConcTndrComponent,GiftCardInquiryComponent, MainMenuComponent,
-    SalesTranRptDetailComponent,  SalesTranRptPageComponent
-  ],
+    SalesTranRptDetailComponent, SalesTranRptPageComponent, CustomerSearchComponent, TicketLookupComponent,
+    CustomerNewComponent, TranDetailsComponent],
+  
   imports: [
     CommonModule,
     ReactiveFormsModule,

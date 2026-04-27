@@ -20,6 +20,7 @@ import { addTabSerialToTktObj, initTktObj, loadTicket, loadTicketSuccess, update
 import { TktObjState } from '../../app.state';
 import { Actions, ofType } from '@ngrx/effects';
 import { CPOSWebSvcService } from '../../longterm/services/cposweb-svc.service';
+import { VendorLoginResultsModel } from 'src/app/models/vendor.login.results.model';
 
 @Component({
     selector: 'app-logon-vendorlt',
@@ -183,7 +184,7 @@ export class VendorLTComponent implements OnInit {
                     this.logonSvc.logonUser(locModel).subscribe(() => {   
                         this.router.navigate([inProgTranId > 0 ? '/checkout' : '/salestran']);
                     });
-                    
+                    this.initOnSuccessfulLogon(data, locModel);
                     //console.log('vendorlt mandate training dialog closed');
                 }, (reason: any) => {
                     //console.log('vendorlt mandate training dialog dismissed');
@@ -191,47 +192,51 @@ export class VendorLTComponent implements OnInit {
                 return;
             }
 
-            this._saleTranSvc.getLocationConfig(+data.locationUID, +data.individualUID).subscribe(locCnfgData => {
+            this.initOnSuccessfulLogon(data, locModel);            
+        });
+    }
 
-                this._logonDataSvc.setLocationConfig(locCnfgData);
-                
-                let locConfig = this._logonDataSvc.getLocationConfig();
-                this._tktObjStore.dispatch(initTktObj({ locConfig: locConfig, individualUID: +data.individualUID}));
-                this._locConfigStore.dispatch(setLocationConfig({ locationConfig: locCnfgData.configs[0] }));
+    initOnSuccessfulLogon(data: VendorLoginResultsModel, locModel: VLogonModel) {
+        this._saleTranSvc.getLocationConfig(+data.locationUID, +data.individualUID).subscribe(locCnfgData => {
 
-                this._saleTranSvc.getTenderTypes(1, 100).subscribe(data => {
-                    this._logonDataSvc.setTenderTypes(data);
+            this._logonDataSvc.setLocationConfig(locCnfgData);
+
+            let locConfig = this._logonDataSvc.getLocationConfig();
+            this._tktObjStore.dispatch(initTktObj({ locConfig: locConfig, individualUID: +data.individualUID }));
+            this._locConfigStore.dispatch(setLocationConfig({ locationConfig: locCnfgData.configs[0] }));
+
+            this._saleTranSvc.getTenderTypes(1, 100).subscribe(data => {
+                this._logonDataSvc.setTenderTypes(data);
+            });
+
+            let today = new Date();
+            today.toDateString()
+            this._saleTranSvc.GetDailyExchRate(+data.locationUID, today.getMonth() + 1 + '-' + today.getDate() + '-' + today.getFullYear(), +data.individualUID).subscribe(data => {
+                this._logonDataSvc.setDailyExchRate(data.data);
+            })
+
+            let inProgTranId = locCnfgData.configs[0].inProgTranId;
+            if (inProgTranId > 0) {
+
+                this._toastSvc.info("An incomplete ticket has been found. Please complete it or void it!!");
+                this._tktObjStore.dispatch(loadTicket({ tranId: inProgTranId, locationId: locModel.locationUID, indivId: locModel.individualUID }))
+
+                this._cposWebSvc.pinpadHeartbeat("PING").subscribe(data => {
+                    if (data.IsSuccess) {
+                        this._tktObjStore.dispatch(addTabSerialToTktObj({ tabSerialNum: data.TabMachineName, ipAddress: data.IpAddress }));
+                    }
                 });
 
-                let today = new Date();
-                today.toDateString()
-                this._saleTranSvc.GetDailyExchRate(+data.locationUID, today.getMonth() + 1 + '-' + today.getDate() + '-' + today.getFullYear(), +data.individualUID).subscribe(data => {
-                    this._logonDataSvc.setDailyExchRate(data.data);
-                })
-
-                inProgTranId = locCnfgData.configs[0].inProgTranId;
-                if(inProgTranId > 0) {
-                    
-                    this._toastSvc.info("An incomplete ticket has been found. Please complete it or void it!!");
-                    this._tktObjStore.dispatch(loadTicket({ tranId: inProgTranId, locationId: locModel.locationUID, indivId: locModel.individualUID }))
-
-                    this._cposWebSvc.pinpadHeartbeat("PING").subscribe(data => {
-                        if (data.IsSuccess) {
-                            this._tktObjStore.dispatch(addTabSerialToTktObj({ tabSerialNum: data.TabMachineName, ipAddress: data.IpAddress }));
-                        }
-                    });
-
-                    this.actions$.pipe(ofType(loadTicketSuccess)).subscribe(() => {
-                        setTimeout((logonDataSvc, tktObjStore, routr) => {
-                            routr.navigate(['/checkout']);
-                            tktObjStore.dispatch(updateCheckoutTotals({ logonDataSvc: logonDataSvc }))
-                        }, 800, this._logonDataSvc, this._tktObjStore, this.router);                           
-                    });                 
-                }
-                else {
-                    this.router.navigate(['/salestran']);
-                }              
-            });
+                this.actions$.pipe(ofType(loadTicketSuccess)).subscribe(() => {
+                    setTimeout((logonDataSvc, tktObjStore, routr) => {
+                        routr.navigate(['/checkout']);
+                        tktObjStore.dispatch(updateCheckoutTotals({ logonDataSvc: logonDataSvc }))
+                    }, 800, this._logonDataSvc, this._tktObjStore, this.router);
+                });
+            }
+            else {
+                this.router.navigate(['/salestran']);
+            }
         });
     }
 

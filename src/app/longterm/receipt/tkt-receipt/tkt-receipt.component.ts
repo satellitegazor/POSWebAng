@@ -69,7 +69,7 @@ export class TktReceiptComponent implements OnInit {
     this.activatedRoute.queryParams
       .pipe(
         switchMap((params) => {
-          this.transactionId = Number(params['TxnId'] ?? 0);
+          this.transactionId = Number(params['txnid'] ?? 0);
           this.frmSalesTrnRpt =
             String(params['frmSalesTrnRpt'] ?? '').toLowerCase() === 'true';
           this.src = String(params['src'] ?? '').toUpperCase();
