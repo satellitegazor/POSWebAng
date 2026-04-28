@@ -3,20 +3,20 @@ import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { select, Store } from '@ngrx/store';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { TicketSplit } from 'src/app/models/ticket.split';
+import { LogonDataService } from '../../../../global/logon-data-service.service';
+import { TicketSplit } from '../../../../models/ticket.split';
 import { filter, firstValueFrom, Subscription, take } from 'rxjs';
 import { getIsSplitPayR5, getRemainingBal, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
-import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
+import { TenderStatusType, TicketTender, TranStatusType } from '../../../../models/ticket.tender';
 import { TenderType } from '../../../models/tender.type';
 import { addPinpadResp, addTender, deleteDeclinedTenderFromStore, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, savePinpadResponse, saveTenderObj, updateTenderRRN } from '../../store/ticketstore/ticket.action';
-import { UtilService } from 'src/app/services/util.service';
+import { UtilService } from '../../../../services/util.service';
 //import { VfoneCaptureTran } from '../../services/models/capture-tran.model';
 import { forkJoin } from 'rxjs';
-import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
+import { ExchCardTndr } from '../../../../models/exch.card.tndr';
 import { TenderUtil } from '../tender-util';
 import { RedeemGiftCardTenders } from '../gc-redeem-services/redeem-gift-card-tenders';
-import { ToastService } from 'src/app/services/toast.service';
+import { ToastService } from '../../../../services/toast.service';
 import { DecimalPipe } from '@angular/common';
 import { OConusRedeemGCWithPinPadService } from '../gc-redeem-services/oconus-redeeem-gc-with-pin-pad';
 import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
@@ -96,7 +96,7 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
       }
     });
     this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
-    this._tndrObj.tenderTypeCode = 'CC';
+    this._tndrObj.tenderTypeCode = this._logonDataSvc.getTranIsRefund() ? 'RC' : 'CC';
 
     this._store.select(getTktObjSelector).subscribe(data => {
       if (data == null)

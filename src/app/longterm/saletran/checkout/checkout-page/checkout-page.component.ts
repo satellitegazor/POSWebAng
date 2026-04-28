@@ -4,9 +4,9 @@ import { Router } from '@angular/router';
 
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap'
 import { select, Store } from '@ngrx/store';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { TenderStatusType, TicketTender } from 'src/app/models/ticket.tender';
-import { SharedSubjectService } from 'src/app/shared-subject/shared-subject.service';
+import { LogonDataService } from '../../../../global/logon-data-service.service';
+import { TenderStatusType, TicketTender } from '../../../../models/ticket.tender';
+import { SharedSubjectService } from '../../../../shared-subject/shared-subject.service';
 import { CustomerSearchComponent } from '../../../customer-search/customer-search.component';
 import { LocationConfig } from '../../../models/location-config';
 import { TenderType, TenderTypeModel } from '../../../models/tender.type';
@@ -17,9 +17,9 @@ import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { TipsModalDlgComponent } from '../tips-modal-dlg/tips-modal-dlg.component';
 import { firstValueFrom, Observable, Subscription, take, map } from 'rxjs';
 import { Actions, ofType } from '@ngrx/effects';
-import { TicketSplit } from 'src/app/models/ticket.split';
-import { DailyExchRate } from 'src/app/models/exchange.rate';
-import { UtilService } from 'src/app/services/util.service';
+import { TicketSplit } from '../../../../models/ticket.split';
+import { DailyExchRate } from '../../../../models/exchange.rate';
+import { UtilService } from '../../../../services/util.service';
 
 @Component({
   selector: 'app-checkout-page',
@@ -74,7 +74,7 @@ export class CheckoutPageComponent implements OnInit {
     this.dfltCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getDfltCurrCode()) ?? '';
 
     this._tenderTypesModel = this._logonDataSvc.getTenderTypes();
-    this.isRefund = this._logonDataSvc.getTranMode();
+    this.isRefund = this._logonDataSvc.getTranIsRefund();
     this.tenderButtonUIDisplay();
 
     this._store.select(getCheckoutItemsSelector).subscribe(items => {
@@ -147,7 +147,7 @@ export class CheckoutPageComponent implements OnInit {
     this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
     this._store.dispatch(isSplitPayR5({ isSplitPayR5: (tndrCode == 'btnSplitPay') }));
 
-    if (tndrCode == 'btnSplitPay' && this.locationConfig.inProgTranId > 0) {
+    if ((tndrCode == 'btnSplitPay' && this.locationConfig.inProgTranId > 0) || this._logonDataSvc.getTranIsRefund()) {
       this._navigateToTenderPage(tndrCode);
       return
     }
@@ -251,7 +251,7 @@ export class CheckoutPageComponent implements OnInit {
 
   public tenderButtonUIDisplay(): void {
 
-    this._displayTenders = this._tenderTypesModel.types?.filter((tndr) => tndr.isRefundType == this.isRefund);
+    this._displayTenders = this._tenderTypesModel.types?.filter((tndr) => tndr.isRefundType == this.isRefund && tndr.tenderTypeCode);
 
     this.tenderButtonWidthPercent = 99 / (this._displayTenders?.length + (this.isRefund ? 1 : 2)); // +1 for split pay button
   }

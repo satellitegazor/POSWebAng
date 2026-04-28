@@ -225,12 +225,12 @@ export class LogonDataService {
 
     }
 
-    public setTranMode(IsRefund: boolean) {
+    public setTranIsRefund(IsRefund: boolean) {
         sessionStorage.setItem('tranmode', IsRefund.toString());
     }
 
-    public getTranMode() {
-        return Boolean(sessionStorage.getItem('tranmode'));
+    public getTranIsRefund() {
+        return (sessionStorage.getItem('tranmode') ? sessionStorage.getItem('tranmode')?.toLowerCase() : 'false') == 'true';
     }
 
     public getBusinessModel(): number {

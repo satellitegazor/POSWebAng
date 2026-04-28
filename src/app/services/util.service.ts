@@ -58,11 +58,13 @@ export class UtilService {
   public tenderCodeDescMap = new Map<string, string>([
     ['CK', 'Check'],
     ['CA', 'Cash'],
+    ['CR', 'Concession Credit Card Refund'],
     ['XC', 'Credit Card'],
     ['XR', 'Credit Card Refund'],
     ['GC', 'Exchange Gift Card'],
     ['CC', 'Concession Credit Card'],
     ['EG', 'Eagle Cash'],
+    ['RC', 'Cash Refund'],
     ['MS', 'Military Star Card'],
   ]);
 

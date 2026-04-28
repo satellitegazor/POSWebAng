@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { PinValidateComponent } from '../../pin-validate/pin-validate.component';
-import { VendorLoginResultsModel } from 'src/app/models/vendor.login.results.model';
-import { ToastService } from 'src/app/services/toast.service';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { LocalStorageService } from 'src/app/global/local-storage.service';
+import { VendorLoginResultsModel } from '../../../models/vendor.login.results.model';
+import { ToastService } from '../../../services/toast.service';
+import { LogonDataService } from '../../../global/logon-data-service.service';
+import { LocalStorageService } from '../../../global/local-storage.service';
 import { RefundReasonDlgComponent } from '../../saletran/refund-reason-dlg/refund-reason-dlg.component';
 
 @Component({
@@ -31,7 +31,7 @@ goToEnterSalesTransRefund() {
   this.openPinValidate(() => {
     const modalRef = this._modalService.open(RefundReasonDlgComponent, this.pinModalOptions);
     modalRef.result.then(() => {
-      this._logonDataSvc.setTranMode(true);
+      this._logonDataSvc.setTranIsRefund(true);
       this.router.navigate(['/salestran'], { queryParams: { refund: true } });
     }).catch(() => undefined);
   });

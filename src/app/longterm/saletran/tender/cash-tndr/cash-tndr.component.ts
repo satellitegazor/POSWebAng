@@ -1,19 +1,19 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
+import { TenderStatusType, TicketTender, TranStatusType } from '../../../../models/ticket.tender';
 import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { ActivatedRoute, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { UtilService } from 'src/app/services/util.service';
-import { TicketSplit } from 'src/app/models/ticket.split';
-import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
+import { LogonDataService } from '../../../../global/logon-data-service.service';
+import { UtilService } from '../../../../services/util.service';
+import { TicketSplit } from '../../../../models/ticket.split';
+import { ExchCardTndr } from '../../../../models/exch.card.tndr';
 import { firstValueFrom, forkJoin, Subscription, take } from 'rxjs';
 import { getIsSplitPayR5, getRemainingBal, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { TenderUtil } from '../tender-util';
 import { addTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj } from '../../store/ticketstore/ticket.action';
 import { RedeemGiftCardTenders } from '../gc-redeem-services/redeem-gift-card-tenders';
-import { ToastService } from 'src/app/services/toast.service';
+import { ToastService } from '../../../../services/toast.service';
 import { OConusRedeemGCWithPinPadService } from '../gc-redeem-services/oconus-redeeem-gc-with-pin-pad';
 import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
 
@@ -82,7 +82,7 @@ export class CashTndrComponent implements OnInit {
       this.activatedRoute.queryParams.pipe(take(1))
     ]).subscribe(([tenderBal, isSplitPay, params]) => {
 
-      this._tndrObj.tenderTypeCode = params['code'] || 'CA';
+      this._tndrObj.tenderTypeCode = this._logonDataSvc.getTranIsRefund() ? 'RC' : 'CA';
       this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
       this._tndrObj.ticketTenderId = -Date.now() % 10000;
       this._tndrObj.tenderTypeDesc = this._utilSvc.tenderCodeDescMap.get(this._tndrObj.tenderTypeCode) || 'Cash';
@@ -160,7 +160,7 @@ export class CashTndrComponent implements OnInit {
 
     this._tndrObj.tenderStatus = TenderStatusType.InProgress;
     this._tndrObj.isAuthorized = true;
-    this._tndrObj.tenderTypeCode = "CA";
+    this._tndrObj.tenderTypeCode = this._logonDataSvc.getTranIsRefund() ? 'RC' : 'CA';
     this._tndrObj.tndMaintTimestamp = new Date(Date.now());
     this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
     this._store.dispatch(addTender({ tndrObj: this._tndrObj }));
