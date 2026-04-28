@@ -82,6 +82,7 @@ export class SaveTicketSuccessComponent implements OnInit, OnDestroy {
     sessionStorage.setItem('inProgTranTabSerialNum', '');
 
     let locConfig = this._logonDataSvc.getLocationConfig();
+    this._logonDataSvc.setTranMode(false);
     
     this._store.dispatch(resetTktObj({ locConfig: locConfig }));
 

@@ -6,6 +6,7 @@ import { VendorLoginResultsModel } from 'src/app/models/vendor.login.results.mod
 import { ToastService } from 'src/app/services/toast.service';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { LocalStorageService } from 'src/app/global/local-storage.service';
+import { RefundReasonDlgComponent } from '../../saletran/refund-reason-dlg/refund-reason-dlg.component';
 
 @Component({
   selector: 'app-main-menu',
@@ -27,7 +28,13 @@ goToNoSaleReport() {
   this.openPinValidate(() => this.router.navigate(['/nosalereport']));
 }
 goToEnterSalesTransRefund() {
-  this.openPinValidate(() => this.router.navigate(['/refundtran']));
+  this.openPinValidate(() => {
+    const modalRef = this._modalService.open(RefundReasonDlgComponent, this.pinModalOptions);
+    modalRef.result.then(() => {
+      this._logonDataSvc.setTranMode(true);
+      this.router.navigate(['/salestran'], { queryParams: { refund: true } });
+    }).catch(() => undefined);
+  });
 }
 goToTicketStatus() {
   this.router.navigate(['/ticketstatus']);

@@ -30,6 +30,7 @@ export const ADD_CUST_ID = 'add CustomerId to TktObj';
 export const ADD_NEW_CUST = 'add New Customer to TktObj';
 export const ADD_TENDER_OBJ = 'addTenderToTktObj';
 export const ADD_PINPAD_RESP = 'addPinpadResponse';
+export const APP_REFUND_REASON = 'addRefundReason';
 export const UPD_SALE_ITEM = 'updSaleItems';
 export const UPD_CHK_OUT_TOTALS = 'updCheckoutTotals';
 export const UPD_SRVD_BY_ASSOC = 'updateServedByAssociate';
@@ -146,7 +147,7 @@ export const savePinpadResponseFailed = createAction(SAVE_PINPAD_RESP,
     props<{msg: string}>());
 
 export const addCustomerId = createAction(ADD_CUST_ID, 
-    props<{custId: number}>())
+    props<{custId: number}>());
 
 export const addNewCustomer = createAction(ADD_CUST_ID, 
     props<{custObj: LTC_Customer}>());
@@ -210,5 +211,6 @@ export const loadInProgressTendersFail = createAction(LOAD_INPROGRESS_TENDERS_FA
 
 export const updateShipHandling = createAction('updateShipHandling', props<{dfltCurrSymbl: string,shipHandlingAmountDC: number, shipHandlingTaxDC: number, shipHandlingAmountNDC: number, shipHandlingTaxNDC: number}>());
 
+export const addRefundReason = createAction(APP_REFUND_REASON, props<{ refundCode: string, refundReason: string}>());
 
 //export const updateLocationConfig = createAction(UPDATE_LOCATION_CONFIG, props<{}>)

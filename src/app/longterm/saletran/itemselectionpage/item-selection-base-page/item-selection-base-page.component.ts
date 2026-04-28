@@ -105,6 +105,10 @@ export class ItemSelectionBasePageComponent implements OnInit, OnDestroy {
     private tktSaleItemComponent: TktSaleItemComponent = {} as TktSaleItemComponent;
 
     ngOnInit(): void {
+        this.initializeItemSelectionPage();
+    }
+
+    private initializeItemSelectionPage(): void {
 
         //console.log('SalesCart ngOnInit')
         this.vendorLoginResult = this._logonDataSvc.getLTVendorLogonData();
@@ -131,6 +135,8 @@ export class ItemSelectionBasePageComponent implements OnInit, OnDestroy {
         this.ndcCurrSymbol = this._utilSvc.currencySymbols.get(this.defaultCurrencyCode != 'USD' ? "USD" : exchRateObj.currCode) || '';
 
         let pinpadStatus: VerifoneCommStatus = new VerifoneCommStatus();
+
+        
 
         this._buildTktObj();
         this._saleTranSvc.getSaleItemListFromDB(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0, 0, 0, 0).subscribe(data => {
