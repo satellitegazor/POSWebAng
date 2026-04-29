@@ -20,6 +20,7 @@ import { Actions, ofType } from '@ngrx/effects';
 import { TicketSplit } from '../../../../models/ticket.split';
 import { DailyExchRate } from '../../../../models/exchange.rate';
 import { UtilService } from '../../../../services/util.service';
+import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCheckoutItem';
 
 @Component({
   selector: 'app-checkout-page',
@@ -85,7 +86,7 @@ export class CheckoutPageComponent implements OnInit {
       this.tenderAmount = 0;
       this.fcTenderAmount = 0;
 
-      items.forEach(itm => {
+      items.forEach((itm: SalesTransactionCheckoutItem) => {
         this.tenderAmount += itm.lineItemDollarDisplayAmount ?? 0;
         this.fcTenderAmount += itm.fcLineItemDollarDisplayAmount ?? 0;
       })

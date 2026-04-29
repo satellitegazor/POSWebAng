@@ -1,17 +1,15 @@
 
 <div class="container-fluid px-2 pt-2 pb-3">
     <div class="card border-0 shadow-sm tran-details-card">
-        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
-            <div>
-                <h5 class="mb-0 fw-bold">Transaction Details</h5>
-                <small class="text-light-subtle">Customer ticket history</small>
-            </div>
-            <span class="badge text-bg-light results-badge">{{tranDtls.length}} Result{{tranDtls.length === 1 ? '' : 's'}}</span>
-        </div>
-
         <div class="card-body p-2 p-md-3">
+            <div class="d-flex justify-content-end align-items-center gap-2 mb-2">
+                <input type="text" class="form-control form-control-sm" style="width: 200px;"
+                    placeholder="Search..." [(ngModel)]="searchText" (ngModelChange)="onSearchChange()"
+                    aria-label="Search transactions" />
+                <span class="badge text-bg-light results-badge">{{filteredTranDtls.length}} Result{{filteredTranDtls.length === 1 ? '' : 's'}}</span>
+            </div>
             <div class="table-responsive tran-details-table-wrap">
-                <table class="table table-hover align-middle tran-details-table mb-0">
+                <table class="table table-hover align-middle tran-details-table mb-0" id="tblTranDetails">
                     <thead>
                         <tr>
                             <th class="text-center">
@@ -114,14 +112,17 @@
                             </th> 
                             <th>Associate</th>-->
                             <th>Rack Location</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngIf="tranDtls.length === 0">
-                            <td colspan="9" class="text-center text-muted py-4">No transactions found for this customer.</td>
+                        <tr *ngIf="pagedTranDtls.length === 0">
+                            <td colspan="9" class="text-center text-muted py-4">
+                                {{searchText ? 'No transactions match your search.' : 'No transactions found for this customer.'}}
+                            </td>
                         </tr>
 
-                        <tr *ngFor="let tran of tranDtls" class="clickable-row" (click)="tranSelected(tran.transactionID)">
+                        <tr *ngFor="let tran of pagedTranDtls" class="clickable-row" (click)="tranSelected(tran.transactionID)">
                             <td class="text-center fw-bold">
                                 <span class="ticket-link">
                                     {{tran.ticketNumber}}
@@ -135,11 +136,66 @@
                             <td>{{tran.ticketStatusDesc}}</td>
                             <!-- <td class="text-end">{{formatAmount(tran.merchandiseSale)}}</td>
                             <td>{{tran.associate}}</td> -->
-                            <td>{{tran.rackLocation}}</td>
+                            <td>{{tran.rackLocationDesc}}</td>
+                            <td>
+                                <a *ngIf="!tran.tenderType" href="#" role="button" tabindex="0"
+                                    aria-label="Cancel ticket" class="text-danger"
+                                    (click)="$event.preventDefault(); cancelTicket(tran.transactionID)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                        class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+                                    </svg>
+                                </a>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+            <div class="d-flex justify-content-between align-items-center mt-2 px-1">
+                <small class="text-muted">Showing {{pageStart}} to {{pageEnd}} of {{filteredTranDtls.length}} rows</small>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-md btn-outline-secondary"
+                        [disabled]="currentPage === 1"
+                        (click)="goToPage(currentPage - 1)">&#8249; Previous</button>
+                    <button type="button" class="btn btn-md btn-outline-secondary"
+                        [disabled]="currentPage >= totalPages"
+                        (click)="goToPage(currentPage + 1)">Next &#8250;</button>
+                </div>
+            </div>
         </div>
     </div>
+</div>
+
+<div class="footer fixed-bottom cncsnFooter">
+    <div id="stButtonBottomBar" class="row">
+
+        <button class="border border-white btn btn-info btn-lg ftrbtn goToST" style="width:33.3%;" id="btnSalesTran"
+            aria-label="Left Align" (click)="btnSalesTran($event)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart"
+                viewBox="0 0 16 16">
+                <path d="M3 5h10l-1 5H5L3 5z"></path>
+                <path d="M1 1h2l1.2 10.2A2 2 0 0 0 6.2 13h5.6a2 2 0 0 0 2-1.6L15 4H4.3L4 2H1zM6 14.5a1 1 0 1 0 0 2a1 1 0 0 0 0-2zm6 0a1 1 0 1 0 0 2a1 1 0 0 0 0-2z"></path>
+            </svg> Sales Transaction
+        </button>
+        <button class="border border-white btn btn-info btn-lg ftrbtn" style="width:33.3%;" id="btnRefundTran"
+             aria-label="Left Align" (click)="btnRefundTran($event)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-counterclockwise"
+                viewBox="0 0 16 16">
+                <path
+                    d="M8 3a5 5 0 1 1-4.546 2.916a.5.5 0 0 1 .908.418A4 4 0 1 0 8 4a.5.5 0 0 1 0-1z" />
+                <path
+                    d="M8 1.5a.5.5 0 0 1 .5.5v2.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 1 1 .708-.708L7.5 4.793V2a.5.5 0 0 1 .5-.5z" />
+            </svg> Refund Transaction
+        </button>
+        <button class="border border-white btn btn-info btn-lg ftrbtn" style="width:33.3%;" id="btnTicketLookup"
+             aria-label="Left Align" (click)="btnTicketLookup($event)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search"
+                viewBox="0 0 16 16">
+                <path
+                    d="M11 6a5 5 0 1 1-10 0a5 5 0 0 1 10 0zM1.5 6a4.5 4.5 0 1 0 9 0a4.5 4.5 0 0 0-9 0z" />
+                <path
+                    d="M10.344 10.344a.5.5 0 0 1 .707 0l3.2 3.2a.5.5 0 0 1-.707.707l-3.2-3.2a.5.5 0 0 1 0-.707z" />
+            </svg> Ticket Lookup
+        </button>
+        </div> 
 </div>

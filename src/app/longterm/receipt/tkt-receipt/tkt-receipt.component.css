@@ -66,6 +66,13 @@
 	align-items: stretch;
 }
 
+/* Ensure the live footer button row spans the full grid width */
+.receipt-footer-grid > .d-flex {
+	grid-column: 1 / -1;
+	width: 100%;
+	display: flex;
+}
+
 .receipt-footer-btn {
 	display: flex;
 	flex-direction: row;

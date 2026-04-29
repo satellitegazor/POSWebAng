@@ -2,9 +2,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { saleTranDataInterface } from '../store/ticketstore/ticket.state';
 import { Store } from '@ngrx/store';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
+import { LogonDataService } from '../../../global/logon-data-service.service';
 import { resetTktObj, saveTicketForGuestCheckSuccess } from '../store/ticketstore/ticket.action';
-import { SaveTicketResultsModel } from 'src/app/models/ticket.split';
+import { SaveTicketResultsModel } from '../../../models/ticket.split';
 import { getSavedTicketResult } from '../store/ticketstore/ticket.selector';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { PinValidateComponent } from '../../pin-validate/pin-validate.component';
@@ -12,7 +12,7 @@ import { TicketStatusDlgComponent } from '../ticket-status-dlg/ticket-status-dlg
 import { TicketStatusLocationData } from '../../models/ticket.status.location.models';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { VendorLoginResultsModel } from 'src/app/models/vendor.login.results.model';
+import { VendorLoginResultsModel } from '../../../models/vendor.login.results.model';
 
 @Component({
     selector: 'app-save-ticket-success',
@@ -111,6 +111,10 @@ export class SaveTicketSuccessComponent implements OnInit, OnDestroy {
 
   private _openTicketStatusDialogIfNeeded(): void {
     if (this._hasOpenedTicketStatusDialog) {
+      return;
+    }
+
+    if (this._logonDataSvc.getTranIsRefund()) {
       return;
     }
 

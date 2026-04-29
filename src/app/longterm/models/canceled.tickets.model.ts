@@ -32,3 +32,19 @@ export class LTC_CancelledTickets {
     cancelReason: string = '';
 
 }
+
+export class LTC_TicketCancel {
+    ticketCancelId: number = 0;
+    cancelTransactionID: number = 0;
+    ticketCancelTypeId: number = 0;
+    otherReason: string = '';
+    tcMaintTimestamp: Date = {} as Date;
+    tcMaintUserId: string = '';
+    ticketCancelTypeCode: string = '';
+    ticketCancelTypeDesc: string = '';
+}
+
+export class TicketCancelResultsModel {
+    results: MobileBase = {} as MobileBase;
+    tktCancel: LTC_TicketCancel = new LTC_TicketCancel();
+}

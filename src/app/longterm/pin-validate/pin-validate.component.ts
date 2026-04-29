@@ -1,21 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { PosApiService } from 'src/app/longterm/services/pos-api-service';
+import { LogonDataService } from '../../global/logon-data-service.service';
+import { PosApiService } from '../../longterm/services/pos-api-service';
 import { LogonSvc } from '../../logon/logonsvc.service';
 import { VLogonModel } from '../../logon/models/vlogon.model';
-import { GlobalConstants } from 'src/app/global/global.constants';
-import { AlertOptions } from 'src/app/alertmsg/alert-message/alert-message.model';
-import { AlertService } from 'src/app/alertmsg/alert-message/alert-message.service';
-import { ToastService } from 'src/app/services/toast.service';
-import { VendorLoginResultsModel } from 'src/app/models/vendor.login.results.model';
+import { GlobalConstants } from '../../global/global.constants';
+import { AlertOptions } from '../../alertmsg/alert-message/alert-message.model';
+import { AlertService } from '../../alertmsg/alert-message/alert-message.service';
+import { ToastService } from '../../services/toast.service';
+import { VendorLoginResultsModel } from '../../models/vendor.login.results.model';
 
 @Component({
   selector: 'app-pin-validate',
   standalone: false,
   templateUrl: './pin-validate.component.html',
-  styleUrl: './pin-validate.component.css'
+  styleUrls: ['./pin-validate.component.css']
 })
 export class PinValidateComponent implements OnInit {
 
@@ -29,12 +29,14 @@ export class PinValidateComponent implements OnInit {
 
     }
     vpin: string = ''
+    private _inputReady: boolean = false;
 
     ngOnInit(): void {
-
+      setTimeout(() => { this._inputReady = true; }, 300);
     }
 
     pinKeyUp($event: KeyboardEvent) {
+      if (!this._inputReady) { return; }
       if(this.vpin.length == 4) {
         this.ValidatePin(this.vpin);
       }

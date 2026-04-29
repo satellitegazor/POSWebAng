@@ -53,6 +53,8 @@ logonUserRoleType: string = '';
     const path = (this.route.url || '').split('?')[0].toLowerCase();
 
     switch (true) {
+      case path.includes('/trandtls'):
+        return 'Transaction Details';
       case path.includes('/rptsettlement'):
         return 'Settlement Report';
       case path.includes('/rptsalestran'):
@@ -71,6 +73,38 @@ logonUserRoleType: string = '';
         return 'Price List Report';
       case path.includes('/rptcashdrw'):
         return 'Cash Drawer Report';
+      case path.includes('/ticketstatus'):
+        return 'Ticket Status';
+      case path.includes('/salestran'):
+      case path.includes('/checkout'):
+        if(this._logonDataSvc.getTranIsRefund()) {
+          return 'Refund Transaction';
+        }
+        else {
+          return 'Sales Transaction';
+        }
+      case path.includes('/mainmenu'):
+        return 'Main Menu';
+      case path.includes('/adminmenu'):
+        return 'Admin Menu';
+      case path.includes('/itembtnmenu'):
+        return 'Item Button Menu';
+      case path.includes('/eaglecash'):
+        return 'Eagle Cash';
+      case path.includes('/cctender'):
+        return 'Concession Card Tender';
+       case path.includes('/gcinquiry'):
+        return 'Gift Card Inquiry';
+       case path.includes('/ticketlookup'):
+        return 'Ticket Lookup';
+      case path.includes('/pinpadtran'):
+        return 'Pin Pad Transaction';
+       case path.includes('/splitpay'):
+        return 'Split Payment';
+       case path.includes('/savetktsuccess'):
+        return 'Save Ticket Success';
+      case path.includes('/cashcheck'):
+        return 'Cash/Check Tender';
       default:
         return 'Point of Sale';
     }

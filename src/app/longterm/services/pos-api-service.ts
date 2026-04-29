@@ -26,7 +26,7 @@ import { LTC_StoreLocation_Result } from '../models/store.location';
 import { SettlementReportResultModel } from '../reports/settlement/models';
 import { LTC_BalanceDueTicketsResultsModel } from '../models/balancedue.tickets.model';
 import { LTC_NoSaleResultsModel } from '../models/nosale.report.model';
-import { LTC_CancelledTicketsResultsModel } from '../models/canceled.tickets.model';
+import { LTC_CancelledTicketsResultsModel, TicketCancelResultsModel } from '../models/canceled.tickets.model';
 import { CashDrawerSummaryResultsModel, LTC_CashDrawerVariance } from '../models/cash.drawer.model';
 import { LTC_ItemButtonMenuResultsModel } from '../models/item.button.menu.models';
 import { LTC_ContractResultsModel } from '../models/contract.models';
@@ -541,6 +541,23 @@ export class PosApiService {
             GlobalConstants.CPOS_SVCS_URL + '/ltc/LoadTicketStatLoc?guid=' + GlobalConstants.POST_GUID
                 + '&uid=' + uid.toString(),
             JSON.stringify(request),
+            { headers: this.headerObjs }
+        );
+    }
+
+    public cancelTicket(
+        transactionId: number,
+        uid: string,
+        cliTimeVar: number = 0,
+        cancelType: string = 'PG'
+    ): Observable<TicketCancelResultsModel> {
+        return this.httpClient.put<TicketCancelResultsModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/CancelTicket?guid=' + encodeURIComponent(GlobalConstants.PUT_GUID)
+                + '&transactionId=' + transactionId.toString()
+                + '&uid=' + encodeURIComponent(uid)
+                + '&cliTimeVar=' + cliTimeVar.toString()
+                + '&cancelType=' + encodeURIComponent(cancelType),
+            null,
             { headers: this.headerObjs }
         );
     }

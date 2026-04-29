@@ -7,6 +7,8 @@ import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 import { TicketTender } from '../../../models/ticket.tender';
 import { LogonDataService } from '../../../global/logon-data-service.service';
 import { ToastService } from '../../../services/toast.service';
+import { Actions, ofType } from '@ngrx/effects';
+
 import {
   LTC_SingleTransactionResultsModel,
   LTC_Ticket
@@ -18,6 +20,10 @@ import {
 import { PosApiService } from '../../services/pos-api-service';
 import { LTC_HoursOfOperation } from '../../models/store.location';
 import { TicketStatusDlgComponent } from '../../saletran/ticket-status-dlg/ticket-status-dlg.component';
+import { TktObjState } from '../../../app.state';
+import { Store } from '@ngrx/store';
+import { addTabSerialToTktObj, loadTicket, loadTicketSuccess, updateCheckoutTotals } from '../../saletran/store/ticketstore/ticket.action';
+import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
 
 type TicketItem = LTC_Ticket['items'][number];
 
@@ -54,13 +60,21 @@ export class TktReceiptComponent implements OnInit {
   public signature: LTC_SingleTransactionResultsModel['SignatureData'] =
     {} as LTC_SingleTransactionResultsModel['SignatureData'];
 
+  bDisplayAddlTagsBtn: boolean = false;
+  bDisplayCheckoutBtn: boolean = false;
+  bDisplayTicketStatusBtn: boolean = false;
+  bDisplayCancelTicketBtn: boolean = false;
+
   constructor(
     private readonly activatedRoute: ActivatedRoute,
     private readonly router: Router,
     private readonly modalService: NgbModal,
     private readonly posApiService: PosApiService,
     private readonly logonDataService: LogonDataService,
-    private readonly toastService: ToastService
+    private readonly toastService: ToastService,
+    private readonly _tktObjStore: Store<TktObjState>,
+    private readonly _cposWebSvc: CPOSWebSvcService,
+    private actions$: Actions,
   ) {}
 
   ngOnInit(): void {
@@ -90,6 +104,12 @@ export class TktReceiptComponent implements OnInit {
             )
             .pipe(
               switchMap((data: LTC_SingleTransactionResultsModel) => {
+                data.ticket.tenders.length == 0 ? this.bDisplayCheckoutBtn = true : this.bDisplayCheckoutBtn = false;
+                let busFuncCode = this.logonDataService.getLocationConfig().busFuncCode;
+                (busFuncCode == 'BUSFNC_LNDRYCLN' || busFuncCode == 'BUSFNC_LNDRYCLN_WALT') ? this.bDisplayAddlTagsBtn = true : this.bDisplayAddlTagsBtn = false;
+                (busFuncCode == 'BUSFNC_LNDRYCLN' || busFuncCode == 'BUSFNC_LNDRYCLN_WALT') ? this.bDisplayCancelTicketBtn = true : this.bDisplayCancelTicketBtn = false;
+                (busFuncCode == 'BUSFNC_LNDRYCLN' || busFuncCode == 'BUSFNC_LNDRYCLN_WALT') ? this.bDisplayTicketStatusBtn = true : this.bDisplayTicketStatusBtn = false;
+
                 const ticket = this.ensureTicketDefaults(
                   this.toCamelCaseKeys<LTC_Ticket>(data.ticket)
                 );
@@ -480,6 +500,51 @@ export class TktReceiptComponent implements OnInit {
         this.toastService.error('Failed to load ticket status.');
       }
     });
+  }
+
+  btnPrintAddlTags(event: Event): void {
+    event.preventDefault();
+
+    if (!this.hasTicketData) {
+      this.toastService.warning('Receipt is not ready to print yet.');
+      return;
+    }
+
+    window.print();
+  }
+
+  btnCheckout(event: Event): void {
+    event.preventDefault();
+    this._tktObjStore.dispatch(loadTicket({ tranId: this.transactionId, locationId: this.logonDataService.getLocationConfig().locationUID, indivId: this.logonDataService.getLocationConfig().individualUID }))
+
+      this._cposWebSvc.pinpadHeartbeat("PING").subscribe(data => {
+          if (data.IsSuccess) {
+              this._tktObjStore.dispatch(addTabSerialToTktObj({ tabSerialNum: data.TabMachineName, ipAddress: data.IpAddress }));
+          }
+      });
+
+      this.actions$.pipe(ofType(loadTicketSuccess)).subscribe(() => {
+          setTimeout((logonDataSvc, tktObjStore, routr) => {
+              routr.navigate(['/checkout']);
+              tktObjStore.dispatch(updateCheckoutTotals({ logonDataSvc: logonDataSvc }))
+          }, 800, this.logonDataService, this._tktObjStore, this.router);
+      });
+    
+  }
+
+  btnCancelTicket(event: Event): void {
+    event.preventDefault();
+    this.toastService.info('Cancel Ticket action is not configured in this receipt screen.');
+  }
+
+  btnTranDetails(event: Event): void {
+    event.preventDefault();
+    this.router.navigate(['/trandtls']);
+  }
+
+  btnTktLookup(event: Event): void {
+    event.preventDefault();
+    this.router.navigate(['/ticketlookup']);
   }
 
   btnSalesTranReportClick(event: Event): void {

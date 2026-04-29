@@ -1,9 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Route, Router } from '@angular/router';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { LTC_TransactionDetails } from 'src/app/longterm/models/ticket.list';
-import { PosApiService } from 'src/app/longterm/services/pos-api-service';
-import { UtilService } from 'src/app/services/util.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { LogonDataService } from '../../global/logon-data-service.service';
+import { GlobalConstants } from '../../global/global.constants';
+import { LTC_TransactionDetails } from '../../longterm/models/ticket.list';
+import { PinValidateComponent } from '../../longterm/pin-validate/pin-validate.component';
+import { PosApiService } from '../../longterm/services/pos-api-service';
+import { VendorLoginResultsModel } from '../../models/vendor.login.results.model';
+import { UtilService } from '../../services/util.service';
 
 @Component({
     selector: 'app-tran-details',
@@ -29,11 +33,48 @@ export class TranDetailsComponent implements OnInit {
   public tranDtls: LTC_TransactionDetails[] = [];
   public currSymbl: string = '';
 
+  public searchText: string = '';
+  public currentPage: number = 1;
+  public readonly pageSize = 10;
+
+  get filteredTranDtls(): LTC_TransactionDetails[] {
+    if (!this.searchText.trim()) {
+      return this.tranDtls;
+    }
+    const term = this.searchText.toLowerCase().trim();
+    return this.tranDtls.filter(t =>
+      String(t.ticketNumber ?? '').toLowerCase().includes(term) ||
+      String(t.tenderType ?? '').toLowerCase().includes(term) ||
+      String(t.customerName ?? '').toLowerCase().includes(term) ||
+      String(t.customerPhone ?? '').toLowerCase().includes(term) ||
+      String(t.ticketStatusDesc ?? '').toLowerCase().includes(term) ||
+      String(t.rackLocationDesc ?? '').toLowerCase().includes(term)
+    );
+  }
+
+  get pagedTranDtls(): LTC_TransactionDetails[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filteredTranDtls.slice(start, start + this.pageSize);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredTranDtls.length / this.pageSize);
+  }
+
+  get pageStart(): number {
+    return this.filteredTranDtls.length === 0 ? 0 : (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  get pageEnd(): number {
+    return Math.min(this.currentPage * this.pageSize, this.filteredTranDtls.length);
+  };
+
   constructor(private activatedRoute: ActivatedRoute,
     private _router: Router,
     private _logonDataSvc: LogonDataService,
     private _saleTranSvc: PosApiService,
-  private _utilSvc: UtilService) { 
+    private _utilSvc: UtilService,
+    private _modalService: NgbModal) {
 
     }
 
@@ -77,6 +118,7 @@ export class TranDetailsComponent implements OnInit {
   }
 
   private applySort() {
+    this.currentPage = 1;
     if (!this.activeSortColumn || !this.tranDtls?.length) {
       return;
     }
@@ -118,6 +160,67 @@ export class TranDetailsComponent implements OnInit {
 
   tranSelected(tranId: number) {
     this._router.navigateByUrl('/ltktrcpt?frmSalesTrnRpt=false&txnid=' + tranId);    
+  }
+
+  btnSalesTran(evt: Event): void {
+    evt.preventDefault();
+    this._logonDataSvc.setTranIsRefund(false);
+    this.navigateToSalesTran(false);
+  }
+
+  btnRefundTran(evt: Event): void {
+    evt.preventDefault();
+    this._logonDataSvc.setTranIsRefund(true);
+    this.navigateToSalesTran(true);
+  }
+
+  private navigateToSalesTran(isRefund: boolean): void {
+    const locConfig = this._logonDataSvc.getLocationConfig();
+
+    if (locConfig.pinReqdForSalesTran) {
+      const modalRef = this._modalService.open(PinValidateComponent, { backdrop: 'static', keyboard: false });
+      modalRef.result.then((loginResult?: VendorLoginResultsModel) => {
+        if (loginResult?.isAuthorized) {
+          if (isRefund) {
+            this._router.navigate(['/salestran'], { queryParams: { isrefund: true } });
+          } else {
+            this._router.navigate(['/salestran']);
+          }
+        }
+      }).catch(() => undefined);
+    } else {
+      if (isRefund) {
+        this._router.navigate(['/salestran'], { queryParams: { isrefund: true } });
+      } else {
+        this._router.navigate(['/salestran']);
+      }
+    }
+  }
+
+  btnTicketLookup(evt: Event): void {
+    evt.preventDefault();
+    this._router.navigate(['/ticketlookup']);
+  }
+
+  onSearchChange(): void {
+    this.currentPage = 1;
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) {
+      return;
+    }
+    this.currentPage = page;
+  }
+
+  cancelTicket(transactionId: number): void {
+    const config = this._logonDataSvc.getLocationConfig();
+    const guid = GlobalConstants.PUT_GUID;
+    const uid = config.individualUID?.toString() ?? '';
+    this._saleTranSvc.cancelTicket(transactionId, uid).subscribe({
+      next: () => {
+      }
+    });
   }
 
   formatTranDateLocal(value: Date | string | null | undefined): string {
