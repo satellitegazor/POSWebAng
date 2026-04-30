@@ -52,7 +52,7 @@ export class TicketLookupComponent implements OnInit {
 
       this._saleSvc.getTranIdForTicketNum(this._logonDataSvc.getLocationId(), this.ticketNum, this._logonDataSvc.getLocationConfig().individualUID).subscribe(data => {
         if(data.results.success) {
-          this._route.navigateByUrl('/lrcpt?tranid=' + data.transactionID);
+          this._route.navigateByUrl('/ltktrcpt?txnid=' + data.transactionID);
         }
       })    
     }
