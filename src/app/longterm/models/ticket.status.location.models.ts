@@ -9,6 +9,7 @@ export class LoadTicketStatLocRequest {
     public firstName: string = '';
     public pageSize: number = 2000;
     public pageNum: number = 1;
+    public userId: number = 0;
 }
 
 export class LoadTicketStatLocResultModel {

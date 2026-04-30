@@ -104,11 +104,15 @@ export class TktReceiptComponent implements OnInit {
             )
             .pipe(
               switchMap((data: LTC_SingleTransactionResultsModel) => {
+                
                 data.ticket.tenders.length == 0 ? this.bDisplayCheckoutBtn = true : this.bDisplayCheckoutBtn = false;
                 let busFuncCode = this.logonDataService.getLocationConfig().busFuncCode;
                 (busFuncCode == 'BUSFNC_LNDRYCLN' || busFuncCode == 'BUSFNC_LNDRYCLN_WALT') ? this.bDisplayAddlTagsBtn = true : this.bDisplayAddlTagsBtn = false;
                 (busFuncCode == 'BUSFNC_LNDRYCLN' || busFuncCode == 'BUSFNC_LNDRYCLN_WALT') ? this.bDisplayCancelTicketBtn = true : this.bDisplayCancelTicketBtn = false;
                 (busFuncCode == 'BUSFNC_LNDRYCLN' || busFuncCode == 'BUSFNC_LNDRYCLN_WALT') ? this.bDisplayTicketStatusBtn = true : this.bDisplayTicketStatusBtn = false;
+
+                data.ticket.balanceDue > 0 ? this.bDisplayCancelTicketBtn = true : this.bDisplayCancelTicketBtn = false;
+                this.ticket = data.ticket;
 
                 const ticket = this.ensureTicketDefaults(
                   this.toCamelCaseKeys<LTC_Ticket>(data.ticket)
