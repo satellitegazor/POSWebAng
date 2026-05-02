@@ -2,11 +2,11 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { first } from 'rxjs';
-import { LTC_Customer } from 'src/app/models/customer';
+import { LTC_Customer } from '../../models/customer';
 import { PosApiService } from '../services/pos-api-service'; 
 import { addCustomerId } from '../saletran/store/ticketstore/ticket.action';
 import { saleTranDataInterface } from '../saletran/store/ticketstore/ticket.state';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
+import { LogonDataService } from '../../global/logon-data-service.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 

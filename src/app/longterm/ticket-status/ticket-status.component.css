@@ -228,6 +228,7 @@ a.balance-due:hover {
   color: darkred;
   text-decoration: underline;
 }
+
 .ticket-number-cell {
   text-align: center;
   font-weight: bold;
@@ -242,6 +243,23 @@ a.balance-due:hover {
   font-size: 1.2rem;
   font-weight: 700;
 }
+
 .text-bold {
   font-weight: 700;
+}
+
+/* Ensure popups are not clipped by table or parent containers */
+.ready-time-popup,
+ ticket-status-popup {
+  position: absolute;
+  z-index: 2000;
+  /* Optional: add a background and box-shadow for visibility */
+  background: #27588d;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* Make sure table and parent containers allow overflow */
+table, .table-responsive, .ticket-status-table-container {
+  overflow: visible !important;
+  position: relative;
 }

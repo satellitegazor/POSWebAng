@@ -8,7 +8,7 @@ import {
   LoadTicketStatLocRequest,
   LoadTicketStatLocResultModel,
   LTC_RackLocation,
-  LTC_TicketStatus,
+  PickUpStatusMasterData,
   TicketStatusLocationData,
 } from '../../models/ticket.status.location.models';
 import { PosApiService, UpdateTicketStatusLocationRequest } from '../../services/pos-api-service';
@@ -20,19 +20,19 @@ import { ToastService } from '../../../services/toast.service';
 
 @Component({
   selector: 'app-ticket-status-dlg',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
+  standalone: false,
   templateUrl: './ticket-status-dlg.component.html',
   styleUrls: ['./ticket-status-dlg.component.css']
 })
 export class TicketStatusDlgComponent implements OnInit, OnDestroy {
   @Input() title = 'Ticket Status';
   @Input() ticketStatus: TicketStatusLocationData = new TicketStatusLocationData();
-  @Input() ticketStatuses: LTC_TicketStatus[] = [
-    { tktStatusId: 1, tktStatusCode: 'NOTREADY', description: 'Not Ready', displayOrder: 1, active: true },
-    { tktStatusId: 2, tktStatusCode: 'READY', description: 'Ready for Pick Up', displayOrder: 2, active: true },
-    { tktStatusId: 3, tktStatusCode: 'PICKEDUP', description: 'Picked Up', displayOrder: 3, active: true },
-  ];
+  // @Input() ticketStatuses: LTC_TicketStatus[] = [
+  //   { tktStatusId: 1, tktStatusCode: 'NOTREADY', description: 'Not Ready', displayOrder: 1, active: true },
+  //   { tktStatusId: 2, tktStatusCode: 'READY', description: 'Ready for Pick Up', displayOrder: 2, active: true },
+  //   { tktStatusId: 3, tktStatusCode: 'PICKEDUP', description: 'Picked Up', displayOrder: 3, active: true },
+  // ];
+  ticketStatuses: PickUpStatusMasterData[] = [];
   @Input() rackLocations: LTC_RackLocation[] = [];
   @Input() showBalanceFields = false;
 
@@ -79,25 +79,38 @@ export class TicketStatusDlgComponent implements OnInit, OnDestroy {
       .subscribe(tktObj => {
 
         this.tktStatRequest = new LoadTicketStatLocRequest();
-        this.tktStatRequest.locationId = tktObj?.locationUID ?? 0;
-        this.tktStatRequest.tranId = tktObj?.transactionID ?? 0;
-        this.currentUserId = (tktObj?.individualUID ?? 0).toString();
-        const userId: number = tktObj?.individualUID ?? 0;
+        if(tktObj && tktObj.transactionID > 0) {  
+          this.tktStatRequest.locationId = tktObj?.locationUID ?? 0;
+          this.tktStatRequest.tranId = tktObj?.transactionID ?? 0;
+          this.currentUserId = (tktObj?.individualUID ?? 0).toString();
+        }
+        else if(this.ticketStatus && this.ticketStatus.transactionID > 0) {
+          this.tktStatRequest.locationId = this.ticketStatus?.locationUID ?? 0;
+          this.tktStatRequest.tranId = this.ticketStatus?.transactionID ?? 0;
+          this.currentUserId = '0';
+        }
 
-        this._salesTranSvc.loadTicketStatLoc(userId, this.tktStatRequest)
+        this._salesTranSvc.loadTicketStatLoc(+this.currentUserId, this.tktStatRequest)
           .pipe(takeUntil(this._destroy$))
           .subscribe(result => {
             if (result && result.results && result.results.success) {
               this.tktStatResult = result as LoadTicketStatLocResultModel;
+
+              this.ticketStatuses = result.ticketStatuses ?? [];
+
+              this.editableTicketStatus = this._cloneTicketStatus(result.tickets?.[0] ?? this.ticketStatus);
+              // Ensure type consistency
+              this.editableTicketStatus.tktStatusId = Number(this.editableTicketStatus.tktStatusId);
+              this.editableTicketStatus.tktStatusId == 0 ? this.editableTicketStatus.tktStatusId = 1: this.editableTicketStatus.tktStatusId = this.editableTicketStatus.tktStatusId;
+              this.readyByDateValue = this.editableTicketStatus.readyByDate ? this._formatDateForInput(this.editableTicketStatus.readyByDate) : '';
+              this.nextPaymentDueValue = this.editableTicketStatus.payByDueDate ? this._formatDateForInput(this.editableTicketStatus.payByDueDate) : '';
+              this.readyByTimeValue = this.editableTicketStatus.readyByDate ? (this._formatTimeForInput(this.editableTicketStatus.readyByDate) == "00:00" ? '16:00' : this._formatTimeForInput(this.editableTicketStatus.readyByDate)) : '16:00';
+              
             }
           });
       });
 
-    this.editableTicketStatus = this._cloneTicketStatus(this.ticketStatus);
-    this.readyByDateValue = '';  // Start with blank date, don't auto-populate from input
-    this.nextPaymentDueValue = this._formatDateForInput(this.editableTicketStatus.payByDueDate);
-    this.readyByTimeValue = '16:00';  // Keep as 16:00 default, don't override with input time
-    
+
     this._initialState = this._snapshotState();
   }
 
@@ -115,7 +128,7 @@ export class TicketStatusDlgComponent implements OnInit, OnDestroy {
   }
 
   get pickupStatusDescription(): string {
-    return this.ticketStatuses.find(status => status.tktStatusId === this.editableTicketStatus.tktStatusId)?.description ?? 'Select status';
+    return this.ticketStatuses.filter(status => status.tktStatusId === this.ticketStatus.tktStatusId)[0]?.description ?? '';
   }
 
   get balanceDueDisplay(): string {
@@ -137,11 +150,12 @@ export class TicketStatusDlgComponent implements OnInit, OnDestroy {
   }
 
   save(): void {
-    
+    // Ensure latest values from form are set on editableTicketStatus
+    this.editableTicketStatus.readyByDate = this._combineDateAndTime(this.readyByDateValue, this.readyByTimeValue);
+    this.editableTicketStatus.payByDueDate = this._toDateOrNull(this.nextPaymentDueValue);
+    this.editableTicketStatus.rckLocDesc = (this.editableTicketStatus.rckLocDesc || '').trim();
+
     const savedTicketStatus = this._cloneTicketStatus(this.editableTicketStatus);
-    savedTicketStatus.readyByDate = this._combineDateAndTime(this.readyByDateValue, this.readyByTimeValue);
-    savedTicketStatus.payByDueDate = this._toDateOrNull(this.nextPaymentDueValue);
-    savedTicketStatus.rckLocDesc = (savedTicketStatus.rckLocDesc || '').trim();
 
     const selectedRackLocation = this.rackLocations.find(location =>
       location.rckLocationUID === savedTicketStatus.rackLocationId ||
@@ -202,7 +216,7 @@ export class TicketStatusDlgComponent implements OnInit, OnDestroy {
     this.isReadyByTimePopupOpen = false;
   }
 
-  trackByTicketStatusId(_: number, status: LTC_TicketStatus): number {
+  trackByTicketStatusId(_: number, status: PickUpStatusMasterData): number {
     return status.tktStatusId;
   }
 

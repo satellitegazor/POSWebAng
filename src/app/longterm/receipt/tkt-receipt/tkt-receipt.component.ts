@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { EMPTY, of } from 'rxjs';
 import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 import { TicketTender } from '../../../models/ticket.tender';
@@ -24,6 +24,7 @@ import { TktObjState } from '../../../app.state';
 import { Store } from '@ngrx/store';
 import { addTabSerialToTktObj, loadTicket, loadTicketSuccess, updateCheckoutTotals } from '../../saletran/store/ticketstore/ticket.action';
 import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
+import { CustomerSearchComponent } from '../../customer-search/customer-search.component';
 
 type TicketItem = LTC_Ticket['items'][number];
 
@@ -466,7 +467,11 @@ export class TktReceiptComponent implements OnInit {
       }
     });
   }
-
+       modalOptions: NgbModalOptions = {
+            backdrop: 'static',
+            keyboard: false,
+            centered: true
+        };
   btnTicketStatusClick(event: Event): void {
     event.preventDefault();
 
@@ -489,7 +494,9 @@ export class TktReceiptComponent implements OnInit {
 
         const modalRef = this.modalService.open(TicketStatusDlgComponent, {
           backdrop: 'static',
-          keyboard: false
+          keyboard: false,
+          container: 'body',        
+          size: 'lg'
         });
         modalRef.componentInstance.title = 'Ticket Status';
         modalRef.componentInstance.ticketStatus = Object.assign(new TicketStatusLocationData(), result.tickets[0]);

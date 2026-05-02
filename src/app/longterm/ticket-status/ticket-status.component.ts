@@ -7,7 +7,7 @@ import { PosApiService, UpdateTicketStatusLocationRequest } from '../services/po
 import {
   LoadTicketStatLocRequest,
   LoadTicketStatLocResultModel,
-  LTC_TicketStatus,
+  PickUpStatusMasterData,
   TicketStatusLocationData
 } from '../models/ticket.status.location.models';
 
@@ -126,7 +126,7 @@ export class TicketStatusComponent implements OnInit {
     return this.ticketStatusResult?.tickets ?? [];
   }
 
-  get ticketStatuses(): LTC_TicketStatus[] {
+  get ticketStatuses(): PickUpStatusMasterData[] {
     return (this.ticketStatusResult?.ticketStatuses ?? [])
       .filter((status) => status.active)
       .sort((a, b) => a.displayOrder - b.displayOrder);
@@ -281,11 +281,11 @@ export class TicketStatusComponent implements OnInit {
       : ticket.transactionID;
   }
 
-  canSelectTicketStatus(ticket: TicketStatusLocationData, status: LTC_TicketStatus): boolean {
+  canSelectTicketStatus(ticket: TicketStatusLocationData, status: PickUpStatusMasterData): boolean {
     return this.getStatusId(status) >= this.getCurrentTicketStatusId(ticket);
   }
 
-  selectTicketStatus(ticket: TicketStatusLocationData, status: LTC_TicketStatus): void {
+  selectTicketStatus(ticket: TicketStatusLocationData, status: PickUpStatusMasterData): void {
     const selectedStatusId = this.normalizeTicketStatusId(this.getStatusId(status), this.ticketStatuses);
     this.selectedTicketStatusLabelByTranId[ticket.transactionID] = this.getStatusDescription(status) || 'Not Ready';
     this.selectedTicketStatusByTranId[ticket.transactionID] = selectedStatusId;
@@ -311,7 +311,7 @@ export class TicketStatusComponent implements OnInit {
     this.persistTicketStatusChange(ticket);
   }
 
-  isTicketStatusSelected(ticket: TicketStatusLocationData, status: LTC_TicketStatus): boolean {
+  isTicketStatusSelected(ticket: TicketStatusLocationData, status: PickUpStatusMasterData): boolean {
     return this.getCurrentTicketStatusId(ticket) === this.getStatusId(status);
   }
 
@@ -381,7 +381,7 @@ export class TicketStatusComponent implements OnInit {
     return this.normalizeTicketStatusId(ticket.tktStatusId, this.ticketStatuses);
   }
 
-  private normalizeTicketStatusId(statusId: number | null | undefined, availableStatuses: LTC_TicketStatus[]): number {
+  private normalizeTicketStatusId(statusId: number | null | undefined, availableStatuses: PickUpStatusMasterData[]): number {
     const normalizedStatusId = this.resolveCanonicalStatusId(statusId);
 
     if (availableStatuses.some((status) => this.getStatusId(status) === normalizedStatusId)) {
@@ -400,7 +400,7 @@ export class TicketStatusComponent implements OnInit {
     return Number(value) || 0;
   }
 
-  private getStatusId(status: LTC_TicketStatus | null | undefined): number {
+  private getStatusId(status: PickUpStatusMasterData | null | undefined): number {
     if (!status) {
       return 0;
     }
@@ -431,7 +431,7 @@ export class TicketStatusComponent implements OnInit {
     return this.resolveCanonicalStatusId(rawStatusId, status);
   }
 
-  private getStatusDescription(status: LTC_TicketStatus | null | undefined): string {
+  private getStatusDescription(status: PickUpStatusMasterData | null | undefined): string {
     if (!status) {
       return '';
     }
@@ -448,7 +448,7 @@ export class TicketStatusComponent implements OnInit {
 
   private resolveCanonicalStatusId(
     statusId: number | string | null | undefined,
-    status: LTC_TicketStatus | null | undefined = null
+    status: PickUpStatusMasterData | null | undefined = null
   ): number {
     const parsedId = this.toStatusId(statusId);
     if (parsedId === 1 || parsedId === 2 || parsedId === 3) {

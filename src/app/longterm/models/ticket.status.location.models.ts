@@ -15,7 +15,7 @@ export class LoadTicketStatLocRequest {
 export class LoadTicketStatLocResultModel {
     public results: MobileBase = {} as MobileBase;
     public tickets: TicketStatusLocationData[] = [];
-    public ticketStatuses: LTC_TicketStatus[] = [];
+    public ticketStatuses: PickUpStatusMasterData[] = [];
     public rackLocations: LTC_RackLocation[] = [];
     public totalRowCount: number = 0;
 }
@@ -41,7 +41,7 @@ export class TicketStatusLocationData {
     public cDialCode: string = '';
 }
 
-export class LTC_TicketStatus {
+export class PickUpStatusMasterData {
     public tktStatusId: number = 0;
     public tktStatusCode: string = '';
     public description: string = '';

@@ -54,7 +54,8 @@
 								class="form-control ready-time-trigger"
 								[attr.aria-expanded]="isReadyByTimePopupOpen"
 								aria-haspopup="dialog"
-								(click)="toggleReadyByTimePopup()">
+								(click)="toggleReadyByTimePopup()"
+								[(ngModel)]="editableTicketStatus.readyByTime">
 								<span>{{ readyByTimeValue || 'Select time' }}</span>
 								<span class="ready-time-trigger-icon" aria-hidden="true">v</span>
 							</button>
@@ -87,7 +88,7 @@
 							class="form-select"
 							[ngModel]="editableTicketStatus.tktStatusId"
 							(ngModelChange)="onPickupStatusChange($event)">
-							<option *ngFor="let status of ticketStatuses; trackBy: trackByTicketStatusId" [ngValue]="status.tktStatusId">
+							<option *ngFor="let status of ticketStatuses" [ngValue]="status.tktStatusId">
 								{{ status.description }}
 							</option>
 						</select>
@@ -110,6 +111,12 @@
 							<option *ngFor="let rackLocation of rackLocations; trackBy: trackByRackLocationId" [value]="rackLocation.description"></option>
 						</datalist>
 					</div>
+				</div>
+
+				<!-- Debug info for troubleshooting -->
+				<div style="color: red; font-size: 12px;">
+					tktStatusId (model): {{ editableTicketStatus.tktStatusId }} (type: {{ editableTicketStatus.tktStatusId?.constructor?.name }})<br>
+					Status IDs: <span>{{ pickUpStatusesMstrData }}</span>
 				</div>
 			</div>
 		</section>

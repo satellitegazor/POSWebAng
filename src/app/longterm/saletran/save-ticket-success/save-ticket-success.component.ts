@@ -25,7 +25,7 @@ export class SaveTicketSuccessComponent implements OnInit, OnDestroy {
   modalOptions: NgbModalOptions = {
     backdrop: 'static',
     keyboard: false,
-    centered: true,
+    container: 'body',
     size: 'lg'
   };
 
