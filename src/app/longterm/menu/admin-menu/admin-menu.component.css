@@ -1,3 +1,37 @@
+/* Admin menu items styled like main menu */
+.admin-menu-link {
+    background: linear-gradient(180deg, #3d5268 0%, #2f4358 100%);
+    border: 2px solid #2a3c50;
+    border-radius: var(--radius-lg, 12px);
+    box-shadow: 0 5px 12px rgba(22, 40, 58, 0.24);
+    color: #fff !important;
+    display: block;
+    text-decoration: none;
+    transition: box-shadow 0.15s, border-color 0.15s, background-color 0.15s;
+    margin-bottom: 1rem;
+}
+
+.admin-menu-link:hover,
+.admin-menu-link:focus {
+    background: linear-gradient(180deg, #48637e 0%, #36506a 100%);
+    border-color: #6e92b7;
+    box-shadow: 0 8px 20px rgba(22, 40, 58, 0.32);
+    outline: none;
+    color: #fff;
+}
+
+.admin-menu-link:active {
+    background: linear-gradient(180deg, #30465d 0%, #2a3d52 100%);
+}
+
+.admin-menu-link h5,
+.admin-menu-link small {
+    color: #fff !important;
+}
+
+.admin-menu-link i {
+    color: #d9e6f3 !important;
+}
 .cncsn-footer {
     height: 90px;
     z-index: 1030;

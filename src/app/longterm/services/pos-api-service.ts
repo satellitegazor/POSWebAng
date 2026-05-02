@@ -510,7 +510,18 @@ export class PosApiService {
             { headers: this.headerObjs });
     }
 
-
+    /**
+     * Calls the WebAPI endpoint ltc/GetAssociateDetsToCopy
+     * @param guid string
+     * @param pFromLid number
+     * @param pToLid number
+     * @param uid string
+     * @returns Observable<LTC_LocationAssociatesResultsModel>
+     */
+    public getAssociateDetsToCopy(pFromLid: number, pToLid: number, uid: string): Observable<LTC_LocationAssociatesResultsModel> {
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/GetAssociateDetsToCopy?guid=${encodeURIComponent(GlobalConstants.GET_GUID)}&pFromLid=${pFromLid}&pToLid=${pToLid}&uid=${encodeURIComponent(uid)}`;
+        return this.httpClient.get<LTC_LocationAssociatesResultsModel>(url, { headers: this.headerObjs });
+    }
 
     //This is called from TicketStatus modal dialog after saving transaction for LaundryDrycleaning Business Model
     public updateTicketStatusLocation(uid: string, request: UpdateTicketStatusLocationRequest): Observable<UpdateTicketStatusLocationResultModel> {
@@ -708,4 +719,3 @@ export interface SendEmailRequest {
     EmailContent: string;
     Subject: string;
 }
-  

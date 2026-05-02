@@ -29,6 +29,8 @@ import { PriceListRptComponent } from './reports/pricelist/price-list-rpt.compon
 import { TicketStatusComponent } from './ticket-status/ticket-status.component';
 import { TranDetailsComponent } from '../misc-module/tran-details/tran-details.component';
 import { TicketLookupComponent } from './ticket-lookup/ticket-lookup.component';
+import { AssocMaintenanceComponent } from './menu/admin-menu/assoc-maintenance/assoc-maintenance.component';
+import { SplInstrucSetupComponent } from './menu/admin-menu/spl-instruc-setup/spl-instruc-setup.component';
 
 const routes: Routes = [
   { path: 'salestran', component: ItemSelectionBasePageComponent },
@@ -54,7 +56,10 @@ const routes: Routes = [
   { path: 'rptcashdrw', component: CashDrawerReportPageComponent },
   { path: 'ticketstatus', component: TicketStatusComponent },
   { path: 'trandtls', component: TranDetailsComponent},
-  { path: 'ticketlookup', component: TicketLookupComponent}
+  { path: 'ticketlookup', component: TicketLookupComponent},
+  { path: 'assocmaint', component: AssocMaintenanceComponent },
+  { path: 'splinstr', component: SplInstrucSetupComponent }
+
 
 
 

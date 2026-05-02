@@ -1,0 +1,95 @@
+<!-- Bootstrap-styled Associate Maintenance UI -->
+<div class="container-fluid my-0 px-0">
+  <div class="card shadow">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center ">
+        <label for="ddlPINReqd" class="form-label">PIN required for each sales transaction:</label>
+        <select id="ddlPINReqd" class="form-select" style="min-width: 180px; max-width: 240px;">
+          <option [selected]!="pinReqdForSalesTran" value="false">No</option>
+          <option [selected]="pinReqdForSalesTran" value="true">Yes</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="lnkCopyAssociate" type="button">
+        Copy Associate
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="alert alert-info py-2 mb-3">
+        <strong>Privacy Act Training</strong> is a mandatory requirement for all concessionaires and their associates who use an exchange furnished CPOS tablet.<br>
+        Please reach out to the Exchange SBM for more details on the requirement and access to the training.
+      </div>
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Email Address</th>
+              <th>Phone Number</th>
+              <th>PIN #</th>
+              <th>PII Training</th>
+              <th>Type</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let assoc of associatesResult?.associates">
+              <td><input type="text" class="form-control" [(ngModel)]="assoc.firstName" style="text-transform: capitalize" /></td>
+              <td><input type="text" class="form-control" [(ngModel)]="assoc.lastName" style="text-transform: capitalize" /></td>
+              <td><input type="text" class="form-control" [(ngModel)]="assoc.emailAddress" style="text-transform: uppercase" /></td>
+              <td><input type="text" class="form-control" maxlength="15" [(ngModel)]="assoc.phoneNumber" /></td>
+              <td><input type="text" class="form-control" [value]="assoc.pin" readonly /></td>
+              <td>
+                <select class="form-select" [(ngModel)]="assoc.privActConfmComplete">
+                  <option [ngValue]="false" style="color:red">Incomplete</option>
+                  <option [ngValue]="true">Complete</option>
+                </select>
+              </td>
+              <td>
+                <button class="btn btn-outline-secondary btn-sm" type="button">
+                  {{ assoc.description || 'Type' }}
+                </button>
+              </td>
+              <td>
+                <button class="btn btn-warning btn-sm" type="button">
+                  Reset PIN
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+    <div class="footer fixed-bottom cncsnFooter">
+      <div class="row g-0">
+        <div class="col-12 col-md-4">
+          <button class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2" id="amAdd" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus-fill" viewBox="0 0 16 16">
+              <path d="M6 8c1.657 0 3-1.343 3-3S7.657 2 6 2 3 3.343 3 5s1.343 3 3 3zm4.5 1a.5.5 0 0 1 .5.5V11h1.5a.5.5 0 0 1 0 1H11v1.5a.5.5 0 0 1-1 0V12H8.5a.5.5 0 0 1 0-1H10v-1.5a.5.5 0 0 1 .5-.5zM6 9c-2.33 0-7 1.17-7 3.5V14a1 1 0 0 0 1 1h7.256A4.48 4.48 0 0 1 7 12.5c0-.828.2-1.61.553-2.292C6.37 10.08 6.19 10 6 10z"/>
+            </svg>
+            <span>Add Associate</span>
+          </button>
+        </div>
+        <div class="col-12 col-md-4">
+          <button class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2" id="amSave" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-save-fill" viewBox="0 0 16 16">
+              <path d="M8 1.5A1.5 1.5 0 0 0 6.5 3v1h3V3A1.5 1.5 0 0 0 8 1.5zM3 4v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4H3zm2 2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5A.5.5 0 0 1 5 6zm0 2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5A.5.5 0 0 1 5 8zm0 2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5A.5.5 0 0 1 5 10z"/>
+            </svg>
+            <span>Save</span>
+          </button>
+        </div>
+        <div class="col-12 col-md-4">
+          <button class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2" id="amSalesTran" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-fill" viewBox="0 0 16 16">
+              <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5A.5.5 0 0 1 0 1.5"/>
+              <path d="M5 12a2 2 0 1 0 0 4a2 2 0 0 0 0-4m5 0a2 2 0 1 0 0 4a2 2 0 0 0 0-4"/>
+            </svg>
+            <span>Sales Transaction</span>
+          </button>
+        </div>
+      </div>
+    </div>

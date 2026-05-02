@@ -55,6 +55,9 @@ import { TicketLookupComponent } from './ticket-lookup/ticket-lookup.component';
 import { CustomerNewComponent } from './customer-new/customer-new.component';
 import { TranDetailsComponent } from '../misc-module/tran-details/tran-details.component';
 import { TicketStatusDlgComponent } from './saletran/ticket-status-dlg/ticket-status-dlg.component';
+import { AssocMaintenanceComponent } from './menu/admin-menu/assoc-maintenance/assoc-maintenance.component';
+import { SplInstrucSetupComponent } from './menu/admin-menu/spl-instruc-setup/spl-instruc-setup.component';
+import { AdminMenuComponent } from './menu/admin-menu/admin-menu.component';
 
 @NgModule({
   declarations: [DeptListComponent, ItemSelectionBasePageComponent, SalesCategoryComponent, SaleItemComponent,
@@ -64,7 +67,8 @@ import { TicketStatusDlgComponent } from './saletran/ticket-status-dlg/ticket-st
     ItemButtonSalesCatListComponent, ItemButtonSalesItemListComponent, CashTndrComponent,
     ConcessionCardTndrComponent, DeviceTndrPageComponent, EgConcTndrComponent,GiftCardInquiryComponent, MainMenuComponent,
     SalesTranRptDetailComponent, SalesTranRptPageComponent, CustomerSearchComponent, TicketLookupComponent,
-    CustomerNewComponent, TranDetailsComponent, TicketStatusDlgComponent],
+    CustomerNewComponent, TranDetailsComponent, TicketStatusDlgComponent, AssocMaintenanceComponent, SplInstrucSetupComponent,
+    AdminMenuComponent],
   
   imports: [
     CommonModule,
