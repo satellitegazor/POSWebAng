@@ -1,3 +1,6 @@
+
+
+
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { GlobalConstants } from '../../global/global.constants';
@@ -582,6 +585,14 @@ export class PosApiService {
         );
     }
 
+
+    public saveLocationAssociates(request: SaveLocationAssociatesRequest): Observable<LTC_LocationAssociatesResultsModel> {
+
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/SaveLocationAssociates?guid=${encodeURIComponent(GlobalConstants.PUT_GUID)}`;
+        
+        return this.httpClient.put<LTC_LocationAssociatesResultsModel>(url, JSON.stringify(request), { headers: this.headerObjs });
+    }
+
 }
 
 export interface InProgressTendersResultModel {
@@ -718,4 +729,12 @@ export interface SendEmailRequest {
     EmailAddress: string;
     EmailContent: string;
     Subject: string;
+}
+// Add this interface if not already present
+export interface SaveLocationAssociatesRequest {
+    // Define properties as per backend contract
+    // Example:
+    // locationId: number;
+    // associates: any[];
+    // ...
 }
