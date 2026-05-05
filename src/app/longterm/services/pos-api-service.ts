@@ -1,3 +1,5 @@
+
+import { LTCSpecialInstructionsParmModel, LTCSpecialInstructionsResultsModel } from '../models/special.instructions.model';
 import { LTCOtherContractResultsModel } from '../models/location.associates';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -608,6 +610,44 @@ export class PosApiService {
         const guid = GlobalConstants.GET_GUID;
         const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/GetOtherContractLocations?guid=${encodeURIComponent(guid)}&uid=${encodeURIComponent(uid)}&cid=${cid}&lid=${lid}&isForAssociates=${isForAssociates}`;
         return this.httpClient.get<LTCOtherContractResultsModel>(url, { headers: this.headerObjs });
+    }
+
+    /**
+     * Calls the GetLocationSpecialInstructions WebAPI.
+     * guid is fetched from GlobalConstants.
+     * @param uid string
+     * @param locuid number
+     * @param dptuid number
+     */
+    public getLocationSpecialInstructions(uid: string, locuid: number, dptuid: number) {
+        const guid = GlobalConstants.GET_GUID;
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/GetLocationSpecialInstructions?guid=${encodeURIComponent(guid)}&uid=${encodeURIComponent(uid)}&locuid=${locuid}&dptuid=${dptuid}`;
+        return this.httpClient.get<LTCSpecialInstructionsResultsModel>(url, { headers: this.headerObjs });
+    }
+
+    /**
+     * Calls the SaveLocationSpecialInstructions WebAPI.
+     * guid is fetched from GlobalConstants.
+     * @param uid string
+     * @param parms LTCSpecialInstructionsParmModel
+     */
+    public saveLocationSpecialInstructions(uid: string, parms: LTCSpecialInstructionsParmModel) {
+        const guid = GlobalConstants.PUT_GUID || GlobalConstants.GET_GUID;
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/SaveLocationSpecialInstructions?guid=${encodeURIComponent(guid)}&uid=${encodeURIComponent(uid)}`;
+        return this.httpClient.put<LTCSpecialInstructionsResultsModel>(url, JSON.stringify(parms), { headers: this.headerObjs });
+    }
+
+        /**
+     * Calls the InactivateSplInstruction WebAPI (DELETE).
+     * guid is fetched from GlobalConstants.
+     * @param uid string
+     * @param dptId number
+     * @param splInstrId number
+     */
+    public inactivateSplInstruction(uid: string, dptId: number, splInstrId: number) {
+        const guid = GlobalConstants.DELETE_GUID;
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/InactivateSplInstruction?guid=${encodeURIComponent(guid)}&uid=${encodeURIComponent(uid)}&dptId=${dptId}&splInstrId=${splInstrId}`;
+        return this.httpClient.delete<MobileBase>(url, { headers: this.headerObjs });
     }
 
 }
