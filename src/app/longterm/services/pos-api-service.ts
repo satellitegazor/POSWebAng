@@ -1,6 +1,3 @@
-
-
-
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { GlobalConstants } from '../../global/global.constants';
@@ -12,7 +9,7 @@ import { VendorLoginResultsModel } from '../../models/vendor.login.results.model
 import { LogonDataService } from '../../global/logon-data-service.service';
 import { LTC_CustomerLookupResultsModel } from '../../models/customer';
 import { LocationConfigModel } from '../models/location-config';
-import { LTC_LocationAssociatesResultsModel } from '../models/location.associates';
+import { AssociatePINUpdateResultsModel, LTC_LocationAssociatesResultsModel, ResetAssociatePINRequest } from '../models/location.associates';
 import { SaveTicketResultsModel, TicketSplit } from '../../models/ticket.split';
 import { DailyExchRateMdl } from '../../models/exchange.rate'
 import { TenderTypeModel } from '../models/tender.type';
@@ -586,11 +583,16 @@ export class PosApiService {
     }
 
 
-    public saveLocationAssociates(request: SaveLocationAssociatesRequest): Observable<LTC_LocationAssociatesResultsModel> {
+    public saveLocationAssociates(uid: string, request: SaveLocationAssociatesRequest): Observable<LTC_LocationAssociatesResultsModel> {
 
-        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/SaveLocationAssociates?guid=${encodeURIComponent(GlobalConstants.PUT_GUID)}`;
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/SaveLocationAssociates?uid=${encodeURIComponent(uid)}&guid=${encodeURIComponent(GlobalConstants.PUT_GUID)}`;
         
         return this.httpClient.put<LTC_LocationAssociatesResultsModel>(url, JSON.stringify(request), { headers: this.headerObjs });
+    }
+
+    public resetAssociatePIN(uid: string, request: ResetAssociatePINRequest) {
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/ResetAssociatePIN?guid=${encodeURIComponent(GlobalConstants.PUT_GUID)}&uid=${encodeURIComponent(uid)}`;
+        return this.httpClient.put<AssociatePINUpdateResultsModel>(url, JSON.stringify(request), { headers: this.headerObjs });
     }
 
 }
