@@ -58,6 +58,7 @@ import { TicketStatusDlgComponent } from './saletran/ticket-status-dlg/ticket-st
 import { AssocMaintenanceComponent } from './menu/admin-menu/assoc-maintenance/assoc-maintenance.component';
 import { SplInstrucSetupComponent } from './menu/admin-menu/spl-instruc-setup/spl-instruc-setup.component';
 import { AdminMenuComponent } from './menu/admin-menu/admin-menu.component';
+import { CopyAssociateLocationModalComponent } from './menu/admin-menu/assoc-maintenance/copy-associate-location-modal.component';
 
 @NgModule({
   declarations: [DeptListComponent, ItemSelectionBasePageComponent, SalesCategoryComponent, SaleItemComponent,
@@ -68,7 +69,7 @@ import { AdminMenuComponent } from './menu/admin-menu/admin-menu.component';
     ConcessionCardTndrComponent, DeviceTndrPageComponent, EgConcTndrComponent,GiftCardInquiryComponent, MainMenuComponent,
     SalesTranRptDetailComponent, SalesTranRptPageComponent, CustomerSearchComponent, TicketLookupComponent,
     CustomerNewComponent, TranDetailsComponent, TicketStatusDlgComponent, AssocMaintenanceComponent, SplInstrucSetupComponent,
-    AdminMenuComponent],
+    AdminMenuComponent, CopyAssociateLocationModalComponent],
   
   imports: [
     CommonModule,

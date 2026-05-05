@@ -55,3 +55,18 @@ export class ResetAssociatePINRequest {
   individualId: number = 0;
   credentials: string = '';
 }
+
+export class LTCOtherContractResultsModel {
+  results: MobileBase = {} as MobileBase;
+  otherContractLocations: LTCOtherContractLocations[] = [];
+  hasContracts: boolean = false;
+  hasPrevLocations: boolean = false;
+}
+
+export class LTCOtherContractLocations {
+  contractStatus: string = '';
+  locationUID: string = '';
+  locationName: string = '';
+  contractUID: number = 0;
+  contractNumber: string = '';
+}

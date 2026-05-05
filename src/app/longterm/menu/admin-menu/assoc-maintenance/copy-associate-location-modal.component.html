@@ -1,0 +1,13 @@
+<div class="modal-header">
+  <h5 class="modal-title">Copy Associate from Location</h5>
+</div>
+<div class="modal-body">
+  <label for="locationDropdown" class="form-label">Select Location</label>
+  <select id="locationDropdown" class="form-select" [(ngModel)]="selectedLocationUID">
+    <option *ngFor="let loc of locations" [value]="loc.locationUID">{{ loc.locationName }}</option>
+  </select>
+</div>
+<div class="modal-footer justify-content-end gap-2">
+  <button type="button" class="btn btn-primary" (click)="onYes()">Yes</button>
+  <button type="button" class="btn btn-secondary" (click)="onNo()">No</button>
+</div>

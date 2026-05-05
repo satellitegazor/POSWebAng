@@ -175,7 +175,7 @@ export class VendorLTComponent implements OnInit {
                 return;
             }
             if(data.resetPIN == 0 && data.showPrivTrngConfrm > 0) {
-                const modalRef = this._modalService.open(MandateTrainingComponent, { backdrop: 'static', keyboard: false, centered: true });
+                const modalRef = this._modalService.open(MandateTrainingComponent, { backdrop: 'static', keyboard: false, centered: true, size: 'lg' });
                 modalRef.componentInstance.vendorName = data.associateName;
                 modalRef.componentInstance.businessDate = new Date;
                 modalRef.result.then((result: any) => {

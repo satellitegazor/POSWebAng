@@ -1,3 +1,4 @@
+import { LTCOtherContractResultsModel } from '../models/location.associates';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { GlobalConstants } from '../../global/global.constants';
@@ -593,6 +594,20 @@ export class PosApiService {
     public resetAssociatePIN(uid: string, request: ResetAssociatePINRequest) {
         const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/ResetAssociatePIN?guid=${encodeURIComponent(GlobalConstants.PUT_GUID)}&uid=${encodeURIComponent(uid)}`;
         return this.httpClient.put<AssociatePINUpdateResultsModel>(url, JSON.stringify(request), { headers: this.headerObjs });
+    }
+
+    /**
+ * Calls the GetOtherContractLocations WebAPI.
+ * guid is fetched from GlobalConstants.
+ * @param uid string
+ * @param cid number
+ * @param lid number
+ * @param isForAssociates boolean (optional, default false)
+ */
+    public getOtherContractLocations(uid: string, cid: number, lid: number, isForAssociates: boolean = false) {
+        const guid = GlobalConstants.GET_GUID;
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/GetOtherContractLocations?guid=${encodeURIComponent(guid)}&uid=${encodeURIComponent(uid)}&cid=${cid}&lid=${lid}&isForAssociates=${isForAssociates}`;
+        return this.httpClient.get<LTCOtherContractResultsModel>(url, { headers: this.headerObjs });
     }
 
 }
