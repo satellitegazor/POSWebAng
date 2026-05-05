@@ -336,7 +336,7 @@ export class SalesTranRptPageComponent implements OnInit {
   }
 
   get managerAssociateEmail(): string {
-    return this.SaleAssocList.find(assoc => (assoc.cODE || '').toUpperCase() === 'RLTYP_CONC_MNGR')?.emailAddress?.trim() || '';
+    return this.SaleAssocList.find(assoc => (assoc.code || '').toUpperCase() === 'RLTYP_CONC_MNGR')?.emailAddress?.trim() || '';
   }
 
   private getSelectedRecipientEmail(): string {

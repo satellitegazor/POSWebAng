@@ -15,14 +15,14 @@ export class LTC_Associates
 {
     public individualUID: number = 0;
     public individualRoleTypeUID: number = 0;
-    public pIN: string = '';
+    public pin: string = '';
     public firstName: string = '';
     public lastName: string = '';
     public emailAddress: string = '';
     public phoneNumber: string = '';
-    public cODE: string = '';
+    public code: string = '';
     public description: string = '';
-    public hasUpdates: string = '';
+    public hasUpdates: boolean = false;
     public individualLocationUID: number = 0;
     public maintTimestamp: Date = {} as Date;
     public maintUserId: string = '';
@@ -31,5 +31,27 @@ export class LTC_Associates
     public indCountryDialCode: string = '';
     public dcTipAmount: number = 0;
     public ndcTipAmount: number = 0;
+    public locationUID: number = 0;
+    public active: boolean = false;
 
+}
+
+export class AssociatePINUpdateResultsModel {
+  results: MobileBase = {} as MobileBase;
+  vendorNumber: string = '';
+  vendorName: string = '';
+  facilityNumber: string = '';
+  facilityName: string = '';
+  locationName: string = '';
+  associateEmail: string = '';
+  contractStart: Date = {} as Date;
+  contractEnd: Date = {} as Date;
+  individualRole: string = '';
+  associateName: string = '';
+}
+
+export class ResetAssociatePINRequest {
+  locationId: number = 0;
+  individualId: number = 0;
+  credentials: string = '';
 }
