@@ -1,0 +1,20 @@
+
+<div class="container mt-5" style="max-width: 400px;">
+	<div class="card shadow">
+		<div class="card-body">
+			<h3 class="card-title text-center mb-4">Logon</h3>
+			<form>
+				<div class="mb-3">
+					<label for="sbmLoginId" class="form-label">Login ID</label>
+					<input type="text" class="form-control" id="sbmLoginId" [(ngModel)]="loginId" name="loginId" autocomplete="username" required>
+				</div>
+				<div class="mb-3">
+					<label for="sbmPassword" class="form-label">Password</label>
+					<input type="password" class="form-control" id="sbmPassword" [(ngModel)]="password" name="password" autocomplete="current-password" required>
+				</div>
+				<button type="button" class="btn btn-primary w-100" (click)="onLogin()">Login</button>
+			</form>
+		</div>
+	</div>
+</div>
+
