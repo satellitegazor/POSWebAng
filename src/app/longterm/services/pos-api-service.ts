@@ -1,3 +1,5 @@
+    
+    // endregion
 
 import { LTCSpecialInstructionsParmModel, LTCSpecialInstructionsResultsModel } from '../models/special.instructions.model';
 import { LTCOtherContractResultsModel } from '../models/location.associates';
@@ -34,6 +36,7 @@ import { CashDrawerSummaryResultsModel, LTC_CashDrawerVariance } from '../models
 import { LTC_ItemButtonMenuResultsModel } from '../models/item.button.menu.models';
 import { LTC_ContractResultsModel } from '../models/contract.models';
 import { LTC_TicketStatusLocationResult } from '../models/ticket.status.model';
+import { LTC_BalanceDueCountResultsModel, LTC_DailyExchRateHistResultsModel, Ltc_PinReqdSalTranResultsModel, LTC_Signature, LTC_SingleCustomerResultsModel, LTC_SingleTicketPaymentDetailsModel, LTC_SingleTransactionId, LtcFeeHResultsModel, SignatureData } from '../models/misc.models';
 
 
 @Injectable({
@@ -649,6 +652,109 @@ export class PosApiService {
         const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/InactivateSplInstruction?guid=${encodeURIComponent(guid)}&uid=${encodeURIComponent(uid)}&dptId=${dptId}&splInstrId=${splInstrId}`;
         return this.httpClient.delete<MobileBase>(url, { headers: this.headerObjs });
     }
+
+    // region: Generated API methods from C# WebAPI signatures
+
+    public getTicketStatusLocationDetails(
+        uid: string,
+        nLocationUID: number,
+        tranId: number = 0,
+        fromDt: string = '',
+        toDt: string = '',
+        lastName: string = '',
+        firstName: string = '',
+        pageSize: number = 10,
+        pageNum: number = 1
+    ): Observable<LTC_TicketStatusLocationResult> {
+        const guid = GlobalConstants.GET_GUID;
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/GetTicketStatusLocationDetails?guid=${encodeURIComponent(guid)}&uid=${encodeURIComponent(uid)}&nLocationUID=${nLocationUID}&TranId=${tranId}&FromDt=${encodeURIComponent(fromDt)}&ToDt=${encodeURIComponent(toDt)}&LastName=${encodeURIComponent(lastName)}&FirstName=${encodeURIComponent(firstName)}&PageSize=${pageSize}&PageNum=${pageNum}`;
+        return this.httpClient.get<LTC_TicketStatusLocationResult>(url, { headers: this.headerObjs });
+    }
+
+    public putAssociateResetPIN(uid: string, request: ResetAssociatePINRequest): Observable<AssociatePINUpdateResultsModel> {
+        const guid = GlobalConstants.PUT_GUID;
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/ResetAssociatePIN?guid=${encodeURIComponent(guid)}&uid=${encodeURIComponent(uid)}`;
+        return this.httpClient.put<AssociatePINUpdateResultsModel>(url, JSON.stringify(request), { headers: this.headerObjs });
+    }
+
+    public putLocationSpecialInstructions(uid: string, parms: LTCSpecialInstructionsParmModel): Observable<LTCSpecialInstructionsResultsModel> {
+        const guid = GlobalConstants.PUT_GUID;
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/SaveLocationSpecialInstructions?guid=${encodeURIComponent(guid)}&uid=${encodeURIComponent(uid)}`;
+        return this.httpClient.put<LTCSpecialInstructionsResultsModel>(url, JSON.stringify(parms), { headers: this.headerObjs });
+    }
+
+    public deleteSplInstruction(uid: string, dptId: number, splInstrId: number): Observable<MobileBase> {
+        const guid = GlobalConstants.DELETE_GUID;
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/InactivateSplInstruction?guid=${encodeURIComponent(guid)}&uid=${encodeURIComponent(uid)}&dptId=${dptId}&splInstrId=${splInstrId}`;
+        return this.httpClient.delete<MobileBase>(url, { headers: this.headerObjs });
+    }
+
+    public getTransactionID(uid: string, locationId: number, ticketNum: number): Observable<LTC_SingleTransactionId> {
+        const guid = GlobalConstants.GET_GUID;
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/GetTransactionID?guid=${encodeURIComponent(guid)}&uid=${encodeURIComponent(uid)}&locationId=${locationId}&ticketNum=${ticketNum}`;
+        return this.httpClient.get<LTC_SingleTransactionId>(url, { headers: this.headerObjs });
+    }
+
+    public getSingleTicketPaymentDetails(uid: string, pTransactionID: number): Observable<LTC_SingleTicketPaymentDetailsModel> {
+        const guid = GlobalConstants.GET_GUID;
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/GetSingleTicketPaymentDetails?guid=${encodeURIComponent(guid)}&uid=${encodeURIComponent(uid)}&pTransactionID=${pTransactionID}`;
+        return this.httpClient.get<LTC_SingleTicketPaymentDetailsModel>(url, { headers: this.headerObjs });
+    }
+
+    public getSingleCustomer(uid: string, pCustomerUID: number): Observable<LTC_SingleCustomerResultsModel> {
+        const guid = GlobalConstants.GET_GUID;
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/GetSingleCustomer?guid=${encodeURIComponent(guid)}&uid=${encodeURIComponent(uid)}&pCustomerUID=${pCustomerUID}`;
+        return this.httpClient.get<LTC_SingleCustomerResultsModel>(url, { headers: this.headerObjs });
+    }
+
+    public getDailyExchRateRptDtls(cid: number, lid: number, fNum: string, fDt: string, tDt: string, uid: string): Observable<LTC_DailyExchRateHistResultsModel> {
+        const guid = GlobalConstants.GET_GUID;
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/GetDailyExchRateRptDtls?guid=${encodeURIComponent(guid)}&cid=${cid}&lid=${lid}&fNum=${encodeURIComponent(fNum)}&fDt=${encodeURIComponent(fDt)}&tDt=${encodeURIComponent(tDt)}&uid=${encodeURIComponent(uid)}`;
+        return this.httpClient.get<LTC_DailyExchRateHistResultsModel>(url, { headers: this.headerObjs });
+    }
+
+    public getFeeHistory(uid: string, id: number, feeType: string): Observable<LtcFeeHResultsModel> {
+        const guid = GlobalConstants.GET_GUID;
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/GetFeeHistory?guid=${encodeURIComponent(guid)}&uid=${encodeURIComponent(uid)}&id=${id}&feeType=${encodeURIComponent(feeType)}`;
+        return this.httpClient.get<LtcFeeHResultsModel>(url, { headers: this.headerObjs });
+    }
+
+    public getSignature(uid: string, ticketTenderID: number): Observable<LTC_Signature> {
+        const guid = GlobalConstants.GET_GUID;
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/GetSignature?guid=${encodeURIComponent(guid)}&uid=${encodeURIComponent(uid)}&ticketTenderID=${ticketTenderID}`;
+        return this.httpClient.get<LTC_Signature>(url, { headers: this.headerObjs });
+    }
+
+    public saveSignature(signData: SignatureData): Observable<LTC_Signature> {
+        const guid = GlobalConstants.PUT_GUID;
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/SaveSignature?guid=${encodeURIComponent(guid)}`;
+        return this.httpClient.put<LTC_Signature>(url, JSON.stringify(signData), { headers: this.headerObjs });
+    }
+
+    public getLocationBalanceDueCountByParams(locuid: number, cid: number, date: string): Observable<LTC_BalanceDueCountResultsModel> {
+        const guid = GlobalConstants.GET_GUID;
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/GetLocationBalanceDueCount?locuid=${locuid}&cid=${cid}&date=${encodeURIComponent(date)}&guid=${encodeURIComponent(guid)}`;
+        return this.httpClient.get<LTC_BalanceDueCountResultsModel>(url, { headers: this.headerObjs });
+    }
+
+    public getLocationBalanceDueCount(uid: string, locuid: number, cid: number, date: string): Observable<LTC_BalanceDueCountResultsModel> {
+        const guid = GlobalConstants.GET_GUID;
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/GetLocationBalanceDueCount?guid=${encodeURIComponent(guid)}&uid=${encodeURIComponent(uid)}&locuid=${locuid}&cid=${cid}&date=${encodeURIComponent(date)}`;
+        return this.httpClient.get<LTC_BalanceDueCountResultsModel>(url, { headers: this.headerObjs });
+    }
+
+    public getVendorContractSummaryCS(cid: number, lid: number, assocUID: number, fNum: string, fDt: string, tDt: string, frgnCurr: boolean): Observable<VendorContractSummaryResultsModel> {
+        const guid = GlobalConstants.GET_GUID;
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/GetVendorContractSummaryCS?cid=${cid}&lid=${lid}&assocUID=${assocUID}&fNum=${encodeURIComponent(fNum)}&fDt=${encodeURIComponent(fDt)}&tDt=${encodeURIComponent(tDt)}&frgnCurr=${frgnCurr}&guid=${encodeURIComponent(guid)}`;
+        return this.httpClient.get<VendorContractSummaryResultsModel>(url, { headers: this.headerObjs });
+    }
+
+    public setGetPINReqdForSalTran(uid: string, lid: number, pinreqdflag: boolean = true, hasupdates: boolean = false, actioncode: number = 0, dbVal: string = 'Conus'): Observable<Ltc_PinReqdSalTranResultsModel> {
+        const guid = GlobalConstants.GET_GUID;
+        const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/SetGetPINReqdForSalTran?guid=${encodeURIComponent(guid)}&uid=${encodeURIComponent(uid)}&lid=${lid}&pinreqdflag=${pinreqdflag}&hasupdates=${hasupdates}&actioncode=${actioncode}&dbVal=${encodeURIComponent(dbVal)}`;
+        return this.httpClient.get<Ltc_PinReqdSalTranResultsModel>(url, { headers: this.headerObjs });
+    }
+
 
 }
 

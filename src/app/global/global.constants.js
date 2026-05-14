@@ -16,7 +16,7 @@ var GlobalConstants = /** @class */ (function () {
     GlobalConstants.PUT_GUID = '348D6A33-9C41-46E1-A18A-919B0E419CD4';
     GlobalConstants.POST_GUID = '22C1662C-ACAB-48DE-9DF1-246144BEFC2D';
     GlobalConstants.DELETE_GUID = 'A07C27C6-7943-4109-BD0D-61056147ACA7';
-    GlobalConstants.CPOS_SVCS_URL = 'https://localhost:44328';
+    GlobalConstants.CPOS_SVCS_URL = environment.apiBaseUrl;
     return GlobalConstants;
 }());
 exports.GlobalConstants = GlobalConstants;

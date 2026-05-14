@@ -21,6 +21,7 @@ import { TktObjState } from '../../app.state';
 import { Actions, ofType } from '@ngrx/effects';
 import { CPOSWebSvcService } from '../../longterm/services/cposweb-svc.service';
 import { VendorLoginResultsModel } from 'src/app/models/vendor.login.results.model';
+import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-logon-vendorlt',
@@ -39,7 +40,7 @@ export class VendorLTComponent implements OnInit {
     successMsgDisplay: string = 'none';
     errorMsgDisplay: string = 'none';
     receiptPrinterName: string = 'Star Micronics Printer';
-    verifoneAPIUrl: string = 'http://localhost:8000/cposwebsvc/pinpad/';
+    verifoneAPIUrl: string = environment.pinPadUrl;
     
     
     

@@ -1,9 +1,11 @@
-﻿export class GlobalConstants {
+﻿import { environment } from "../../environments/environment";
+
+export class GlobalConstants {
     public static GET_GUID = '74D6B861-C792-493A-90C7-232B4BCA1441';
     public static PUT_GUID = '348D6A33-9C41-46E1-A18A-919B0E419CD4';
     public static POST_GUID = '22C1662C-ACAB-48DE-9DF1-246144BEFC2D';
     public static DELETE_GUID = 'A07C27C6-7943-4109-BD0D-61056147ACA7';
-    public static CPOS_SVCS_URL = 'https://localhost:44328';
+    public static CPOS_SVCS_URL = environment.apiBaseUrl;
 
     public static GetClientTimeVariance(): number {
         var now = new Date();
