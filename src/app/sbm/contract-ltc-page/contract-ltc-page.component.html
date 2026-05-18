@@ -1,0 +1,862 @@
+<div id="ccContent" class="container-fluid py-3 ui-cncsn-body contract-ltc-page" data-saved-changes="false"
+    data-removed-objects="false" data-contract-removed="false" *ngIf="ltcContract as contract; else loadingOrEmpty">
+    <div class="accordion accordion-flush" id="divContract">
+        <div class="accordion-item shadow-sm mb-3 divRegionCountry" style="display: none;">
+            <h2 class="accordion-header" id="headingRegionCountry">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#ccRegionCountryBody" aria-expanded="true" aria-controls="ccRegionCountryBody">
+                    Country/Currency (Region: <span class="ms-1" id="spanContractRegion">{{ contract.regionDesc ||
+                        contract.regionCode || '-' }}</span>)
+                </button>
+            </h2>
+            <div id="ccRegionCountryBody" class="accordion-collapse collapse show"
+                aria-labelledby="headingRegionCountry">
+                <div class="accordion-body">
+                    <div class="table-responsive">
+                        <table class="table table-borderless align-middle mb-0 tblContractRegion">
+                            <tbody>
+                                <tr>
+                                    <td class="text-end text-nowrap" style="width: 10%;">Country:</td>
+                                    <td style="width: 20%; min-width: 75px;"><button type="button"
+                                            class="btn btn-outline-primary btn-sm w-100 cpos-region-country"
+                                            data-bs-toggle="modal" data-bs-target="#regioncountries">{{
+                                            contract.countryName || '-' }}</button></td>
+                                    <td class="text-end text-nowrap" style="width: 20%;">Foreign Currency:</td>
+                                    <td style="width: 20%; min-width: 75px;"><button type="button"
+                                            class="btn btn-outline-primary btn-sm w-100 cpos-region-currency"
+                                            data-bs-toggle="modal" data-bs-target="#regioncurrencies">{{
+                                            contract.currencyDesc || contract.currencyCode || '-' }}</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item shadow-sm mb-3">
+            <h2 class="accordion-header" id="headingContract">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#ccContractBody" aria-expanded="true" aria-controls="ccContractBody">
+                    Contract - <span id="spanContractNumber" class="text-uppercase ms-1">{{ contract.contractNumber ||
+                        '-' }}</span>
+                    <span class="ms-2">(Vendor: <span id="spanVendorName">{{ contract.vendorName || '-'
+                            }}</span>)</span>
+                </button>
+            </h2>
+            <div id="ccContractBody" class="accordion-collapse collapse show" aria-labelledby="headingContract">
+                <div class="accordion-body">
+                    <div class="table-responsive">
+                        <table class="table table-borderless align-middle mb-0">
+                            <tbody>
+                                <tr>
+                                    <td class="text-end text-nowrap" style="width: 10%;">Vendor Number:</td>
+                                    <td style="width: 15%; min-width: 75px;">
+                                        <div class="input-group input-group-sm">
+                                            <input id="ccVendorNumber"
+                                                class="form-control ltc-contract ltc-vendor-number" maxlength="10"
+                                                type="text" [value]="contract.vendorNumber" />
+                                            <button type="button" class="btn ltc-vendor-check vendor-lookup-btn"
+                                                id="btnVendorLookup" data-target-vendor-input="ccVendorNumber"
+                                                (click)="onVendorLookupClick()">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                    fill="currentColor" class="vendor-lookup-icon" viewBox="0 0 16 16"
+                                                    aria-hidden="true">
+                                                    <path
+                                                        d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                                                    <path
+                                                        d="m10.97 5.97-.03.03-3.992 3.99-1.647-1.647a.75.75 0 0 0-1.06 1.06l2.177 2.177a.75.75 0 0 0 1.06 0l4.523-4.522a.75.75 0 1 0-1.06-1.06" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td id="tdvendInfoBlock" class="fw-bold text-start">
+                                        <div id="vendInfoBlock">
+                                            <span id="vendorName">{{ contract.vendorName || '-' }}</span>
+                                            <span class="vendDispGarnish">(</span>
+                                            <span id="vendDispNbr">{{ contract.vendorNumber || '-' }}</span>
+                                            <span class="vendDispGarnish">)</span>
+                                        </div>
+                                    </td>
+                                    <td style="width: 245px;">
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button"
+                                                class="btn btn-outline-danger ltc-remove-contract d-inline-flex align-items-center"
+                                                id="btnRemoveContract{{contract.contractUid}}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                    fill="#dc3545" viewBox="0 0 16 16" aria-hidden="true">
+                                                    <path
+                                                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z" />
+                                                </svg>
+                                                <span class="ms-1">Contract</span>
+                                            </button>
+                                            <button type="button"
+                                                class="btn btn-outline-primary ltc-add-location d-inline-flex align-items-center"
+                                                id="btnAddLocation{{contract.contractUid}}" data-bs-toggle="modal"
+                                                data-bs-target="#dialogLocation">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                    fill="#001f6b" viewBox="0 0 16 16" aria-hidden="true">
+                                                    <path
+                                                        d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z" />
+                                                </svg>
+                                                <span class="ms-1">Location</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="row g-3 align-items-end">
+                                            <div class="col-lg-3 col-md-4">
+                                                <label class="form-label mb-1" for="ccContractNumber">Contract
+                                                    Number:</label>
+                                                <input id="ccContractNumber"
+                                                    class="form-control form-control-sm ltc-contract ltc-contract-number text-uppercase"
+                                                    type="text" maxlength="30" [value]="contract.contractNumber"
+                                                    placeholder="DRM 18-101" />
+                                            </div>
+                                            <div class="col-auto">
+                                                <button type="button" class="btn btn-outline-secondary btn-sm"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#dialogLTCContractNumber">Help</button>
+                                            </div>
+                                            <div class="col-lg-2 col-md-3">
+                                                <label class="form-label mb-1" for="ccContractStart">Contract Start
+                                                    Date:</label>
+                                                <input type="text"
+                                                    class="form-control form-control-sm ltc-dp ltc-contract ltc-contract-start"
+                                                    id="ccContractStart" name="ccContractStart"
+                                                    [value]="contract.contractStart | date:'MM/dd/yyyy'" />
+                                            </div>
+                                            <div class="col-lg-2 col-md-3">
+                                                <label class="form-label mb-1" for="ccContractEnd">Contract End
+                                                    Date:</label>
+                                                <input type="text"
+                                                    class="form-control form-control-sm ltc-dp ltc-contract ltc-contract-end"
+                                                    id="ccContractEnd" name="ccContractEnd"
+                                                    [value]="contract.contractEnd | date:'MM/dd/yyyy'" />
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item shadow-sm mb-3">
+            <h2 class="accordion-header" id="headingOwner">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#ccOwnerBody" aria-expanded="false" aria-controls="#ccOwnerBody">
+                    Concession Owner - <span id="spanOwnerId1" class="ms-1 text-capitalize">{{ contract.ownerFirstName
+                        }} {{ contract.ownerLastName }}</span>
+                </button>
+            </h2>
+            <div id="ccOwnerBody" class="accordion-collapse collapse" aria-labelledby="headingOwner">
+                <div class="accordion-body">
+                    <div class="table-responsive">
+                        <table class="table table-borderless align-middle mb-0 tblContractOwner">
+                            <tbody>
+                                <tr>
+                                    <td class="text-end text-nowrap" style="width: 10%;">First Name:</td>
+                                    <td style="width: 20%; min-width: 75px;"><input
+                                            class="form-control form-control-sm ltc-conc-owner ltc-conc-owner-first-name text-capitalize"
+                                            maxlength="30" type="text" [value]="contract.ownerFirstName" /></td>
+                                    <td class="text-end text-nowrap" style="width: 20%;">Last Name:</td>
+                                    <td style="width: 20%; min-width: 75px;"><input
+                                            class="form-control form-control-sm ltc-conc-owner ltc-conc-owner-last-name text-capitalize"
+                                            maxlength="30" type="text" [value]="contract.ownerLastName" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-end text-nowrap">Email Address:</td>
+                                    <td style="width: 35%; min-width: 75px;"><input
+                                            class="form-control form-control-sm ltc-conc-owner ltc-conc-owner-email-address text-uppercase"
+                                            type="text" [value]="contract.ownerEmail" /></td>
+                                    <td class="text-end text-nowrap">Phone Number:</td>
+                                    <td style="width: 30%; min-width: 75px;"><input id="concownerphnumber"
+                                            class="form-control form-control-sm ltc-conc-owner ltc-conc-owner-phone-number"
+                                            type="text" maxlength="15" [value]="contract.ownerPhone" /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item shadow-sm mb-3 collapse-contract-store-location"
+            *ngFor="let location of contract.locations; let i = index" [attr.data-location-uid]="location.locationUID">
+            <h2 class="accordion-header" [id]="'headingLocation' + location.locationUID">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    [attr.data-bs-target]="'#locationBody' + location.locationUID" aria-expanded="false"
+                    [attr.aria-controls]="'locationBody' + location.locationUID">
+                    <div class="d-flex w-100 justify-content-between align-items-center flex-wrap gap-2">
+                        <span>Location - <span [id]="'spanLocationName' + location.locationUID">{{ location.locationName
+                                || '-' }}</span>
+                            <!--<span>(Facilities:
+                <span [id]="'spanFacilityName' + location.locationUID">{{ location.facilities.map(f => f.facilityNumber).join(', ') }}</span>) 
+              </span>-->
+                        </span>
+                        <button type="button" id="ltc-reports-btn-{{location.locationUID}}"
+                            class="btn btn-outline-info btn-md ltc-reports-btn"
+                            (click)="btnReportsClick(location.locationUID)">&nbsp;Reports&nbsp;</button>
+                    </div>
+                </button>
+            </h2>
+
+            <div class="accordion-collapse collapse" [id]="'locationBody' + location.locationUID"
+                [attr.aria-labelledby]="'headingLocation' + location.locationUID">
+                <div class="accordion-body">
+                    <div class="accordion accordion-flush">
+                        <div class="accordion-item border-0 mb-3">
+                            <h3 class="accordion-header">
+                                <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse"
+                                    [attr.data-bs-target]="'#locationDetails' + location.locationUID">Location
+                                    Details</button>
+                            </h3>
+                            <div class="accordion-collapse collapse show"
+                                [id]="'locationDetails' + location.locationUID">
+                                <div class="accordion-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-borderless align-middle mb-0 tblStoreLocation">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text-end text-nowrap">Location Name:</td>
+                                                    <td colspan="2"><input
+                                                            class="form-control form-control-sm ltc-contract-location ltc-location-name text-capitalize"
+                                                            maxlength="48" type="text"
+                                                            [value]="location.locationName" /></td>
+                                                    <td class="text-end text-nowrap">Store Name:</td>
+                                                    <td><input
+                                                            class="form-control form-control-sm ltc-contract-location ltc-store-name text-uppercase"
+                                                            type="text" maxlength="48" [value]="location.storeName" />
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-end text-nowrap">Address Line 1:</td>
+                                                    <td colspan="4"><input
+                                                            class="form-control form-control-sm ltc-contract-location ltc-address-line1 text-capitalize"
+                                                            type="text" [value]="location.addressLine1" /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-end text-nowrap">Address Line 2:</td>
+                                                    <td colspan="2"><input
+                                                            class="form-control form-control-sm ltc-contract-location ltc-address-line2 text-capitalize"
+                                                            type="text" [value]="location.addressLine2" /></td>
+                                                    <td class="text-end text-nowrap">Suite Number:</td>
+                                                    <td><input
+                                                            class="form-control form-control-sm ltc-contract-location ltc-store-stNbr"
+                                                            maxlength="12" type="text" [value]="location.suiteNbr" />
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-end text-nowrap">City:</td>
+                                                    <td><input
+                                                            class="form-control form-control-sm ltc-contract-location ltc-address-city text-capitalize"
+                                                            type="text" maxlength="50" [value]="location.city" /></td>
+                                                    <td class="text-end text-nowrap">State/Province:</td>
+                                                    <td><input
+                                                            class="form-control form-control-sm ltc-contract-location ltc-address-state text-uppercase"
+                                                            type="text" maxlength="30"
+                                                            [value]="location.stateProvice" /></td>
+                                                    <td><input
+                                                            class="form-control form-control-sm ltc-contract-location ltc-address-zip text-uppercase"
+                                                            type="text" maxlength="10" [value]="location.postalCode" />
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-end text-nowrap">Phone:</td>
+                                                    <td><input
+                                                            class="form-control form-control-sm ltc-contract-location ltc-phone-number"
+                                                            type="text" maxlength="15" [value]="location.phoneNumber" />
+                                                    </td>
+                                                    <td class="text-end text-nowrap">Terminal ID:</td>
+                                                    <td colspan="2"><input
+                                                            class="form-control form-control-sm ltc-contract-location ltc-terminal-id text-uppercase"
+                                                            type="text" maxlength="7" [value]="location.terminalID" />
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item border-0 mb-3">
+                            <h3 class="accordion-header">
+                                <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse"
+                                    [attr.data-bs-target]="'#locationFacilities' + location.locationUID">Facilities</button>
+                            </h3>
+                            <div class="accordion-collapse collapse show"
+                                [id]="'locationFacilities' + location.locationUID">
+                                <div class="accordion-body">
+                                    <div class="accordion accordion-flush contract-store-location-facility"
+                                        [id]="'facilityAccordion' + location.locationUID"
+                                        [attr.data-location-uid]="location.locationUID">
+                                        <div class="accordion-item mb-2 collapse-store-location-facility"
+                                            *ngFor="let facility of location.facilities"
+                                            [attr.data-facility-uid]="facility.facilityUID"
+                                            [attr.data-location-uid]="location.locationUID">
+                                            <h4 class="accordion-header"
+                                                [id]="'headingFacility' + facility.facilityUID">
+                                                <button class="accordion-button collapsed py-2" type="button"
+                                                    data-bs-toggle="collapse"
+                                                    [attr.data-bs-target]="'#facilityBody' + facility.facilityUID">
+                                                    <div
+                                                        class="d-flex w-100 justify-content-between align-items-center flex-wrap gap-2">
+                                                        <span>Facility - <span
+                                                                [id]="'spanFacilityNumber' + facility.facilityUID">{{
+                                                                facility.facilityNumber || '-' }}</span></span>
+                                                        <span
+                                                            class="d-inline-flex align-items-center gap-2 small text-muted ms-3">
+                                                            <input class="form-check-input mt-0" type="radio"
+                                                                [name]="'primaryFacility' + location.locationUID"
+                                                                [checked]="facility.isPrimaryFacility" disabled />
+                                                            <span>Primary/MID-TID Facility</span>
+                                                        </span>
+                                                    </div>
+                                                </button>
+                                            </h4>
+                                            <div class="accordion-collapse facility-body collapse"
+                                                [id]="'facilityBody' + facility.facilityUID"
+                                                [attr.aria-labelledby]="'headingFacility' + facility.facilityUID">
+                                                <div class="accordion-body">
+                                                    <div class="table-responsive store-location-facility-panel"
+                                                        style="max-height: 500px; overflow: auto;">
+                                                        <table
+                                                            class="table table-borderless align-middle mb-0 tblStoreFacility"
+                                                            style="min-width: 980px;">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td class="text-end text-nowrap">Facility Number:
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="d-flex align-items-center gap-1">
+                                                                            <input
+                                                                                class="form-control ltc-location-facility ltc-location-facility-number"
+                                                                                maxlength="10" type="text"
+                                                                                [id]="'ccFacility' + location.locationUID + facility.facilityUID"
+                                                                                [value]="facility.facilityNumber" />
+                                                                            <button type="button"
+                                                                                class="btn btn-outline-secondary btn-sm ltc-facility-check"
+                                                                                [attr.data-facility-uid]="facility.facilityUID"
+                                                                                [attr.data-location-uid]="location.locationUID"
+                                                                                title="Facility Lookup">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                    width="14" height="14"
+                                                                                    fill="currentColor"
+                                                                                    viewBox="0 0 16 16"
+                                                                                    aria-hidden="true">
+                                                                                    <path
+                                                                                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M6.97 11.03a.75.75 0 0 0 1.06 0l3.992-3.99a.75.75 0 1 0-1.06-1.061L7.5 9.44 5.53 7.47a.75.75 0 0 0-1.06 1.06z" />
+                                                                                </svg>
+                                                                            </button>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td colspan="3" class="fw-bold text-start"
+                                                                        [attr.id]="'tdfacInfoBlock' + location.locationUID + facility.facilityUID"
+                                                                        [class.text-danger]="facility.fMF_Facility?.facilityName === 'FACILITY NOT IN FMF'">
+                                                                        <div
+                                                                            [attr.id]="'facInfoBlock' + location.locationUID + facility.facilityUID">
+                                                                            <span
+                                                                                [attr.id]="'facName' + location.locationUID + facility.facilityUID">{{
+                                                                                facility.fMF_Facility?.facilityName ||
+                                                                                'FACILITY NOT IN FMF' }}</span>
+                                                                            <span class="facRegionGarnish"> (</span>
+                                                                            <span
+                                                                                [attr.id]="'facRegion' + location.locationUID + facility.facilityUID">{{
+                                                                                facility.fMF_Facility?.regionId || '-'
+                                                                                }}</span>
+                                                                            <span class="facRegionGarnish">)</span>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td class="text-end">
+                                                                        <button type="button"
+                                                                            class="btn btn-outline-danger btn-sm ltc-location-facility ltc-remove-facility d-inline-flex align-items-center"
+                                                                            [attr.data-location-uid]="location.locationUID"
+                                                                            [attr.data-facility-uid]="facility.facilityUID"
+                                                                            [attr.data-facility-number]="facility.facilityNumber">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                width="18" height="18" fill="#dc3545"
+                                                                                viewBox="0 0 16 16" aria-hidden="true">
+                                                                                <path
+                                                                                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z" />
+                                                                            </svg>
+                                                                            <span class="ms-1">Facility</span>
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="text-end text-nowrap">Business Model:
+                                                                    </td>
+                                                                    <td>
+                                                                        <button type="button"
+                                                                            class="btn btn-outline-primary btn-sm w-100 ltc-location-facility ltc-business-function text-truncate"
+                                                                            [attr.id]="facility.facilityUID + '' + facility.businessFunctionUID"
+                                                                            [attr.data-location-uid]="location.locationUID"
+                                                                            [attr.data-facility-uid]="facility.facilityUID"
+                                                                            data-bs-toggle="modal"
+                                                                            data-bs-target="#businessFunctions">
+                                                                            {{
+                                                                            $any(facility).businessFunctionDescription
+                                                                            || ('Business Function ' +
+                                                                            facility.businessFunctionUID) }}
+                                                                        </button>
+                                                                    </td>
+                                                                    <td class="text-end text-nowrap">Fee Type:</td>
+                                                                    <td>
+                                                                        <button type="button"
+                                                                            class="btn btn-outline-primary btn-sm w-100 ltc-location-facility ltc-commission-fee-type"
+                                                                            [attr.id]="'feeType' + facility.facilityUID"
+                                                                            [attr.data-location-uid]="location.locationUID"
+                                                                            [attr.data-facility-uid]="facility.facilityUID"
+                                                                            data-bs-toggle="modal"
+                                                                            data-bs-target="#commissionFeeTypes">
+                                                                            {{ facility.feeTypeCode || ('Fee Type ' +
+                                                                            facility.feeTypeID) }}
+                                                                        </button>
+                                                                    </td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="text-end text-nowrap">Fee Amount:</td>
+                                                                    <td><input
+                                                                            class="form-control form-control-sm ltc-location-facility ltc-commission-fee-amount"
+                                                                            [attr.id]="'fAmount' + facility.facilityUID"
+                                                                            type="text" [value]="facility.feeAmount" />
+                                                                    </td>
+                                                                    <td class="text-end text-nowrap">Fee %:</td>
+                                                                    <td colspan="3"><input
+                                                                            class="form-control form-control-sm ltc-location-facility ltc-commission-fee-percent"
+                                                                            type="number" min="0" max="99" step="0.01"
+                                                                            [value]="facility.feePercent" /></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="text-end text-nowrap">Department
+                                                                        Category:</td>
+                                                                    <td>
+                                                                        <button type="button"
+                                                                            class="btn btn-outline-secondary btn-sm department-select"
+                                                                            [attr.id]="'dept' + location.locationUID + facility.facilityUID"
+                                                                            [attr.data-facility-uid]="facility.facilityUID"
+                                                                            [attr.data-location-uid]="location.locationUID"
+                                                                            [attr.data-fee-type]="facility.feeTypeID"
+                                                                            data-bs-toggle="modal"
+                                                                            data-bs-target="#departments1">
+                                                                            Departments
+                                                                        </button>
+                                                                    </td>
+                                                                    <td colspan="4"></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td colspan="6">
+                                                                        <div class="ltc-facilitiy-department">
+                                                                            <table
+                                                                                class="table table-md table-striped table-borderless mb-0"
+                                                                                [attr.id]="'table' + location.locationUID + facility.facilityUID"
+                                                                                [attr.data-location-uid]="location.locationUID">
+                                                                                <tbody>
+                                                                                    <tr *ngFor="let dpt of ($any(facility).departments || []); let di = index"
+                                                                                        [attr.data-facility-id]="facility.facilityUID"
+                                                                                        [attr.data-department-id]="$any(dpt).departmentUID">
+                                                                                        <td style="width: 30%;">
+                                                                                            <button type="button"
+                                                                                                class="btn btn-outline-secondary btn-sm department-button">
+                                                                                                {{ $any(dpt).description
+                                                                                                || ('Department ' + (di
+                                                                                                + 1)) }}
+                                                                                            </button>
+                                                                                        </td>
+                                                                                        <td class="text-end text-nowrap"
+                                                                                            style="width: 10%;">Fee %:
+                                                                                        </td>
+                                                                                        <td style="width: 40%;"><input
+                                                                                                class="form-control form-control-sm ltc-department-percent"
+                                                                                                type="number" min="0"
+                                                                                                max="99" step="0.01"
+                                                                                                [value]="$any(dpt).feePercent" />
+                                                                                        </td>
+                                                                                        <td style="width: 20%;"
+                                                                                            class="text-end">
+                                                                                            <button type="button"
+                                                                                                class="btn btn-outline-danger btn-sm ltc-remove-department">Remove</button>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr
+                                                                                        *ngIf="!($any(facility).departments?.length)">
+                                                                                        <td colspan="4"
+                                                                                            class="text-muted small">No
+                                                                                            departments configured for
+                                                                                            this facility.</td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="text-end text-nowrap">CAM Charges:</td>
+                                                                    <td><input
+                                                                            class="form-control form-control-sm ltc-cam-charges-fee ltc-location-facility"
+                                                                            type="text"
+                                                                            [value]="facility.cAMChrgFeeAmt" /></td>
+                                                                    <td class="text-end text-nowrap">Overhead Facility#:
+                                                                    </td>
+                                                                    <td><input
+                                                                            class="form-control form-control-sm ltc-location-facility ltc-camcharges-facility-number"
+                                                                            type="text"
+                                                                            [value]="facility.cAMChrgFacNbr" /></td>
+                                                                    <td colspan="2" class="fw-semibold text-start"
+                                                                        [class.text-danger]="facility.fMF_CAMChrgFacility?.facilityName === 'FACILITY NOT IN FMF'">
+                                                                        {{ facility.fMF_CAMChrgFacility?.facilityName ||
+                                                                        '-' }}
+                                                                        <span class="facRegionGarnish">({{
+                                                                            facility.fMF_CAMChrgFacility?.regionId ||
+                                                                            '-' }})</span>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #loadingOrEmpty>
+    <div class="container-fluid py-3">
+        <div class="alert alert-info mb-0">Loading contract details...</div>
+    </div>
+</ng-template>
+<div class="modal fade" id="businessFunctions" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select a Business Model</h5><button type="button" class="btn-close"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group"><button type="button"
+                        class="list-group-item list-group-item-action ltc-business-function-option"
+                        data-bs-dismiss="modal">Model A</button><button type="button"
+                        class="list-group-item list-group-item-action ltc-business-function-option"
+                        data-bs-dismiss="modal">Model B</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="businessCategories" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select a Business Category</h5><button type="button" class="btn-close"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group"><button type="button"
+                        class="list-group-item list-group-item-action ltc-business-category-option"
+                        data-bs-dismiss="modal">Category A</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="individualRoleTypes" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select a Role</h5><button type="button" class="btn-close"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group"><button type="button"
+                        class="list-group-item list-group-item-action ltc-individual-role-type-option"
+                        data-bs-dismiss="modal">Manager</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="commissionFeeTypes" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select a Fee Type</h5><button type="button" class="btn-close"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group"><button type="button"
+                        class="list-group-item list-group-item-action ltc-commission-fee-type-option"
+                        data-bs-dismiss="modal">Flat</button><button type="button"
+                        class="list-group-item list-group-item-action ltc-commission-fee-type-option"
+                        data-bs-dismiss="modal">Percent</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="hoursFromDrpdwn" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select Hour</h5><button type="button" class="btn-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group"><button type="button"
+                        class="list-group-item list-group-item-action ltc-hours-from-option" data-bs-dismiss="modal">By
+                        Appointment Only</button><button type="button"
+                        class="list-group-item list-group-item-action ltc-hours-from-option"
+                        data-bs-dismiss="modal">08:00</button><button type="button"
+                        class="list-group-item list-group-item-action ltc-hours-from-option"
+                        data-bs-dismiss="modal">08:30</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="hoursToDrpdwn" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select Hour</h5><button type="button" class="btn-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group"><button type="button"
+                        class="list-group-item list-group-item-action ltc-hours-to-option"
+                        data-bs-dismiss="modal">08:00</button><button type="button"
+                        class="list-group-item list-group-item-action ltc-hours-to-option"
+                        data-bs-dismiss="modal">08:30</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="dlgfFeeHistory" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Flat Fee History</h5><button type="button" class="btn-close"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="divForFlatFeeHist" style="height:250px; overflow-y:scroll;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="dlgpFeeHistory" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Percentage Fee History</h5><button type="button" class="btn-close"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="pFeeHistorytablesHFac" class="text-center fw-semibold"></div>
+                <div id="pFeeHistorytablesH" class="text-center fw-semibold"></div>
+                <div id="divForPercentageFeeHist" style="height:250px; overflow-y:scroll;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="dlgrFeeHistory" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Equipment Rental History</h5><button type="button" class="btn-close"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="divForRentalFeeHist" style="height:250px; overflow-y:scroll;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ccDeviceTypesTypes" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select a CC Device</h5><button type="button" class="btn-close"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group"><button type="button"
+                        class="list-group-item list-group-item-action ltc-device-type-option"
+                        data-bs-dismiss="modal">Device A</button><button type="button"
+                        class="list-group-item list-group-item-action ltc-device-type-option"
+                        data-bs-dismiss="modal">Device B</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="EagleCashOptionTypes" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">--Select--</h5><button type="button" class="btn-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group"><button type="button"
+                        class="list-group-item list-group-item-action ltc-EglCash-type-option"
+                        data-bs-dismiss="modal">Yes</button><button type="button"
+                        class="list-group-item list-group-item-action ltc-EglCash-type-option"
+                        data-bs-dismiss="modal">No</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="UseShipHndlngTypes" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">--Select--</h5><button type="button" class="btn-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group"><button type="button"
+                        class="list-group-item list-group-item-action ltc-UseShipHndlng-type-option"
+                        data-bs-dismiss="modal">Yes</button><button type="button"
+                        class="list-group-item list-group-item-action ltc-UseShipHndlng-type-option"
+                        data-bs-dismiss="modal">No</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="dlgInsurFeeHist" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Insurance Fee History</h5><button type="button" class="btn-close"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="divForInsurFeeHist" style="height:250px; overflow-y:scroll;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="dlgCAMChrgFeeHist" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">CAM Charges Fee History</h5><button type="button" class="btn-close"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="divForCAMCHrgFeeHist" style="height:250px; overflow-y:scroll;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="dialogLTCContractNumber" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Store Help</h5><button type="button" class="btn-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">Contract number help content</div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="dialogLocation" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Location Help</h5><button type="button" class="btn-close"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">Location help content</div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="dialogStore" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Store Help</h5><button type="button" class="btn-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">Store help content</div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="dialogTerminal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Terminal Help</h5><button type="button" class="btn-close"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">Terminal help content</div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="dlgInsFacNbr" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Insurance Facility Number Help</h5><button type="button" class="btn-close"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">Insurance facility number help content</div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="departments1" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select Departments</h5><button type="button" class="btn-close"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0 text-muted">Department picker placeholder.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="footer fixed-bottom cncsnFooter contract-footer mt-3">
+        <div id="stButtonBottomBar" class="d-flex flex-row w-100">
+            <button class="border border-white btn btn-info btn-lg ftrbtn flex-fill" id="saveContract" type="button"
+                (click)="onSaveLtcContract()">
+                <!-- Floppy disk (save) icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="M3 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4.414a2 2 0 0 0-.586-1.414l-1.414-1.414A2 2 0 0 0 12.586 1H3zm0 1h9.586a1 1 0 0 1 .707.293l1.414 1.414A1 1 0 0 1 15 4.414V13a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm1 2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H4zm0 1h8v2H4V4zm1 5a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1h1zm0 1H4v2h1v-2zm6 0a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1h1zm0 1h-1v2h1v-2z"/>
+                </svg>&nbsp;Save Contract
+            </button>
+            <button class="border border-white btn btn-info btn-lg ftrbtn flex-fill" id="backToContractListing" type="button"
+                (click)="onBackToContractListing()">
+                <!-- Left arrow (back) icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M15 8a.5.5 0 0 1-.5.5H3.707l3.147 3.146a.5.5 0 0 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L3.707 7.5H14.5A.5.5 0 0 1 15 8z"/>
+                </svg>&nbsp;Contract Listing
+            </button>
+        </div>
+    </div>

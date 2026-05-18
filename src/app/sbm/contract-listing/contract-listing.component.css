@@ -1,0 +1,192 @@
+.contract-listing-page {
+	padding-bottom: 280px;
+}
+
+.contract-listing-body {
+	padding-top: 0.1rem;
+	padding-bottom: 0.1rem;
+}
+
+.contract-listing-page .card {
+	border: 1px solid #dee2e6;
+}
+
+.contract-listing-page .card-header {
+	background-color: navy !important;
+}
+
+.contract-list-options {
+	--bs-gutter-y: 0.35rem;
+}
+
+.timeframe-group {
+	min-height: 38px;
+	align-items: center;
+}
+
+.table th,
+.table td {
+	white-space: nowrap;
+}
+
+.exchange-panel {
+	border-radius: 0.75rem;
+}
+
+.exchange-panel .card-header {
+	padding-top: 0.5rem;
+	padding-bottom: 0.35rem;
+}
+
+.exchange-panel .card-body {
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+}
+
+.exchange-name {
+	font-size: 1rem;
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.exchange-number {
+	font-size: 0.85rem;
+}
+
+.exchange-email-value {
+	color: #b00020;
+	font-weight: 600;
+	font-size: 0.9rem;
+	word-break: break-word;
+}
+
+.contract-list {
+	padding: 0.25rem;
+	border-radius: 0.5rem;
+}
+
+.contract-list-header,
+.contract-item {
+	display: grid;
+	grid-template-columns: 5% 50% 10% 10% 15%;
+	gap: 0.75rem;
+	align-items: center;
+}
+
+.contract-list-header {
+	padding: 0.35rem 0.5rem;
+	font-size: 0.75rem;
+	font-weight: 700;
+	color: #495057;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+.contract-item {
+	padding: 0.45rem 0.5rem;
+	border-top: 1px solid rgba(0, 0, 0, 0.08);
+	background: #fff;
+}
+
+.contract-item:first-of-type {
+	border-top: 0;
+}
+
+.contract-number {
+	font-weight: 700;
+}
+
+.contract-type {
+	text-align: center;
+	font-size: 0.9rem;
+}
+
+.contract-facilities {
+	font-size: 0.8rem;
+	color: #6c757d;
+	margin-top: 0.1rem;
+}
+
+.contract-date {
+	font-size: 0.88rem;
+}
+
+.contract-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	justify-content: flex-end;
+}
+
+.contract-label {
+	display: inline-block;
+	min-width: 3rem;
+	margin-right: 0.25rem;
+	font-size: 0.7rem;
+	font-weight: 700;
+	color: #6c757d;
+	text-transform: uppercase;
+}
+
+.contract-actions .btn {
+	padding: 0.2rem 0.5rem;
+	font-size: 0.8rem;
+	line-height: 1.2;
+}
+
+@media (max-width: 767.98px) {
+	.contract-list-header {
+		display: none !important;
+	}
+
+	.contract-item {
+		grid-template-columns: 1fr;
+		gap: 0.35rem;
+	}
+
+	.contract-actions {
+		justify-content: flex-start;
+	}
+}
+
+.contract-footer {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 10;
+	width: 100%;
+	background-color: #f8f9fa;
+	border-top: 1px solid #dee2e6;
+}
+
+.contract-footer #stButtonBottomBar {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.ftrbtn {
+	width: 20%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.35rem;
+	border-radius: 0;
+	font-size: 0.95rem;
+}
+
+.ftrbtn svg {
+	flex: 0 0 auto;
+}
+
+@media (max-width: 991.98px) {
+	.ftrbtn {
+		width: 33.3333%;
+	}
+}
+
+@media (max-width: 575.98px) {
+	.ftrbtn {
+		width: 100%;
+	}
+}

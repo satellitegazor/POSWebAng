@@ -1,1 +1,144 @@
-<p>contract-listing works!</p>
+
+<div class="container-fluid py-3 pb-5 contract-listing-page">
+	<div class="card shadow-sm mb-3">
+		<div class="card-body">
+			<div class="row g-3 align-items-end contract-list-options">
+				<div class="col-12 col-lg-3">
+					<h5 class="mb-0">List Options</h5>
+				</div>
+
+				<div class="col-12 col-lg-9">
+					<div class="d-flex flex-wrap gap-2 justify-content-lg-end">
+						<button type="button" class="btn btn-outline-primary" (click)="openFilterDialog()">
+							Contract Filter
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="card shadow-sm">
+		<div class="card-header">
+			<div class="row g-2 align-items-center">
+				<div class="col">
+					<h6 class="mb-0">Exchange Contracts</h6>
+				</div>
+				<div class="col-auto text-muted small" *ngIf="!isLoading">
+					{{ exchanges.length }} exchange(s)
+				</div>
+			</div>
+		</div>
+
+		<div class="card-body">
+			<div *ngIf="isLoading" class="p-4 text-center text-muted">Loading contracts...</div>
+
+			<div *ngIf="!isLoading">
+				<div class="contract-list-header d-none d-md-grid contract-list-global-header">
+					<div class="contract-type">Type</div>
+					<div class="contract-main">Contract Number</div>
+					<div class="contract-date">Contract Start Date</div>
+					<div class="contract-date">Contract End Date</div>
+					<div class="contract-actions">Actions</div>
+				</div>
+
+				<div class="card shadow-sm exchange-panel mb-3" *ngFor="let exchange of exchanges">
+					<div class="card-header border-0 pb-0">
+						<div class="exchange-header d-flex flex-wrap gap-3 align-items-start justify-content-between">
+							<div class="exchange-info">
+								<div class="exchange-name">{{ exchange.parentFacName }}</div>
+								<div class="exchange-number">{{ exchange.parentFacNbr }}</div>
+							</div>
+
+							<div class="exchange-email text-end">
+								<div class="small text-muted mb-1">SBM Email Address</div>
+								<div class="exchange-email-value">{{ exchange.sbmEmailAddr?.trim() || 'Click to add Email Address' }}</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="card-body pt-3 contract-listing-body">
+						<div class="contract-list card border-0 bg-light-subtle">
+							<div class="contract-item" *ngFor="let contract of exchange.contractsInExchange">
+
+
+								<div class="contract-type">
+									<b *ngIf="contract.appType === 1">R</b>
+								</div>								
+								
+								<div class="contract-main">
+									<div class="contract-number"><a (click)="navigateToPage(contract)" style="cursor: pointer;">{{ contract.venderData.vendorName }} ({{contract.venderData.vendorNumber}})</a></div>
+									<div class="contract-facilities" *ngIf="contract.facNumberList?.length">
+										{{ contract.facNumberList.join(', ') }}
+									</div>
+								</div>
+
+
+								<div class="contract-date">
+									<span class="contract-label d-md-none">Start</span>
+									{{ formatContractDate(contract.contractStartDate) }}
+								</div>
+
+								<div class="contract-date">
+									<span class="contract-label d-md-none">End</span>
+									{{ formatContractDate(contract.contractEndDate) }}
+								</div>
+
+								<div class="contract-actions text-md-end">
+									<button type="button" class="btn btn-outline-secondary btn-sm">Ticket Look-up</button>
+									<button type="button" class="btn btn-outline-primary btn-sm">Start Event</button>
+								</div>
+							</div>
+
+							<div class="text-center text-muted py-3" *ngIf="!exchange.contractsInExchange?.length">
+								No contracts found for this exchange.
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div *ngIf="exchanges.length === 0" class="text-center py-4 text-muted">
+					No contract data found for selected filters.
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="footer fixed-bottom cncsnFooter contract-footer mt-3">
+		<div id="stButtonBottomBar" class="row g-0">
+			<button class="border border-white btn btn-info btn-lg ftrbtn" id="addLTCContract" type="button" (click)="onAddLtcContract()">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16" aria-hidden="true">
+					<path d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14m0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16"/>
+					<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+				</svg>
+				Add LTC Contract
+			</button>
+			<button class="border border-white btn btn-info btn-lg ftrbtn" id="addRovContract" type="button" (click)="onAddRovContract()">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-compass" viewBox="0 0 16 16" aria-hidden="true">
+					<path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m-.287-11.19 3.218-1.074a.5.5 0 0 1 .633.633L10.49 7.587a1 1 0 0 1-.63.63L6.64 9.291a.5.5 0 0 1-.633-.633l1.074-3.218a1 1 0 0 1 .63-.63z"/>
+				</svg>
+				Add ST Com/LT Roving Contract
+			</button>
+			<button class="border border-white btn btn-info btn-lg ftrbtn" id="listUserAuth" type="button" (click)="onListUserAuth()">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people" viewBox="0 0 16 16" aria-hidden="true">
+					<path d="M13 7a3 3 0 1 0-2.83-4H10a3 3 0 0 0 0 6zM5 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m8 1c-1.33 0-4 .67-4 2v1h7v-1c0-1.33-2.67-2-4-2m-8 0c-1.33 0-4 .67-4 2v1h7v-1c0-1.33-2.67-2-4-2"/>
+				</svg>
+				User Auth
+			</button>
+			<button class="border border-white btn btn-info btn-lg ftrbtn" id="addUserAuth" type="button" (click)="onAddUserAuth()">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shield-lock" viewBox="0 0 16 16" aria-hidden="true">
+					<path d="M5.072.56C6.157.198 7.03 0 8 0s1.843.198 2.928.56a11.8 11.8 0 0 1 3.476 1.84A.5.5 0 0 1 14.5 2v5.5c0 4.15-2.37 6.833-6.146 8.307a.5.5 0 0 1-.354 0C4.224 14.333 1.854 11.65 1.854 7.5V2a.5.5 0 0 1 .096-.295A11.8 11.8 0 0 1 5.072.56M8 1c-.835 0-1.58.17-2.61.513A10.8 10.8 0 0 0 2.854 3v4.5c0 3.71 2.03 6.13 5.146 7.43 3.116-1.3 5.146-3.72 5.146-7.43V3a10.8 10.8 0 0 0-2.536-1.487C9.58 1.17 8.835 1 8 1"/>
+					<path d="M8 7a1 1 0 0 0-1 1v1h2V8a1 1 0 0 0-1-1m2 2V8a2 2 0 1 0-4 0v1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/>
+				</svg>
+				Administrator
+			</button>
+			<button class="border border-white btn btn-info btn-lg ftrbtn" id="logOut" type="button" (click)="onLogOut()">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16" aria-hidden="true">
+					<path fill-rule="evenodd" d="M10 15a.5.5 0 0 0 .5-.5V11a.5.5 0 0 0-1 0v3H2.5v-12h7v3a.5.5 0 0 0 1 0V1.5A1.5 1.5 0 0 0 9 .5h-6A1.5 1.5 0 0 0 1.5 2v12A1.5 1.5 0 0 0 3 15.5h6a.5.5 0 0 0 .5-.5"/>
+					<path fill-rule="evenodd" d="M15.354 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L13.793 7.5H6.5a.5.5 0 0 0 0 1h7.293l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
+				</svg>
+				Logout
+			</button>
+		</div>
+	</div>
+</div>

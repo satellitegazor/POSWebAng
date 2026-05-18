@@ -4,6 +4,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { GlobalConstants } from '../../global/global.constants';
 import { LogonModel, LogonResultsModel } from '../../models/mobile.client.identity';
+import { ContractIdResultsModel, VendorContractDataModel } from '../models/contract.models';
+import { LTC_ContractResultsModel } from '../../longterm/models/contract.models';
 
 @Injectable({
   providedIn: 'root'
@@ -19,5 +21,62 @@ export class SbmWebApiService {
   public sbmLogon(model: LogonModel): Observable<LogonResultsModel> {
     const url = GlobalConstants.CPOS_SVCS_URL + '/sbm/SbmLogon?guid=' + GlobalConstants.POST_GUID;
     return this.httpClient.post<LogonResultsModel>(url, JSON.stringify(model), { headers: this.headerObjs });
+  }
+
+  public getActiveContractIds(pastEvents: string, currentEvents: string, futureEvents: string, 
+      pastMonthsBack: string, uid: string, isStlmtRptJob: string = 'N', 
+        autojob: boolean = true): Observable<VendorContractDataModel> {
+    const url = `${GlobalConstants.CPOS_SVCS_URL}/sbm/GetActiveContractIds?guid=${GlobalConstants.GET_GUID}` +
+      `&pastEvents=${pastEvents}&currentEvents=${currentEvents}&futureEvents=${futureEvents}` +
+      `&pastMonthsBack=${pastMonthsBack}&uid=${uid}&isStlmtRptJob=${isStlmtRptJob}&autojob=${autojob}`;
+    return this.httpClient.get<VendorContractDataModel>(url, { headers: this.headerObjs });
+  }
+
+  public getCountryCurrencyCodes(regcode: string): Observable<any> {
+    const url = `${GlobalConstants.CPOS_SVCS_URL}/sbm/GetCountryCurrencyCodes?regcode=${regcode}&guid=${GlobalConstants.GET_GUID}`;
+    return this.httpClient.get<any>(url, { headers: this.headerObjs });
+  }
+
+  public getRegionCode(): Observable<any> {
+    const url = `${GlobalConstants.CPOS_SVCS_URL}/sbm/GetRegionCode?guid=${GlobalConstants.GET_GUID}`;
+    return this.httpClient.get<any>(url, { headers: this.headerObjs });
+  }
+
+  /**
+   * Calls the ltc/LoadLTCContract API endpoint.
+   * @param contractUID The contract UID
+   * @param uid The user ID
+   * @returns Observable<LTC_ContractResultsModel>
+   */
+  public loadLTCContract(contractUID: number, uid: string): Observable<LTC_ContractResultsModel> {
+    const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/LoadLTCContract?guid=${GlobalConstants.GET_GUID}` +
+      `&contractUID=${encodeURIComponent(contractUID)}` +
+      `&uid=${encodeURIComponent(uid)}`;
+    return this.httpClient.get<LTC_ContractResultsModel>(url, { headers: this.headerObjs });
+  }
+
+  public getDERDiscrepancyModel(uid: string): Observable<any> {
+    const url = `${GlobalConstants.CPOS_SVCS_URL}/sbm/GetDERDiscrepancyModel?uid=${uid}&guid=${GlobalConstants.GET_GUID}`;
+    return this.httpClient.get<any>(url, { headers: this.headerObjs });
+  }
+
+  public getSingleFacilityLocal(facNbr: string): Observable<any> {
+    const url = `${GlobalConstants.CPOS_SVCS_URL}/sbm/GetSingleFacilityLocal?facNbr=${facNbr}&guid=${GlobalConstants.GET_GUID}`;
+    return this.httpClient.get<any>(url, { headers: this.headerObjs });
+  }
+
+  public getVendorLocal(sVendorNum: string): Observable<any> {
+    const url = `${GlobalConstants.CPOS_SVCS_URL}/sbm/GetVendorLocal?sVendorNum=${sVendorNum}&guid=${GlobalConstants.GET_GUID}`;
+    return this.httpClient.get<any>(url, { headers: this.headerObjs });
+  }
+
+  public saveSBMEmailAddr(emailData: any): Observable<any> {
+    const url = `${GlobalConstants.CPOS_SVCS_URL}/sbm/SaveSBMEmailAddr?guid=${GlobalConstants.PUT_GUID}`;
+    return this.httpClient.put<any>(url, emailData, { headers: this.headerObjs });
+  }
+
+  public loadSBMEmailAddr(uid: string, facilityNum: string): Observable<any> {
+    const url = `${GlobalConstants.CPOS_SVCS_URL}/sbm/LoadSBMEmailAddr?guid=${GlobalConstants.GET_GUID}&uid=${uid}&facilityNum=${facilityNum}`;
+    return this.httpClient.get<any>(url, { headers: this.headerObjs });
   }
 }

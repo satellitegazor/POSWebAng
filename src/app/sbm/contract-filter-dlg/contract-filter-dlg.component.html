@@ -1,39 +1,35 @@
-<!-- Modal -->
-<div class="modal fade" id="dlgEventFilter" tabindex="-1" aria-labelledby="dlgEventFilterLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 600px;">
-        <div class="modal-content">
-            <div class="modal-header py-2 px-3">
-                <h5 class="modal-title" id="dlgEventFilterLabel">Select Criteria for Contract Selection</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body px-4">
-                <div class="d-flex align-items-center mb-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-bookshelf me-3" viewBox="0 0 16 16" aria-label="Bookshelf icon">
-                        <path d="M2 2v12h1V2H2zm2 0v12h1V2H4zm2 0v12h1V2H6zm2 0v12h1V2H8zm2 0v12h1V2h-1zm2 0v12h1V2h-1zM1 1.5A.5.5 0 0 1 1.5 1h13a.5.5 0 0 1 .5.5v13a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-13zM2 2v12h12V2H2z"/>
-                    </svg>
-                    <span class="fw-bold fs-5">Select Criteria for Contract Selection</span>
-                </div>
+<div class="modal-header py-2 px-3 contractselect-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-bookshelf me-3"
+                            viewBox="0 0 16 16" aria-label="Bookshelf icon">
+                            <path
+                                d="M2 2v12h1V2H2zm2 0v12h1V2H4zm2 0v12h1V2H6zm2 0v12h1V2H8zm2 0v12h1V2h-1zm2 0v12h1V2h-1zM1 1.5A.5.5 0 0 1 1.5 1h13a.5.5 0 0 1 .5.5v13a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-13zM2 2v12h12V2H2z" />
+                        </svg>
+    <h5 id="dlgEventFilterLabel">Select Criteria for Contract Selection</h5>
+    <button type="button" class="btn-close close-contract-selection" aria-label="Close" (click)="activeModal.dismiss('close')"></button>
+</div>
+<div class="modal-body px-4">
+                
                 <div class="mb-3 text-muted" style="font-size: 0.95rem;">
                     Enter any portion of the Vendor Number and/or 4-digit Exchange Number, or select the 'Select All'
                     option. Select a timeframe to
                     include any combination of past, current or future contracts.
                 </div>
-                <div class="row mb-3">
+                <div class="row mb-3 vendor-filter-group">
                     <div class="col-8">
                         <div class="mb-2">
                             <label for="txtFilterVendorNumber" class="form-label mb-1">Vendor Number</label>
                             <input id="txtFilterVendorNumber" maxlength="10" name="FilterVendorNumber"
-                                placeholder="Vendor" type="number" class="form-control" disabled>
+                                placeholder="Vendor" type="text" class="form-control" disabled>
                         </div>
                         <div class="mb-2">
                             <label for="txtFilterExchangeNumber" class="form-label mb-1">Exchange Number</label>
                             <input id="txtFilterExchangeNumber" maxlength="4" name="FilterExchangeNumber"
-                                placeholder="Exch" type="number" class="form-control" disabled>
+                                placeholder="Exch" type="text" class="form-control" disabled>
                         </div>
                         <div>
                             <label for="txtFilterFacilityNumber" class="form-label mb-1">Facility Number</label>
                             <input id="txtFilterFacilityNumber" maxlength="10" name="FilterFacilityNumber"
-                                placeholder="Facility" type="number" class="form-control" disabled>
+                                placeholder="Facility" type="text" class="form-control" disabled>
                         </div>
                     </div>
                     <div class="col-4 d-flex flex-column align-items-center justify-content-center">
@@ -72,26 +68,21 @@
                         <label class="form-label mb-0">Timeframe</label>
                     </div>
                     <div class="col-8">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" id="dvFilterPast" value="P">
-                            <label class="form-check-label" for="dvFilterPast">Past</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" id="dvFilterCurrent" value="C" checked>
-                            <label class="form-check-label" for="dvFilterCurrent"><em>Current</em></label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" id="dvFilterFuture" value="F">
-                            <label class="form-check-label" for="dvFilterFuture">Future</label>
+                        <div class="timeframe-toggle-group" role="group" aria-label="Timeframe filter toggles">
+                            <input type="checkbox" class="btn-check" id="dvFilterPast" value="P" autocomplete="off">
+                            <label class="btn timeframe-toggle" for="dvFilterPast">Past</label>
+
+                            <input type="checkbox" class="btn-check" id="dvFilterCurrent" value="C" checked autocomplete="off">
+                            <label class="btn timeframe-toggle" for="dvFilterCurrent">Current</label>
+
+                            <input type="checkbox" class="btn-check" id="dvFilterFuture" value="F" autocomplete="off">
+                            <label class="btn timeframe-toggle" for="dvFilterFuture">Future</label>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-primary" id="btnSelectFilter" (click)="onSelectFilter()">
-                    <i class="bi bi-arrow-repeat me-1"></i>Select
-                </button>
-            </div>
-        </div>
-    </div>
+</div>
+<div class="modal-footer justify-content-center">
+    <button type="button" class="btn btn-primary" id="btnSelectFilter" (click)="onSelectFilter()">
+        <i class="bi bi-arrow-repeat me-1"></i>Select
+    </button>
 </div>

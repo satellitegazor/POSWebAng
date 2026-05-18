@@ -1,0 +1,49 @@
+<div class="card shadow-sm exchange-panel mb-3">
+  <div class="card-header bg-white border-0 pb-0">
+    <div class="exchange-header d-flex flex-wrap gap-3 align-items-start justify-content-between">
+      <div class="exchange-info">
+        <div class="exchange-name">{{ exchangeData.parentFacName }}</div>
+        <div class="exchange-number text-muted">{{ exchangeData.parentFacNbr }}</div>
+      </div>
+
+      <div class="exchange-email text-end">
+        <div class="small text-muted mb-1">SBM Email Address</div>
+        <div class="exchange-email-value">{{ emailAddress }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body pt-3">
+    <div class="contract-list card border-0 bg-light-subtle">
+
+
+      <div class="contract-item" *ngFor="let contract of exchangeData.contractsInExchange">
+        <div class="contract-main">
+          <div class="contract-number">{{ contract.contractNumber }}</div>
+          <div class="contract-facilities" *ngIf="contract.facNumberList?.length">
+            {{ contract.facNumberList.join(', ') }}
+          </div>
+        </div>
+
+        <div class="contract-date">
+          <span class="contract-label d-md-none">Start</span>
+          {{ contract.contractStartDate | date: 'dd MMM yyyy' }}
+        </div>
+
+        <div class="contract-date">
+          <span class="contract-label d-md-none">End</span>
+          {{ contract.contractEndDate | date: 'dd MMM yyyy' }}
+        </div>
+
+        <div class="contract-actions text-md-end">
+          <button type="button" class="btn btn-outline-secondary btn-sm">Ticket Look-up</button>
+          <button type="button" class="btn btn-outline-primary btn-sm">Start Event</button>
+        </div>
+      </div>
+
+      <div class="text-center text-muted py-3" *ngIf="!exchangeData.contractsInExchange?.length">
+        No contracts found for this exchange.
+      </div>
+    </div>
+  </div>
+</div>

@@ -36,6 +36,7 @@ export class LTC_Contract {
 	phaseOutDate: Date | null = null;
 	contractNumber: string = '';
 	vendorNumber: string = '';
+	vendorName: string = '';
 	milStarTxnFee: number = 0;
 	confirmContractTimestamp: Date = {} as Date;
 	allowTaxExemption: boolean = false;

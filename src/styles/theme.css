@@ -1,3 +1,9 @@
+/* Custom wider modal for ContractFilterDlgComponent */
+.wider-modal .modal-dialog {
+  max-width: 50vw;
+  width: 125%;
+  min-width: 500px;
+}
 /* ===================================
    PROFESSIONAL POS THEME
    ===================================== */

@@ -1,13 +1,17 @@
 
 import { Component } from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-contract-filter-dlg',
+  standalone: false,
   imports: [],
   templateUrl: './contract-filter-dlg.component.html',
   styleUrl: './contract-filter-dlg.component.css'
 })
 export class ContractFilterDlgComponent {
+
+  constructor(public activeModal: NgbActiveModal) {}
 
   onSelectFilter() {
     // Get values from UI elements
@@ -18,20 +22,23 @@ export class ContractFilterDlgComponent {
     const regionType = (document.getElementById('regiontype') as HTMLSelectElement)?.value || '';
     const contractType = (document.getElementById('contracttype') as HTMLSelectElement)?.value || '';
 
-    // TimeFrame: collect checked values for dvFilterPast, dvFilterCurrent, dvFilterFuture
-    const timeframes: string[] = [];
-    if ((document.getElementById('dvFilterPast') as HTMLInputElement)?.checked) timeframes.push('P');
-    if ((document.getElementById('dvFilterCurrent') as HTMLInputElement)?.checked) timeframes.push('C');
-    if ((document.getElementById('dvFilterFuture') as HTMLInputElement)?.checked) timeframes.push('F');
+    // Save dvFilterPast, dvFilterCurrent, dvFilterFuture as separate localStorage items
+    const dvFilterPastChecked = (document.getElementById('dvFilterPast') as HTMLInputElement)?.checked || false;
+    const dvFilterCurrentChecked = (document.getElementById('dvFilterCurrent') as HTMLInputElement)?.checked || false;
+    const dvFilterFutureChecked = (document.getElementById('dvFilterFuture') as HTMLInputElement)?.checked || false;
 
-    // Save to localStorage
     localStorage.setItem('filterVendorNumber', vendorNumber);
     localStorage.setItem('filterExchangeNumber', exchangeNumber);
     localStorage.setItem('filterFacilityNumber', facilityNumber);
     localStorage.setItem('filterSelectAll', JSON.stringify(selectAll));
     localStorage.setItem('regionType', regionType);
     localStorage.setItem('contractType', contractType);
-    localStorage.setItem('filterTimeFrame', JSON.stringify(timeframes));
+    localStorage.setItem('dvFilterPast', JSON.stringify(dvFilterPastChecked));
+    localStorage.setItem('dvFilterCurrent', JSON.stringify(dvFilterCurrentChecked));
+    localStorage.setItem('dvFilterFuture', JSON.stringify(dvFilterFutureChecked));
+
+    this.activeModal.close('selected');
+  
   }
 
   onFilterSelectAllChange(event: Event) {

@@ -1,0 +1,97 @@
+.exchange-panel {
+  border-radius: 0.75rem;
+}
+
+.exchange-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.exchange-number {
+  font-size: 0.92rem;
+}
+
+.exchange-email-value {
+  color: #b00020;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.contract-list {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.contract-list-header,
+.contract-item {
+  display: grid;
+  grid-template-columns: minmax(220px, 2.2fr) minmax(140px, 1fr) minmax(140px, 1fr) minmax(170px, auto);
+  gap: 1rem;
+  align-items: center;
+}
+
+.contract-list-header {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #495057;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.contract-item {
+  padding: 0.75rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+}
+
+.contract-item:first-of-type {
+  border-top: 0;
+}
+
+.contract-number {
+  font-weight: 700;
+}
+
+.contract-facilities {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-top: 0.15rem;
+}
+
+.contract-date {
+  font-size: 0.95rem;
+}
+
+.contract-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.contract-label {
+  display: inline-block;
+  min-width: 3rem;
+  margin-right: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #6c757d;
+  text-transform: uppercase;
+}
+
+@media (max-width: 767.98px) {
+  .contract-list-header {
+    display: none !important;
+  }
+
+  .contract-item {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+
+  .contract-actions {
+    justify-content: flex-start;
+  }
+}

@@ -33,6 +33,7 @@ export class SbmStorageService {
   };
 
   public saveLogonResults(result: LogonResultsModel) {
+    sessionStorage.setItem("userType", "sbm");
     sessionStorage.setItem(this.keys.results, JSON.stringify(result.results));
     // Store userPrincipal as a whole
     sessionStorage.setItem(this.keys.userPrincipal, JSON.stringify(result.userPrincipal));

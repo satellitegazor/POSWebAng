@@ -1,0 +1,317 @@
+/* Footer button bar layout and docking */
+.contract-footer {
+	background: #f8fafc;
+	border-top: 1px solid #e0e6ed;
+	z-index: 1050;
+	box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+	padding: 0;
+}
+
+.contract-footer #stButtonBottomBar {
+	min-height: 64px;
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+	width: 100%;
+	gap: 0;
+}
+
+.contract-footer .ftrbtn {
+	border-radius: 0;
+	font-size: 1.15rem;
+	font-weight: 600;
+	height: 64px;
+	width: 100%;
+	margin: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-left: 1px solid #e0e6ed;
+	border-right: 1px solid #e0e6ed;
+}
+
+.contract-footer .ftrbtn:first-child {
+	border-left: none;
+}
+.contract-footer .ftrbtn:last-child {
+	border-right: none;
+}
+
+@media (max-width: 767.98px) {
+	.contract-footer #stButtonBottomBar {
+		flex-direction: column;
+	}
+	.contract-footer .ftrbtn {
+		height: 54px;
+		font-size: 1rem;
+	}
+}
+
+/* Add bottom padding to main content to prevent overlap */
+.contract-ltc-page {
+	padding-bottom: 5.5rem;
+}
+.contract-ltc-page {
+	padding-bottom: 1.25rem;
+}
+
+.contract-ltc-page .accordion-item {
+	border: 0;
+	border-radius: 0.5rem;
+	overflow: hidden;
+	background-color: #fff;
+}
+
+.contract-ltc-page .accordion-item + .accordion-item {
+	margin-top: 0.75rem;
+}
+
+.contract-ltc-page > .accordion > .accordion-item > .accordion-header .accordion-button {
+	background-color: navy;
+	color: #fff;
+	font-weight: 600;
+	border: 0;
+	box-shadow: none;
+}
+
+.contract-ltc-page > .accordion > .accordion-item > .accordion-header .accordion-button.collapsed {
+	background-color: #154a9d;
+}
+
+.contract-ltc-page .accordion-button::after {
+	filter: brightness(0) invert(1);
+}
+
+.contract-ltc-page .accordion .accordion .accordion-button {
+	background-color: #5f7692;
+	color: #ffffff;
+	border-top: 0;
+	font-size: 0.9rem;
+	font-weight: 600;
+	box-shadow: none;
+}
+
+.contract-ltc-page .accordion .accordion .accordion-button::after {
+	filter: brightness(0) invert(1);
+}
+
+.contract-ltc-page .accordion-body {
+	background-color: #fbfcfe;
+	padding-top: 0.85rem;
+	padding-bottom: 0.85rem;
+}
+
+.contract-ltc-page .table {
+	margin-bottom: 0;
+}
+
+.contract-ltc-page .table td {
+	padding-top: 0.2rem;
+	padding-bottom: 0.2rem;
+	vertical-align: middle;
+	border-top: 0;
+}
+
+.contract-ltc-page .table th {
+	border-top: 0;
+	border-bottom: 0;
+}
+
+.contract-ltc-page .text-end.text-nowrap,
+.contract-ltc-page .form-label {
+	color: #4c5967;
+	font-weight: 700;
+	font-size: 0.85rem;
+}
+
+.contract-ltc-page .form-control,
+.contract-ltc-page .form-select {
+	min-height: 31px;
+	border-color: #ced4da;
+	font-size: 1rem;
+    font-weight: bold;
+}
+
+.contract-ltc-page .form-control:focus,
+.contract-ltc-page .form-select:focus {
+	border-color: #0d6efd;
+	box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.contract-ltc-page .btn-group .btn,
+.contract-ltc-page .btn-sm {
+	font-weight: 500;
+}
+
+.contract-ltc-page .vendor-lookup-btn {
+	background-color: navy;
+	border-color: navy;
+	color: #fff;
+	min-width: 42px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.25rem 0.55rem;
+}
+
+.contract-ltc-page .vendor-lookup-btn:hover,
+.contract-ltc-page .vendor-lookup-btn:focus,
+.contract-ltc-page .vendor-lookup-btn:active {
+	background-color: #001f6b;
+	border-color: #001f6b;
+	color: #fff;
+	box-shadow: none;
+}
+
+.contract-ltc-page .vendor-lookup-icon {
+	width: 20px;
+	height: 20px;
+	color: #fff;
+}
+
+.contract-ltc-page .ltc-reports {
+	min-width: 78px;
+}
+
+.contract-ltc-page .ltc-reports-btn {
+	min-width: 88px;
+	background-color: #0b5cab;
+	border-color: #0b5cab;
+	color: #ffffff;
+	font-weight: 600;
+}
+
+.contract-ltc-page .ltc-reports-btn:hover,
+.contract-ltc-page .ltc-reports-btn:focus,
+.contract-ltc-page .ltc-reports-btn:active {
+	background-color: #084a8a;
+	border-color: #084a8a;
+	color: #ffffff;
+	box-shadow: none;
+}
+
+.contract-ltc-page .modal-header {
+	background-color: navy;
+	color: #fff;
+	border-bottom: 0;
+}
+
+.contract-ltc-page .modal-header .btn-close {
+	filter: brightness(0) invert(1);
+}
+
+.contract-ltc-page .modal-content {
+	border: 0;
+	box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.contract-ltc-page .accordion-button,
+.contract-ltc-page .accordion-collapse,
+.contract-ltc-page .accordion-body {
+	border: 0;
+}
+
+.contract-ltc-page .facility-body .accordion-header {
+	background-color: #4f6782;
+	border-radius: 0.4rem 0.4rem 0 0;
+}
+
+.contract-ltc-page .facility-body .accordion-header .accordion-button {
+	background-color: #4f6782;
+	color: #ffffff;
+	font-weight: 600;
+	border: 0;
+	box-shadow: none;
+	font-size: 1rem;
+}
+
+.contract-ltc-page .facility-body .accordion-header .accordion-button:not(.collapsed) {
+	background-color: #41546c;
+	box-shadow: none;
+}
+
+.contract-ltc-page .facility-body .accordion-body {
+	background: #f4f8ff;
+	border-radius: 0 0 0.5rem 0.5rem;
+	padding: 0.65rem;
+}
+
+.contract-ltc-page .facility-body .store-location-facility-panel {
+	background-color: #ffffff;
+	border: 1px solid #dbe5f4;
+	border-radius: 0.5rem;
+	padding: 0.45rem;
+}
+
+.contract-ltc-page .facility-body .tblStoreFacility td {
+	font-size: 0.9rem;
+	padding-top: 0.25rem;
+	padding-bottom: 0.25rem;
+}
+
+.contract-ltc-page .facility-body .text-end.text-nowrap {
+	font-weight: 700;
+}
+
+.contract-ltc-page .facility-body .form-control {
+	min-height: 31px;
+	max-width: 200px;
+	font-size: 1rem;
+	padding: 0.35rem 0.6rem;
+	font-weight: 600;
+}
+
+.contract-ltc-page .facility-body .ltc-location-facility-number,
+.contract-ltc-page .facility-body .ltc-camcharges-facility-number {
+	max-width: 140px;
+}
+
+.contract-ltc-page .facility-body .ltc-commission-fee-amount,
+.contract-ltc-page .facility-body .ltc-commission-fee-percent,
+.contract-ltc-page .facility-body .ltc-department-percent,
+.contract-ltc-page .facility-body .ltc-cam-charges-fee {
+	max-width: 110px;
+}
+
+.contract-ltc-page .facility-body .btn.btn-sm {
+	padding: 0.35rem 0.75rem;
+	font-size: 0.9rem;
+	line-height: 1.25;
+}
+
+.contract-ltc-page .facility-body .ltc-business-function,
+.contract-ltc-page .facility-body .ltc-commission-fee-type {
+	max-width: 210px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.contract-ltc-page .facility-body .ltc-facilitiy-department {
+	background: #f8fbff;
+	border-radius: 0.4rem;
+	padding: 0.25rem;
+}
+
+@media (max-width: 991.98px) {
+	.contract-ltc-page .table td {
+		padding-top: 0.3rem;
+		padding-bottom: 0.3rem;
+	}
+
+	.contract-ltc-page .btn-group {
+		width: 100%;
+	}
+
+	.contract-ltc-page .btn-group .btn {
+		flex: 1 1 auto;
+	}
+    
+}
+
+.contract-ltc-page .table th,
+.contract-ltc-page .table td,
+.contract-ltc-page .table tr {
+    border-top: 0 !important;
+    border-bottom: 0 !important;
+}

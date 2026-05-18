@@ -32,8 +32,13 @@ logonUserRoleType: string = '';
   }
   
   vlogout() {
-    this._logonDataSvc.clearTenderTypes();
-    this.route.navigate(['/vlogon']);
+    if(sessionStorage.getItem("userType") === "vendorlt") {
+      this._logonDataSvc.clearTenderTypes();
+      this.route.navigate(['/vlogon']);
+    }
+    else if(sessionStorage.getItem("userType") === "sbm") {
+      this.route.navigate(['/sbm/login']);
+    }
   }
 
   gotoMainMenu() {

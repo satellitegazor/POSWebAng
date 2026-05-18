@@ -383,6 +383,23 @@ class FacilityModel {
     }
 }
 
+export class ExchangesListModel {
+    regionId!: string;
+    regionName!: string;
+    exchangeFacNbr!: string;
+    exchangeFacName!: string;
+    exchangeFacNameShort!: string;
+    exchangeFacStatus!: string;
+    fiscalBusinessClass!: string;
+    functionNameCode!: string;
+    operatingAuthcode!: string;
+}
+
+export class ExchangeRegionModel {
+    regionId!: string;
+    regionName!: string;
+}
+
 class LTC_Facility {
     FacilityUID: number = 0;
     FacilityNumber: string= '';
