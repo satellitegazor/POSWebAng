@@ -30,6 +30,20 @@ export class UtilService {
     return `${year}${month}${day}${hours}${minutes}${seconds}${milliseconds}`;
   }
 
+  public IsValidEmailAddress(emailAddr: string): boolean {
+    const value = (emailAddr || '').trim();
+    if (!value) {
+      return false;
+    }
+
+    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    return emailRegex.test(value);
+  }
+
+  public getUniqueNumberForDay(date: Date = new Date()): number {
+    return (date.getHours() * 60) + date.getMinutes();
+  }
+
   public tenderCodePageMap = new Map<string, string>([
     ['btnSplitPay', 'splitpay'],
     ['CK', 'cashcheck'],

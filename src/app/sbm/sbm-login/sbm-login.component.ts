@@ -24,6 +24,7 @@ export class SbmLoginComponent {
   password: string = '';
 
   onLogin() {
+    
     let logonModelReq = new LogonModel();
     logonModelReq.tssId = this.loginId;
     logonModelReq.tssPW = this.password;

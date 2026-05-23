@@ -66,8 +66,13 @@
 	margin-top: 0.75rem;
 }
 
+.contract-ltc-page .accordion-button {
+	--bs-accordion-btn-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+	--bs-accordion-btn-active-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
 .contract-ltc-page > .accordion > .accordion-item > .accordion-header .accordion-button {
-	background-color: navy;
+	background-color: #0d3b8c;
 	color: #fff;
 	font-weight: 600;
 	border: 0;
@@ -75,15 +80,32 @@
 }
 
 .contract-ltc-page > .accordion > .accordion-item > .accordion-header .accordion-button.collapsed {
-	background-color: #154a9d;
+	background-color: #2b5ca8;
+}
+
+#headingContract .accordion-button,
+#headingOwner .accordion-button,
+[id^="headingLocation"] .accordion-button {
+	background-color: #1a3a7a;
+	color: #ffffff;
+	font-weight: 700;
+	border: 0;
+	box-shadow: none;
+}
+
+#headingContract .accordion-button.collapsed,
+#headingOwner .accordion-button.collapsed,
+[id^="headingLocation"] .accordion-button.collapsed {
+	background-color: #3d6ec4;
 }
 
 .contract-ltc-page .accordion-button::after {
-	filter: brightness(0) invert(1);
+	filter: none;
+	opacity: 1;
 }
 
 .contract-ltc-page .accordion .accordion .accordion-button {
-	background-color: #5f7692;
+	background-color: #4a607d;
 	color: #ffffff;
 	border-top: 0;
 	font-size: 0.9rem;
@@ -91,8 +113,12 @@
 	box-shadow: none;
 }
 
+.contract-ltc-page .accordion .accordion .accordion-button.collapsed {
+	background-color: #637b98;
+}
+
 .contract-ltc-page .accordion .accordion .accordion-button::after {
-	filter: brightness(0) invert(1);
+	filter: none;
 }
 
 .contract-ltc-page .accordion-body {
@@ -212,12 +238,12 @@
 }
 
 .contract-ltc-page .facility-body .accordion-header {
-	background-color: #4f6782;
+	background-color: #4a607d;
 	border-radius: 0.4rem 0.4rem 0 0;
 }
 
 .contract-ltc-page .facility-body .accordion-header .accordion-button {
-	background-color: #4f6782;
+	background-color: #4a607d;
 	color: #ffffff;
 	font-weight: 600;
 	border: 0;
@@ -225,8 +251,12 @@
 	font-size: 1rem;
 }
 
+.contract-ltc-page .facility-body .accordion-header .accordion-button.collapsed {
+	background-color: #637b98;
+}
+
 .contract-ltc-page .facility-body .accordion-header .accordion-button:not(.collapsed) {
-	background-color: #41546c;
+	background-color: #334760;
 	box-shadow: none;
 }
 
@@ -273,15 +303,196 @@
 	max-width: 110px;
 }
 
+.contract-ltc-page .department-fee-input-wrap {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+}
+
+.contract-ltc-page .department-fee-slider {
+	width: 100%;
+	min-width: 0;
+	--bs-form-range-thumb-bg: navy;
+	--bs-form-range-thumb-active-bg: #1e3f8a;
+	--bs-form-range-track-bg: #d2dbef;
+	accent-color: navy;
+}
+
+.contract-ltc-page .department-fee-slider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	background-color: navy;
+	width: 1.4rem;
+	height: 1.4rem;
+	border-radius: 50%;
+	margin-top: -0.45rem;
+}
+
+.contract-ltc-page .department-fee-slider::-webkit-slider-runnable-track {
+	height: 0.5rem;
+	border-radius: 999px;
+	background: linear-gradient(navy, navy) 0/100% 100% no-repeat, #d2dbef;
+}
+
+.contract-ltc-page .department-fee-slider::-moz-range-thumb {
+	background-color: navy;
+	border-color: navy;
+	width: 1.4rem;
+	height: 1.4rem;
+	border-radius: 50%;
+}
+
+.contract-ltc-page .department-fee-slider::-moz-range-track {
+	height: 0.5rem;
+	border-radius: 999px;
+	background-color: #d2dbef;
+}
+
+.contract-ltc-page .apply-first-fee-btn {
+	min-width: 2rem;
+	padding: 0.2rem 0.45rem;
+	font-weight: 700;
+	line-height: 1;
+}
+
 .contract-ltc-page .facility-body .btn.btn-sm {
 	padding: 0.35rem 0.75rem;
 	font-size: 0.9rem;
 	line-height: 1.25;
 }
 
+.contract-ltc-page .location-phone-composite {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.contract-ltc-page .country-dial-dropdown {
+	flex: 0 0 250px;
+	max-width: 250px;
+}
+
+.contract-ltc-page .country-dial-toggle {
+	display: flex;
+	align-items: baseline;
+	gap: 0.4rem;
+	width: 100%;
+	overflow: hidden;
+	text-align: left;
+	white-space: nowrap;
+}
+
+.contract-ltc-page .country-dial-menu {
+	max-height: 300px;
+	overflow-y: auto;
+	min-width: 320px;
+	z-index: 1060;
+	position: relative;
+}
+
+.contract-ltc-page .country-dial-option {
+	display: flex;
+	align-items: baseline;
+	gap: 0.45rem;
+}
+
+.contract-ltc-page .country-flag-icon {
+	display: inline-block;
+	width: 1.2rem;
+	height: 0.9rem;
+	border-radius: 2px;
+	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+	flex: 0 0 auto;
+}
+
+.contract-ltc-page .country-name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.contract-ltc-page .country-dial-code {
+	font-size: 0.75rem;
+	line-height: 1;
+	color: #4c5967;
+}
+
+.contract-ltc-page .location-phone-composite .ltc-phone-number {
+	flex: 1 1 auto;
+}
+
+.contract-ltc-page .location-currency-input-group {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+}
+
+.contract-ltc-page .location-currency-symbol {
+	font-weight: 700;
+	color: #4c5967;
+	min-width: 1rem;
+}
+
+.contract-ltc-page .ltc-equipment-rental {
+	max-width: 180px;
+}
+
+.contract-ltc-page .hours-of-operation-editor {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	max-width: 44rem;
+}
+
+.contract-ltc-page .hours-of-operation-row {
+	display: grid;
+	grid-template-columns: 8.5rem 8.5rem 9.5rem 9.5rem auto;
+	gap: 0.5rem;
+	align-items: center;
+	justify-content: start;
+}
+
+.contract-ltc-page .hours-of-operation-row .form-select,
+.contract-ltc-page .hours-of-operation-row .btn {
+	min-height: 31px;
+}
+
+.contract-ltc-page .hours-of-operation-add {
+	align-self: flex-start;
+	min-width: 2.25rem;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.contract-ltc-page .location-yes-no-toggle .btn {
+	min-width: 3.25rem;
+}
+
+@media (max-width: 991.98px) {
+	.contract-ltc-page .location-phone-composite {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.contract-ltc-page .country-dial-dropdown {
+		flex: 1 1 auto;
+		max-width: none;
+	}
+
+	.contract-ltc-page .country-dial-menu {
+		min-width: 100%;
+	}
+
+	.contract-ltc-page .hours-of-operation-row {
+		grid-template-columns: 1fr;
+	}
+
+	.contract-ltc-page .hours-of-operation-add {
+		align-self: stretch;
+	}
+}
+
 .contract-ltc-page .facility-body .ltc-business-function,
 .contract-ltc-page .facility-body .ltc-commission-fee-type {
-	max-width: 210px;
+	max-width: 350px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;

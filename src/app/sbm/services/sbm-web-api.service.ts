@@ -5,7 +5,8 @@ import { Observable } from 'rxjs';
 import { GlobalConstants } from '../../global/global.constants';
 import { LogonModel, LogonResultsModel } from '../../models/mobile.client.identity';
 import { ContractIdResultsModel, VendorContractDataModel } from '../models/contract.models';
-import { LTC_ContractResultsModel } from '../../longterm/models/contract.models';
+import { LTC_Contract, LTC_ContractResultsModel, LTC_ReferenceResultsModel } from '../../longterm/models/contract.models';
+import { FacilityModel } from '../../longterm/models/store.location';
 
 @Injectable({
   providedIn: 'root'
@@ -55,14 +56,20 @@ export class SbmWebApiService {
     return this.httpClient.get<LTC_ContractResultsModel>(url, { headers: this.headerObjs });
   }
 
+  public getLTCReferenceLists(uid: string): Observable<LTC_ReferenceResultsModel> {
+    const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/GetLTCReferenceLists?guid=${GlobalConstants.GET_GUID}` +
+      `&uid=${encodeURIComponent(uid)}`;
+    return this.httpClient.get<LTC_ReferenceResultsModel>(url, { headers: this.headerObjs });
+  }
+
   public getDERDiscrepancyModel(uid: string): Observable<any> {
     const url = `${GlobalConstants.CPOS_SVCS_URL}/sbm/GetDERDiscrepancyModel?uid=${uid}&guid=${GlobalConstants.GET_GUID}`;
     return this.httpClient.get<any>(url, { headers: this.headerObjs });
   }
 
-  public getSingleFacilityLocal(facNbr: string): Observable<any> {
+  public getSingleFacilityLocal(facNbr: string): Observable<FacilityModel> {
     const url = `${GlobalConstants.CPOS_SVCS_URL}/sbm/GetSingleFacilityLocal?facNbr=${facNbr}&guid=${GlobalConstants.GET_GUID}`;
-    return this.httpClient.get<any>(url, { headers: this.headerObjs });
+    return this.httpClient.get<FacilityModel>(url, { headers: this.headerObjs });
   }
 
   public getVendorLocal(sVendorNum: string): Observable<any> {
@@ -78,5 +85,10 @@ export class SbmWebApiService {
   public loadSBMEmailAddr(uid: string, facilityNum: string): Observable<any> {
     const url = `${GlobalConstants.CPOS_SVCS_URL}/sbm/LoadSBMEmailAddr?guid=${GlobalConstants.GET_GUID}&uid=${uid}&facilityNum=${facilityNum}`;
     return this.httpClient.get<any>(url, { headers: this.headerObjs });
+  }
+
+  public PutLTCContract(uid: string, contract: LTC_Contract): Observable<LTC_ContractResultsModel> {
+    const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/SaveLTCContract?guid=${GlobalConstants.PUT_GUID}&uid=${encodeURIComponent(uid)}`;
+    return this.httpClient.put<LTC_ContractResultsModel>(url, contract, { headers: this.headerObjs });
   }
 }

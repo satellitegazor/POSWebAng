@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { SbmRoutingModule } from './sbm-module-routing.module';
@@ -9,6 +9,7 @@ import { ExchangePanelComponent } from '../exchange-panel/exchange-panel.compone
 import { ContractFilterDlgComponent } from '../contract-filter-dlg/contract-filter-dlg.component';
 import { ContractLtcPageComponent } from '../contract-ltc-page/contract-ltc-page.component';
 import { ContractRovPageComponent } from '../contract-rov-page/contract-rov-page.component';
+import { PosCurrency3Directive } from '../../directives/pos-currency.directive.3';
   
 
 @NgModule({
@@ -17,6 +18,7 @@ import { ContractRovPageComponent } from '../contract-rov-page/contract-rov-page
   imports: [
     CommonModule,
     FormsModule,
+    PosCurrency3Directive,
     SbmRoutingModule
   ]
 })

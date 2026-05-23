@@ -43,7 +43,7 @@ export class InactiveLogoutInterceptor implements HttpInterceptor {
         this._store.dispatch(resetTktObj({ locConfig: locConfig }));
       } 
       else if(appType == 'sbm') {
-        this._router.navigateByUrl('/logon');
+        this._router.navigateByUrl('/sbm/logon');
       }
     })
   }

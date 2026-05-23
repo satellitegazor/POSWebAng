@@ -1,4 +1,5 @@
 import { MobileBase } from '../../models/mobile.base';
+import { LTC_Department } from '../reports/pricelist/price-list-rpt.component';
 
 export class LTC_StoreLocation_Result {
 	public results: MobileBase = {} as MobileBase;
@@ -90,6 +91,7 @@ export class LTC_Facility {
 	public hasUpdates: boolean = false;
 	public isPrimaryFacility: boolean = false;
 	public insuranceFacNbr: string = '';
+	public departments: LTC_Department[] = [];
 }
 
 export class LTC_Individual {
@@ -114,6 +116,6 @@ export class LTC_HoursOfOperation {
 	public dayTo: string = '';
 	public timeFrom: string = '';
 	public timeTo: string = '';
-	public displayOrder: string = '';
+	public displayOrder: number = 0;
 	public hasUpdates: boolean = false;
 }
