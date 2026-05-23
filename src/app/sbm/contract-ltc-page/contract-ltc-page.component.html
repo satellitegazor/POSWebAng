@@ -110,7 +110,7 @@
                                 <tr>
                                     <td colspan="4">
                                         <div class="row g-3 align-items-end">
-                                            <div class="col-lg-3 col-md-4">
+                                            <div class="col-md-4">
                                                 <label class="form-label mb-1" for="ccContractNumber">Contract
                                                     Number:</label>
                                                 <input id="ccContractNumber"
@@ -125,23 +125,61 @@
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#dialogLTCContractNumber">Help</button>
                                             </div>
-                                            <div class="col-lg-2 col-md-3">
+                                            <div class="col-md-3">
                                                 <label class="form-label mb-1" for="ccContractStart">Contract Start
                                                     Date:</label>
-                                                <input type="text"
-                                                    class="form-control form-control-sm ltc-dp ltc-contract ltc-contract-start"
-                                                    id="ccContractStart" name="ccContractStart"
-                                                    [ngModel]="contractStartInput"
-                                                    (ngModelChange)="onContractDateInputChange('contractStart', $event)" />
+                                                <div class="input-group input-group-sm contract-date-input-group">
+                                                    <input type="text"
+                                                        class="form-control form-control-sm ltc-dp ltc-contract ltc-contract-start contract-date-display"
+                                                        id="ccContractStart" name="ccContractStart"
+                                                        [ngModel]="contractStartInput"
+                                                        readonly
+                                                        (click)="openContractDatePicker('contractStart')" />
+                                                    <button type="button"
+                                                        class="btn btn-outline-secondary contract-date-trigger"
+                                                        aria-label="Open contract start date picker"
+                                                        (click)="openContractDatePicker('contractStart')">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                                                            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h.5A1.5 1.5 0 0 1 15 2.5v11A1.5 1.5 0 0 1 13.5 15h-11A1.5 1.5 0 0 1 1 13.5v-11A1.5 1.5 0 0 1 2.5 1H3V.5a.5.5 0 0 1 .5-.5zM2 5v8.5a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5V5H2z"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                                <input
+                                                    #contractStartDatePicker
+                                                    type="date"
+                                                    class="contract-date-native-picker"
+                                                    tabindex="-1"
+                                                    [min]="contractStartMinDateIso"
+                                                    [value]="getContractDatePickerValue('contractStart')"
+                                                    (change)="onContractDatePickerChange('contractStart', $event)" />
                                             </div>
-                                            <div class="col-lg-2 col-md-3">
+                                            <div class="col-md-3">
                                                 <label class="form-label mb-1" for="ccContractEnd">Contract End
                                                     Date:</label>
-                                                <input type="text"
-                                                    class="form-control form-control-sm ltc-dp ltc-contract ltc-contract-end"
-                                                    id="ccContractEnd" name="ccContractEnd"
-                                                    [ngModel]="contractEndInput"
-                                                    (ngModelChange)="onContractDateInputChange('contractEnd', $event)" />
+                                                <div class="input-group input-group-sm contract-date-input-group">
+                                                    <input type="text"
+                                                        class="form-control form-control-sm ltc-dp ltc-contract ltc-contract-end contract-date-display"
+                                                        id="ccContractEnd" name="ccContractEnd"
+                                                        [ngModel]="contractEndInput"
+                                                        readonly
+                                                        (click)="openContractDatePicker('contractEnd')" />
+                                                    <button type="button"
+                                                        class="btn btn-outline-secondary contract-date-trigger"
+                                                        aria-label="Open contract end date picker"
+                                                        (click)="openContractDatePicker('contractEnd')">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                                                            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h.5A1.5 1.5 0 0 1 15 2.5v11A1.5 1.5 0 0 1 13.5 15h-11A1.5 1.5 0 0 1 1 13.5v-11A1.5 1.5 0 0 1 2.5 1H3V.5a.5.5 0 0 1 .5-.5zM2 5v8.5a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5V5H2z"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                                <input
+                                                    #contractEndDatePicker
+                                                    type="date"
+                                                    class="contract-date-native-picker"
+                                                    tabindex="-1"
+                                                    [min]="contractEndMinDateIso"
+                                                    [value]="getContractDatePickerValue('contractEnd')"
+                                                    (change)="onContractDatePickerChange('contractEnd', $event)" />
                                             </div>
                                         </div>
                                     </td>

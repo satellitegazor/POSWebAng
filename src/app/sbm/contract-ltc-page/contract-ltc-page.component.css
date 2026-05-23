@@ -195,6 +195,28 @@
 	color: #fff;
 }
 
+.contract-ltc-page .contract-date-input-group .contract-date-display {
+	cursor: pointer;
+	background-color: #fff;
+}
+
+.contract-ltc-page .contract-date-trigger {
+	min-width: 2.2rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.contract-ltc-page .contract-date-native-picker {
+	position: absolute;
+	width: 0;
+	height: 0;
+	opacity: 0;
+	pointer-events: none;
+	border: 0;
+	padding: 0;
+}
+
 .contract-ltc-page .ltc-reports {
 	min-width: 78px;
 }

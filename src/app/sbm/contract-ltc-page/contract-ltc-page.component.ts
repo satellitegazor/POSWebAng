@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SbmWebApiService } from '../services/sbm-web-api.service';
@@ -30,6 +30,8 @@ type HoursTimeOption = {
 export class ContractLtcPageComponent implements OnInit {
 
   @ViewChild('contractForm') contractFormRef?: NgForm;
+  @ViewChild('contractStartDatePicker') contractStartDatePickerRef?: ElementRef<HTMLInputElement>;
+  @ViewChild('contractEndDatePicker') contractEndDatePickerRef?: ElementRef<HTMLInputElement>;
 
   ltcContract: LTC_Contract | null = null;
   ltcReferenceData: LTC_ReferenceResultsModel | null = null;
@@ -44,6 +46,21 @@ export class ContractLtcPageComponent implements OnInit {
   openCountryDialLocationUid: number | null = null;
   selectedCountryIsoByLocationUid: Record<number, CountryCode> = {};
   private tempUidSeed = -1;
+  readonly todayDateIso = this.toIsoDateString(new Date());
+
+  get contractStartMinDateIso(): string {
+    return this.todayDateIso;
+  }
+
+  get contractEndMinDateIso(): string {
+    const startDate = this.parseDateInput(this.contractStartInput);
+    const startDateIso = this.toIsoDateString(startDate);
+    if (!startDateIso) {
+      return this.todayDateIso;
+    }
+
+    return startDateIso > this.todayDateIso ? startDateIso : this.todayDateIso;
+  }
 
   get hasSavedChanges(): string {
     return this.contractFormRef?.pristine === false ? 'false' : 'true';
@@ -75,18 +92,33 @@ export class ContractLtcPageComponent implements OnInit {
     this.route.queryParamMap.subscribe(params => {
       const ctrid = params.get('ctrid');
       const userIdStr = sessionStorage.getItem('sbm_employeeId');
-      if (ctrid && userIdStr) {
-        const contractId = Number(ctrid);
-        const userId = Number(userIdStr);
-        if (!isNaN(contractId) && !isNaN(userId) && contractId > 0 && userId > 0) {
-          this.LoadContract(contractId, userId);
-        }
-        else {
-          this.ltcContract = new LTC_Contract() as any;
-          this.onAddLocation(this.ltcContract?.contractUid ?? 0);
-          }
+      const contractId = Number(ctrid);
+      const userId = Number(userIdStr);
+
+      if (ctrid && userIdStr && !isNaN(contractId) && !isNaN(userId) && contractId > 0 && userId > 0) {
+        this.LoadContract(contractId, userId);
+        return;
       }
+
+      this.initializeNewContract();
     });
+  }
+
+  private initializeNewContract(): void {
+    // Guard against route/query re-emissions resetting in-progress form edits.
+    if (this.ltcContract && this.ltcContract.contractUid <= 0) {
+      return;
+    }
+
+    const newContract = new LTC_Contract();
+    newContract.contractUid = 0;
+    newContract.locations = newContract.locations || [];
+    this.ltcContract = newContract;
+    this.syncDateInputs();
+
+    if (!this.ltcContract.locations.length) {
+      this.onAddLocation(this.ltcContract.contractUid);
+    }
   }
 
   private buildCountryDialOptions(): CountryDialOption[] {
@@ -367,6 +399,44 @@ export class ContractLtcPageComponent implements OnInit {
       this.ltcContract.contractEnd = nextValue as any;
     }
 
+    this.enforceContractDateRange(field);
+
+    this.markObjectUpdated(this.ltcContract);
+  }
+
+  openContractDatePicker(field: 'contractStart' | 'contractEnd'): void {
+    const pickerInput = this.getContractDatePicker(field);
+    if (!pickerInput) {
+      return;
+    }
+
+    if (typeof pickerInput.showPicker === 'function') {
+      pickerInput.showPicker();
+      return;
+    }
+
+    pickerInput.focus();
+    pickerInput.click();
+  }
+
+  onContractDatePickerChange(field: 'contractStart' | 'contractEnd', event: Event): void {
+    const isoValue = (event.target as HTMLInputElement).value;
+    if (!this.ltcContract) {
+      return;
+    }
+
+    const parsedDate = this.parseIsoDate(isoValue);
+    const formattedDate = parsedDate ? this.formatDateInput(parsedDate) : '';
+
+    if (field === 'contractStart') {
+      this.contractStartInput = formattedDate;
+      this.ltcContract.contractStart = parsedDate as any;
+    } else {
+      this.contractEndInput = formattedDate;
+      this.ltcContract.contractEnd = parsedDate as any;
+    }
+
+    this.enforceContractDateRange(field);
     this.markObjectUpdated(this.ltcContract);
   }
 
@@ -443,6 +513,91 @@ export class ContractLtcPageComponent implements OnInit {
     }
 
     return `(${digits.slice(0, 3)})-${digits.slice(3, 6)}-${digits.slice(6)}`;
+  }
+
+  getContractDatePickerValue(field: 'contractStart' | 'contractEnd'): string {
+    const value = field === 'contractStart' ? this.contractStartInput : this.contractEndInput;
+    const parsedDate = this.parseDateInput(value);
+    return this.toIsoDateString(parsedDate);
+  }
+
+  private getContractDatePicker(field: 'contractStart' | 'contractEnd'): HTMLInputElement | null {
+    const picker = field === 'contractStart' ? this.contractStartDatePickerRef : this.contractEndDatePickerRef;
+    return picker?.nativeElement || null;
+  }
+
+  private parseIsoDate(value: string): Date | null {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+    if (!match) {
+      return null;
+    }
+
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    const day = Number(match[3]);
+    const parsedDate = new Date(year, month - 1, day);
+
+    if (
+      parsedDate.getFullYear() !== year ||
+      parsedDate.getMonth() !== month - 1 ||
+      parsedDate.getDate() !== day
+    ) {
+      return null;
+    }
+
+    return parsedDate;
+  }
+
+  private toIsoDateString(value: Date | null): string {
+    if (!value || isNaN(value.getTime())) {
+      return '';
+    }
+
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1).padStart(2, '0');
+    const day = String(value.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  private enforceContractDateRange(changedField: 'contractStart' | 'contractEnd'): void {
+    if (!this.ltcContract) {
+      return;
+    }
+
+    const startDate = this.parseDateInput(this.contractStartInput);
+    const endDate = this.parseDateInput(this.contractEndInput);
+    if (!startDate || !endDate) {
+      return;
+    }
+
+    const today = this.parseIsoDate(this.todayDateIso);
+    if (today) {
+      if (startDate < today) {
+        this.contractStartInput = this.formatDateInput(today);
+        this.ltcContract.contractStart = today as any;
+      }
+
+      if (endDate < today) {
+        this.contractEndInput = this.formatDateInput(today);
+        this.ltcContract.contractEnd = today as any;
+      }
+    }
+
+    const normalizedStart = this.parseDateInput(this.contractStartInput);
+    const normalizedEnd = this.parseDateInput(this.contractEndInput);
+    if (!normalizedStart || !normalizedEnd) {
+      return;
+    }
+
+    if (normalizedEnd < normalizedStart) {
+      if (changedField === 'contractStart') {
+        this.contractEndInput = this.formatDateInput(normalizedStart);
+        this.ltcContract.contractEnd = normalizedStart as any;
+      } else {
+        this.contractEndInput = this.formatDateInput(normalizedStart);
+        this.ltcContract.contractEnd = normalizedStart as any;
+      }
+    }
   }
 
   private normalizeFeePercent(value: string | number): number {
