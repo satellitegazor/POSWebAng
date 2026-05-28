@@ -113,9 +113,16 @@
 
 .contract-actions {
 	display: flex;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 	gap: 0.35rem;
+	align-items: center;
 	justify-content: flex-end;
+}
+
+.contract-start-event-slot {
+	display: flex;
+	justify-content: flex-end;
+	min-width: 6.75rem;
 }
 
 .contract-label {
@@ -128,7 +135,8 @@
 	text-transform: uppercase;
 }
 
-.contract-actions .btn {
+.contract-actions .btn,
+.contract-start-event .btn {
 	padding: 0.2rem 0.5rem;
 	font-size: 0.8rem;
 	line-height: 1.2;
@@ -145,7 +153,12 @@
 	}
 
 	.contract-actions {
+		flex-wrap: wrap;
 		justify-content: flex-start;
+	}
+
+	.contract-start-event-slot {
+		min-width: 0;
 	}
 }
 

@@ -275,6 +275,37 @@
                                                     <td colspan="2"><input class="form-control form-control-sm ltc-contract ltc-parent-facility-number text-capitalize"
                                                         id="'ccPrimFac' + location.locationUID" maxlength="10" type="text" name="'facilityNumber_' + location.locationUID"
                                                             [(ngModel)]="location.facilityNumber" (ngModelChange)="markObjectUpdated(location)" disabled /></td>
+                                                            <td></td><td></td>
+                                                    <td style="width: 245px;">
+                                                        <div class="btn-group btn-group-sm" role="group">
+                                                            <button type="button" class="btn btn-outline-danger ltc-remove-location d-inline-flex align-items-center"
+                                                                id="btnRemoveLocation{{location.locationUID}}" (click)="onRemoveLocation(location.locationUID)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#dc3545" viewBox="0 0 16 16"
+                                                                    aria-hidden="true">
+                                                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1z" />
+                                                                </svg>
+                                                                <span class="ms-1">Location</span>
+                                                            </button>
+                                                            <button type="button" class="btn btn-outline-primary ltc-add-facility d-inline-flex align-items-center"
+                                                                id="btnAddFacility{{location.locationUID}}" (click)="onAddFacility(location.locationUID)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#001f6b" viewBox="0 0 16 16"
+                                                                    aria-hidden="true">
+                                                                    <path
+                                                                        d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z" />
+                                                                </svg>
+                                                                <span class="ms-1">Facility</span>
+                                                            </button>
+                                                            <button type="button" class="btn btn-outline-primary ltc-add-manager d-inline-flex align-items-center"
+                                                                id="btnAddManager{{location.locationUID}}" (click)="onAddManager(location.locationUID)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#001f6b" viewBox="0 0 16 16"
+                                                                    aria-hidden="true">
+                                                                    <path
+                                                                        d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z" />
+                                                                </svg>
+                                                                <span class="ms-1">Manager</span>
+                                                            </button>
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <td class="text-end text-nowrap">Location Name:</td>
@@ -283,7 +314,7 @@
                                                             maxlength="48" type="text"
                                                         [name]="'locationName_' + location.locationUID"
                                                         [(ngModel)]="location.locationName"
-                                                        (ngModelChange)="markObjectUpdated(location)" /></td>
+                                                        (ngModelChange)="markObjectUpdated(location)" /></td><td></td>
                                                     <td class="text-end text-nowrap">Store Name:</td>
                                                     <td><input
                                                             class="form-control form-control-sm ltc-contract-location ltc-store-name text-uppercase"
@@ -294,7 +325,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td class="text-end text-nowrap">Address Line 1:</td>
-                                                    <td colspan="4"><input
+                                                    <td colspan="5"><input
                                                             class="form-control form-control-sm ltc-contract-location ltc-address-line1 text-capitalize"
                                                         type="text" [name]="'addressLine1_' + location.locationUID"
                                                         [(ngModel)]="location.addressLine1"
@@ -306,7 +337,7 @@
                                                             class="form-control form-control-sm ltc-contract-location ltc-address-line2 text-capitalize"
                                                         type="text" [name]="'addressLine2_' + location.locationUID"
                                                         [(ngModel)]="location.addressLine2"
-                                                        (ngModelChange)="markObjectUpdated(location)" /></td>
+                                                        (ngModelChange)="markObjectUpdated(location)" /></td><td></td>
                                                     <td class="text-end text-nowrap">Suite Number:</td>
                                                     <td><input
                                                             class="form-control form-control-sm ltc-contract-location ltc-store-stNbr"
@@ -329,6 +360,7 @@
                                                         [name]="'stateProvince_' + location.locationUID"
                                                         [(ngModel)]="location.stateProvice"
                                                         (ngModelChange)="markObjectUpdated(location)" /></td>
+                                                        <td class="text-end text-nowrap">Postal Code:</td>
                                                     <td><input
                                                             class="form-control form-control-sm ltc-contract-location ltc-address-zip text-uppercase"
                                                         type="text" maxlength="10" [name]="'postalCode_' + location.locationUID"
@@ -381,6 +413,7 @@
                                                                 (ngModelChange)="onLocationPhoneInputChange(location, $event)" />
                                                         </div>
                                                     </td>
+                                                    <td></td>
                                                     <td class="text-end text-nowrap">Terminal ID:</td>
                                                     <td><input
                                                             class="form-control form-control-sm ltc-contract-location ltc-terminal-id text-uppercase"
@@ -810,6 +843,159 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="accordion-item border-0 mb-3" *ngIf="location.associates?.length">
+                            <h3 class="accordion-header">
+                                <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse"
+                                    [attr.data-bs-target]="'#locationManagers' + location.locationUID">Managers</button>
+                            </h3>
+                            <div class="accordion-collapse collapse show"
+                                [id]="'locationManagers' + location.locationUID">
+                                <div class="accordion-body">
+                                    <div class="accordion accordion-flush contract-store-location-individual"
+                                        [attr.data-location-uid]="location.locationUID">
+                                        <div class="accordion-item mb-2 collapse-store-location-individual"
+                                            *ngFor="let associate of location.associates"
+                                            [attr.data-individual-uid]="associate.individualUID"
+                                            [attr.data-location-uid]="location.locationUID">
+                                            <h4 class="accordion-header"
+                                                [id]="'headingIndividual' + associate.individualUID">
+                                                <button class="accordion-button collapsed py-2" type="button"
+                                                    data-bs-toggle="collapse"
+                                                    [attr.data-bs-target]="'#individualBody' + associate.individualUID"
+                                                    [attr.aria-controls]="'individualBody' + associate.individualUID">
+                                                    <span>
+                                                        {{ associate.individualRoleTypeDescription || 'Concession Manager' }} -
+                                                        {{ ((associate.firstName || '') + ' ' + (associate.lastName || '')).trim() || '-' }}
+                                                    </span>
+                                                </button>
+                                            </h4>
+                                            <div class="accordion-collapse collapse individual-body"
+                                                [id]="'individualBody' + associate.individualUID"
+                                                [attr.aria-labelledby]="'headingIndividual' + associate.individualUID">
+                                                <div class="accordion-body">
+                                                    <div class="table-responsive store-location-individual-panel">
+                                                        <table class="table table-borderless align-middle mb-0 tblStoreAssociate">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td colspan="6" class="text-end">
+                                                                        <div class="btn-group btn-group-sm" role="group">
+                                                                            <button type="button"
+                                                                                class="btn btn-outline-primary ltc-copy-owner-details"
+                                                                                (click)="copyOwnerDetailsToAssociate(location, associate)">
+                                                                                Copy Owner Details
+                                                                            </button>
+                                                                            <button type="button"
+                                                                                class="btn btn-outline-danger ltc-remove-associate"
+                                                                                (click)="onRemoveAssociate(location, associate.individualUID)">
+                                                                                Manager
+                                                                            </button>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="text-end text-nowrap" style="width: 10%;">First Name:</td>
+                                                                    <td style="width: 20%; min-width: 75px;">
+                                                                        <input
+                                                                            class="form-control form-control-sm ltc-location-individual ltc-individual-first-name text-capitalize"
+                                                                            maxlength="30"
+                                                                            type="text"
+                                                                            [name]="'associateFirstName_' + location.locationUID + '_' + associate.individualUID"
+                                                                            [(ngModel)]="associate.firstName"
+                                                                            (ngModelChange)="markObjectUpdated(associate); markObjectUpdated(location)" />
+                                                                    </td>
+                                                                    <td class="text-end text-nowrap" style="width: 20%;">Last Name:</td>
+                                                                    <td style="width: 20%; min-width: 75px;">
+                                                                        <input
+                                                                            class="form-control form-control-sm ltc-location-individual ltc-individual-last-name text-capitalize"
+                                                                            maxlength="30"
+                                                                            type="text"
+                                                                            [name]="'associateLastName_' + location.locationUID + '_' + associate.individualUID"
+                                                                            [(ngModel)]="associate.lastName"
+                                                                            (ngModelChange)="markObjectUpdated(associate); markObjectUpdated(location)" />
+                                                                    </td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="text-end text-nowrap">Email Address:</td>
+                                                                    <td style="width: 20%; min-width: 75px;">
+                                                                        <input
+                                                                            class="form-control form-control-sm ltc-location-individual ltc-individual-email-address text-uppercase"
+                                                                            type="text"
+                                                                            [name]="'associateEmail_' + location.locationUID + '_' + associate.individualUID"
+                                                                            [(ngModel)]="associate.emailAddress"
+                                                                            (ngModelChange)="markObjectUpdated(associate); markObjectUpdated(location)" />
+                                                                    </td>
+                                                                    <td class="text-end text-nowrap">Phone Number:</td>
+                                                                    <td colspan="3">
+                                                                        <div class="location-phone-composite">
+                                                                            <div class="dropdown country-dial-dropdown" (click)="$event.stopPropagation()">
+                                                                                <button
+                                                                                    class="btn btn-outline-secondary btn-sm dropdown-toggle country-dial-toggle"
+                                                                                    type="button"
+                                                                                    [id]="'countryDialAssocDropdown_' + associate.individualUID"
+                                                                                    [attr.aria-expanded]="isCountryDialDropdownOpenForAssociate(associate.individualUID)"
+                                                                                    (click)="toggleCountryDialDropdownForAssociate(associate.individualUID)">
+                                                                                    <ng-container *ngIf="getSelectedCountryDialOptionForAssociate(associate) as selectedCountry; else noAssociateCountryCodeSelected">
+                                                                                        <span class="country-flag-icon fi" [class]="'country-flag-icon fi fi-' + selectedCountry.iso2.toLowerCase()"></span>
+                                                                                        <span class="country-name">{{ selectedCountry.name }}</span>
+                                                                                        <sub class="country-dial-code">+{{ selectedCountry.dialCode }}</sub>
+                                                                                    </ng-container>
+                                                                                    <ng-template #noAssociateCountryCodeSelected>
+                                                                                        <span class="country-name">Select Country Code</span>
+                                                                                    </ng-template>
+                                                                                </button>
+                                                                                <ul
+                                                                                    class="dropdown-menu country-dial-menu"
+                                                                                    [class.show]="isCountryDialDropdownOpenForAssociate(associate.individualUID)"
+                                                                                    [attr.aria-labelledby]="'countryDialAssocDropdown_' + associate.individualUID">
+                                                                                    <li *ngFor="let option of countryDialOptions">
+                                                                                        <button
+                                                                                            type="button"
+                                                                                            class="dropdown-item country-dial-option"
+                                                                                            (click)="onAssociateDialCodeSelect(location, associate, option)">
+                                                                                            <span class="country-flag-icon fi" [class]="'country-flag-icon fi fi-' + option.iso2.toLowerCase()"></span>
+                                                                                            <span class="country-name">{{ option.name }}</span>
+                                                                                            <sub class="country-dial-code">+{{ option.dialCode }}</sub>
+                                                                                        </button>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </div>
+                                                                            <input
+                                                                                class="form-control form-control-sm ltc-location-individual ltc-individual-phone-number"
+                                                                                type="text"
+                                                                                maxlength="15"
+                                                                                [name]="'associatePhone_' + location.locationUID + '_' + associate.individualUID"
+                                                                                [(ngModel)]="associate.phoneNumber"
+                                                                                (ngModelChange)="onAssociatePhoneInputChange(location, associate, $event)" />
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="text-end text-nowrap">Role:</td>
+                                                                    <td style="width: 20%; min-width: 75px;">
+                                                                        <button
+                                                                            type="button"
+                                                                            class="btn btn-outline-secondary btn-sm w-100 ltc-location-individual ltc-individual-role-type"
+                                                                            disabled>
+                                                                            {{ associate.individualRoleTypeDescription || 'Concession Manager' }}
+                                                                        </button>
+                                                                    </td>
+                                                                    <td colspan="4"></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
                     </div>
                 </div>
             </div>
@@ -1138,7 +1324,7 @@
             </div>
             <div class="modal-body">
                 <div *ngIf="departmentPopupDepartments.length; else noDepartmentsAvailable" class="table-responsive">
-                    <table class="table table-borderless align-middle mb-0">
+                    <table class="table table-striped table-borderless align-middle mb-0">
                         <tbody>
                             <tr *ngFor="let dept of departmentPopupDepartments">
                                 <td style="width: 85%; padding-left: 1rem;">{{ dept.deptName }}</td>

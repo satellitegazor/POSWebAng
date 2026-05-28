@@ -1,5 +1,8 @@
 import { MobileBase } from "../../models/mobile.base";
 import { Vendor } from "../../longterm/models/contract.models";
+import { CPOS_RegionCountryCurrencyResultsModel } from "../../longterm/models/region.currency.models";
+import { FacilityModel } from "../../longterm/models/store.location";
+import { ROV_Event } from "../../longterm/models/ticket.list";
 
 export class ActiveContracts {
     id!: number;
@@ -26,6 +29,68 @@ export class ActiveContracts {
 export class ContractIdResultsModel {
     results!: MobileBase;
     activeContracts!: ActiveContracts[];
+}
+
+export class ROV_ContractResultsModel {
+    results!: MobileBase;
+    contract!: ROV_Contract;
+}
+
+
+export class ROV_Facility {
+    facilityUid: number = 0;
+    facilityNumber: string = '';
+    contractUid: number = 0;
+    regionUid: string = '';
+    businessFunctionUid: number = 0;
+    businessCategoryUid: number = 0;
+    fmfChargeToFacility: FacilityModel = new FacilityModel();
+    fmfFacility: FacilityModel = new FacilityModel();
+    fmfParentFacility: FacilityModel = new FacilityModel();
+    hasUpdates: boolean;
+    events: ROV_Event[] = [];
+
+    constructor() {
+        this.hasUpdates = false;
+    }
+}
+
+export class ROV_Contract {
+    contractUid!: number;
+    contractStart!: Date;
+    contractEnd!: Date;
+    contractNumber!: string;
+    vendorNumber!: string;
+    regionCode!: string;
+    regionDesc!: string;
+    countryCode!: string;
+    countryName!: string;
+    currencyCode!: string;
+    currencyDesc!: string;
+    milStarTxnFee!: number;
+    confirmContractTimestamp!: Date;
+    allowTaxExemption!: boolean;
+    applyCouponsAfterTax!: boolean;
+    ownerUid!: string;
+    ownerFirstName!: string;
+    ownerLastName!: string;
+    ownerEmail!: string;
+    ownerPhone!: string;
+    ownerCountryDialCode!: string;
+    concessionaire!: Vendor;
+    vendorEPaid!: boolean;
+    chargeToFaciltyNbr!: string;
+    facility!: ROV_Facility;
+    regionCountryCurrency!: CPOS_RegionCountryCurrencyResultsModel;
+    hasRemoved!: boolean;
+    hasUpdates: boolean;
+    isMerged!: boolean;
+    cliTimeVar!: number;
+    cntrctTranCount!: number;
+
+    constructor() {
+        this.hasUpdates = false;
+    }
 }
 
 export class FAEmailAddress {

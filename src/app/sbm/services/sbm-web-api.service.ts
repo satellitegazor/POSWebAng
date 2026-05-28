@@ -4,9 +4,10 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { GlobalConstants } from '../../global/global.constants';
 import { LogonModel, LogonResultsModel } from '../../models/mobile.client.identity';
-import { ContractIdResultsModel, VendorContractDataModel } from '../models/contract.models';
-import { LTC_Contract, LTC_ContractResultsModel, LTC_ReferenceResultsModel } from '../../longterm/models/contract.models';
+import { ContractIdResultsModel, ROV_ContractResultsModel, VendorContractDataModel } from '../models/contract.models';
+import { LTC_Contract, LTC_ContractResultsModel, LTC_ReferenceResultsModel, ROV_ReferenceResultsModel } from '../../longterm/models/contract.models';
 import { FacilityModel } from '../../longterm/models/store.location';
+import { CPOS_RegionCountryCurrencyResultsModel } from '../../longterm/models/region.currency.models';
 
 @Injectable({
   providedIn: 'root'
@@ -33,9 +34,9 @@ export class SbmWebApiService {
     return this.httpClient.get<VendorContractDataModel>(url, { headers: this.headerObjs });
   }
 
-  public getCountryCurrencyCodes(regcode: string): Observable<any> {
+  public getCountryCurrencyCodes(regcode: string): Observable<CPOS_RegionCountryCurrencyResultsModel> {
     const url = `${GlobalConstants.CPOS_SVCS_URL}/sbm/GetCountryCurrencyCodes?regcode=${regcode}&guid=${GlobalConstants.GET_GUID}`;
-    return this.httpClient.get<any>(url, { headers: this.headerObjs });
+    return this.httpClient.get<CPOS_RegionCountryCurrencyResultsModel>(url, { headers: this.headerObjs });
   }
 
   public getRegionCode(): Observable<any> {
@@ -50,16 +51,29 @@ export class SbmWebApiService {
    * @returns Observable<LTC_ContractResultsModel>
    */
   public loadLTCContract(contractUID: number, uid: string): Observable<LTC_ContractResultsModel> {
-    const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/LoadLTCContract?guid=${GlobalConstants.GET_GUID}` +
+    const url = `${GlobalConstants.CPOS_SVCS_URL}/sbm/LoadLTCContract?guid=${GlobalConstants.GET_GUID}` +
       `&contractUID=${encodeURIComponent(contractUID)}` +
       `&uid=${encodeURIComponent(uid)}`;
     return this.httpClient.get<LTC_ContractResultsModel>(url, { headers: this.headerObjs });
+  }
+
+  public loadROVContract(cid: number, uid: string): Observable<ROV_ContractResultsModel> {
+    const url = `${GlobalConstants.CPOS_SVCS_URL}/sbm/LoadROVContract?guid=${GlobalConstants.GET_GUID}` +
+      `&cid=${encodeURIComponent(cid)}` +
+      `&uid=${encodeURIComponent(uid)}`;
+    return this.httpClient.get<ROV_ContractResultsModel>(url, { headers: this.headerObjs });
   }
 
   public getLTCReferenceLists(uid: string): Observable<LTC_ReferenceResultsModel> {
     const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/GetLTCReferenceLists?guid=${GlobalConstants.GET_GUID}` +
       `&uid=${encodeURIComponent(uid)}`;
     return this.httpClient.get<LTC_ReferenceResultsModel>(url, { headers: this.headerObjs });
+  }
+
+  public getROVReferenceLists(uid: string): Observable<ROV_ReferenceResultsModel> {
+    const url = `${GlobalConstants.CPOS_SVCS_URL}/sbm/GetROVReferenceLists?guid=${GlobalConstants.GET_GUID}` +
+      `&uid=${encodeURIComponent(uid)}`;
+    return this.httpClient.get<ROV_ReferenceResultsModel>(url, { headers: this.headerObjs });
   }
 
   public getDERDiscrepancyModel(uid: string): Observable<any> {

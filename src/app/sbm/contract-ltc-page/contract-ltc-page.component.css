@@ -295,6 +295,24 @@
 	padding: 0.45rem;
 }
 
+.contract-ltc-page .store-location-individual-panel {
+	background-color: #ffffff;
+	border: 1px solid #dbe5f4;
+	border-radius: 0.5rem;
+	padding: 0.45rem;
+}
+
+.contract-ltc-page .tblStoreAssociate td {
+	font-size: 0.92rem;
+	padding-top: 0.3rem;
+	padding-bottom: 0.3rem;
+}
+
+.contract-ltc-page .ltc-copy-owner-details,
+.contract-ltc-page .ltc-remove-associate {
+	min-width: 9.5rem;
+}
+
 .contract-ltc-page .facility-body .tblStoreFacility td {
 	font-size: 0.9rem;
 	padding-top: 0.25rem;
@@ -547,4 +565,35 @@
 .contract-ltc-page .table tr {
     border-top: 0 !important;
     border-bottom: 0 !important;
+}
+
+/* Department picker accessibility: larger text and stronger checkbox affordance */
+#departmentsPopup .table td {
+	font-size: 1.1rem;
+	font-weight: 600;
+	padding-top: 0.75rem;
+	padding-bottom: 0.75rem;
+	vertical-align: middle;
+}
+
+#departmentsPopup .form-check-input {
+	width: 1.45rem;
+	height: 1.45rem;
+	margin-top: 0;
+	border: 2px solid #0b4aa2;
+	border-radius: 0.3rem;
+	accent-color: #0b4aa2;
+	cursor: pointer;
+	box-shadow: 0 0 0 2px rgba(11, 74, 162, 0.12);
+}
+
+#departmentsPopup .form-check-input:checked {
+	background-color: #0b4aa2;
+	border-color: #0b4aa2;
+	box-shadow: 0 0 0 3px rgba(11, 74, 162, 0.2);
+}
+
+#departmentsPopup .form-check-input:focus {
+	outline: none;
+	box-shadow: 0 0 0 4px rgba(11, 74, 162, 0.3);
 }

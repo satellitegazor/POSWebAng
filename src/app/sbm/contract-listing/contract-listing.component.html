@@ -39,7 +39,10 @@
 					<div class="contract-main">Contract Number</div>
 					<div class="contract-date">Contract Start Date</div>
 					<div class="contract-date">Contract End Date</div>
-					<div class="contract-actions">Actions</div>
+					<div class="contract-actions" style="justify-content: center;">
+						<span>Actions</span>
+						<div class="contract-start-event-slot"></div>
+					</div>
 				</div>
 
 				<div class="card shadow-sm exchange-panel mb-3" *ngFor="let exchange of exchanges">
@@ -73,7 +76,6 @@
 									</div>
 								</div>
 
-
 								<div class="contract-date">
 									<span class="contract-label d-md-none">Start</span>
 									{{ formatContractDate(contract.contractStartDate) }}
@@ -86,7 +88,9 @@
 
 								<div class="contract-actions text-md-end">
 									<button type="button" class="btn btn-outline-secondary btn-sm">Ticket Look-up</button>
-									<button type="button" class="btn btn-outline-primary btn-sm">Start Event</button>
+									<div class="contract-start-event-slot">
+										<button *ngIf="contract.appType === 1" type="button" class="btn btn-outline-primary btn-sm">Start Event</button>
+									</div>
 								</div>
 							</div>
 

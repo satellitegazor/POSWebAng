@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { convertToParamMap, ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 
 import { ContractRovPageComponent } from './contract-rov-page.component';
+import { SbmWebApiService } from '../services/sbm-web-api.service';
 
 describe('ContractRovPageComponent', () => {
   let component: ContractRovPageComponent;
@@ -8,7 +11,21 @@ describe('ContractRovPageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ContractRovPageComponent]
+      declarations: [ContractRovPageComponent],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            queryParamMap: of(convertToParamMap({}))
+          }
+        },
+        {
+          provide: SbmWebApiService,
+          useValue: {
+            loadROVContract: jasmine.createSpy('loadROVContract')
+          }
+        }
+      ]
     })
     .compileComponents();
 

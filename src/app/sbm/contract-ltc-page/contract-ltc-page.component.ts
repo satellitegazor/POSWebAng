@@ -9,6 +9,9 @@ import { FacilityModel, LTC_Facility, LTC_Individual, LTC_StoreLocation } from '
 import { PosApiService } from '../../longterm/services/pos-api-service';
 import { LTC_Department } from '../../longterm/reports/pricelist/price-list-rpt.component';
 import { CountryCode, getCountries, getCountryCallingCode } from 'libphonenumber-js';
+import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
+import { CPOS_RegionCountryCurrencyResultsModel } from '../../longterm/models/region.currency.models';
+import { RegionCurrencyDlgComponent, RegionCurrencySelectionResult } from '../region-currency-dlg/region-currency-dlg.component';
 
 type CountryDialOption = {
   iso2: CountryCode;
@@ -29,11 +32,12 @@ type HoursTimeOption = {
 })
 export class ContractLtcPageComponent implements OnInit {
 
+
   @ViewChild('contractForm') contractFormRef?: NgForm;
   @ViewChild('contractStartDatePicker') contractStartDatePickerRef?: ElementRef<HTMLInputElement>;
   @ViewChild('contractEndDatePicker') contractEndDatePickerRef?: ElementRef<HTMLInputElement>;
 
-  ltcContract: LTC_Contract | null = null;
+  ltcContract: LTC_Contract = new LTC_Contract();
   ltcReferenceData: LTC_ReferenceResultsModel | null = null;
   contractStartInput = '';
   contractEndInput = '';
@@ -44,16 +48,23 @@ export class ContractLtcPageComponent implements OnInit {
   readonly daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   readonly hoursTimeOptions = this.buildHoursTimeOptions();
   openCountryDialLocationUid: number | null = null;
+  openCountryDialAssociateUid: number | null = null;
   selectedCountryIsoByLocationUid: Record<number, CountryCode> = {};
+  selectedCountryIsoByAssociateUid: Record<number, CountryCode> = {};
   private tempUidSeed = -1;
   readonly todayDateIso = this.toIsoDateString(new Date());
+  private readonly regionCurrencyModalOptions: NgbModalOptions = {
+    backdrop: 'static',
+    keyboard: false,
+    centered: true
+  };
 
   get contractStartMinDateIso(): string {
     return this.todayDateIso;
   }
 
   get contractEndMinDateIso(): string {
-    const startDate = this.parseDateInput(this.contractStartInput);
+    const startDate = this.parseDateInput(this.contractStartInput); 
     const startDateIso = this.toIsoDateString(startDate);
     if (!startDateIso) {
       return this.todayDateIso;
@@ -76,7 +87,8 @@ export class ContractLtcPageComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private toastSvc: ToastService,
-    private utilSvc: UtilService
+    private utilSvc: UtilService,
+    private modalService: NgbModal
   ) { }
 
   ngOnInit(): void {
@@ -88,6 +100,8 @@ export class ContractLtcPageComponent implements OnInit {
         this.ltcReferenceData.feeTypes = this.ltcReferenceData.feeTypes.filter(fee => fee.feeTypeCode != 'D');
       }
     });
+
+
 
     this.route.queryParamMap.subscribe(params => {
       const ctrid = params.get('ctrid');
@@ -106,18 +120,68 @@ export class ContractLtcPageComponent implements OnInit {
 
   private initializeNewContract(): void {
     // Guard against route/query re-emissions resetting in-progress form edits.
-    if (this.ltcContract && this.ltcContract.contractUid <= 0) {
+    if (this.ltcContract && this.ltcContract.contractUID > 0) {
       return;
     }
 
     const newContract = new LTC_Contract();
-    newContract.contractUid = 0;
+    newContract.contractUID = 0;
     newContract.locations = newContract.locations || [];
     this.ltcContract = newContract;
     this.syncDateInputs();
 
+    this.sbmWebApiService.getRegionCode().subscribe({
+      next: result => {
+        if (this.ltcContract) {
+          this.ltcContract.regionCode = result?.cposRegion[0].regionCode || 'CON';
+        }
+
+        if(this.ltcContract?.regionCode == "CON") {
+          this.sbmWebApiService.getCountryCurrencyCodes(this.ltcContract?.regionCode || 'CON').subscribe({
+            next: countryCurrencyCodes => {
+              if (this.ltcContract) {
+                this.ltcContract.currencyCode = countryCurrencyCodes?.cposCurrency?.[0]?.currencyCode || '';
+                this.ltcContract.currencyDesc = countryCurrencyCodes?.cposCurrency?.[0]?.currencyDesc || '';
+                this.ltcContract.countryCode = countryCurrencyCodes?.cposRegionCountry?.[0]?.countryCode || '';
+              }
+            }
+          });
+        }
+        else {
+          const modalRef = this.modalService.open(RegionCurrencyDlgComponent, this.regionCurrencyModalOptions);
+          modalRef.result.then((selected: RegionCurrencySelectionResult) => {
+            if (!this.ltcContract) {
+              return;
+            }
+
+            this.ltcContract.regionCode = selected?.regionCode || this.ltcContract.regionCode;
+            this.ltcContract.countryCode = selected?.countryCode || '';
+            this.ltcContract.currencyCode = selected?.currencyCode || '';
+            if (!this.ltcContract.regionCode || !this.ltcContract.currencyCode) {
+              this.ltcContract.currencyDesc = '';
+              return;
+            }
+
+            // this.sbmWebApiService.getCountryCurrencyCodes(this.ltcContract.regionCode).subscribe({
+            //   next: countryCurrencyResult => {
+            //     if (!this.ltcContract) {
+            //       return;
+            //     }
+
+            //     const selectedCurrency = countryCurrencyResult?.cposCurrency?.find(
+            //       (currency: { currencyCode: string; currencyDesc: string }) =>
+            //         currency.currencyCode === this.ltcContract?.currencyCode
+            //     );
+            //     this.ltcContract.currencyDesc = selectedCurrency?.currencyDesc || '';
+            //   }
+            // });
+          }).catch(() => {});
+        }
+      }
+    });
+
     if (!this.ltcContract.locations.length) {
-      this.onAddLocation(this.ltcContract.contractUid);
+      this.onAddLocation(this.ltcContract.contractUID);
     }
   }
 
@@ -197,10 +261,51 @@ export class ContractLtcPageComponent implements OnInit {
     this.openCountryDialLocationUid = null;
   }
 
+  isCountryDialDropdownOpenForAssociate(individualUID: number): boolean {
+    return this.openCountryDialAssociateUid === individualUID;
+  }
+
+  toggleCountryDialDropdownForAssociate(individualUID: number): void {
+    this.openCountryDialAssociateUid = this.openCountryDialAssociateUid === individualUID ? null : individualUID;
+  }
+
+  closeAssociateCountryDialDropdown(): void {
+    this.openCountryDialAssociateUid = null;
+  }
+
+  getSelectedCountryDialOptionForAssociate(associate: LTC_Individual): CountryDialOption | null {
+    const selectedIso2 = this.selectedCountryIsoByAssociateUid[associate.individualUID];
+    if (selectedIso2) {
+      const selectedOption = this.countryDialOptions.find(option => option.iso2 === selectedIso2);
+      if (selectedOption) {
+        return selectedOption;
+      }
+    }
+
+    const normalizedDialCode = this.normalizeDialCode(associate.indCountryDialCode);
+    if (!normalizedDialCode) {
+      return null;
+    }
+
+    if (normalizedDialCode === '1') {
+      return this.countryDialOptions.find(option => option.iso2 === 'US') || this.getCountryDialOption(normalizedDialCode);
+    }
+
+    return this.getCountryDialOption(normalizedDialCode);
+  }
+
   onLocationDialCodeSelect(location: LTC_StoreLocation, option: CountryDialOption): void {
     location.locCountryDialCode = option.dialCode;
     this.selectedCountryIsoByLocationUid[location.locationUID] = option.iso2;
     this.closeCountryDialDropdown();
+    this.markObjectUpdated(location);
+  }
+
+  onAssociateDialCodeSelect(location: LTC_StoreLocation, associate: LTC_Individual, option: CountryDialOption): void {
+    associate.indCountryDialCode = option.dialCode;
+    this.selectedCountryIsoByAssociateUid[associate.individualUID] = option.iso2;
+    this.closeAssociateCountryDialDropdown();
+    this.markObjectUpdated(associate);
     this.markObjectUpdated(location);
   }
 
@@ -268,6 +373,7 @@ export class ContractLtcPageComponent implements OnInit {
   @HostListener('document:click')
   onDocumentClick(): void {
     this.closeCountryDialDropdown();
+    this.closeAssociateCountryDialDropdown();
   }
 
   /**
@@ -294,7 +400,7 @@ export class ContractLtcPageComponent implements OnInit {
         });
       },
       error: err => {
-        this.ltcContract = null;
+        this.ltcContract = new LTC_Contract();
         this.syncDateInputs();
         // Optionally handle error
       },
@@ -443,6 +549,34 @@ export class ContractLtcPageComponent implements OnInit {
   onLocationPhoneInputChange(location: LTC_StoreLocation, eventOrValue: Event | string | number): void {
     const value = this.resolveInputValue(eventOrValue);
     location.phoneNumber = this.formatUsPhoneNumber(value);
+    this.markObjectUpdated(location);
+  }
+
+  onAssociatePhoneInputChange(location: LTC_StoreLocation, associate: LTC_Individual, eventOrValue: Event | string | number): void {
+    const value = this.resolveInputValue(eventOrValue);
+    associate.phoneNumber = this.formatUsPhoneNumber(value);
+    this.markObjectUpdated(associate);
+    this.markObjectUpdated(location);
+  }
+
+  copyOwnerDetailsToAssociate(location: LTC_StoreLocation, associate: LTC_Individual): void {
+    associate.firstName = this.ltcContract.ownerFirstName || '';
+    associate.lastName = this.ltcContract.ownerLastName || '';
+    associate.emailAddress = this.ltcContract.ownerEmail || '';
+    associate.phoneNumber = this.formatUsPhoneNumber(this.ltcContract.ownerPhone || '');
+    associate.indCountryDialCode = this.ltcContract.ownerCountryDialCode || associate.indCountryDialCode || '';
+
+    const selectedDialOption = this.getCountryDialOption(associate.indCountryDialCode);
+    if (selectedDialOption) {
+      this.selectedCountryIsoByAssociateUid[associate.individualUID] = selectedDialOption.iso2;
+    }
+
+    this.markObjectUpdated(associate);
+    this.markObjectUpdated(location);
+  }
+
+  onRemoveAssociate(location: LTC_StoreLocation, individualUID: number): void {
+    location.associates = (location.associates || []).filter(associate => associate.individualUID !== individualUID);
     this.markObjectUpdated(location);
   }
 
@@ -838,6 +972,7 @@ export class ContractLtcPageComponent implements OnInit {
 
     contract.contractStart = startDate as Date;
     contract.contractEnd = endDate as Date;
+    contract.confirmContractTimestamp = new Date();
 
     const uid = sessionStorage.getItem('sbm_name') || '';
     if (!uid) {
@@ -849,6 +984,7 @@ export class ContractLtcPageComponent implements OnInit {
     this.sbmWebApiService.PutLTCContract(uid, contract).subscribe({
       next: (resultDataModel: LTC_ContractResultsModel) => {
         if(resultDataModel && resultDataModel.results.success) {
+          this.ltcContract.contractUID = resultDataModel.contract.contractUID
         this.toastSvc.success('Contract saved successfully.');
         contractForm?.form.markAsPristine();
         } else {
@@ -942,5 +1078,47 @@ export class ContractLtcPageComponent implements OnInit {
         facility.fMF_Facility = response;
       }  
       });
+  }
+
+  onAddManager(locationId: number) {
+    let newManager = new LTC_Individual();
+    newManager.individualUID = this.getTemporaryUid();
+    newManager.locationUID = locationId;
+    newManager.firstName = '';
+    newManager.lastName = '';
+    newManager.emailAddress = '';
+    newManager.phoneNumber = '';
+    newManager.indCountryDialCode = '';
+    newManager.individualRoleTypeCode = "RLTYP_CONC_MNGR";
+    newManager.individualRoleTypeDescription = 'Concession Manager';
+    newManager.individualRoleTypeUID = 1;
+    newManager.pin = '';
+    newManager.hasUpdates = true;
+
+    const location = this.ltcContract.locations.find(loc => loc.locationUID === locationId);
+    if (!location) {
+      return;
+    }
+
+    location.associates = location.associates || [];
+    location.associates.push(newManager);
+    this.markObjectUpdated(location);
+  }
+  onAddFacility(locationId: number) {
+    let newFacility = new LTC_Facility();
+    newFacility.facilityUID = this.getTemporaryUid();
+    newFacility.facilityNumber = '';
+    newFacility.locationUID = locationId;
+    newFacility.businessCategoryUID = 2;
+    newFacility.hasUpdates = true;
+    this.ltcContract.locations.find(loc => loc.locationUID === locationId)?.facilities?.push( newFacility );
+  }
+  onRemoveLocation(locationId: number) {
+    if(this.ltcContract?.locations.some(loc => loc.locTranCount > 0 && loc.locationUID === locationId)) {
+      this.toastSvc.error('Cannot remove Location with existing Sales/Refunds.');
+      return;
+    }
+    this.ltcContract.locations = this.ltcContract.locations.filter(loc => loc.locationUID !== locationId);
+    this.markObjectUpdated(this.ltcContract);
   }
 }

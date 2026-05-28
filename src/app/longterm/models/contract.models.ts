@@ -103,6 +103,51 @@ export class LTC_TicketCancelType {
 	displayOrder: number = 0;
 }
 
+export class ROV_DeviceType {
+	deviceId: number = 0;
+	deviceCode: string = '';
+	deviceDesc: string = '';
+	displayOrder: number = 0;
+}
+
+export class ROV_DeptOfBusFun {
+	departmentBfUid: number = 0;
+	departmentTypeUid: number = 0;
+	businessFunctionUid: number = 0;
+}
+
+export class ROV_DepartmentType {
+	departmentTypeUid: number = 0;
+	deptName: string = '';
+	allowTags: boolean | null = null;
+	custInfoReq: boolean | null = null;
+	defaultNoOfTags: number = 0;
+}
+
+export class ROV_IndividualRoleType {
+	individualRoleTypeUid: number = 0;
+	code: string = '';
+	description: string = '';
+	displayOrder: number = 0;
+}
+
+export class ROV_FeeType {
+	feeTypeId: number = 0;
+	feeTypeCode: string = '';
+	feeTypeDesc: string = '';
+	displayOrder: number = 0;
+}
+
+export class ROV_BusinessFunction {
+	businessFunctionUid: number = 0;
+	code: string = '';
+	description: string = '';
+	displayOrder: number = 0;
+	businessModel: string = '';
+	allowShipHandling: boolean = false;
+	allowInsurance: boolean = false;
+}
+
 export class LTC_DeviceType {
 	deviceID: number = 0;
 	deviceCode: string = '';
@@ -111,7 +156,7 @@ export class LTC_DeviceType {
 }
 
 export class LTC_Contract {
-	contractUid: number = 0;
+	contractUID: number = 0;
 	contractStart: Date = {} as Date;
 	contractEnd: Date = {} as Date;
 	regionCode: string = '';
@@ -149,6 +194,24 @@ export class LTC_Contract {
 export class LTC_ContractResultsModel {
 	results: MobileBase = {} as MobileBase;
 	contract: LTC_Contract = new LTC_Contract();
+}
+
+export class ROV_ReferenceResultsModel {
+	results: MobileBase = {} as MobileBase;
+	businessCategories: LTC_BusinessCategory[] = [];
+	businessFunctions: ROV_BusinessFunction[] = [];
+	couponTypes: LTC_CouponType[] = [];
+	feeTypes: ROV_FeeType[] = [];
+	cPOSRegions: CPOS_Region[] = [];
+	salesCatTypes: LTC_SalesCatType[] = [];
+	individualRoleTypes: ROV_IndividualRoleType[] = [];
+	refundReasonTypes: LTC_RefundReasonType[] = [];
+	noSaleReasonTypes: LTC_NoSaleReasonType[] = [];
+	departmetnTypes: ROV_DepartmentType[] = [];
+	bfDepartments: ROV_DeptOfBusFun[] = [];
+	ticketCancelTypes: LTC_TicketCancelType[] = [];
+	deviceTypes: ROV_DeviceType[] = [];
+	dBRegion: CPOSDB = CPOSDB.Conus;
 }
 
 export class LTC_ReferenceResultsModel {

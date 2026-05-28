@@ -470,7 +470,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
                 },
                 error: (error) => {
                   console.error('Error during gift card redemption: ', error);
-                  this._toastSvc.error('Gift Card Redemption Failed: ' + error.message + '.<br/>Please complete the transaction using another tender method.');
+                  this._toastSvc.error('Gift Card Inquiry Failed: ' + error.message + '.<br/>Please complete the transaction using another tender method.');
                   this.route.navigate(['/splitpay']);
                   return false;
                 }

@@ -592,7 +592,6 @@ export class PosApiService {
     public saveLocationAssociates(uid: string, request: SaveLocationAssociatesRequest): Observable<LTC_LocationAssociatesResultsModel> {
 
         const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/SaveLocationAssociates?uid=${encodeURIComponent(uid)}&guid=${encodeURIComponent(GlobalConstants.PUT_GUID)}`;
-        
         return this.httpClient.put<LTC_LocationAssociatesResultsModel>(url, JSON.stringify(request), { headers: this.headerObjs });
     }
 

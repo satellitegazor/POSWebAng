@@ -196,6 +196,7 @@ export class CheckoutPageComponent implements OnInit {
       tndrObj.rrn = this._utilSvc.getUniqueRRN();
       tndrObj.tenderStatus = TenderStatusType.Complete;
       tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+      this._store.dispatch(addTender({ tndrObj }));
 
       var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
       if (tktObjData) {
@@ -211,8 +212,8 @@ export class CheckoutPageComponent implements OnInit {
           console.log('Transaction ID saved:', this._transactionId);
 
           // Update tender with transaction ID
-          tndrObj.tenderTransactionId = this._transactionId;
-          this._store.dispatch(addTender({ tndrObj }));
+          // tndrObj.tenderTransactionId = this._transactionId;
+          // this._store.dispatch(addTender({ tndrObj }));
 
           if (tktObjData?.tipAmountDC == 0) {
             const modalRef = this.modalService.open(TipsModalDlgComponent, this.modalOptions);

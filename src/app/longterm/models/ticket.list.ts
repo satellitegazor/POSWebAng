@@ -130,7 +130,7 @@ export class ROV_Department {
 }
 
 
-class ROV_Event {
+export class ROV_Event {
     EventID: number = 0;
     EventName: string = '';
     SuiteNbr: string = '';
@@ -195,7 +195,7 @@ class ROV_Event {
 
 }
 
-class ROV_Individual {
+export class ROV_Individual {
     IndividualUID: number = 0;
     FirstName: string= "";
     LastName: string= "";
