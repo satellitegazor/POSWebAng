@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { convertToParamMap, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 
@@ -12,6 +13,7 @@ describe('ContractRovPageComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ContractRovPageComponent],
+      imports: [FormsModule],
       providers: [
         {
           provide: ActivatedRoute,
