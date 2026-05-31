@@ -4,7 +4,9 @@ import { ROV_Contract, ROV_Facility } from '../models/contract.models';
 import { ROV_ReferenceResultsModel, Vendor } from '../../longterm/models/contract.models';
 import { CPOS_RegionCountryCurrencyResultsModel } from '../../longterm/models/region.currency.models';
 import { SbmWebApiService } from '../services/sbm-web-api.service';
-import { ROV_Event } from 'src/app/longterm/models/ticket.list';
+import { ROV_Department, ROV_Event, ROV_Individual } from 'src/app/longterm/models/ticket.list';
+import { NgForm } from '@angular/forms';
+import { FacilityModel } from 'src/app/longterm/models/store.location';
 
 @Component({
   selector: 'app-contract-rov-page',
@@ -13,14 +15,23 @@ import { ROV_Event } from 'src/app/longterm/models/ticket.list';
   standalone: false
 })
 export class ContractRovPageComponent implements OnInit {
+onBackToContractListing() {
+throw new Error('Method not implemented.');
+}
+onSaveRovContract(arg0: any) {
+throw new Error('Method not implemented.');
+}
   public rovContract: ROV_Contract | null = null;
   private readonly shortDateFormatter: Intl.DateTimeFormat = new Intl.DateTimeFormat('en-US');
+  private readonly eventsPageSize = 5;
+  public currentEventsPage = 0;
   public rovRefList: ROV_ReferenceResultsModel = new ROV_ReferenceResultsModel();
   
   contractStartInput = '';
   contractEndInput = '';
   todayDateIso = new Date().toISOString().split('T')[0];
 
+  @ViewChild('contractForm') contractFormRef?: NgForm;
   @ViewChild('contractStartDatePicker') contractStartDatePickerRef?: ElementRef<HTMLInputElement>;
   @ViewChild('contractEndDatePicker') contractEndDatePickerRef?: ElementRef<HTMLInputElement>;
 
@@ -60,9 +71,14 @@ export class ContractRovPageComponent implements OnInit {
     this.sbmWebApiService.loadROVContract(contractId, uid).subscribe({
       next: result => {
         this.rovContract = result?.contract || new ROV_Contract();
+        this.syncDateInputs();
+        this.currentEventsPage = 0;
+        this.onVendorLookupClick();
+        this.onFacilityLookupClick(this.rovContract.facility, this.rovContract.facility.facilityNumber || '');
       },
       error: () => {
         this.initializeNewContract();
+        this.syncDateInputs();
       }
     });
   }
@@ -113,6 +129,8 @@ export class ContractRovPageComponent implements OnInit {
     this.rovContract.facility.hasUpdates = false;
     const event: ROV_Event = new ROV_Event();
     this.rovContract.facility.events = [event];
+    this.syncDateInputs();
+    this.currentEventsPage = 0;
 
     this.sbmWebApiService.getRegionCode().subscribe({
       next: result => {
@@ -165,7 +183,7 @@ export class ContractRovPageComponent implements OnInit {
     this.rovContract.hasUpdates = true;
   }
 
-  private getContractDatePicker(field: 'contractStart' | 'contractEnd'): HTMLInputElement | null {
+    private getContractDatePicker(field: 'contractStart' | 'contractEnd'): HTMLInputElement | null {
     const picker = field === 'contractStart' ? this.contractStartDatePickerRef : this.contractEndDatePickerRef;
     return picker?.nativeElement || null;
   }
@@ -357,4 +375,195 @@ export class ContractRovPageComponent implements OnInit {
     return startDateIso > this.todayDateIso ? startDateIso : this.todayDateIso;
   }
 
+
+  onVendorLookupClick(): void {
+    if (!this.rovContract) {
+      return;
+    }
+
+    const vendorNumber = (this.rovContract.vendorNumber || '').trim();
+    if (!vendorNumber) {
+      return;
+    }
+
+    this.sbmWebApiService.getVendorLocal(vendorNumber).subscribe({
+      next: (response: any) => {
+        const vendor = response?.vendor || response?.Vendor || response;
+        const resolvedVendorNumber = vendor?.vendorNumber || vendor?.VendorNumber || vendor?.sVendorNum || vendorNumber;
+        const resolvedVendorName = vendor?.vendorName || vendor?.VendorName || vendor?.name || this.rovContract?.vendorName || '';
+
+        this.rovContract!.vendorNumber = String(resolvedVendorNumber);
+        this.rovContract!.vendorName = String(resolvedVendorName);
+
+        if (this.rovContract?.concessionaire) {
+          this.rovContract.concessionaire.vendorNumber = String(resolvedVendorNumber);
+          this.rovContract.concessionaire.vendorName = String(resolvedVendorName);
+        }
+
+        this.markObjectUpdated(this.rovContract);
+        this.contractFormRef?.control.markAsDirty();
+      },
+      error: () => {
+        // Keep existing values when lookup fails.
+      }
+    });
+  }
+
+  onFacilityLookupClick(facility: ROV_Facility, facilityNum: string): void {
+    if (!this.rovContract?.facility) {
+      return;
+    }
+    this.sbmWebApiService.getSingleFacilityLocal(facilityNum).subscribe({
+      next: (response: FacilityModel) => {
+        facility.fmfFacility = response;
+      }  
+      });
+    this.markObjectUpdated(this.rovContract.facility);
+    this.contractFormRef?.control.markAsDirty();
+  }
+
+  get hasSavedChanges(): string {
+    return this.contractFormRef?.pristine === false ? 'false' : 'true';
+  }
+
+  get paginatedEvents(): ROV_Event[] {
+    const events = this.rovContract?.facility?.events || [];
+    const start = this.currentEventsPage * this.eventsPageSize;
+    return events.slice(start, start + this.eventsPageSize);
+  }
+
+  get totalEventCount(): number {
+    return this.rovContract?.facility?.events?.length || 0;
+  }
+
+  get totalEventPages(): number {
+    return this.totalEventCount > 0 ? Math.ceil(this.totalEventCount / this.eventsPageSize) : 0;
+  }
+
+  get canGoToPreviousEventsPage(): boolean {
+    return this.currentEventsPage > 0;
+  }
+
+  get canGoToNextEventsPage(): boolean {
+    return this.currentEventsPage < this.totalEventPages - 1;
+  }
+
+  onPreviousEventsPage(): void {
+    if (!this.canGoToPreviousEventsPage) {
+      return;
+    }
+
+    this.currentEventsPage -= 1;
+  }
+
+  onNextEventsPage(): void {
+    if (!this.canGoToNextEventsPage) {
+      return;
+    }
+
+    this.currentEventsPage += 1;
+  }
+
+  getEventAssociates(event: ROV_Event): ROV_Individual[] {
+    return event?.associates || [];
+  }
+
+  onResetAssociatePin(event: ROV_Event, associate: ROV_Individual): void {
+    associate.pin = '';
+    associate.hasUpdates = true;
+    event.hasUpdates = true;
+    this.markObjectUpdated(event);
+    this.contractFormRef?.control.markAsDirty();
+  }
+
+  onCopyOwnerDetailsToAssociate(event: ROV_Event, associate: ROV_Individual): void {
+    if (!this.rovContract) {
+      return;
+    }
+
+    associate.firstName = this.rovContract.ownerFirstName || '';
+    associate.lastName = this.rovContract.ownerLastName || '';
+    associate.emailAddress = (this.rovContract.ownerEmail || '').toUpperCase();
+    associate.phoneNumber = this.rovContract.ownerPhone || '';
+    associate.indCountryDialCode = this.rovContract.ownerCountryDialCode || '';
+    associate.hasUpdates = true;
+    event.hasUpdates = true;
+    this.markObjectUpdated(event);
+    this.contractFormRef?.control.markAsDirty();
+  }
+
+  onAssociateFieldChange(event: ROV_Event, associate: ROV_Individual): void {
+    associate.hasUpdates = true;
+    event.hasUpdates = true;
+    this.markObjectUpdated(event);
+  }
+
+  getEventDepartments(event: ROV_Event): ROV_Department[] {
+    return event?.departments || [];
+  }
+
+  onAddEventDepartment(event: ROV_Event): void {
+    event.departments = event.departments || [];
+
+    const department = new ROV_Department();
+    department.DepartmentUID = 0;
+    department.Description = '';
+    department.FeePercent = 0;
+    department.HasUpdates = true;
+
+    event.departments.push(department);
+    event.hasUpdates = true;
+    this.markObjectUpdated(event);
+    this.contractFormRef?.control.markAsDirty();
+  }
+
+  onEventDepartmentFeePercentInputChange(event: ROV_Event, department: ROV_Department, input: unknown): void {
+    const target = (input as Event | null)?.target as HTMLInputElement | null;
+    const value = target ? Number(target.value) : Number(input ?? 0);
+
+    const normalized = Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : 0;
+    department.FeePercent = Number(normalized.toFixed(2));
+    department.HasUpdates = true;
+    event.hasUpdates = true;
+    this.markObjectUpdated(event);
+    this.contractFormRef?.control.markAsDirty();
+  }
+
+  onAssociateFieldInputChange(event: ROV_Event, associate: ROV_Individual, field: 'firstName' | 'lastName' | 'emailAddress' | 'phoneNumber', input: Event): void {
+    const value = ((input.target as HTMLInputElement | null)?.value || '');
+    associate[field] = field === 'emailAddress' ? value.toUpperCase() : value;
+    this.onAssociateFieldChange(event, associate);
+    this.contractFormRef?.control.markAsDirty();
+  }
+
+  copyFirstEventDepartmentFeePercentToAll(event: ROV_Event): void {
+    const departments = this.getEventDepartments(event);
+    if (!departments.length) {
+      return;
+    }
+
+    const firstValue = Number((departments[0].FeePercent || 0));
+    const normalized = Number.isFinite(firstValue) ? Math.min(100, Math.max(0, firstValue)) : 0;
+
+    departments.forEach((department: ROV_Department) => {
+      department.FeePercent = Number(normalized.toFixed(2));
+      department.HasUpdates = true;
+    });
+
+    event.hasUpdates = true;
+    this.markObjectUpdated(event);
+    this.contractFormRef?.control.markAsDirty();
+  }
+
+  onRemoveEventDepartment(event: ROV_Event, department: ROV_Department): void {
+    event.departments = (event.departments || []).filter((item: ROV_Department) => item !== department);
+    event.hasUpdates = true;
+    this.markObjectUpdated(event);
+    this.contractFormRef?.control.markAsDirty();
+  }
+
+  private syncDateInputs(): void {
+    this.contractStartInput = this.formatDateInput(this.rovContract?.contractStart);
+    this.contractEndInput = this.formatDateInput(this.rovContract?.contractEnd);
+  }
 }

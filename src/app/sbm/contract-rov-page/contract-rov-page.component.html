@@ -54,7 +54,7 @@
 							<label class="form-label mb-1">Vendor Number</label>
 							<div class="input-group input-group-md">
 								<input id="rovVendorNumberInput" class="form-control" maxlength="10" [value]="contract.vendorNumber" />
-								<button id="rovVendorLookupButton" type="button" class="btn btn-primary d-flex align-items-center justify-content-center px-3" aria-label="Vendor lookup" title="Vendor lookup">
+								<button id="rovVendorLookupButton" type="button" class="btn btn-primary d-flex align-items-center justify-content-center px-3" aria-label="Vendor lookup" title="Vendor lookup" (click)="onVendorLookupClick()">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="vendor-lookup-icon"
                                                     viewBox="0 0 16 16" aria-hidden="true">
                                                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
@@ -65,8 +65,12 @@
 							</div>
 						</div>
 						<div class="col-lg-5 col-md-6 fw-semibold">
-							{{ contract.concessionaire?.vendorName || '-' }}
-							<span class="text-muted">({{ contract.vendorNumber || '-' }})</span>
+							<div id="vendInfoBlock">
+								<span id="vendorName">{{ contract.vendorName || '-' }}</span>
+								<span class="vendDispGarnish">(</span>
+								<span id="vendDispNbr">{{ contract.vendorNumber || '-' }}</span>
+								<span class="vendDispGarnish">)</span>
+							</div>
 						</div>
 						<div class="col-lg-3 col-md-12 text-lg-end">
 							<span class="badge" [class.bg-success]="contract.vendorEPaid" [class.bg-warning]="!contract.vendorEPaid" [class.text-dark]="!contract.vendorEPaid">
@@ -74,7 +78,7 @@
 							</span>
 						</div>
 
-						<div class="col-lg-3 col-md-6">
+						<div class="col-lg-4 col-md-4">
 							<label class="form-label mb-1">Contract Start Date</label>
 							<div class="input-group input-group-md contract-date-input-group">
 							<input id="rovContractStartDateInput" 
@@ -95,7 +99,7 @@
 								[min]="contractStartMinDateIso" [value]="getContractDatePickerValue('contractStart')"
 								(change)="onContractDatePickerChange('contractStart', $event)" />
 						</div>
-						<div class="col-lg-3 col-md-6">
+						<div class="col-lg-4 col-md-4">
 							<label class="form-label mb-1">Contract End Date</label>
 							<div class="input-group input-group-md contract-date-input-group">
 							<input id="rovContractEndDateInput" class="form-control form-control-sm" 
@@ -114,7 +118,7 @@
 								[min]="contractEndMinDateIso" [value]="getContractDatePickerValue('contractEnd')"
 								(change)="onContractDatePickerChange('contractEnd', $event)" />
 						</div>
-						<div class="col-lg-4 col-md-8">
+						<div class="col-lg-4 col-md-4">
 							<label class="form-label mb-1">Contract Number</label>
 							<div class="input-group input-group-md">
 							<input id="rovContractNumberInput" class="form-control form-control-sm text-uppercase" maxlength="30" [value]="contract.contractNumber" />
@@ -189,14 +193,17 @@
 							<label class="form-label mb-1">Facility Number</label>
 							<div class="input-group input-group-md">
 								<input id="rovFacilityNumberInput" class="form-control" maxlength="10" [value]="facility.facilityNumber" />
-								<button id="rovFacilityLookupButton" type="button" class="btn btn-primary  d-flex align-items-center justify-content-center px-3" aria-label="Facility lookup" title="Facility lookup">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="vendor-lookup-icon"
-                                                    viewBox="0 0 16 16" aria-hidden="true">
-                                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-                                                    <path
-                                                        d="m10.97 5.97-.03.03-3.992 3.99-1.647-1.647a.75.75 0 0 0-1.06 1.06l2.177 2.177a.75.75 0 0 0 1.06 0l4.523-4.522a.75.75 0 1 0-1.06-1.06" />
-                                                </svg>
+								<button id="rovFacilityLookupButton" type="button" class="btn btn-primary  d-flex align-items-center justify-content-center px-3" 
+									aria-label="Facility lookup" title="Facility lookup" (click)="onFacilityLookupClick(facility, facility.facilityNumber || '')">
+									<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="vendor-lookup-icon"
+										viewBox="0 0 16 16" aria-hidden="true">
+										<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+										<path
+											d="m10.97 5.97-.03.03-3.992 3.99-1.647-1.647a.75.75 0 0 0-1.06 1.06l2.177 2.177a.75.75 0 0 0 1.06 0l4.523-4.522a.75.75 0 1 0-1.06-1.06" />
+									</svg>
 								</button>
+								<span [attr.id]="'facName' + facility.facilityUID">{{
+									' ( ' + (facility.fmfFacility?.facilityName || 'FACILITY NOT IN FMF') + ' )' }}</span>
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-6">
@@ -237,9 +244,9 @@
 			</h2>
 			<div id="collapseRovEvents" class="accordion-collapse collapse show" aria-labelledby="headingRovEvents">
 				<div class="accordion-body">
-					<ng-container *ngIf="contract.facility?.events?.length; else noEventsTemplate">
+					<ng-container *ngIf="totalEventCount; else noEventsTemplate">
 						<div class="accordion" id="rovEventAccordion">
-							<div class="accordion-item mb-2" *ngFor="let event of contract.facility.events; let i = index">
+							<div class="accordion-item mb-2" *ngFor="let event of paginatedEvents; let i = index">
 								<h3 class="accordion-header d-flex align-items-center gap-2 pe-2" [id]="'headingRovEvent' + i">
 									<button
 										[id]="'rovEventToggleButton' + i"
@@ -250,15 +257,15 @@
 										aria-expanded="false"
 										[attr.aria-controls]="'collapseRovEvent' + i">
 											<span class="text-uppercase">
-												{{ event.EventName || '-' }}
+												{{ event.eventName || '-' }}
 											</span>
 											<span class="ms-1 text-muted">
-												({{ formatDate(event.EventStartDate) || '-' }} to {{ formatDate(event.EventEndDate) || '-' }})
+												({{ formatDate(event.eventStartDate) || '-' }} to {{ formatDate(event.eventEndDate) || '-' }})
 											</span>
 									</button>
-									<button [id]="'rovEventReportsButton' + i" type="button" class="btn btn-outline-info btn-md" (click)="$event.stopPropagation()">Reports</button>
-									<button [id]="'rovStartEventButton' + i" type="button" class="btn btn-outline-primary btn-md" *ngIf="!event.DayStarted" (click)="$event.stopPropagation()">Start Event</button>
-									<span class="small text-muted text-nowrap">Event ID: {{ event.EventID || 0 }}</span>
+									<button [id]="'rovEventReportsButton' + i" type="button" class="btn btn-primary btn-outline-info btn-md" (click)="$event.stopPropagation()">Reports</button>
+									<button [id]="'rovStartEventButton' + i" type="button" class="btn  btn-primary btn-outline-primary btn-md" *ngIf="!event.dayStarted" (click)="$event.stopPropagation()">Start Event</button>
+									<span class="small text-muted text-nowrap">Event ID: {{ event.eventID || 0 }}</span>
 								</h3>
 								<div
 									class="accordion-collapse collapse"
@@ -268,36 +275,161 @@
 										<div class="row g-3">
 											<div class="col-lg-5 col-md-6">
 												<label class="form-label mb-1">Event Location</label>
-												<input [id]="'rovEventLocationInput' + i" class="form-control form-control-sm text-uppercase" [value]="event.EventName" readonly />
+												<input [id]="'rovEventLocationInput' + i" class="form-control form-control-sm text-uppercase" [value]="event.eventName" readonly />
 											</div>
 											<div class="col-lg-2 col-md-3">
 												<label class="form-label mb-1">Suite Number</label>
-												<input [id]="'rovEventSuiteNumberInput' + i" class="form-control form-control-sm text-uppercase" [value]="event.SuiteNbr" readonly />
+												<input [id]="'rovEventSuiteNumberInput' + i" class="form-control form-control-sm text-uppercase" [value]="event.suiteNbr" readonly />
 											</div>
 											<div class="col-lg-3 col-md-3">
 												<label class="form-label mb-1">Terminal ID</label>
-												<input [id]="'rovEventTerminalIdInput' + i" class="form-control form-control-sm text-uppercase" [value]="event.FacilityTerminal" readonly />
+												<input [id]="'rovEventTerminalIdInput' + i" class="form-control form-control-sm text-uppercase" [value]="event.facilityTerminal" readonly />
 											</div>
 											<div class="col-lg-2 col-md-6">
 												<label class="form-label mb-1">Fee Type</label>
-												<input [id]="'rovEventFeeTypeInput' + i" class="form-control form-control-sm" [value]="event.FeeTypeCode || '--Select--'" readonly />
+												<select [id]="'rovEventFeeTypeInput' + i" class="form-select form-select-sm" [value]="event.feeTypeCode || ''">
+													<option value="">--Select--</option>
+													<option *ngFor="let feeType of rovRefList.feeTypes" [value]="feeType.feeTypeCode" [selected]="event.feeTypeCode === feeType.feeTypeCode">
+														{{ feeType.feeTypeDesc }}
+													</option>
+												</select>
 											</div>
 
 											<div class="col-lg-3 col-md-6">
 												<label class="form-label mb-1">Event Start Date</label>
-												<input [id]="'rovEventStartDateInput' + i" class="form-control form-control-sm" [value]="formatDate(event.EventStartDate)" readonly />
+												<input [id]="'rovEventStartDateInput' + i" class="form-control form-control-sm" [value]="formatDate(event.eventStartDate)" readonly />
 											</div>
 											<div class="col-lg-3 col-md-6">
 												<label class="form-label mb-1">Event End Date</label>
-												<input [id]="'rovEventEndDateInput' + i" class="form-control form-control-sm" [value]="formatDate(event.EventEndDate)" readonly />
+												<input [id]="'rovEventEndDateInput' + i" class="form-control form-control-sm" [value]="formatDate(event.eventEndDate)" readonly />
 											</div>
 											<div class="col-lg-3 col-md-6">
 												<label class="form-label mb-1">Fee Amount ($)</label>
-												<input [id]="'rovEventFeeAmountInput' + i" class="form-control form-control-sm" [value]="event.FlatFeeDollarAmount" readonly />
+												<input [id]="'rovEventFeeAmountInput' + i" class="form-control form-control-sm" [value]="event.flatFeeDollarAmount" readonly />
 											</div>
-											<div class="col-lg-3 col-md-6">
-												<label class="form-label mb-1">Department Count</label>
-												<input [id]="'rovEventDepartmentCountInput' + i" class="form-control form-control-sm" [value]="event.Departments?.length || 0" readonly />
+										</div>
+
+										<div class="event-department-panel mt-3">
+											<table class="table table-sm table-borderless mb-0 w-100">
+												<tbody>
+													<tr>
+														<td class="text-end text-nowrap">Department Category:</td>
+														<td>
+															<button type="button" class="btn btn-outline-secondary btn-sm department-select" [id]="'rovEventDeptAddButton' + currentEventsPage + '_' + i" title="Select Departments" aria-label="Select Departments" (click)="onAddEventDepartment(event)">
+																<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+																	<path d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z" />
+																</svg>
+															</button>
+														</td>
+														<td colspan="3"></td>
+													</tr>
+													<tr>
+														<td colspan="5">
+															<div class="ltc-facilitiy-department">
+																<table class="table table-sm table-striped table-borderless mb-0" [id]="'rovEventDepartmentTable' + currentEventsPage + '_' + i">
+																	<tbody>
+																		<tr *ngFor="let dpt of getEventDepartments(event); let di = index">
+																			<td style="width: 20%;">
+																				<button type="button" class="btn btn-outline-secondary btn-sm department-button">
+																					{{ $any(dpt).description || ('Department ' + (di + 1)) }}
+																				</button>
+																			</td>
+																			<td class="text-end text-nowrap" style="width: 10%;">Fee %:</td>
+																			<td style="width: 20%;">
+																				<div class="department-fee-input-wrap">
+																					<input
+																						class="form-control form-control-sm ltc-department-percent"
+																						type="text"
+																						[name]="'eventDepartmentFeePercent_' + currentEventsPage + '_' + i + '_' + di"
+																						[value]="$any(dpt).feePercent"
+																						(input)="onEventDepartmentFeePercentInputChange(event, $any(dpt), $event)" />
+																					<button
+																						*ngIf="di === 0"
+																						type="button"
+																						class="btn btn-outline-success btn-sm apply-first-fee-btn"
+																						title="Apply first fee % to all departments"
+																						aria-label="Apply first fee percent to all departments"
+																						(click)="copyFirstEventDepartmentFeePercentToAll(event)">
+																						✓
+																					</button>
+																				</div>
+																			</td>
+																			<td style="width: 40%;">
+																				<input
+																					class="form-range department-fee-slider"
+																					type="range"
+																					min="0"
+																					max="100"
+																					step="0.01"
+																					[name]="'eventDepartmentFeePercentSlider_' + currentEventsPage + '_' + i + '_' + di"
+																					[value]="$any(dpt).feePercent || 0"
+																					(input)="onEventDepartmentFeePercentInputChange(event, $any(dpt), $event)" />
+																			</td>
+																			<td style="width: 10%;" class="text-end">
+																				<button type="button" (click)="onRemoveEventDepartment(event, $any(dpt))" class="btn btn-outline-danger btn-sm ltc-remove-department">Remove</button>
+																			</td>
+																		</tr>
+																		<tr *ngIf="!getEventDepartments(event).length">
+																			<td colspan="5" class="text-muted small">No departments configured for this event.</td>
+																		</tr>
+																	</tbody>
+																</table>
+															</div>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+
+										<div class="accordion mt-3" [id]="'rovEventAssociateAccordion' + currentEventsPage + '_' + i">
+											<div class="accordion-item border">
+												<h4 class="accordion-header" [id]="'headingRovEventAssociate' + currentEventsPage + '_' + i">
+													<button
+														class="accordion-button py-2"
+														type="button"
+														data-bs-toggle="collapse"
+														[attr.data-bs-target]="'#collapseRovEventAssociate' + currentEventsPage + '_' + i"
+														aria-expanded="true"
+														[attr.aria-controls]="'collapseRovEventAssociate' + currentEventsPage + '_' + i">
+														Event Associates ({{ getEventAssociates(event).length }})
+													</button>
+												</h4>
+												<div
+													class="accordion-collapse collapse show"
+													[id]="'collapseRovEventAssociate' + currentEventsPage + '_' + i"
+													[attr.aria-labelledby]="'headingRovEventAssociate' + currentEventsPage + '_' + i">
+													<div class="accordion-body event-associate-panel">
+														<ng-container *ngIf="getEventAssociates(event).length; else noEventAssociatesTemplate">
+															<div class="associate-card border rounded p-2 mb-3" *ngFor="let associate of getEventAssociates(event); let ai = index">
+																<div class="d-flex justify-content-end gap-2 mb-2">
+																	<button type="button" class="btn btn-sm btn-outline-secondary" [id]="'rovResetAssociatePinButton' + i + '_' + ai" (click)="onResetAssociatePin(event, associate)">Reset PIN</button>
+																	<button type="button" class="btn btn-sm btn-primary" [id]="'rovCopyOwnerDetailsButton' + i + '_' + ai" (click)="onCopyOwnerDetailsToAssociate(event, associate)">Copy Owner Details</button>
+																</div>
+																<div class="row g-2">
+																	<div class="col-md-3">
+																		<label class="form-label mb-1">First Name</label>
+																		<input class="form-control form-control-sm text-capitalize" [name]="'associateFirstName_' + i + '_' + ai" [value]="associate.firstName" maxlength="30" (input)="onAssociateFieldInputChange(event, associate, 'firstName', $event)" />
+																	</div>
+																	<div class="col-md-3">
+																		<label class="form-label mb-1">Last Name</label>
+																		<input class="form-control form-control-sm text-capitalize" [name]="'associateLastName_' + i + '_' + ai" [value]="associate.lastName" maxlength="30" (input)="onAssociateFieldInputChange(event, associate, 'lastName', $event)" />
+																	</div>
+																	<div class="col-md-3">
+																		<label class="form-label mb-1">Email Address</label>
+																		<input class="form-control form-control-sm text-uppercase" [name]="'associateEmail_' + i + '_' + ai" [value]="associate.emailAddress" (input)="onAssociateFieldInputChange(event, associate, 'emailAddress', $event)" />
+																	</div>
+																	<div class="col-md-3">
+																		<label class="form-label mb-1">Phone Number</label>
+																		<input class="form-control form-control-sm" [name]="'associatePhone_' + i + '_' + ai" [value]="associate.phoneNumber" maxlength="15" (input)="onAssociateFieldInputChange(event, associate, 'phoneNumber', $event)" />
+																	</div>
+																</div>
+															</div>
+														</ng-container>
+														<ng-template #noEventAssociatesTemplate>
+															<div class="text-muted small">No event associates available.</div>
+														</ng-template>
+													</div>
+												</div>
 											</div>
 										</div>
 									</div>
@@ -306,9 +438,9 @@
 						</div>
 
 						<div class="d-flex justify-content-end align-items-center gap-2 mt-3">
-							<span class="text-muted small">{{ contract.facility?.events?.length || 0 }} event(s)</span>
-							<button id="rovEventsPreviousButton" type="button" class="btn btn-outline-secondary btn-sm" disabled>Previous</button>
-							<button id="rovEventsNextButton" type="button" class="btn btn-outline-secondary btn-sm" disabled>Next</button>
+							<span class="text-muted small">{{ totalEventCount }} event(s)</span>
+							<button id="rovEventsPreviousButton" type="button" class="btn btn-outline-secondary btn-sm" [disabled]="!canGoToPreviousEventsPage" (click)="onPreviousEventsPage()">Previous</button>
+							<button id="rovEventsNextButton" type="button" class="btn btn-outline-secondary btn-sm" [disabled]="!canGoToNextEventsPage" (click)="onNextEventsPage()">Next</button>
 						</div>
 					</ng-container>
 
@@ -317,6 +449,28 @@
 					</ng-template>
 				</div>
 			</div>
+		</div>
+	</div>
+	<div class="footer fixed-bottom cncsnFooter contract-footer mt-3">
+		<div id="stButtonBottomBar" class="d-flex flex-row w-100">
+			<button class="border border-white btn btn-info btn-lg ftrbtn flex-fill" id="saveContract" type="button"
+				(click)="onSaveRovContract(contractFormRef)">
+				<!-- Floppy disk (save) icon -->
+				<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"
+					aria-hidden="true">
+					<path
+						d="M3 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4.414a2 2 0 0 0-.586-1.414l-1.414-1.414A2 2 0 0 0 12.586 1H3zm0 1h9.586a1 1 0 0 1 .707.293l1.414 1.414A1 1 0 0 1 15 4.414V13a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm1 2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H4zm0 1h8v2H4V4zm1 5a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1h1zm0 1H4v2h1v-2zm6 0a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1h1zm0 1h-1v2h1v-2z" />
+				</svg>&nbsp;Save Contract
+			</button>
+			<button class="border border-white btn btn-info btn-lg ftrbtn flex-fill" id="backToContractListing"
+				type="button" (click)="onBackToContractListing()">
+				<!-- Left arrow (back) icon -->
+				<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"
+					aria-hidden="true">
+					<path fill-rule="evenodd"
+						d="M15 8a.5.5 0 0 1-.5.5H3.707l3.147 3.146a.5.5 0 0 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L3.707 7.5H14.5A.5.5 0 0 1 15 8z" />
+				</svg>&nbsp;Contract Listing
+			</button>
 		</div>
 	</div>
 </div>

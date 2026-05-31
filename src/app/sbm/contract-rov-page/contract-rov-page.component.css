@@ -87,3 +87,107 @@
     border: 0;
     padding: 0;
 }
+
+.contract-rov-page .event-associate-panel {
+    background-color: #f4f8ff;
+}
+
+.contract-rov-page .associate-card {
+    background-color: #ffffff;
+    border-color: #dbe5f4 !important;
+}
+
+.contract-rov-page .associate-card:last-child {
+    margin-bottom: 0 !important;
+}
+
+.contract-rov-page .ltc-department-percent {
+    max-width: 110px;
+}
+
+.contract-rov-page .department-fee-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.contract-rov-page .department-fee-slider {
+    width: 100%;
+    min-width: 0;
+    --bs-form-range-thumb-bg: navy;
+    --bs-form-range-thumb-active-bg: #1e3f8a;
+    --bs-form-range-track-bg: #d2dbef;
+    accent-color: navy;
+}
+
+.contract-rov-page .department-fee-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    background-color: navy;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    margin-top: -0.45rem;
+}
+
+.contract-rov-page .department-fee-slider::-webkit-slider-runnable-track {
+    height: 0.5rem;
+    border-radius: 999px;
+    background: linear-gradient(navy, navy) 0/100% 100% no-repeat, #d2dbef;
+}
+
+.contract-rov-page .department-fee-slider::-moz-range-thumb {
+    background-color: navy;
+    border-color: navy;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+}
+
+.contract-rov-page .department-fee-slider::-moz-range-track {
+    height: 0.5rem;
+    border-radius: 999px;
+    background-color: #d2dbef;
+}
+
+.contract-rov-page .apply-first-fee-btn {
+    min-width: 2rem;
+    padding: 0.2rem 0.45rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.contract-rov-page .event-department-panel {
+    background: #f8fbff;
+    border-radius: 0.4rem;
+    padding: 0.25rem;
+}
+
+.contract-rov-page .event-department-panel .ltc-facilitiy-department {
+    background: #f8fbff;
+    border-radius: 0.4rem;
+    padding: 0.25rem;
+}
+
+.contract-rov-page .event-department-panel .table td {
+    font-size: 0.9rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    vertical-align: middle;
+}
+
+.contract-rov-page .event-department-panel .text-end.text-nowrap {
+    font-weight: 700;
+}
+
+.contract-rov-page .event-department-panel .btn.btn-sm {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.9rem;
+    line-height: 1.25;
+}
+
+.contract-rov-page .event-department-panel .table th,
+.contract-rov-page .event-department-panel .table td,
+.contract-rov-page .event-department-panel .table tr {
+    border-top: 0 !important;
+    border-bottom: 0 !important;
+}
