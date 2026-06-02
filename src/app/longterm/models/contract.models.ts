@@ -111,13 +111,13 @@ export class ROV_DeviceType {
 }
 
 export class ROV_DeptOfBusFun {
-	departmentBfUid: number = 0;
-	departmentTypeUid: number = 0;
-	businessFunctionUid: number = 0;
+	departmentBFUID: number = 0;
+	departmentTypeUID: number = 0;
+	businessFunctionUID: number = 0;
 }
 
 export class ROV_DepartmentType {
-	departmentTypeUid: number = 0;
+	departmentTypeUID: number = 0;
 	deptName: string = '';
 	allowTags: boolean | null = null;
 	custInfoReq: boolean | null = null;
@@ -125,21 +125,21 @@ export class ROV_DepartmentType {
 }
 
 export class ROV_IndividualRoleType {
-	individualRoleTypeUid: number = 0;
+	individualRoleTypeUID: number = 0;
 	code: string = '';
 	description: string = '';
 	displayOrder: number = 0;
 }
 
 export class ROV_FeeType {
-	feeTypeId: number = 0;
+	feeTypeID: number = 0;
 	feeTypeCode: string = '';
 	feeTypeDesc: string = '';
 	displayOrder: number = 0;
 }
 
 export class ROV_BusinessFunction {
-	businessFunctionUid: number = 0;
+	businessFunctionUID: number = 0;
 	code: string = '';
 	description: string = '';
 	displayOrder: number = 0;

@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { GlobalConstants } from '../../global/global.constants';
 import { LogonModel, LogonResultsModel } from '../../models/mobile.client.identity';
-import { ContractIdResultsModel, ROV_ContractResultsModel, VendorContractDataModel } from '../models/contract.models';
+import { ContractIdResultsModel, ROV_Contract, ROV_ContractResultsModel, VendorContractDataModel } from '../models/contract.models';
 import { LTC_Contract, LTC_ContractResultsModel, LTC_ReferenceResultsModel, ROV_ReferenceResultsModel } from '../../longterm/models/contract.models';
 import { FacilityModel } from '../../longterm/models/store.location';
 import { CPOS_RegionCountryCurrencyResultsModel } from '../../longterm/models/region.currency.models';
@@ -102,7 +102,14 @@ export class SbmWebApiService {
   }
 
   public PutLTCContract(uid: string, contract: LTC_Contract): Observable<LTC_ContractResultsModel> {
-    const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/SaveLTCContract?guid=${GlobalConstants.PUT_GUID}&uid=${encodeURIComponent(uid)}`;
+    const url = `${GlobalConstants.CPOS_SVCS_URL}/sbm/SaveLTCContract?guid=${GlobalConstants.PUT_GUID}&uid=${encodeURIComponent(uid)}`;
     return this.httpClient.put<LTC_ContractResultsModel>(url, contract, { headers: this.headerObjs });
   }
+
+  public putROVContract(uid: string, contract: ROV_Contract): Observable<ROV_ContractResultsModel> {
+    const url = `${GlobalConstants.CPOS_SVCS_URL}/sbm/SaveROVContract?guid=${GlobalConstants.PUT_GUID}&uid=${encodeURIComponent(uid)}`;
+    return this.httpClient.put<ROV_ContractResultsModel>(url, contract, { headers: this.headerObjs });
+  }
+
+
 }

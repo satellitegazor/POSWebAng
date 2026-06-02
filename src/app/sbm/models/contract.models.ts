@@ -56,7 +56,7 @@ export class ROV_Facility {
 }
 
 export class ROV_Contract {
-    contractUid!: number;
+    contractUID!: number;
     contractStart!: Date;
     contractEnd!: Date;
     contractNumber!: string;

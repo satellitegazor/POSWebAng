@@ -1,12 +1,15 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ROV_Contract, ROV_Facility } from '../models/contract.models';
-import { ROV_ReferenceResultsModel, Vendor } from '../../longterm/models/contract.models';
+import { ROV_DepartmentType, ROV_ReferenceResultsModel, Vendor } from '../../longterm/models/contract.models';
 import { CPOS_RegionCountryCurrencyResultsModel } from '../../longterm/models/region.currency.models';
 import { SbmWebApiService } from '../services/sbm-web-api.service';
-import { ROV_Department, ROV_Event, ROV_Individual } from 'src/app/longterm/models/ticket.list';
+import { ROV_Department, ROV_Event, ROV_Individual } from '../../longterm/models/ticket.list';
 import { NgForm } from '@angular/forms';
-import { FacilityModel } from 'src/app/longterm/models/store.location';
+import { FacilityModel } from '../../longterm/models/store.location';
+import { ToastService } from '../../services/toast.service';
+import { UtilService } from '../../services/util.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-contract-rov-page',
@@ -15,18 +18,17 @@ import { FacilityModel } from 'src/app/longterm/models/store.location';
   standalone: false
 })
 export class ContractRovPageComponent implements OnInit {
-onBackToContractListing() {
-throw new Error('Method not implemented.');
-}
-onSaveRovContract(arg0: any) {
-throw new Error('Method not implemented.');
-}
+
   public rovContract: ROV_Contract | null = null;
   private readonly shortDateFormatter: Intl.DateTimeFormat = new Intl.DateTimeFormat('en-US');
   private readonly eventsPageSize = 5;
   public currentEventsPage = 0;
-  public rovRefList: ROV_ReferenceResultsModel = new ROV_ReferenceResultsModel();
+  public rovReferenceData: ROV_ReferenceResultsModel = new ROV_ReferenceResultsModel();
   
+  selectedDepartmentTypeUIDs = new Set<number>();
+  departmentPopupEvent: ROV_Event | null = null;
+  departmentPopupDepartments: ROV_DepartmentType[] = [];
+  departmentPopupFacility: ROV_Facility | null = null;    
   contractStartInput = '';
   contractEndInput = '';
   todayDateIso = new Date().toISOString().split('T')[0];
@@ -38,18 +40,22 @@ throw new Error('Method not implemented.');
 
   constructor(
     private route: ActivatedRoute,
-    private sbmWebApiService: SbmWebApiService
+    private sbmWebApiService: SbmWebApiService,
+    private router: Router,
+    private toastSvc: ToastService,
+    private utilSvc: UtilService,
+    private modalService: NgbModal
   ) {}
 
   ngOnInit(): void {
 
     this.sbmWebApiService.getROVReferenceLists(sessionStorage.getItem('sbm_employeeId') || '').subscribe({
       next: result => {
-        this.rovRefList = result;
+        this.rovReferenceData = result;
       },
       error: () => {
         // Keep defaults when reference list call fails.
-        this.rovRefList = new ROV_ReferenceResultsModel();
+        this.rovReferenceData = new ROV_ReferenceResultsModel();
       }
     });
 
@@ -60,6 +66,7 @@ throw new Error('Method not implemented.');
 
       if (ctrid && uid && !isNaN(contractId) && contractId > 0) {
         this.loadContract(contractId, uid);
+        
         return;
       }
 
@@ -73,24 +80,63 @@ throw new Error('Method not implemented.');
         this.rovContract = result?.contract || new ROV_Contract();
         this.syncDateInputs();
         this.currentEventsPage = 0;
-        this.onVendorLookupClick();
+        this.onVendorLookupClick(this.rovContract.vendorNumber);
         this.onFacilityLookupClick(this.rovContract.facility, this.rovContract.facility.facilityNumber || '');
+        this.initalizeExchRegion();
       },
       error: () => {
         this.initializeNewContract();
+        
         this.syncDateInputs();
       }
     });
   }
 
-  private initializeNewContract(): void {
-    if ((this.rovContract?.contractUid ?? 0) > 0) {
+  private initalizeExchRegion(): void {
+    if (!this.rovContract) {
       return;
     }
+    this.sbmWebApiService.getRegionCode().subscribe({
+      next: result => {
+        const regionCode = result?.cposRegion?.[0]?.regionCode || 'CON';
+        if (!this.rovContract) {
+          return;
+        }
+
+        this.rovContract.regionCode = regionCode;
+        this.rovContract.regionDesc = result?.cposRegion?.[0]?.regionDesc || '';
+        this.rovContract.facility.regionUid = regionCode;
+
+        this.sbmWebApiService.getCountryCurrencyCodes(regionCode).subscribe({
+          next: countryCurrencyCodes => {
+            if (!this.rovContract) {
+              return;
+            }
+
+            const selectedCountry = countryCurrencyCodes?.cposRegionCountry?.[0];
+            const selectedCurrency = countryCurrencyCodes?.cposCurrency?.[0];
+
+            this.rovContract.regionCountryCurrency = countryCurrencyCodes;
+            this.rovContract.countryCode = selectedCountry?.countryCode || '';
+            this.rovContract.countryName = selectedCountry?.countryName || '';
+            this.rovContract.currencyCode = selectedCurrency?.currencyCode || '';
+            this.rovContract.currencyDesc = selectedCurrency?.currencyDesc || '';
+
+            this.rovContract.facility.events.forEach(e => {
+              e.exchRegion = regionCode;
+              e.countryCode = selectedCountry?.countryCode || '';
+            });
+          }
+        });
+      }
+    });
+  }
+  private initializeNewContract(): void {
 
     this.rovContract = new ROV_Contract();
+    this.initalizeExchRegion();
 
-    this.rovContract.contractUid = 0;
+    this.rovContract.contractUID = 0;
     this.rovContract.contractStart = new Date();
     this.rovContract.contractEnd = new Date();
     this.rovContract.contractNumber = '';
@@ -120,7 +166,7 @@ throw new Error('Method not implemented.');
     this.rovContract.applyCouponsAfterTax = false;
     this.rovContract.vendorEPaid = false;
     this.rovContract.facility = new ROV_Facility();
-    this.rovContract.facility.contractUid = this.rovContract.contractUid;
+    this.rovContract.facility.contractUid = this.rovContract.contractUID;
     this.rovContract.facility.facilityUid = 0;
     this.rovContract.facility.facilityNumber = '';
     this.rovContract.facility.regionUid = this.rovContract.regionCode;
@@ -132,35 +178,7 @@ throw new Error('Method not implemented.');
     this.syncDateInputs();
     this.currentEventsPage = 0;
 
-    this.sbmWebApiService.getRegionCode().subscribe({
-      next: result => {
-        const regionCode = result?.cposRegion?.[0]?.regionCode || 'CON';
-        if (!this.rovContract ) {
-          return;
-        }
 
-        this.rovContract.regionCode = regionCode;
-        this.rovContract.regionDesc = result?.cposRegion?.[0]?.regionDesc || '';
-        this.rovContract.facility.regionUid = regionCode;
-
-        this.sbmWebApiService.getCountryCurrencyCodes(regionCode).subscribe({
-          next: countryCurrencyCodes => {
-            if (!this.rovContract) {
-              return;
-            }
-
-            const selectedCountry = countryCurrencyCodes?.cposRegionCountry?.[0];
-            const selectedCurrency = countryCurrencyCodes?.cposCurrency?.[0];
-
-            this.rovContract.regionCountryCurrency = countryCurrencyCodes;
-            this.rovContract.countryCode = selectedCountry?.countryCode || '';
-            this.rovContract.countryName = selectedCountry?.countryName || '';
-            this.rovContract.currencyCode = selectedCurrency?.currencyCode || '';
-            this.rovContract.currencyDesc = selectedCurrency?.currencyDesc || '';
-          }
-        });
-      }
-    });
   }
 
   public formatDate(value: Date | string | null | undefined): string {
@@ -177,6 +195,13 @@ throw new Error('Method not implemented.');
     if (!this.rovContract ?.facility) {
       return;
     }
+
+    console.log('[TEMP][ROV-DEPT] Business model changed', {
+      selectedValue,
+      previousBusinessFunctionUid: this.rovContract.facility.businessFunctionUid,
+      referenceBusinessFunctionCount: this.rovReferenceData?.businessFunctions?.length || 0,
+      referenceBfDepartmentCount: (this.rovReferenceData as any)?.bfDepartments?.length || 0
+    });
 
     this.rovContract.facility.businessFunctionUid = Number.isFinite(selectedValue) ? selectedValue : 0;
     this.rovContract.facility.hasUpdates = true;
@@ -376,27 +401,28 @@ throw new Error('Method not implemented.');
   }
 
 
-  onVendorLookupClick(): void {
+  onVendorLookupClick(vendorNumber?: string): void {
+
     if (!this.rovContract) {
       return;
     }
 
-    const vendorNumber = (this.rovContract.vendorNumber || '').trim();
-    if (!vendorNumber) {
+    const resolvedVendorNumber = (vendorNumber ?? this.rovContract.vendorNumber ?? '').trim();
+    if (!resolvedVendorNumber) {
       return;
     }
 
-    this.sbmWebApiService.getVendorLocal(vendorNumber).subscribe({
+    this.sbmWebApiService.getVendorLocal(resolvedVendorNumber).subscribe({
       next: (response: any) => {
         const vendor = response?.vendor || response?.Vendor || response;
-        const resolvedVendorNumber = vendor?.vendorNumber || vendor?.VendorNumber || vendor?.sVendorNum || vendorNumber;
+        const fetchedVendorNumber = vendor?.vendorNumber || vendor?.VendorNumber || vendor?.sVendorNum || resolvedVendorNumber;
         const resolvedVendorName = vendor?.vendorName || vendor?.VendorName || vendor?.name || this.rovContract?.vendorName || '';
 
-        this.rovContract!.vendorNumber = String(resolvedVendorNumber);
+        this.rovContract!.vendorNumber = String(fetchedVendorNumber);
         this.rovContract!.vendorName = String(resolvedVendorName);
 
         if (this.rovContract?.concessionaire) {
-          this.rovContract.concessionaire.vendorNumber = String(resolvedVendorNumber);
+          this.rovContract.concessionaire.vendorNumber = String(fetchedVendorNumber);
           this.rovContract.concessionaire.vendorName = String(resolvedVendorName);
         }
 
@@ -416,6 +442,9 @@ throw new Error('Method not implemented.');
     this.sbmWebApiService.getSingleFacilityLocal(facilityNum).subscribe({
       next: (response: FacilityModel) => {
         facility.fmfFacility = response;
+        this.rovContract?.facility.events.forEach(e => {
+          e.exchRegion = response.regionId;
+        });
       }  
       });
     this.markObjectUpdated(this.rovContract.facility);
@@ -502,18 +531,194 @@ throw new Error('Method not implemented.');
     return event?.departments || [];
   }
 
-  onAddEventDepartment(event: ROV_Event): void {
-    event.departments = event.departments || [];
+  private getSelectedBusinessFunctionUid(): number {
+    const facility = this.rovContract?.facility as any;
+    const rawValue = facility?.businessFunctionUid ?? facility?.businessFunctionUID ?? 0;
+    const parsedValue = Number(rawValue);
+    return Number.isFinite(parsedValue) ? parsedValue : 0;
+  }
 
-    const department = new ROV_Department();
-    department.DepartmentUID = 0;
-    department.Description = '';
-    department.FeePercent = 0;
-    department.HasUpdates = true;
+  private getDepartmentTypeUidFromMapping(item: any): number {
+    const rawValue = item?.deparmentTypeUID ?? item?.departmentTypeUID ?? item?.departmentTypeUId ?? item?.departmentTypeUid ?? 0;
+    const parsedValue = Number(rawValue);
+    return Number.isFinite(parsedValue) ? parsedValue : 0;
+  }
 
-    event.departments.push(department);
+  private getBusinessFunctionUidFromMapping(item: any): number {
+    const rawValue = item?.businessFunctionUid ?? item?.businessFunctionUID ?? 0;
+    const parsedValue = Number(rawValue);
+    return Number.isFinite(parsedValue) ? parsedValue : 0;
+  }
+
+  private getReferenceDepartmentTypes(): ROV_DepartmentType[] {
+    const referenceData = this.rovReferenceData as any;
+    const sourceList = referenceData?.departmetnTypes || referenceData?.departmentTypes || [];
+
+    console.log('[TEMP][ROV-DEPT] Department types source', {
+      hasDepartmetnTypes: Array.isArray(referenceData?.departmetnTypes),
+      hasDepartmentTypes: Array.isArray(referenceData?.departmentTypes),
+      sourceCount: Array.isArray(sourceList) ? sourceList.length : 0,
+      firstSourceItem: Array.isArray(sourceList) && sourceList.length ? sourceList[0] : null,
+      firstSourceUidCandidates: Array.isArray(sourceList) && sourceList.length
+        ? {
+            departmentTypeUID: sourceList[0]?.departmentTypeUID,
+            departmentTypeUId: sourceList[0]?.departmentTypeUId,
+            departmentTypeUid: sourceList[0]?.departmentTypeUid
+          }
+        : null
+    });
+
+    return (sourceList as any[])
+      .map(item => {
+        if (!item) {
+          return null;
+        }
+
+        const normalized = new ROV_DepartmentType();
+        normalized.departmentTypeUID = Number(item.departmentTypeUID ?? item.departmentTypeUId ?? item.departmentTypeUid ?? 0);
+        normalized.deptName = String(item.deptName ?? item.description ?? '');
+        normalized.allowTags = item.allowTags ?? null;
+        normalized.custInfoReq = item.custInfoReq ?? null;
+        normalized.defaultNoOfTags = Number(item.defaultNoOfTags ?? 0);
+        return normalized;
+      })
+      .filter((item): item is ROV_DepartmentType => !!item && item.departmentTypeUID > 0);
+  }
+
+  private getReferenceBfDepartments(): any[] {
+    const referenceData = this.rovReferenceData as any;
+    const source = (referenceData?.bfDepartments || referenceData?.bfDepartements || referenceData?.bfDepartment || []) as any[];
+
+    console.log('[TEMP][ROV-DEPT] BF->Department mapping source', {
+      hasBfDepartments: Array.isArray(referenceData?.bfDepartments),
+      hasBfDepartementsTypo: Array.isArray(referenceData?.bfDepartements),
+      hasBfDepartment: Array.isArray(referenceData?.bfDepartment),
+      sourceCount: source.length,
+      firstSourceItem: source.length ? source[0] : null,
+      firstSourceUidCandidates: source.length
+        ? {
+            deparmentTypeUID: source[0]?.deparmentTypeUID,
+            departmentTypeUID: source[0]?.departmentTypeUID,
+            departmentTypeUId: source[0]?.departmentTypeUId,
+            departmentTypeUid: source[0]?.departmentTypeUid,
+            businessFunctionUID: source[0]?.businessFunctionUID,
+            businessFunctionUid: source[0]?.businessFunctionUid
+          }
+        : null
+    });
+
+    return source;
+  }
+
+  private getDepartmentOptionsForFacility(): ROV_DepartmentType[] {
+    const businessFunctionUid = this.getSelectedBusinessFunctionUid();
+    if (!this.rovReferenceData || !businessFunctionUid) {
+      console.warn('[TEMP][ROV-DEPT] Cannot resolve departments for popup', {
+        hasReferenceData: !!this.rovReferenceData,
+        businessFunctionUid
+      });
+      return [];
+    }
+
+    const departmentTypes = this.getReferenceDepartmentTypes();
+    const bfDepartments = this.getReferenceBfDepartments();
+    const matchingBfDepartments = bfDepartments
+      .filter(department => this.getBusinessFunctionUidFromMapping(department) === businessFunctionUid);
+    const allowedDepartmentTypeUIDs = matchingBfDepartments
+      .map(department => this.getDepartmentTypeUidFromMapping(department))
+      .filter(uid => uid > 0);
+
+    console.log('[TEMP][ROV-DEPT] Department filter results', {
+      businessFunctionUid,
+      bfDepartmentCount: bfDepartments.length,
+      matchingBfDepartmentCount: matchingBfDepartments.length,
+      departmentTypeCount: departmentTypes.length,
+      matchedDepartmentTypeUIDs: allowedDepartmentTypeUIDs,
+      matchedUniqueDepartmentTypeUIDs: Array.from(new Set(allowedDepartmentTypeUIDs))
+    });
+
+    if (!allowedDepartmentTypeUIDs.length) {
+      return [];
+    }
+
+    const allowedUidSet = new Set<number>(allowedDepartmentTypeUIDs);
+    return departmentTypes.filter(departmentType => allowedUidSet.has(departmentType.departmentTypeUID));
+  }
+
+  openDepartmentPopup(event: ROV_Event): void {
+
+    this.departmentPopupEvent = event;
+    this.departmentPopupFacility = this.rovContract?.facility || null;
+    this.departmentPopupDepartments = this.getDepartmentOptionsForFacility();
+    const currentDepartments = this.getEventDepartments(event);
+
+    console.log('[TEMP][ROV-DEPT] Open department popup', {
+      eventId: (event as any)?.eventId ?? (event as any)?.eventID ?? 0,
+      eventName: event?.eventName || '',
+      popupDepartmentCount: this.departmentPopupDepartments.length,
+      popupDepartmentNames: this.departmentPopupDepartments.map(department => department.deptName),
+      currentEventDepartmentTypeUIDs: currentDepartments.map(department => department.departmentTypeUID)
+    });
+
+    this.selectedDepartmentTypeUIDs = new Set(
+      currentDepartments
+        .map(department => (department.departmentTypeUID || 0))
+        .filter((departmentTypeUID): departmentTypeUID is number => departmentTypeUID > 0)
+    );
+
+  }
+
+
+  isDepartmentChecked(departmentTypeUID: number): boolean {
+    return this.selectedDepartmentTypeUIDs.has(departmentTypeUID);
+  }
+
+  onDepartmentCheckedChange(departmentTypeUID: number, checked: boolean): void {
+    if (checked) {
+      this.selectedDepartmentTypeUIDs.add(departmentTypeUID);
+      return;
+    }
+
+    this.selectedDepartmentTypeUIDs.delete(departmentTypeUID);
+  }
+
+  applyDepartmentSelections(): void {
+    if (!this.departmentPopupEvent || !this.departmentPopupFacility) {
+      return;
+    }
+
+    const event = this.departmentPopupEvent;
+    const facility = this.departmentPopupFacility;
+    const existingDepartments = this.getEventDepartments(event);
+    const departmentTypes = this.departmentPopupDepartments;
+
+    event.departments = departmentTypes
+      .filter(department => this.selectedDepartmentTypeUIDs.has(department.departmentTypeUID))
+      .map(department => {
+        const existingDepartment = existingDepartments.find(item => item.departmentTypeUID === department.departmentTypeUID);
+        const mappedDepartment = new ROV_Department();
+
+        if (existingDepartment) {
+          Object.assign(mappedDepartment, existingDepartment);
+        }
+
+        mappedDepartment.facilityUID = existingDepartment?.facilityUID ?? facility.facilityUid;
+        mappedDepartment.departmentUID = existingDepartment?.departmentUID ?? 0;
+        mappedDepartment.description = existingDepartment?.description || department.deptName || '';
+        mappedDepartment.locationUID = existingDepartment?.locationUID ?? 0;
+        mappedDepartment.locationName = existingDepartment?.locationName ?? '';
+        mappedDepartment.allowTags = existingDepartment?.allowTags ?? Boolean(department.allowTags);
+        mappedDepartment.custInfoReq = existingDepartment?.custInfoReq ?? Boolean(department.custInfoReq);
+        mappedDepartment.feePercent = existingDepartment?.feePercent ?? 0;
+        mappedDepartment.allowTips = existingDepartment?.allowTips ?? false;
+        mappedDepartment.departmentTypeUID = department.departmentTypeUID;
+        mappedDepartment.hasUpdates = true;
+
+        return mappedDepartment;
+      });
+
+    this.markObjectUpdated(facility);
     event.hasUpdates = true;
-    this.markObjectUpdated(event);
     this.contractFormRef?.control.markAsDirty();
   }
 
@@ -522,8 +727,8 @@ throw new Error('Method not implemented.');
     const value = target ? Number(target.value) : Number(input ?? 0);
 
     const normalized = Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : 0;
-    department.FeePercent = Number(normalized.toFixed(2));
-    department.HasUpdates = true;
+    department.feePercent = Number(normalized.toFixed(2));
+    department.hasUpdates = true;
     event.hasUpdates = true;
     this.markObjectUpdated(event);
     this.contractFormRef?.control.markAsDirty();
@@ -532,6 +737,7 @@ throw new Error('Method not implemented.');
   onAssociateFieldInputChange(event: ROV_Event, associate: ROV_Individual, field: 'firstName' | 'lastName' | 'emailAddress' | 'phoneNumber', input: Event): void {
     const value = ((input.target as HTMLInputElement | null)?.value || '');
     associate[field] = field === 'emailAddress' ? value.toUpperCase() : value;
+    associate.hasUpdates = true;
     this.onAssociateFieldChange(event, associate);
     this.contractFormRef?.control.markAsDirty();
   }
@@ -542,12 +748,12 @@ throw new Error('Method not implemented.');
       return;
     }
 
-    const firstValue = Number((departments[0].FeePercent || 0));
+    const firstValue = Number((departments[0].feePercent || 0));
     const normalized = Number.isFinite(firstValue) ? Math.min(100, Math.max(0, firstValue)) : 0;
 
     departments.forEach((department: ROV_Department) => {
-      department.FeePercent = Number(normalized.toFixed(2));
-      department.HasUpdates = true;
+      department.feePercent = Number(normalized.toFixed(2));
+      department.hasUpdates = true;
     });
 
     event.hasUpdates = true;
@@ -565,5 +771,148 @@ throw new Error('Method not implemented.');
   private syncDateInputs(): void {
     this.contractStartInput = this.formatDateInput(this.rovContract?.contractStart);
     this.contractEndInput = this.formatDateInput(this.rovContract?.contractEnd);
+  }
+
+  onBackToContractListing() {
+    this.router.navigate(['sbm/clist']);
+  }
+
+  onSaveRovContract(arg0: any) {
+    if (!this.rovContract) {
+      this.toastSvc.error('No contract data available to save.');
+      return;
+    }
+
+    const contract = this.rovContract;
+    let errMsg = '';
+    const startDate = this.parseDateInput(this.contractStartInput);
+    const endDate = this.parseDateInput(this.contractEndInput);
+
+    if (!contract.vendorNumber || contract.vendorNumber.trim().length < 6) {
+      errMsg += 'Vendor Number requires at least 6 digits.\n';
+    }
+
+    if (!this.contractStartInput.trim()) {
+      errMsg += 'You must enter Contract Start Date.\n';
+    } else if (!startDate) {
+      errMsg += 'You must enter a valid Contract Start Date.\n';
+    }
+
+    if (!this.contractEndInput.trim()) {
+      errMsg += 'You must enter Contract End Date.\n';
+    } else if (!endDate) {
+      errMsg += 'You must enter a valid Contract End Date.\n';
+    }
+
+    if (startDate && endDate) {
+      if (endDate < startDate) {
+        errMsg += 'Contract End Date must be greater than the Contract Start Date.\n';
+      }
+    }
+
+    if (!contract.contractNumber || contract.contractNumber.trim().length === 0) {
+      errMsg += 'You must enter a Contract Number.\n';
+    }
+
+    if (!contract.ownerFirstName || contract.ownerFirstName.trim().length === 0) {
+      errMsg += 'Concession Owner First Name is mandatory.\n';
+    }
+
+    if (!contract.ownerLastName || contract.ownerLastName.trim().length === 0) {
+      errMsg += 'Concession Owner Last Name is mandatory.\n';
+    }
+
+    if (!contract.ownerEmail || !this.utilSvc.IsValidEmailAddress(contract.ownerEmail)) {
+      errMsg += 'You must enter a valid Email Address for the Concession Owner.\n';
+    }
+
+    if (!contract.ownerPhone || contract.ownerPhone.trim().length === 0) {
+      errMsg += 'Concession Owner Phone Number is mandatory.\n';
+    }
+
+    contract.facility.events?.forEach((event, index) => {
+      if (!event.eventName || event.eventName.trim().length === 0) {
+        errMsg += `Event ${event.eventName}: Event Name is mandatory.\n`;
+      }
+
+      const startDate = this.parseDateInput(event.eventStartDate ? this.formatDateInput(event.eventStartDate) : '');
+      const endDate = this.parseDateInput(event.eventEndDate ? this.formatDateInput(event.eventEndDate) : '');
+
+      if (!contract.vendorNumber || contract.vendorNumber.trim().length < 6) {
+        errMsg += 'Vendor Number requires at least 6 digits.\n';
+      }
+
+      if (!startDate) {
+        errMsg += 'You must enter Event Start Date.\n';
+      } else if (!startDate) {
+        errMsg += 'You must enter a valid Event Start Date.\n';
+      }
+
+      if (!endDate) {
+        errMsg += 'You must enter Event End Date.\n';
+      } else if (!endDate) {
+        errMsg += 'You must enter a valid Event End Date.\n';
+      }
+
+      if (startDate && endDate) {
+        if (endDate < startDate) {
+          errMsg += 'Event End Date must be greater than the Event Start Date.\n';
+        }
+      }
+
+      event.associates?.forEach((associate, associateIndex) => {
+        if (!associate.firstName || associate.firstName.trim().length === 0) {
+          errMsg += `Event ${event.eventName}, Associate ${associateIndex + 1}: First Name is mandatory.\n`;
+        }
+        if (!associate.lastName || associate.lastName.trim().length === 0) {
+          errMsg += `Event ${event.eventName}, Associate ${associateIndex + 1}: Last Name is mandatory.\n`;
+        }
+        if (!associate.emailAddress || !this.utilSvc.IsValidEmailAddress(associate.emailAddress)) {
+          errMsg += `Event ${event.eventName}, Associate ${associateIndex + 1}: You must enter a valid Email Address.\n`;
+        }
+        if (!associate.phoneNumber || associate.phoneNumber.trim().length === 0) {
+          errMsg += `Event ${event.eventName}, Associate ${associateIndex + 1}: Phone Number is mandatory.\n`;
+        }
+      });
+
+      event.departments?.forEach((department, departmentIndex) => {
+        if (department.feePercent === undefined || department.feePercent === null || isNaN(department.feePercent)) {
+          errMsg += `Event ${event.eventName}, Department ${department.description}: You must enter a valid Fee Percent.\n`;
+        } else if (department.feePercent < 0 || department.feePercent > 100) {
+          errMsg += `Event ${event.eventName}, Department ${department.description}: Fee Percent must be between 0 and 100.\n`;
+        }
+      });
+
+    });
+
+    const uid = sessionStorage.getItem('sbm_name') || '';
+    if (!uid) {
+      this.toastSvc.error('Unable to save contract: missing user id.');
+      return;
+    }
+
+
+    if (errMsg) {
+      this.toastSvc.error(errMsg);
+      return;
+    }
+
+    this.sbmWebApiService.putROVContract(uid, contract).subscribe({
+      next: result => {
+        if (result?.results.success) {
+          this.toastSvc.success('Contract saved successfully.');
+          if(this.rovContract) {
+            this.rovContract.contractUID = result.contract?.contractUID;
+          }
+        }
+        else {          
+          this.toastSvc.error('Failed to save contract. Please try again.');
+        }
+      },
+      error: () => {
+        this.toastSvc.error('An error occurred while saving the contract. Please try again.');
+      }
+    });
+
   }
 }

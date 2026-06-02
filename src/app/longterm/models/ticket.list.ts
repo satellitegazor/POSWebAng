@@ -97,35 +97,35 @@ export class LTC_SingleTransactionResultsModel
 }
 
 export class ROV_Department {
-    DepartmentUID: number = 0;
-    DepartmentTypeUID: number = 0;
-    Description: string = '';
-    FacilityUID: number = 0;
-    FeePercent: number = 0;
-    SalesTaxPct: number = 0;
-    Active: boolean = false;
-    MaintTimestamp: Date | null = {} as Date;
-    MaintUserId: number = 0;
-    EventUID: number = 0;
-    EventName: string = '';
-    LocationUID: number = 0;
-    LocationName: string = '';
-    AllowTaxExemption: boolean = false;
-    ExchCouponsAfterTax: boolean = false;
-    VendCouponsAfterTax: boolean = false;
-    BfCode: string = '';
-    AllowPartPay: boolean = false;
-    AllowTips: boolean = false;
-    AllowSaveTkt: boolean = false;
-    BusinessModel: number = 0;
-    AllowTags: boolean = false;
-    CustInfoReq: boolean = false;
-    DefaultCurrency: string = '';
-    HasUpdates: boolean = false;
-    AllowzeroPrcntFee: boolean = false;
+    departmentUID: number = 0;
+    departmentTypeUID: number = 0;
+    description: string = '';
+    facilityUID: number = 0;
+    feePercent: number = 0;
+    salesTaxPct: number = 0;
+    active: boolean = false;
+    maintTimestamp: Date | null = {} as Date;
+    maintUserId: number = 0;
+    eventUID: number = 0;
+    eventName: string = '';
+    locationUID: number = 0;
+    locationName: string = '';
+    allowTaxExemption: boolean = false;
+    exchCouponsAfterTax: boolean = false;
+    vendCouponsAfterTax: boolean = false;
+    bfCode: string = '';
+    allowPartPay: boolean = false;
+    allowTips: boolean = false;
+    allowSaveTkt: boolean = false;
+    businessModel: number = 0;
+    allowTags: boolean = false;
+    custInfoReq: boolean = false;
+    defaultCurrency: string = '';
+    hasUpdates: boolean = false;
+    allowZeroPrcntFee: boolean = false;
 
     constructor() {
-        this.HasUpdates = false;
+        this.hasUpdates = false;
     }
 }
 
