@@ -79,6 +79,7 @@ export class ContractRovPageComponent implements OnInit {
     this.sbmWebApiService.loadROVContract(contractId, uid).subscribe({
       next: result => {
         this.rovContract = result?.contract || new ROV_Contract();
+        this.normalizeLoadedContractData();
         this.syncDateInputs();
         this.currentEventsPage = 0;
         this.onVendorLookupClick(this.rovContract.vendorNumber);
@@ -358,6 +359,99 @@ export class ContractRovPageComponent implements OnInit {
     }
 
     return parsedDate;
+  }
+
+  private parseApiDate(value: unknown): Date | null {
+    if (!value) {
+      return null;
+    }
+
+    if (value instanceof Date) {
+      return isNaN(value.getTime()) ? null : value;
+    }
+
+    if (typeof value === 'number') {
+      const dateFromNumber = new Date(value);
+      return isNaN(dateFromNumber.getTime()) ? null : dateFromNumber;
+    }
+
+    if (typeof value !== 'string') {
+      return null;
+    }
+
+    const trimmedValue = value.trim();
+    if (!trimmedValue) {
+      return null;
+    }
+
+    const isoDate = this.parseIsoDate(trimmedValue);
+    if (isoDate) {
+      return isoDate;
+    }
+
+    const dotNetMatch = /\/Date\((\d+)\)\//.exec(trimmedValue);
+    if (dotNetMatch) {
+      const ticks = Number(dotNetMatch[1]);
+      if (Number.isFinite(ticks)) {
+        const dateFromTicks = new Date(ticks);
+        return isNaN(dateFromTicks.getTime()) ? null : dateFromTicks;
+      }
+    }
+
+    const parsedDate = new Date(trimmedValue);
+    return isNaN(parsedDate.getTime()) ? null : parsedDate;
+  }
+
+  private resolveNumericValue(source: any, keys: string[], defaultValue: number = 0): number {
+    for (const key of keys) {
+      const rawValue = source?.[key];
+      const parsedValue = Number(rawValue);
+      if (Number.isFinite(parsedValue)) {
+        return parsedValue;
+      }
+    }
+
+    return defaultValue;
+  }
+
+  private resolveDateValue(source: any, keys: string[]): Date {
+    for (const key of keys) {
+      const parsedDate = this.parseApiDate(source?.[key]);
+      if (parsedDate) {
+        return parsedDate;
+      }
+    }
+
+    return {} as Date;
+  }
+
+  private normalizeLoadedContractData(): void {
+    if (!this.rovContract?.facility?.events?.length) {
+      return;
+    }
+
+    this.rovContract.facility.events.forEach((event: any) => {
+      event.eventStartDate = this.resolveDateValue(event, [
+        'eventStartDate',
+        'EventStartDate',
+        'eventStart',
+        'eventStartDt'
+      ]);
+
+      event.eventEndDate = this.resolveDateValue(event, [
+        'eventEndDate',
+        'EventEndDate',
+        'eventEnd',
+        'eventEndDt'
+      ]);
+
+      event.feeTypeId = this.resolveNumericValue(event, ['feeTypeId', 'feeTypeID', 'FeeTypeId', 'FeeTypeID'], 0);
+      event.flatFeeDollarAmount = this.resolveNumericValue(
+        event,
+        ['flatFeeDollarAmount', 'FlatFeeDollarAmount', 'flatFeeDlrAmt', 'flatFeeAmount'],
+        0
+      );
+    });
   }
 
   private toIsoDateString(value: Date | null): string {
@@ -1012,5 +1106,61 @@ export class ContractRovPageComponent implements OnInit {
 
     this.markObjectUpdated(this.rovContract?.facility);
     this.contractFormRef?.control.markAsDirty();
+  }
+  
+  openEventDatePicker(field: 'eventStart' | 'eventEnd', eventIndexOnPage: number): void {
+    const targetEvent = this.paginatedEvents[eventIndexOnPage];
+    if (!targetEvent) {
+      return;
+    }
+
+    const targetField: 'eventStartDate' | 'eventEndDate' = field === 'eventStart' ? 'eventStartDate' : 'eventEndDate';
+
+    const pickerInput = document.createElement('input');
+    pickerInput.type = 'date';
+    pickerInput.tabIndex = -1;
+    pickerInput.className = 'contract-date-native-picker';
+
+    const currentDateValue = this.getEventDatePickerValue(targetEvent, targetField);
+    pickerInput.value = currentDateValue || this.todayDateIso;
+
+    const contractStartIso = this.toIsoDateString(this.parseDateInput(this.contractStartInput));
+    pickerInput.min = contractStartIso || this.todayDateIso;
+
+    if (targetField === 'eventEndDate') {
+      const eventStartIso = this.getEventDatePickerValue(targetEvent, 'eventStartDate');
+      if (eventStartIso) {
+        pickerInput.min = eventStartIso;
+      }
+    }
+
+    const applySelection = () => {
+      const selectedIsoDate = pickerInput.value;
+      this.onEventDateInputChange(targetEvent, targetField, selectedIsoDate);
+
+      if (targetField === 'eventStartDate') {
+        const selectedDate = this.parseIsoDate(selectedIsoDate);
+        const currentEndDate = targetEvent.eventEndDate instanceof Date ? targetEvent.eventEndDate : null;
+        if (selectedDate && currentEndDate && currentEndDate < selectedDate) {
+          targetEvent.eventEndDate = selectedDate;
+          this.onEventFieldInputChange(targetEvent);
+        }
+      }
+
+      pickerInput.remove();
+    };
+
+    pickerInput.addEventListener('change', applySelection, { once: true });
+    pickerInput.addEventListener('blur', () => pickerInput.remove(), { once: true });
+
+    document.body.appendChild(pickerInput);
+
+    if (typeof pickerInput.showPicker === 'function') {
+      pickerInput.showPicker();
+      return;
+    }
+
+    pickerInput.focus();
+    pickerInput.click();
   }
 }

@@ -299,11 +299,34 @@
 
 											<div class="col-lg-3 col-md-6">
 												<label class="form-label mb-1">Event Start Date</label>
-												<input [id]="'rovEventStartDateInput' + i" type="date" class="form-control form-control-sm" [name]="'eventStartDate_' + currentEventsPage + '_' + i" [ngModel]="getEventDatePickerValue(event, 'eventStartDate')" (ngModelChange)="onEventDateInputChange(event, 'eventStartDate', $event)" />
+
+												<div class="input-group input-group-md contract-date-input-group">
+													<input [id]="'rovEventStartDateInput' + i" type="text" class="form-control form-control-sm contract-date-display"
+														[name]="'eventStartDate_' + currentEventsPage + '_' + i" [ngModel]="getEventDatePickerValue(event, 'eventStartDate')" (ngModelChange)="onEventDateInputChange(event, 'eventStartDate', $event)" />
+													<button type="button" class="btn btn-primary btn-outline-secondary contract-date-trigger"
+														aria-label="Open event start date picker" (click)="openEventDatePicker('eventStart', i)">
+														<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"
+															aria-hidden="true">
+															<path
+																d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h.5A1.5 1.5 0 0 1 15 2.5v11A1.5 1.5 0 0 1 13.5 15h-11A1.5 1.5 0 0 1 1 13.5v-11A1.5 1.5 0 0 1 2.5 1H3V.5a.5.5 0 0 1 .5-.5zM2 5v8.5a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5V5H2z" />
+														</svg>
+													</button>
+												</div>
 											</div>
 											<div class="col-lg-3 col-md-6">
 												<label class="form-label mb-1">Event End Date</label>
-												<input [id]="'rovEventEndDateInput' + i" type="date" class="form-control form-control-sm" [name]="'eventEndDate_' + currentEventsPage + '_' + i" [ngModel]="getEventDatePickerValue(event, 'eventEndDate')" (ngModelChange)="onEventDateInputChange(event, 'eventEndDate', $event)" />
+												<div class="input-group input-group-md contract-date-input-group">
+													<input [id]="'rovEventEndDateInput' + i" type="text" class="form-control form-control-sm contract-date-display"
+														[name]="'eventEndDate_' + currentEventsPage + '_' + i" [ngModel]="getEventDatePickerValue(event, 'eventEndDate')" (ngModelChange)="onEventDateInputChange(event, 'eventEndDate', $event)" />
+													<button type="button" class="btn btn-primary btn-outline-secondary contract-date-trigger"
+														aria-label="Open event end date picker" (click)="openEventDatePicker('eventEnd', i)">
+														<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"
+															aria-hidden="true">
+															<path
+																d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h.5A1.5 1.5 0 0 1 15 2.5v11A1.5 1.5 0 0 1 13.5 15h-11A1.5 1.5 0 0 1 1 13.5v-11A1.5 1.5 0 0 1 2.5 1H3V.5a.5.5 0 0 1 .5-.5zM2 5v8.5a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5V5H2z" />
+														</svg>
+													</button>
+												</div>
 											</div>
 											<div class="col-lg-3 col-md-6">
 												<label class="form-label mb-1">Fee Amount ($)</label>
