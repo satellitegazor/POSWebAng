@@ -10,14 +10,15 @@ import {
   ROV_TransactionDetailsModel,
   ROV_SingleTransactionIDResults,
   ROV_EventsResultModel,
-  ROV_StartOrEndModel,
-  ROV_AssocLogoutHistory
+  ROV_AssocLogoutHistory,
+  ResetPinRequest,
+  ROV_AssociatePINUpdateResultsModel
 } from './models';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ShortTermService {
+export class RovApiService {
   private headerObjs: HttpHeaders;
 
   constructor(private httpClient: HttpClient) {
@@ -99,11 +100,6 @@ export class ShortTermService {
     return this.httpClient.get<ROV_EventsResultModel>(url, { headers: this.headerObjs });
   }
 
-  public eventStartOrEnd(request: EventStartOrEndRequest): Observable<ROV_StartOrEndModel> {
-    const url = GlobalConstants.CPOS_SVCS_URL + '/rov/EventStartOrEnd?guid=' + encodeURIComponent(GlobalConstants.PUT_GUID);
-
-    return this.httpClient.put<ROV_StartOrEndModel>(url, JSON.stringify(request), { headers: this.headerObjs });
-  }
 
   public getValidateRovingEvent(
     creds: string,
@@ -152,16 +148,14 @@ export class ShortTermService {
 
   public saveSplitPayments(request: SaveSplitPaymentsRequest): Observable<SaveTicketResultsModel> {
     const url = GlobalConstants.CPOS_SVCS_URL + '/rov/SaveSplitPayments?guid=' + encodeURIComponent(GlobalConstants.PUT_GUID);
-
     return this.httpClient.put<SaveTicketResultsModel>(url, JSON.stringify(request), { headers: this.headerObjs });
   }
-}
 
-export interface EventStartOrEndRequest {
-  veid: number;
-  startOrEnd: string;
-  uid: string;
-  cliTimeVar: number;
+  public resetRovAssociatePin(request: ResetPinRequest): Observable<ROV_AssociatePINUpdateResultsModel> {
+    const url = GlobalConstants.CPOS_SVCS_URL + '/rov/ResetAssociatePIN?guid=' + encodeURIComponent(GlobalConstants.PUT_GUID);
+    return this.httpClient.put<ROV_AssociatePINUpdateResultsModel>(url, JSON.stringify(request), { headers: this.headerObjs });
+  }
+
 }
 
 export interface SaveAssocRovLogoutHistoryRequest {

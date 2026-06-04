@@ -131,7 +131,7 @@ export class ROV_Department {
 
 
 export class ROV_Event {
-    eventId: number = 0;
+    eventID: number = 0;
     eventName: string = '';
     suiteNbr: string = '';
     facilityNumber: string = '';

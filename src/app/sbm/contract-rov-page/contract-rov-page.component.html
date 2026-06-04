@@ -45,7 +45,7 @@
 					aria-expanded="true"
 					aria-controls="collapseRovContract">
 					Contract - <span class="text-uppercase ms-1">{{ contract.contractNumber || '-' }}</span>
-					<span class="ms-2">(Vendor: {{ contract.concessionaire?.vendorName || '-' }})</span>
+					<span class="ms-2">(Vendor: {{ vendorName || '-' }})</span>
 				</button>
 			</h2>
 			<div id="collapseRovContract" class="accordion-collapse collapse show" aria-labelledby="headingRovContract">
@@ -167,7 +167,41 @@
 						</div>
 						<div class="col-md-6">
 							<label class="form-label mb-1">Phone Number</label>
-							<input id="rovOwnerPhoneInput" name="ownerPhone" class="form-control form-control-sm" maxlength="15" [value]="contract.ownerPhone" (input)="onContractFieldInputChange('ownerPhone', $event)" placeholder="201-555-0123" />
+							<div class="location-phone-composite">
+								<div class="dropdown country-dial-dropdown" (click)="$event.stopPropagation()">
+									<button
+										class="btn btn-outline-secondary btn-sm dropdown-toggle country-dial-toggle"
+										type="button"
+										id="rovOwnerCountryDialDropdown"
+										[attr.aria-expanded]="isOwnerCountryDialDropdownOpen()"
+										(click)="toggleOwnerCountryDialDropdown()">
+										<ng-container *ngIf="getSelectedCountryDialOptionForOwner() as selectedCountry; else noOwnerCountryCodeSelected">
+											<span class="country-flag-icon fi" [class]="'country-flag-icon fi fi-' + selectedCountry.iso2.toLowerCase()"></span>
+											<span class="country-name">{{ selectedCountry.name }}</span>
+											<sub class="country-dial-code">+{{ selectedCountry.dialCode }}</sub>
+										</ng-container>
+										<ng-template #noOwnerCountryCodeSelected>
+											<span class="country-name">Select Country Code</span>
+										</ng-template>
+									</button>
+									<ul
+										class="dropdown-menu country-dial-menu"
+										[class.show]="isOwnerCountryDialDropdownOpen()"
+										attr.aria-labelledby="rovOwnerCountryDialDropdown">
+										<li *ngFor="let option of countryDialOptions">
+											<button
+												type="button"
+												class="dropdown-item country-dial-option"
+												(click)="onOwnerDialCodeSelect(option)">
+												<span class="country-flag-icon fi" [class]="'country-flag-icon fi fi-' + option.iso2.toLowerCase()"></span>
+												<span class="country-name">{{ option.name }}</span>
+												<sub class="country-dial-code">+{{ option.dialCode }}</sub>
+											</button>
+										</li>
+									</ul>
+								</div>
+								<input id="rovOwnerPhoneInput" name="ownerPhone" class="form-control form-control-sm" maxlength="15" [value]="contract.ownerPhone" (input)="onContractFieldInputChange('ownerPhone', $event)" placeholder="201-555-0123" />
+							</div>
 						</div>
 					</div>
 				</div>
@@ -266,7 +300,7 @@
 											</span>
 									</button>
 									<button [id]="'rovEventReportsButton' + i" type="button" class="btn btn-primary btn-outline-info btn-md" (click)="$event.stopPropagation()">Reports</button>
-									<button [id]="'rovStartEventButton' + i" type="button" class="btn  btn-primary btn-outline-primary btn-md" *ngIf="!event.dayStarted" (click)="$event.stopPropagation()">Start Event</button>
+									<button [id]="'rovStartEventButton' + i" type="button" class="btn  btn-primary btn-outline-primary btn-md" *ngIf="!event.dayStarted" (click)="startEvent(event)">Start Event</button>
 									<span class="small text-muted text-nowrap">Event ID: {{ event.eventID || 0 }}</span>
 								</h3>
 								<div
@@ -452,7 +486,41 @@
 																	</div>
 																	<div class="col-md-3">
 																		<label class="form-label mb-1">Phone Number</label>
-																		<input class="form-control form-control-sm" [name]="'associatePhone_' + i + '_' + ai" [value]="associate.phoneNumber" maxlength="15" (input)="onAssociateFieldInputChange(event, associate, 'phoneNumber', $event)" />
+																		<div class="location-phone-composite">
+																			<div class="dropdown country-dial-dropdown" (click)="$event.stopPropagation()">
+																				<button
+																					class="btn btn-outline-secondary btn-sm dropdown-toggle country-dial-toggle"
+																					type="button"
+																					[id]="'rovAssociateCountryDialDropdown_' + getAssociateDialKey(event, associate, ai)"
+																					[attr.aria-expanded]="isAssociateCountryDialDropdownOpen(getAssociateDialKey(event, associate, ai))"
+																					(click)="toggleAssociateCountryDialDropdown(getAssociateDialKey(event, associate, ai))">
+																					<ng-container *ngIf="getSelectedCountryDialOptionForAssociate(event, associate, ai) as selectedCountry; else noAssociateCountryCodeSelected">
+																						<span class="country-flag-icon fi" [class]="'country-flag-icon fi fi-' + selectedCountry.iso2.toLowerCase()"></span>
+																						<span class="country-name">{{ selectedCountry.name }}</span>
+																						<sub class="country-dial-code">+{{ selectedCountry.dialCode }}</sub>
+																					</ng-container>
+																					<ng-template #noAssociateCountryCodeSelected>
+																						<span class="country-name">Select Country Code</span>
+																					</ng-template>
+																				</button>
+																				<ul
+																					class="dropdown-menu country-dial-menu"
+																					[class.show]="isAssociateCountryDialDropdownOpen(getAssociateDialKey(event, associate, ai))"
+																					[attr.aria-labelledby]="'rovAssociateCountryDialDropdown_' + getAssociateDialKey(event, associate, ai)">
+																					<li *ngFor="let option of countryDialOptions">
+																						<button
+																							type="button"
+																							class="dropdown-item country-dial-option"
+																							(click)="onAssociateDialCodeSelect(event, associate, ai, option)">
+																							<span class="country-flag-icon fi" [class]="'country-flag-icon fi fi-' + option.iso2.toLowerCase()"></span>
+																							<span class="country-name">{{ option.name }}</span>
+																							<sub class="country-dial-code">+{{ option.dialCode }}</sub>
+																						</button>
+																					</li>
+																				</ul>
+																			</div>
+																			<input class="form-control form-control-sm" [name]="'associatePhone_' + i + '_' + ai" [value]="associate.phoneNumber" maxlength="15" (input)="onAssociateFieldInputChange(event, associate, 'phoneNumber', $event)" />
+																		</div>
 																	</div>
 																</div>
 															</div>

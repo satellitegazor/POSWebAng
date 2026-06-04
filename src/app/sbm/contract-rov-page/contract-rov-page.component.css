@@ -4,6 +4,53 @@
     color: #fff;
 }
 
+.contract-footer {
+    background: #f8fafc;
+    border-top: 1px solid #e0e6ed;
+    z-index: 1050;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+    padding: 0;
+}
+
+.contract-footer #stButtonBottomBar {
+    min-height: 64px;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    width: 100%;
+    gap: 0;
+}
+
+.contract-footer .ftrbtn {
+    border-radius: 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+    height: 64px;
+    width: 100%;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid #e0e6ed;
+    border-right: 1px solid #e0e6ed;
+}
+
+.contract-footer .ftrbtn:first-child {
+    border-left: none;
+}
+
+.contract-footer .ftrbtn:last-child {
+    border-right: none;
+}
+
+.contract-rov-page {
+    padding-bottom: 5.5rem;
+}
+
+.contract-rov-page {
+    padding-bottom: 1.25rem;
+}
+
 .contract-rov-page .accordion-item {
     border: 0;
     border-radius: 0.5rem;
@@ -20,6 +67,7 @@
     --bs-accordion-btn-active-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
 }
 
+
 .contract-rov-page > .accordion > .accordion-item > .accordion-header .accordion-button {
     background-color: #0d3b8c;
     color: #fff;
@@ -30,6 +78,26 @@
 
 .contract-rov-page > .accordion > .accordion-item > .accordion-header .accordion-button.collapsed {
     background-color: #2b5ca8;
+}
+
+#headingRovContract .accordion-button,
+#headingRovOwner .accordion-button,
+#headingRovFacility .accordion-button,
+#headingRovEvents .accordion-button,
+[id^="headingRovEvent"] .accordion-button {
+    background-color: #1a3a7a;
+    color: #ffffff;
+    font-weight: 700;
+    border: 0;
+    box-shadow: none;
+}
+
+#headingRovContract .accordion-button.collapsed,
+#headingRovOwner .accordion-button.collapsed,
+#headingRovFacility .accordion-button.collapsed,
+#headingRovEvents .accordion-button.collapsed,
+[id^="headingRovEvent"] .accordion-button.collapsed {
+    background-color: #3d6ec4;
 }
 
 .contract-rov-page .accordion-button::after {
@@ -46,6 +114,7 @@
     box-shadow: none;
 }
 
+
 .contract-rov-page .accordion .accordion .accordion-button.collapsed {
     background-color: #637b98;
 }
@@ -60,16 +129,61 @@
     padding-bottom: 0.85rem;
 }
 
+.contract-rov-page .table {
+    margin-bottom: 0;
+}
+
+.contract-rov-page .table td {
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    vertical-align: middle;
+    border-top: 0;
+}
+
+.contract-rov-page .table th {
+    border-top: 0;
+    border-bottom: 0;
+}
+
+.contract-rov-page .text-end.text-nowrap,
+.contract-rov-page .form-label {
+    color: #4c5967;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.contract-rov-page .form-control,
+.contract-rov-page .form-select {
+    min-height: 31px;
+    border-color: #ced4da;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.contract-rov-page .form-control:focus,
+.contract-rov-page .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.contract-rov-page .btn-group .btn,
+.contract-rov-page .btn-sm {
+    font-weight: 500;
+}
+
 .contract-rov-page .accordion-button,
 .contract-rov-page .accordion-collapse,
 .contract-rov-page .accordion-body {
     border: 0;
+    
 }
 
 .contract-rov-page .contract-date-display {
     cursor: pointer;
     background-color: #fff;
 }
+
+
 
 .contract-rov-page .contract-date-trigger {
     min-width: 2.2rem;
@@ -86,6 +200,21 @@
     pointer-events: none;
     border: 0;
     padding: 0;
+}
+
+.contract-rov-page .modal-header {
+    background-color: navy;
+    color: #fff;
+    border-bottom: 0;
+}
+
+.contract-rov-page .modal-header .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+.contract-rov-page .modal-content {
+    border: 0;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
 .contract-rov-page .event-associate-panel {
@@ -190,4 +319,99 @@
 .contract-rov-page .event-department-panel .table tr {
     border-top: 0 !important;
     border-bottom: 0 !important;
+}
+
+.contract-rov-page .location-phone-composite {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.contract-rov-page .country-dial-dropdown {
+    flex: 0 0 250px;
+    max-width: 250px;
+}
+
+.contract-rov-page .country-dial-toggle {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    width: 100%;
+    overflow: hidden;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.contract-rov-page .country-dial-menu {
+    max-height: 300px;
+    overflow-y: auto;
+    min-width: 320px;
+    z-index: 1060;
+    position: relative;
+}
+
+.contract-rov-page .country-dial-option {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+}
+
+.contract-rov-page .country-flag-icon {
+    display: inline-block;
+    width: 1.2rem;
+    height: 0.9rem;
+    border-radius: 2px;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+    flex: 0 0 auto;
+}
+
+.contract-rov-page .country-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.contract-rov-page .country-dial-code {
+    font-size: 0.75rem;
+    line-height: 1;
+    color: #4c5967;
+}
+
+@media (max-width: 991.98px) {
+    .contract-rov-page .location-phone-composite {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .contract-rov-page .country-dial-dropdown {
+        flex: 1 1 auto;
+        max-width: none;
+    }
+
+    .contract-rov-page .country-dial-menu {
+        min-width: 100%;
+    }
+
+    .contract-rov-page .table td {
+        padding-top: 0.3rem;
+        padding-bottom: 0.3rem;
+    }
+
+    .contract-rov-page .btn-group {
+        width: 100%;
+    }
+
+    .contract-rov-page .btn-group .btn {
+        flex: 1 1 auto;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .contract-footer #stButtonBottomBar {
+        flex-direction: column;
+    }
+
+    .contract-footer .ftrbtn {
+        height: 54px;
+        font-size: 1rem;
+    }
 }

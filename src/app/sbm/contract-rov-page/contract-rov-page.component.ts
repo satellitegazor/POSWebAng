@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ROV_Contract, ROV_Facility } from '../models/contract.models';
 import { ROV_DepartmentType, ROV_ReferenceResultsModel, Vendor } from '../../longterm/models/contract.models';
@@ -10,6 +10,16 @@ import { FacilityModel } from '../../longterm/models/store.location';
 import { ToastService } from '../../services/toast.service';
 import { UtilService } from '../../services/util.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CountryCode, getCountries, getCountryCallingCode } from 'libphonenumber-js';
+import { EventStartOrEndRequest, ResetPinRequest, ROV_AssociatePINUpdateResultsModel, ROV_StartOrEndModel, StartOrEOD } from '../../shorterm/models';
+import { GlobalConstants } from '../../global/global.constants';
+import { RovApiService } from '../../shorterm/short-term.service';
+
+type CountryDialOption = {
+  iso2: CountryCode;
+  name: string;
+  dialCode: string;
+};
 
 @Component({
   selector: 'app-contract-rov-page',
@@ -24,6 +34,9 @@ export class ContractRovPageComponent implements OnInit {
   private readonly eventsPageSize = 5;
   public currentEventsPage = 0;
   public rovReferenceData: ROV_ReferenceResultsModel = new ROV_ReferenceResultsModel();
+  public countryDialOptions: CountryDialOption[] = [];
+  public openOwnerCountryDialDropdown = false;
+  public openAssociateCountryDialKey: string | null = null;
   
   selectedDepartmentTypeUIDs = new Set<number>();
   departmentPopupEvent: ROV_Event | null = null;
@@ -33,6 +46,10 @@ export class ContractRovPageComponent implements OnInit {
   contractEndInput = '';
   todayDateIso = new Date().toISOString().split('T')[0];
   public vendorName: string = '';
+  private selectedOwnerCountryIso: CountryCode | null = null;
+  private selectedCountryIsoByAssociateKey: Record<string, CountryCode> = {};
+  private associateDialKeyByObject = new WeakMap<ROV_Individual, string>();
+  private associateDialKeySeed = 0;
 
   @ViewChild('contractForm') contractFormRef?: NgForm;
   @ViewChild('contractStartDatePicker') contractStartDatePickerRef?: ElementRef<HTMLInputElement>;
@@ -45,10 +62,12 @@ export class ContractRovPageComponent implements OnInit {
     private router: Router,
     private toastSvc: ToastService,
     private utilSvc: UtilService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private rovApiService: RovApiService
   ) {}
 
   ngOnInit(): void {
+    this.countryDialOptions = this.buildCountryDialOptions();
 
     this.sbmWebApiService.getROVReferenceLists(sessionStorage.getItem('sbm_employeeId') || '').subscribe({
       next: result => {
@@ -80,6 +99,7 @@ export class ContractRovPageComponent implements OnInit {
       next: result => {
         this.rovContract = result?.contract || new ROV_Contract();
         this.normalizeLoadedContractData();
+        this.hydrateLoadedDialCodeSelections();
         this.syncDateInputs();
         this.currentEventsPage = 0;
         this.onVendorLookupClick(this.rovContract.vendorNumber);
@@ -361,6 +381,149 @@ export class ContractRovPageComponent implements OnInit {
     return parsedDate;
   }
 
+  private buildCountryDialOptions(): CountryDialOption[] {
+    const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+
+    return getCountries()
+      .map((iso2): CountryDialOption => ({
+        iso2,
+        name: regionNames.of(iso2) || iso2,
+        dialCode: getCountryCallingCode(iso2)
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  private normalizeDialCode(value: string | null | undefined): string {
+    return String(value || '').replace(/\D/g, '');
+  }
+
+  private resolveCountryDialOption(dialCode: string | null | undefined): CountryDialOption | null {
+    const normalizedDialCode = this.normalizeDialCode(dialCode);
+    if (!normalizedDialCode) {
+      return null;
+    }
+
+    if (normalizedDialCode === '1') {
+      return this.countryDialOptions.find(option => option.iso2 === 'US') || null;
+    }
+
+    return this.countryDialOptions.find(option => option.dialCode === normalizedDialCode) || null;
+  }
+
+  getSelectedCountryDialOptionForOwner(): CountryDialOption | null {
+    if (this.selectedOwnerCountryIso) {
+      const selectedOption = this.countryDialOptions.find(option => option.iso2 === this.selectedOwnerCountryIso);
+      if (selectedOption) {
+        return selectedOption;
+      }
+    }
+
+    return this.resolveCountryDialOption(this.rovContract?.ownerCountryDialCode || '');
+  }
+
+  isOwnerCountryDialDropdownOpen(): boolean {
+    return this.openOwnerCountryDialDropdown;
+  }
+
+  toggleOwnerCountryDialDropdown(): void {
+    this.openOwnerCountryDialDropdown = !this.openOwnerCountryDialDropdown;
+    if (this.openOwnerCountryDialDropdown) {
+      this.openAssociateCountryDialKey = null;
+    }
+  }
+
+  closeOwnerCountryDialDropdown(): void {
+    this.openOwnerCountryDialDropdown = false;
+  }
+
+  onOwnerDialCodeSelect(option: CountryDialOption): void {
+    if (!this.rovContract) {
+      return;
+    }
+
+    this.rovContract.ownerCountryDialCode = option.dialCode;
+    this.selectedOwnerCountryIso = option.iso2;
+    this.closeOwnerCountryDialDropdown();
+    this.markObjectUpdated(this.rovContract);
+    this.contractFormRef?.control.markAsDirty();
+  }
+
+  getAssociateDialKey(event: ROV_Event, associate: ROV_Individual, associateIndex: number): string {
+    const existingKey = this.associateDialKeyByObject.get(associate);
+    if (existingKey) {
+      return existingKey;
+    }
+
+    const eventId = Number((event as any)?.eventId ?? (event as any)?.eventID ?? 0);
+    const individualId = Number((associate as any)?.individualUid ?? (associate as any)?.individualUID ?? 0);
+    this.associateDialKeySeed += 1;
+    const generatedKey = `ev${eventId}_ind${individualId}_i${associateIndex}_k${this.associateDialKeySeed}`;
+    this.associateDialKeyByObject.set(associate, generatedKey);
+    return generatedKey;
+  }
+
+  isAssociateCountryDialDropdownOpen(dialKey: string): boolean {
+    return this.openAssociateCountryDialKey === dialKey;
+  }
+
+  toggleAssociateCountryDialDropdown(dialKey: string): void {
+    this.openAssociateCountryDialKey = this.openAssociateCountryDialKey === dialKey ? null : dialKey;
+    if (this.openAssociateCountryDialKey) {
+      this.openOwnerCountryDialDropdown = false;
+    }
+  }
+
+  closeAssociateCountryDialDropdown(): void {
+    this.openAssociateCountryDialKey = null;
+  }
+
+  getSelectedCountryDialOptionForAssociate(event: ROV_Event, associate: ROV_Individual, associateIndex: number): CountryDialOption | null {
+    const associateDialKey = this.getAssociateDialKey(event, associate, associateIndex);
+    const selectedIso2 = this.selectedCountryIsoByAssociateKey[associateDialKey];
+    if (selectedIso2) {
+      const selectedOption = this.countryDialOptions.find(option => option.iso2 === selectedIso2);
+      if (selectedOption) {
+        return selectedOption;
+      }
+    }
+
+    return this.resolveCountryDialOption(associate.indCountryDialCode || '');
+  }
+
+  onAssociateDialCodeSelect(event: ROV_Event, associate: ROV_Individual, associateIndex: number, option: CountryDialOption): void {
+    const associateDialKey = this.getAssociateDialKey(event, associate, associateIndex);
+
+    associate.indCountryDialCode = option.dialCode;
+    this.selectedCountryIsoByAssociateKey[associateDialKey] = option.iso2;
+    this.closeAssociateCountryDialDropdown();
+    associate.hasUpdates = true;
+    this.onEventFieldInputChange(event);
+    this.contractFormRef?.control.markAsDirty();
+  }
+
+  private hydrateLoadedDialCodeSelections(): void {
+    const ownerOption = this.resolveCountryDialOption(this.rovContract?.ownerCountryDialCode || '');
+    this.selectedOwnerCountryIso = ownerOption?.iso2 || null;
+
+    this.rovContract?.facility?.events?.forEach((event: ROV_Event) => {
+      this.getEventAssociates(event).forEach((associate: ROV_Individual, associateIndex: number) => {
+        const associateOption = this.resolveCountryDialOption(associate.indCountryDialCode || '');
+        if (!associateOption) {
+          return;
+        }
+
+        const dialKey = this.getAssociateDialKey(event, associate, associateIndex);
+        this.selectedCountryIsoByAssociateKey[dialKey] = associateOption.iso2;
+      });
+    });
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.closeOwnerCountryDialDropdown();
+    this.closeAssociateCountryDialDropdown();
+  }
+
   private parseApiDate(value: unknown): Date | null {
     if (!value) {
       return null;
@@ -618,6 +781,28 @@ export class ContractRovPageComponent implements OnInit {
     event.hasUpdates = true;
     this.markObjectUpdated(event);
     this.contractFormRef?.control.markAsDirty();
+
+    let resetPinRequest: ResetPinRequest = {
+      eventID: Number((event as any)?.eventID ?? 0),
+      indvID: Number((associate as any)?.individualUID ?? 0),
+      creds: '',
+      uid: sessionStorage.getItem('sbm_name') || ''
+    };
+
+    this.rovApiService.resetRovAssociatePin(resetPinRequest).subscribe({
+      next: (response: ROV_AssociatePINUpdateResultsModel) => {
+        if (response.results.success) {
+          this.toastSvc.info('PIN reset successfully');
+        }
+        else {
+          this.toastSvc.error('Failed to reset PIN');
+        }
+      },
+      error: () => {
+        // Handle error if needed
+        this.toastSvc.error('An error occurred while resetting PIN');
+      }
+    });
   }
 
   onCopyOwnerDetailsToAssociate(event: ROV_Event, associate: ROV_Individual): void {
@@ -630,6 +815,12 @@ export class ContractRovPageComponent implements OnInit {
     associate.emailAddress = (this.rovContract.ownerEmail || '').toUpperCase();
     associate.phoneNumber = this.rovContract.ownerPhone || '';
     associate.indCountryDialCode = this.rovContract.ownerCountryDialCode || '';
+    const ownerDialOption = this.getSelectedCountryDialOptionForOwner();
+    const associateIndex = this.getEventAssociates(event).indexOf(associate);
+    if (ownerDialOption && associateIndex >= 0) {
+      const associateDialKey = this.getAssociateDialKey(event, associate, associateIndex);
+      this.selectedCountryIsoByAssociateKey[associateDialKey] = ownerDialOption.iso2;
+    }
     associate.hasUpdates = true;
     event.hasUpdates = true;
     this.markObjectUpdated(event);
@@ -1162,5 +1353,31 @@ export class ContractRovPageComponent implements OnInit {
 
     pickerInput.focus();
     pickerInput.click();
+  }
+
+  startEvent(event: ROV_Event): void {
+    if (!event) {
+      return;
+    }
+
+    let reqStartEvent = new EventStartOrEndRequest();
+    reqStartEvent.startOrEnd = StartOrEOD.DayStarted;
+    reqStartEvent.vendorEventId = event.eventID || 0;
+    reqStartEvent.cliTimeVar = GlobalConstants.GetClientTimeVariance();
+    reqStartEvent.uid = sessionStorage.getItem('sbm_name') || ''
+
+    this.sbmWebApiService.eventStartOrEnd(reqStartEvent).subscribe({
+      next: (response: any) => {
+        if (response?.results?.success) {
+          event.eventStartDate = new Date();
+          event.dayStarted = true;
+          this.onEventFieldInputChange(event);
+          this.toastSvc.success('Event: ' + event.eventName + ' started successfully.');
+        }
+        else {
+          this.toastSvc.error('Event: ' + event.eventName + ' Failed to start event. Please try again.');
+        }
+      }
+    });
   }
 }

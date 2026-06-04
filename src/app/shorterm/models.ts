@@ -234,6 +234,14 @@ export class ROV_AssociatePINUpdateResultsModel {
 	associateName: string = '';
 }
 
+    export class ResetPinRequest
+    {
+        public eventID: number = 0;
+        public indvID: number = 0;
+        public creds: string = '';
+        public uid: string = '';
+    }
+
 export class ROV_TransactionDetailsModel {
 	results: any = null;
 	rovTransactionDetails: ROV_TransactionDetails[] = [];
@@ -800,4 +808,17 @@ export class ROVRefundCancelTicket {
 	vmTndr: any = null;
 	rrn: string = '';
 	milstarPlanNum: string = '';
+}
+
+export enum StartOrEOD {
+	
+	DayStarted = 'S',
+	EndOfDay = 'E'
+}
+
+export class EventStartOrEndRequest {
+	vendorEventId: number = 0;
+	startOrEnd: StartOrEOD = StartOrEOD.DayStarted;
+	uid: string = '';
+	cliTimeVar: number = 0;
 }
