@@ -824,7 +824,7 @@ export class ContractLtcPageComponent implements OnInit {
       .map(department => department.departmentTypeUID);
 
     return allowedDepartmentTypeUIDs
-      .map(departmentTypeUID => this.ltcReferenceData?.departmetnTypes.find(item => item.departmentTypeUID === departmentTypeUID))
+      .map(departmentTypeUID => this.ltcReferenceData?.departmentTypes.find(item => item.departmentTypeUID === departmentTypeUID))
       .filter((department): department is LTC_DepartmentType => !!department);
   }
 

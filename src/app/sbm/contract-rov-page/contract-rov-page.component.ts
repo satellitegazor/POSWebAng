@@ -32,6 +32,7 @@ export class ContractRovPageComponent implements OnInit {
   contractStartInput = '';
   contractEndInput = '';
   todayDateIso = new Date().toISOString().split('T')[0];
+  public vendorName: string = '';
 
   @ViewChild('contractForm') contractFormRef?: NgForm;
   @ViewChild('contractStartDatePicker') contractStartDatePickerRef?: ElementRef<HTMLInputElement>;
@@ -98,7 +99,7 @@ export class ContractRovPageComponent implements OnInit {
     }
     this.sbmWebApiService.getRegionCode().subscribe({
       next: result => {
-        const regionCode = result?.cposRegion?.[0]?.regionCode || 'CON';
+        const regionCode = result?.cposRegion?.[0]?.regionCode || 'CR';
         if (!this.rovContract) {
           return;
         }
@@ -121,6 +122,7 @@ export class ContractRovPageComponent implements OnInit {
             this.rovContract.countryName = selectedCountry?.countryName || '';
             this.rovContract.currencyCode = selectedCurrency?.currencyCode || '';
             this.rovContract.currencyDesc = selectedCurrency?.currencyDesc || '';
+            this.rovContract.facility.regionUid = selectedCountry.regionCode;
 
             this.rovContract.facility.events.forEach(e => {
               e.exchRegion = regionCode;
@@ -137,8 +139,8 @@ export class ContractRovPageComponent implements OnInit {
     this.initalizeExchRegion();
 
     this.rovContract.contractUID = 0;
-    this.rovContract.contractStart = new Date();
-    this.rovContract.contractEnd = new Date();
+    this.rovContract.contractStart = {} as Date;
+    this.rovContract.contractEnd = {} as Date;
     this.rovContract.contractNumber = '';
     this.rovContract.vendorNumber = '';
     this.rovContract.regionCode = 'CON';
@@ -164,7 +166,7 @@ export class ContractRovPageComponent implements OnInit {
     this.rovContract.isMerged = false;
     this.rovContract.allowTaxExemption = false;
     this.rovContract.applyCouponsAfterTax = false;
-    this.rovContract.vendorEPaid = false;
+    
     this.rovContract.facility = new ROV_Facility();
     this.rovContract.facility.contractUid = this.rovContract.contractUID;
     this.rovContract.facility.facilityUid = 0;
@@ -174,6 +176,9 @@ export class ContractRovPageComponent implements OnInit {
     this.rovContract.facility.businessCategoryUid = 0;
     this.rovContract.facility.hasUpdates = false;
     const event: ROV_Event = new ROV_Event();
+    
+    let indiv: ROV_Individual = new ROV_Individual();
+    event.associates.push(indiv);
     this.rovContract.facility.events = [event];
     this.syncDateInputs();
     this.currentEventsPage = 0;
@@ -356,7 +361,7 @@ export class ContractRovPageComponent implements OnInit {
   }
 
   private toIsoDateString(value: Date | null): string {
-    if (!value || isNaN(value.getTime())) {
+    if (!value || !(value instanceof Date) || isNaN(value.getTime())) {
       return '';
     }
 
@@ -416,10 +421,11 @@ export class ContractRovPageComponent implements OnInit {
       next: (response: any) => {
         const vendor = response?.vendor || response?.Vendor || response;
         const fetchedVendorNumber = vendor?.vendorNumber || vendor?.VendorNumber || vendor?.sVendorNum || resolvedVendorNumber;
-        const resolvedVendorName = vendor?.vendorName || vendor?.VendorName || vendor?.name || this.rovContract?.vendorName || '';
+        const resolvedVendorName = vendor?.vendorName || vendor?.VendorName || vendor?.name || '';
+        this.rovContract!.vendorEPaid = Boolean(vendor?.vendorEPaid || vendor?.VendorEPaid || vendor?.ePaid);
 
         this.rovContract!.vendorNumber = String(fetchedVendorNumber);
-        this.rovContract!.vendorName = String(resolvedVendorName);
+        this.vendorName = String(resolvedVendorName);
 
         if (this.rovContract?.concessionaire) {
           this.rovContract.concessionaire.vendorNumber = String(fetchedVendorNumber);
@@ -444,10 +450,25 @@ export class ContractRovPageComponent implements OnInit {
         facility.fmfFacility = response;
         this.rovContract?.facility.events.forEach(e => {
           e.exchRegion = response.regionId;
+          e.hasUpdates = true;
         });
       }  
       });
     this.markObjectUpdated(this.rovContract.facility);
+    this.contractFormRef?.control.markAsDirty();
+  }
+
+  onContractFieldInputChange(
+    field: 'contractNumber' | 'ownerFirstName' | 'ownerLastName' | 'ownerEmail' | 'ownerPhone',
+    input: Event
+  ): void {
+    if (!this.rovContract) {
+      return;
+    }
+
+    const value = (input.target as HTMLInputElement | null)?.value || '';
+    this.rovContract[field] = field === 'ownerEmail' ? value.toUpperCase() : value;
+    this.markObjectUpdated(this.rovContract);
     this.contractFormRef?.control.markAsDirty();
   }
 
@@ -722,16 +743,68 @@ export class ContractRovPageComponent implements OnInit {
     this.contractFormRef?.control.markAsDirty();
   }
 
-  onEventDepartmentFeePercentInputChange(event: ROV_Event, department: ROV_Department, input: unknown): void {
-    const target = (input as Event | null)?.target as HTMLInputElement | null;
-    const value = target ? Number(target.value) : Number(input ?? 0);
+  private resolveInputValue(eventOrValue: Event | string | number): string {
+    if (typeof eventOrValue === 'number') {
+      return Number.isFinite(eventOrValue) ? String(eventOrValue) : '';
+    }
 
-    const normalized = Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : 0;
-    department.feePercent = Number(normalized.toFixed(2));
+    if (typeof eventOrValue === 'string') {
+      return eventOrValue;
+    }
+
+    return (eventOrValue.target as HTMLInputElement | null)?.value ?? '';
+  }
+
+  private normalizeFeePercent(value: string | number): number {
+    const parsedValue = Number(value);
+    if (!Number.isFinite(parsedValue)) {
+      return 0;
+    }
+
+    const boundedValue = Math.min(100, Math.max(0, parsedValue));
+    return Number(boundedValue.toFixed(3));
+  }
+
+  onEventDepartmentFeePercentInputChange(event: ROV_Event, department: ROV_Department, eventOrValue: Event | string | number): void {
+
+    const value = this.resolveInputValue(eventOrValue);
+    const nextPercent = this.normalizeFeePercent(value);
+    
+    department.feePercent = nextPercent;
     department.hasUpdates = true;
     event.hasUpdates = true;
     this.markObjectUpdated(event);
     this.contractFormRef?.control.markAsDirty();
+  }
+
+  onEventFieldInputChange(event: ROV_Event): void {
+    event.hasUpdates = true;
+    this.markObjectUpdated(event);
+    this.contractFormRef?.control.markAsDirty();
+  }
+
+  onEventFeeAmountInputChange(event: ROV_Event, value: unknown): void {
+    const parsedValue = Number(value ?? 0);
+    event.flatFeeDollarAmount = Number.isFinite(parsedValue) ? Number(parsedValue.toFixed(2)) : 0;
+    this.onEventFieldInputChange(event);
+  }
+
+  getEventDatePickerValue(event: ROV_Event, field: 'eventStartDate' | 'eventEndDate'): string {
+    const value = field === 'eventStartDate' ? event.eventStartDate : event.eventEndDate;
+    return this.toIsoDateString(value);
+  }
+
+  onEventDateInputChange(event: ROV_Event, field: 'eventStartDate' | 'eventEndDate', isoDateValue: string): void {
+    const parsedDate = this.parseIsoDate(isoDateValue);
+    const resolvedDate = parsedDate || ({} as Date);
+
+    if (field === 'eventStartDate') {
+      event.eventStartDate = resolvedDate;
+    } else {
+      event.eventEndDate = resolvedDate;
+    }
+
+    this.onEventFieldInputChange(event);
   }
 
   onAssociateFieldInputChange(event: ROV_Event, associate: ROV_Individual, field: 'firstName' | 'lastName' | 'emailAddress' | 'phoneNumber', input: Event): void {
@@ -860,6 +933,8 @@ export class ContractRovPageComponent implements OnInit {
         }
       }
 
+      event.facilityNumber = contract.facility.facilityNumber;
+
       event.associates?.forEach((associate, associateIndex) => {
         if (!associate.firstName || associate.firstName.trim().length === 0) {
           errMsg += `Event ${event.eventName}, Associate ${associateIndex + 1}: First Name is mandatory.\n`;
@@ -881,7 +956,17 @@ export class ContractRovPageComponent implements OnInit {
         } else if (department.feePercent < 0 || department.feePercent > 100) {
           errMsg += `Event ${event.eventName}, Department ${department.description}: Fee Percent must be between 0 and 100.\n`;
         }
+        department.maintTimestamp = new Date();
       });
+
+      event.contractStartDate = this.rovContract?.contractStart || ({} as Date);
+      event.contractEndDate = this.rovContract?.contractEnd || ({} as Date);
+      event.lastEodSubmit = new Date();
+      event.maintTimestamp = new Date();
+      event.iglasProcessedDate = new Date(1999, 12, 12);
+      event.walkerProcessedDate = new Date(1999, 12, 12);
+      event.vendorConfirmEventTimestamp = new Date(1999, 12, 12);
+
 
     });
 
@@ -914,5 +999,18 @@ export class ContractRovPageComponent implements OnInit {
       }
     });
 
+  }
+
+  onAddEvent(): void {
+    let newEvent = new ROV_Event();
+    newEvent.eventName = '';
+
+    let newAssociate = new ROV_Individual();
+    newEvent.associates.push(newAssociate);
+
+    this.rovContract?.facility?.events?.push(newEvent);
+
+    this.markObjectUpdated(this.rovContract?.facility);
+    this.contractFormRef?.control.markAsDirty();
   }
 }

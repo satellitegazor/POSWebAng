@@ -61,7 +61,7 @@ export class ROV_Contract {
     contractEnd!: Date;
     contractNumber!: string;
     vendorNumber!: string;
-    vendorName!: string;
+    //vendorName!: string;
     regionCode!: string;
     regionDesc!: string;
     countryCode!: string;

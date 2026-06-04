@@ -207,7 +207,7 @@ export class ROV_ReferenceResultsModel {
 	individualRoleTypes: ROV_IndividualRoleType[] = [];
 	refundReasonTypes: LTC_RefundReasonType[] = [];
 	noSaleReasonTypes: LTC_NoSaleReasonType[] = [];
-	departmetnTypes: ROV_DepartmentType[] = [];
+	departmentTypes: ROV_DepartmentType[] = [];
 	bfDepartments: ROV_DeptOfBusFun[] = [];
 	ticketCancelTypes: LTC_TicketCancelType[] = [];
 	deviceTypes: ROV_DeviceType[] = [];
@@ -225,7 +225,7 @@ export class LTC_ReferenceResultsModel {
 	individualRoleTypes: LTC_IndividualRoleType[] = [];
 	refundReasonTypes: LTC_RefundReasonType[] = [];
 	noSaleReasonTypes: LTC_NoSaleReasonType[] = [];
-	departmetnTypes: LTC_DepartmentType[] = [];
+	departmentTypes: LTC_DepartmentType[] = [];
 	bfDepartments: LTC_DeptOfBusFun[] = [];
 	ticketCancelTypes: LTC_TicketCancelType[] = [];
 	deviceTypes: LTC_DeviceType[] = [];
