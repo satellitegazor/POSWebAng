@@ -1380,4 +1380,8 @@ export class ContractRovPageComponent implements OnInit {
       }
     });
   }
+
+  openReportsMenu(eventId: number): void {
+    this.router.navigate(['sbm/sbmrovrptmenu'], { queryParams: { contractUid: this.rovContract?.contractUID, eventId: eventId } });    
+  }
 }

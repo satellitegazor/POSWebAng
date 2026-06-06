@@ -870,7 +870,7 @@ export class ContractLtcPageComponent implements OnInit {
   }
 
   btnReportsClick(locationUID: number): void {
-    throw new Error('Method not implemented.');
+    this.router.navigate(['sbm/sbmltcsalestranrpt'], { queryParams: { cid: this.ltcContract?.contractUID, lid: locationUID } });
   }  
 
   onBackToContractListing() {

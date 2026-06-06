@@ -1,0 +1,18 @@
+.report-loading-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 2000;
+	background-color: rgba(0, 0, 0, 0.35);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.report-loading-card {
+	background: #ffffff;
+	border-radius: 0.5rem;
+	padding: 0.9rem 1.1rem;
+	box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+	font-weight: 600;
+	color: #1f2a37;
+}

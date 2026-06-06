@@ -240,19 +240,17 @@
 
         <div class="accordion-item shadow-sm mb-3 collapse-contract-store-location"
             *ngFor="let location of contract.locations; let i = index" [attr.data-location-uid]="location.locationUID">
-            <h2 class="accordion-header" [id]="'headingLocation' + location.locationUID">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+            <h2 class="accordion-header d-flex align-items-center gap-2 pe-2" [id]="'headingLocation' + location.locationUID">
+                <button class="accordion-button collapsed flex-grow-1" type="button" data-bs-toggle="collapse"
                     [attr.data-bs-target]="'#locationBody' + location.locationUID" aria-expanded="false"
                     [attr.aria-controls]="'locationBody' + location.locationUID">
-                    <div class="d-flex w-100 justify-content-between align-items-center flex-wrap gap-2">
-                        <span>Location - <span [id]="'spanLocationName' + location.locationUID">{{ location.locationName
-                                || '-' }}</span>
-                        </span>
-                        <button type="button" id="ltc-reports-btn-{{location.locationUID}}"
-                            class="btn btn-outline-info btn-md ltc-reports-btn"
-                            (click)="btnReportsClick(location.locationUID)">Reports</button>
-                    </div>
+                    <span>Location - <span [id]="'spanLocationName' + location.locationUID">{{ location.locationName
+                            || '-' }}</span>
+                    </span>
                 </button>
+                <button type="button" [id]="'ltc-reports-btn-' + location.locationUID"
+                    class="btn btn-outline-info btn-md ltc-reports-btn"
+                    (click)="btnReportsClick(location.locationUID)">Reports</button>
             </h2>
 
             <div class="accordion-collapse collapse" [id]="'locationBody' + location.locationUID"

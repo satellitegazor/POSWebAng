@@ -1,0 +1,141 @@
+<div class="reports-menu-wrap">
+	<table class="reports-menu-table" role="presentation">
+		<tbody>
+			<tr>
+				<td class="menu-col">
+					<ul class="reports-menu-list">
+						<li class="reports-menu-item">
+							<a data-testid="qa-link-action-2" href="#" class="reports-menu-link"
+								(click)="$event.preventDefault(); goToSalesTransactionReport()">
+								<table class="reports-item-grid" role="presentation">
+									<tr>
+										<td class="icon-cell">
+											<svg class="menu-icon" viewBox="0 0 24 24" aria-label="Sales Transaction Report" role="img">
+												<path d="M4 19h16v2H4zM6 10h2v7H6zm5-4h2v11h-2zm5 2h2v9h-2z"></path>
+											</svg>
+										</td>
+										<td class="label-cell">Sales Transaction Report</td>
+										<td class="arrow-cell"><span class="arrow-glyph">&#8250;</span></td>
+									</tr>
+								</table>
+							</a>
+						</li>
+						<li class="reports-menu-item">
+							<a data-testid="qa-link-action" href="#" class="reports-menu-link" (click)="$event.preventDefault(); goToSettlementReport()">
+								<table class="reports-item-grid" role="presentation">
+									<tr>
+										<td class="icon-cell">
+											<svg class="menu-icon" viewBox="0 0 24 24" aria-label="Settlement Report" role="img">
+												<path d="M5 4h14v2H5zm0 4h14v12H5zm3 3h8v2H8zm0 4h5v2H8z"></path>
+											</svg>
+										</td>
+										<td class="label-cell">Settlement Report</td>
+										<td class="arrow-cell"><span class="arrow-glyph">&#8250;</span></td>
+									</tr>
+								</table>
+							</a>
+						</li>
+
+						<!-- <li class="reports-menu-item">
+							<a data-testid="qa-link-action-3" href="#" class="reports-menu-link" (click)="$event.preventDefault(); goToBalanceDueTickets()">
+								<table class="reports-item-grid" role="presentation">
+									<tr>
+										<td class="icon-cell">
+											<svg class="menu-icon" viewBox="0 0 24 24" aria-label="Balance Due Tickets" role="img">
+												<path d="M4 5h16v14H4zm3 3h10v2H7zm0 4h6v2H7zm9.5 1.5a2.5 2.5 0 1 1 0 .01z"></path>
+											</svg>
+										</td>
+										<td class="label-cell">Balance Due Tickets</td>
+										<td class="arrow-cell"><span class="arrow-glyph">&#8250;</span></td>
+									</tr>
+								</table>
+							</a>
+						</li> -->
+
+						<!-- <li class="reports-menu-item">
+							<a data-testid="qa-link-action-4" href="#" class="reports-menu-link" (click)="$event.preventDefault(); goToCancelledTickets()">
+								<table class="reports-item-grid" role="presentation">
+									<tr>
+										<td class="icon-cell">
+											<svg class="menu-icon" viewBox="0 0 24 24" aria-label="Cancelled Tickets" role="img">
+												<path d="M5 4h14v16H5zm3 4h8v2H8zm0 4h8v2H8z"></path>
+												<path d="M7 7l10 10M17 7L7 17" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"></path>
+											</svg>
+										</td>
+										<td class="label-cell">Cancelled Tickets</td>
+										<td class="arrow-cell"><span class="arrow-glyph">&#8250;</span></td>
+									</tr>
+								</table>
+							</a>
+						</li> -->
+
+						<!-- <li class="reports-menu-item">
+							<a data-testid="qa-link-action-5" href="#" class="reports-menu-link" (click)="$event.preventDefault(); goToNoSaleReport()">
+								<table class="reports-item-grid" role="presentation">
+									<tr>
+										<td class="icon-cell">
+											<svg class="menu-icon" viewBox="0 0 24 24" aria-label="No Sale Report" role="img">
+												<path d="M4 5h16v14H4zm3 3h10v2H7zm0 4h6v2H7z"></path>
+												<path d="M9 9l6 6M15 9l-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"></path>
+											</svg>
+										</td>
+										<td class="label-cell">No Sale Report</td>
+										<td class="arrow-cell"><span class="arrow-glyph">&#8250;</span></td>
+									</tr>
+								</table>
+							</a>
+						</li> -->
+
+						<li class="reports-menu-item">
+							<a data-testid="qa-link-action-6" href="#" class="reports-menu-link" (click)="$event.preventDefault(); goToCashDrawerReport()">
+								<table class="reports-item-grid" role="presentation">
+									<tr>
+										<td class="icon-cell">
+											<svg class="menu-icon" viewBox="0 0 24 24" aria-label="Cash Drawer Report" role="img">
+												<path d="M4 6h16v5H4zM4 12h16v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6zm9 3h4v2h-4z"></path>
+											</svg>
+										</td>
+										<td class="label-cell">Cash Drawer Report</td>
+										<td class="arrow-cell"><span class="arrow-glyph">&#8250;</span></td>
+									</tr>
+								</table>
+							</a>
+						</li>
+
+						<li class="reports-menu-item">
+							<a data-testid="qa-link-action-7" href="#" class="reports-menu-link" (click)="$event.preventDefault(); goTaxSettingsReport()">
+								<table class="reports-item-grid" role="presentation">
+									<tr>
+										<td class="icon-cell">
+											<svg class="menu-icon" viewBox="0 0 24 24" aria-label="Tax Settings" role="img">
+												<path d="M5 5h14v14H5zm3 3h8v2H8zm0 4h8v2H8zm0 4h5v2H8z"></path>
+											</svg>
+										</td>
+										<td class="label-cell">Tax Settings</td>
+										<td class="arrow-cell"><span class="arrow-glyph">&#8250;</span></td>
+									</tr>
+								</table>
+							</a>
+						</li>
+						<li class="reports-menu-item">
+							<a data-testid="qa-link-action-7" href="#" class="reports-menu-link"
+								(click)="$event.preventDefault(); goToDailyExchangeRateReport()">
+								<table class="reports-item-grid" role="presentation">
+									<tr>
+										<td class="icon-cell">
+											<svg class="menu-icon" viewBox="0 0 24 24" aria-label="Daily Exchange Rate Report" role="img">
+												<path d="M5 5h14v14H5zm3 3h8v2H8zm0 4h8v2H8zm0 4h5v2H8z"></path>
+											</svg>
+										</td>
+										<td class="label-cell">Daily Exchange Rate Report</td>
+										<td class="arrow-cell"><span class="arrow-glyph">&#8250;</span></td>
+									</tr>
+								</table>
+							</a>
+						</li>
+					</ul>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

@@ -1,0 +1,56 @@
+.canceled-tickets-page {
+	--report-blue: #0f4c81;
+	--report-blue-dark: #0a3559;
+	--report-silver: #e7edf3;
+	--report-border: #cad6e2;
+	padding-bottom: 5.5rem;
+}
+
+.canceled-tickets-page .accordion-button {
+	background: linear-gradient(90deg, var(--report-blue-dark) 0%, var(--report-blue) 100%);
+	color: #fff;
+	font-weight: 700;
+}
+
+.canceled-tickets-page .accordion-button:not(.collapsed) {
+	color: #fff;
+}
+
+.canceled-tickets-page .accordion-button::after {
+	filter: brightness(0) invert(1);
+}
+
+.table-title {
+	background: var(--report-silver);
+	border: 1px solid var(--report-border);
+	color: #17324f;
+	font-weight: 700;
+	padding: 0.6rem 0.8rem;
+}
+
+.location-header {
+	background: #dbe6f0;
+	border-bottom: 1px solid var(--report-border);
+	color: #12314f;
+	font-weight: 700;
+}
+
+.table thead th {
+	background: #eef3f8;
+	color: #17324f;
+	font-size: 0.86rem;
+	font-weight: 700;
+	border-bottom: 1px solid var(--report-border);
+	white-space: nowrap;
+}
+
+.table tbody td {
+	font-size: 0.9rem;
+}
+
+@media (max-width: 767.98px) {
+	.table tbody td,
+	.table thead th {
+		font-size: 0.8rem;
+	}
+}

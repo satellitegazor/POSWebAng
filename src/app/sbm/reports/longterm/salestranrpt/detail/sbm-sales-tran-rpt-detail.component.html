@@ -1,0 +1,64 @@
+<section class="card mt-3" *ngIf="rptDetail && rptDetail.length > 0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table id="tblucrDetail" class="table table-striped table-hover table-sm align-middle mb-0">
+                <thead class="table-secondary">
+                    <tr>
+                        <th scope="col" class="text-center sort-header" (click)="sortBy('ticketId')">
+                            Ticket ID <span class="sort-indicator">{{ getSortDirectionSymbol('ticketId') }}</span>
+                        </th>
+                        <th scope="col" class="text-center sort-header" (click)="sortBy('date')">
+                            Date <span class="sort-indicator">{{ getSortDirectionSymbol('date') }}</span>
+                        </th>
+                        <th *ngIf="categorizedBy == 'L' || categorizedBy == 'F'" scope="col" class="text-start">Facility</th>
+                        <th *ngIf="categorizedBy == 'A'" scope="col" class="text-start">Associate</th>
+                        <th scope="col" class="text-end sort-header" (click)="sortBy('mdseSales')">
+                            Mdse Sales <span class="sort-indicator">{{ getSortDirectionSymbol('mdseSales') }}</span>
+                        </th>
+                        <th scope="col" class="text-end sort-header" (click)="sortBy('tax')">
+                            Tax <span class="sort-indicator">{{ getSortDirectionSymbol('tax') }}</span>
+                        </th>
+                        <th scope="col" class="text-end sort-header" (click)="sortBy('envTax')">
+                            Env. Tax <span class="sort-indicator">{{ getSortDirectionSymbol('envTax') }}</span>
+                        </th>
+                        <th scope="col" class="text-end sort-header" (click)="sortBy('concessionDiscount')">
+                            Concession Discount <span class="sort-indicator">{{ getSortDirectionSymbol('concessionDiscount') }}</span>
+                        </th>
+                        <th scope="col" class="text-end sort-header" (click)="sortBy('exchangeCoupons')">
+                            Exchange Cpns <span class="sort-indicator">{{ getSortDirectionSymbol('exchangeCoupons') }}</span>
+                        </th>
+                        <th scope="col" class="text-end d-none">KATUSA Cpns</th>
+                        <th scope="col" class="text-center d-none sort-header" (click)="sortBy('tip')">
+                            Tip <span class="sort-indicator">{{ getSortDirectionSymbol('tip') }}</span>
+                        </th>
+                        <th scope="col" class="text-end sort-header" (click)="sortBy('total')">
+                            Total <span class="sort-indicator">{{ getSortDirectionSymbol('total') }}</span>
+                        </th>
+                        <th scope="col" class="text-center sort-header" (click)="sortBy('tender')">
+                            Tender <span class="sort-indicator">{{ getSortDirectionSymbol('tender') }}</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let detail of sortedRptDetail">
+                        <td class="text-center">
+                            <a [routerLink]="['/ltktrcpt']" [queryParams]="{ txnid: detail.transactionId, frmSalesTrnRpt: true, src: 'V' }">{{detail.ticketNumber}}</a>
+                        </td>
+                        <td class="text-center">{{detail.transactionDate | date:'MM/dd/yyyy'}}</td>
+                        <td *ngIf="categorizedBy == 'L' || categorizedBy == 'F'" class="text-start">{{detail.facilityNumber}}</td>
+                        <td *ngIf="categorizedBy == 'A'" class="text-start">{{detail.associate}}</td>
+                        <td class="text-end">{{detail.sales | currency}}</td>
+                        <td class="text-end">{{detail.salesTax | currency}}</td>
+                        <td class="text-end">{{detail.envTax | currency}}</td>
+                        <td class="text-end">{{detail.vendorCoupons | currency}}</td>
+                        <td class="text-end">{{detail.exchangeCoupons | currency}}</td>
+                        <td class="text-end d-none">{{detail.katusaCoupons | currency}}</td>
+                        <td class="text-center d-none">{{detail.tipAmount | currency}}</td>
+                        <td class="text-end">{{getTotal(detail) | currency}}</td>
+                        <td class="text-center">{{detail.tenderTypeDescription}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

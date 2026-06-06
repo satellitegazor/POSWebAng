@@ -299,7 +299,7 @@
 												({{ formatDate(event.eventStartDate) || '-' }} to {{ formatDate(event.eventEndDate) || '-' }})
 											</span>
 									</button>
-									<button [id]="'rovEventReportsButton' + i" type="button" class="btn btn-primary btn-outline-info btn-md" (click)="$event.stopPropagation()">Reports</button>
+									<button [id]="'rovEventReportsButton' + i" type="button" class="btn btn-primary btn-outline-info btn-md" (click)="openReportsMenu(event.eventID)">Reports</button>
 									<button [id]="'rovStartEventButton' + i" type="button" class="btn  btn-primary btn-outline-primary btn-md" *ngIf="!event.dayStarted" (click)="startEvent(event)">Start Event</button>
 									<span class="small text-muted text-nowrap">Event ID: {{ event.eventID || 0 }}</span>
 								</h3>
