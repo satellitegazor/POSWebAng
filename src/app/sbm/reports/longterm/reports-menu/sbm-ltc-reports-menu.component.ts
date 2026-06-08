@@ -34,7 +34,7 @@ export class SbmLtcReportsMenuComponent implements OnInit {
   }
 
   goToSettlementReport(): void {
-    this.router.navigate(['/sbmltcrptsettlement'], { queryParams: { contractid: this.contractId, locationid: this.locationId } });
+    this.router.navigate(['/sbmltcsetlmntrpt'], { queryParams: { contractid: this.contractId, locationid: this.locationId } });
   }
 
   goTaxSettingsReport(): void {

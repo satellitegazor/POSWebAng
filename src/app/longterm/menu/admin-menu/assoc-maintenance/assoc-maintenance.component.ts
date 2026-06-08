@@ -106,7 +106,7 @@ export class AssocMaintenanceComponent implements OnInit {
     const individualUID = this.logonDataService.getLocationConfig().individualUID;
     this.pinReqdForSalesTran = this.logonDataService.getLocationConfig().pinReqdForSalesTran ? true : false;
     // Call the service and assign the result
-    this.posApiService.getLocationAssociates(locationId, individualUID).subscribe({
+    this.posApiService.getLocationAssociates(locationId, String(individualUID)).subscribe({
       next: (result) => {
         // Ensure code and description are set for dropdown compatibility
         if (result && result.associates) {

@@ -145,7 +145,7 @@ export class SbmLtcSalesTranRptPageComponent implements OnInit {
         this.saleTranReportData = reportObj;
         this.onTransTypeChange('A');
 
-        this.posApiSvc.getLocationAssociates(this.locationId, this.indivId).subscribe(data => {
+        this.posApiSvc.getLocationAssociates(this.locationId, String(this.indivId)).subscribe(data => {
           this.SaleAssocList = data.associates
         })
 

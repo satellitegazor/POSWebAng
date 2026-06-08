@@ -16,7 +16,7 @@ export class LocationAssocEffects {
         return this.action$.pipe(
             ofType(getLocationAssocStart),
             exhaustMap((action) => {
-                return this.locCnfgSvc.getLocationAssociates(action.locationId, action.individualUID).pipe(
+                return this.locCnfgSvc.getLocationAssociates(action.locationId, String(action.individualUID)).pipe(
                     map(locAssocs => {
                         return getLocationAssocSuccess({locAssocs});
                     }),

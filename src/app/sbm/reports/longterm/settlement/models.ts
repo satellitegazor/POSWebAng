@@ -1,5 +1,5 @@
-import { MobileBase } from '../../../models/mobile.base';
-import { LTC_Contract } from '../../models/contract.models';
+import { MobileBase } from '../../../../models/mobile.base';
+import { LTC_Contract } from '../../../../longterm/models/contract.models';
 
 export class LTC_SettlementDetails {
 	facilityNumber: string = '';

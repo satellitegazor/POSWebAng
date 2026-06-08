@@ -105,12 +105,19 @@ export class PosApiService {
             { headers: this.headerObjs });
     }
 
-    public getLocationAssociates(locationId: number, individualUID: number) {
+    public getLocationAssociates(locationId: number, sbm_user_name: string): Observable<LTC_LocationAssociatesResultsModel> {
 
         return this.httpClient.get<LTC_LocationAssociatesResultsModel>(GlobalConstants.CPOS_SVCS_URL + '/ltc/GetLocationAssociates?guid=' + GlobalConstants.GET_GUID +
-            '&lid=' + locationId.toString() + '&uid=' + individualUID.toString() + '&active=1',
+            '&lid=' + locationId.toString() + '&uid=' + sbm_user_name + '&active=1',
             { headers: this.headerObjs });
     }
+
+    // public getLocationAssociates(locationId: number, individualUID: number) {
+
+    //     return this.httpClient.get<LTC_LocationAssociatesResultsModel>(GlobalConstants.CPOS_SVCS_URL + '/ltc/GetLocationAssociates?guid=' + GlobalConstants.GET_GUID +
+    //         '&lid=' + locationId.toString() + '&uid=' + individualUID.toString() + '&active=1',
+    //         { headers: this.headerObjs });
+    // }
 
     public getLTCStoreLocation(locationId: number, uid: string): Observable<LTC_StoreLocation_Result> {
         return this.httpClient.get<LTC_StoreLocation_Result>(

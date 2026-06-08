@@ -64,7 +64,7 @@ export class TktSaleItemComponent implements OnInit {
         this.allowTips = locConfig.allowTips;
         this.indivId = +this._logonDataSvc.getLTVendorLogonData().individualUID;        
 
-        this._saleTranSvc.getLocationAssociates(this.locationId, this.indivId).subscribe(data => {
+        this._saleTranSvc.getLocationAssociates(this.locationId, String(this.indivId)).subscribe(data => {
             this.SaleAssocList = data.associates
         })
 

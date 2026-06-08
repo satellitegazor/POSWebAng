@@ -55,7 +55,7 @@ export class TipsModalDlgComponent implements OnInit {
       }
     });
 
-    this._saleTranSvc.getLocationAssociates(locCnfg.locationUID, locCnfg.individualUID).subscribe(data => {
+    this._saleTranSvc.getLocationAssociates(locCnfg.locationUID, String(locCnfg.individualUID)).subscribe(data => {
 
 
       data.associates.forEach(assoc => {

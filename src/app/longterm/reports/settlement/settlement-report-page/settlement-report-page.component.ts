@@ -121,7 +121,7 @@ export class SettlementReportPageComponent implements OnInit {
   }
 
   private loadAssociateEmails(locationId: number, individualUID: number): void {
-    this.posApiService.getLocationAssociates(locationId, individualUID).subscribe({
+    this.posApiService.getLocationAssociates(locationId, String(individualUID)).subscribe({
       next: data => {
         this.SaleAssocList = data?.associates ?? [];
       },

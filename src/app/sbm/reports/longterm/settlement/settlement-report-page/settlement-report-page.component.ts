@@ -1,12 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { LTC_Associates } from '../../../models/location.associates';
-import { PosApiService, SendEmailRequest } from '../../../services/pos-api-service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PosApiService, SendEmailRequest } from '../../../../../longterm/services/pos-api-service';
 import { LTC_SettlementDetails, SettlementReportResultModel } from '../models';
-import { LogonDataService } from '../../../../global/logon-data-service.service';
-import { ToastService } from '../../../../services/toast.service';
+
+import { ToastService } from '../../../../../services/toast.service';
+import { SbmWebApiService } from '../../../../services/sbm-web-api.service';
+import { take } from 'rxjs';
+import { LTC_Contract } from '../../../../../longterm/models/contract.models';
+import { LTC_LocationAssociatesResultsModel } from '../../../../../longterm/models/location.associates';
+import { LTC_StoreLocation } from '../../../../../longterm/models/store.location';
+import { MobileBase } from '../../../../../models/mobile.base';
+import { LTC_Associates} from '../../../../../longterm/models/location.associates'
 
 export interface FacilityGroup {
   facilityNumber: string;
@@ -49,18 +55,18 @@ export interface NonPacAccountingRow {
 }
 
 @Component({
-  selector: 'app-settlement-report-page',
+  selector: 'app-sbm-ltc-settlement-report-page',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './settlement-report-page.component.html',
   styleUrls: ['./settlement-report-page.component.css']
 })
-export class SettlementReportPageComponent implements OnInit {
+export class SbmLtcSettlementReportPageComponent implements OnInit {
 
   stlmtRptDataMdl: SettlementReportResultModel | null = null;
   selectedMonth: number = new Date().getMonth() + 1;
   selectedYear: number = new Date().getFullYear();
-  indivId: number = 0;
+  sbm_user_name: string = '';
   public SaleAssocList: LTC_Associates[] = [];
   showEmailPopup: boolean = false;
   selectedEmailOption: 'self' | 'manager' | 'custom' = 'self';
@@ -68,6 +74,16 @@ export class SettlementReportPageComponent implements OnInit {
   emailSubmitError: string = '';
   emailSubmitSuccess: string = '';
   isSendingEmail: boolean = false;
+  ltcContract: LTC_Contract | null = null;
+  locationName: string = ''
+  locationId: number = 0;
+  contractId: number = 0;
+  facilityNumber: string = '';
+  fromDate: string = '';
+  toDate: string = '';
+  contractNumber: string = '';
+  vendorName: string = '';
+  vendorNumber: string = '';
 
   readonly months = [
     { value: 1, label: 'January' },  { value: 2, label: 'February' },
@@ -85,33 +101,62 @@ export class SettlementReportPageComponent implements OnInit {
 
   constructor(
     private posApiService: PosApiService,
-    private logonDataSvc: LogonDataService,
+    private sbmWebApiService: SbmWebApiService,
     private router: Router,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private activRoute: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    const locCnfg = this.logonDataSvc.getLocationConfig();
-    this.indivId = locCnfg.individualUID || 0;
+    
+    
     const month = this.getMonthToken();
-    this.getSettlmntRptData(locCnfg.contractUID, month, String(locCnfg.individualUID), locCnfg.locationUID);
+
+    this.activRoute.queryParams.pipe(take(1)).subscribe(params => {
+
+      this.contractId = +params['cid'] || 0;
+      this.locationId = +params['lid'] || 0;
+      this.sbm_user_name = sessionStorage.getItem('sbm_name') || '';
+
+      this.sbmWebApiService.loadLTCContract(this.contractId, this.sbm_user_name).subscribe({
+        next: (result) => {
+          this.ltcContract = result.contract;
+          this.locationId = this.ltcContract?.locations[0]?.locationUID || 0;
+          this.locationName = this.ltcContract?.locations[0]?.locationName || '';
+          this.contractNumber = this.ltcContract?.contractNumber || '';
+          this.facilityNumber = this.ltcContract?.locations[0]?.facilities[0]?.facilityNumber || '';
+          this.vendorName = this.ltcContract?.vendorName || '';
+          this.vendorNumber = this.ltcContract?.vendorNumber || '';
+
+          this.getSettlmntRptData(this.ltcContract?.contractUID || 0, month, String(this.sbm_user_name), this.locationId);
+
+        }
+      });
+    });
   }
+
+  onLocationChange() {
+    this.getSettlmntRptData(this.ltcContract?.contractUID || 0, this.getMonthToken(), String(this.sbm_user_name), this.locationId);
+  }
+
 
   getSettlmntRptData(cid: number = 0, month: string = '', uid: string = '', lid: number = 0): void {
 
-    const locCnfg = this.logonDataSvc.getLocationConfig();
+    
     // Clear previous results so stale Fee Summary data is not displayed during/after refresh.
     this.stlmtRptDataMdl = null;
     this.SaleAssocList = [];
 
-    this.posApiService.getSettlementReport(cid, month, uid, lid, locCnfg.rgnCode)
+    let rgnCode = sessionStorage.getItem('rgnCode') || '';
+
+    this.posApiService.getSettlementReport(cid, month, uid, lid, rgnCode)
       .subscribe({
-        next: result => {
+        next: (result: SettlementReportResultModel) => {
           this.stlmtRptDataMdl = result;
           if (result.selectedMonth) this.selectedMonth = result.selectedMonth;
           if (result.selectedYear) this.selectedYear = result.selectedYear;
 
-          this.loadAssociateEmails(lid, Number(uid) || this.indivId);
+          this.loadAssociateEmails(lid, this.sbm_user_name);
         },
         error: () => {
           this.stlmtRptDataMdl = null;
@@ -120,9 +165,9 @@ export class SettlementReportPageComponent implements OnInit {
       });
   }
 
-  private loadAssociateEmails(locationId: number, individualUID: number): void {
-    this.posApiService.getLocationAssociates(locationId, individualUID).subscribe({
-      next: data => {
+  private loadAssociateEmails(locationId: number, individualUID: String): void {
+    this.posApiService.getLocationAssociates(locationId, String(individualUID)).subscribe({
+      next: (data: LTC_LocationAssociatesResultsModel) => {
         this.SaleAssocList = data?.associates ?? [];
       },
       error: () => {
@@ -132,9 +177,9 @@ export class SettlementReportPageComponent implements OnInit {
   }
 
   refreshReport(): void {
-    const locCnfg = this.logonDataSvc.getLocationConfig();
+    
     const month = this.getMonthToken();
-    this.getSettlmntRptData(locCnfg.contractUID, month, String(locCnfg.individualUID), locCnfg.locationUID);
+    this.getSettlmntRptData(this.contractId, month, String(this.sbm_user_name), this.locationId);
   }
 
   private getMonthToken(): string {
@@ -311,12 +356,12 @@ export class SettlementReportPageComponent implements OnInit {
   }
 
   get selectedLocation() {
-    const locations = this.stlmtRptDataMdl?.contract?.locations ?? [];
+    const locations: LTC_StoreLocation[] = this.stlmtRptDataMdl?.contract?.locations ?? [];
     if (!locations.length) {
       return null;
     }
 
-    const fallbackLocId = this.logonDataSvc.getLocationConfig()?.locationUID ?? 0;
+    const fallbackLocId = this.locationId;
     const locationId = this.stlmtRptDataMdl?.locationId ?? fallbackLocId;
     return locations.find(x => x.locationUID === locationId) ?? locations[0];
   }
@@ -427,10 +472,9 @@ export class SettlementReportPageComponent implements OnInit {
       EmailContent: this.buildSettlementReportHtml()
     };
 
-    const uid = this.logonDataSvc.getLocationConfig()?.individualUID || this.indivId;
     this.isSendingEmail = true;
-    this.posApiService.sendEmail(String(uid), request).subscribe({
-      next: result => {
+    this.posApiService.sendEmail(this.sbm_user_name, request).subscribe({
+      next: (result: MobileBase) => {
         this.isSendingEmail = false;
         if (result?.success) {
           this.emailSubmitSuccess = 'Email sent successfully.';
@@ -449,7 +493,7 @@ export class SettlementReportPageComponent implements OnInit {
   }
 
   get selfAssociateEmail(): string {
-    return this.SaleAssocList.find(assoc => assoc.individualUID === this.indivId)?.emailAddress?.trim() || '';
+    return this.SaleAssocList.find(assoc => assoc.individualUID === Number(this.sbm_user_name))?.emailAddress?.trim() || '';
   }
 
   get managerAssociateEmail(): string {

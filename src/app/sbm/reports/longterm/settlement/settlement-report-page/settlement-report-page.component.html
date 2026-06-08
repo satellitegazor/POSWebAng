@@ -20,7 +20,11 @@
 							<label class="form-label fw-semibold mb-1">Location Name</label>
 						</div>
 						<div class="col-12 col-md-4">
-							<div class="border rounded p-2 bg-light">
+							<select class="form-select" [(ngModel)]="locationId" name="locationSelect" (change)="onLocationChange()">
+								<option [value]="0">All</option>
+								<option *ngFor="let loc of ltcContract.locations" [value]="loc.locationUID">{{ loc.locationName }}</option>
+							</select>
+							<!-- <div class="border rounded p-2 bg-light">
 								<span id="ucrFacName">{{ displayLocationName }}</span>
 							</div>
 						</div>
@@ -30,7 +34,7 @@
 						<div class="col-12 col-md-4">
 							<div class="border rounded p-2 bg-light">
 								<span id="ucrVendorNumber">{{ displayVendorNumber }}</span>
-							</div>
+							</div> -->
 						</div>
 					</div>
 					<div class="row g-3 align-items-end mb-2">

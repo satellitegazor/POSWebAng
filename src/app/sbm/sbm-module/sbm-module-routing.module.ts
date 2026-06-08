@@ -11,6 +11,7 @@ import { SbmLtcNoSaleReportPageComponent } from '../reports/longterm/nosalerpt/n
 import { SbmLtcBalDueTktsPageComponent } from '../reports/longterm/balduetkts/sbm-ltc-bal-due-tkts-page.component';
 import { SbmLtcReportsMenuComponent } from '../reports/longterm/reports-menu/sbm-ltc-reports-menu.component';
 import { SbmLtcPriceListRptComponent } from '../reports/longterm/pricelist/price-list-rpt.component';
+import { SbmLtcSettlementReportPageComponent } from '../reports/longterm/settlement/settlement-report-page/settlement-report-page.component';
 
 const routes: Routes = [  
   { path: 'logon', component: SbmLoginComponent },
@@ -24,7 +25,8 @@ const routes: Routes = [
   { path: 'sbmltcsalestranrpt', component: SbmLtcSalesTranRptPageComponent },
   { path: 'sbmltccanceledrpt', component: SbmLtcCanceledTicketsPageComponent },
   { path: 'sbmltccashdrawrpt', component: SbmLtcBalDueTktsPageComponent }, // Placeholder until cash drawer report component is created
-  { path: 'sbmltcpricelistrpt', component: SbmLtcPriceListRptComponent }
+  { path: 'sbmltcpricelistrpt', component: SbmLtcPriceListRptComponent },
+  { path: 'sbmltcsetlmntrpt', component: SbmLtcSettlementReportPageComponent }
 ];
 
 @NgModule({
