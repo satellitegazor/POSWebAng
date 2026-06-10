@@ -128,6 +128,12 @@ logonUserRoleType: string = '';
         return 'Price List Report';
       case path.includes('/sbmltcsetlmntrpt'): 
         return 'Settlement Report'; 	
+      case path.includes('/ltcpage'):
+          return 'Long Term Contract Details';
+      case path.includes('/rovpage'):
+        return 'Short Term (Roving) Contract Details';
+      case path.includes('/sbmltcrptdlyexchrate'):
+          return 'Daily Exchange Rate Report';
       default:
         return 'Point of Sale';
     }
