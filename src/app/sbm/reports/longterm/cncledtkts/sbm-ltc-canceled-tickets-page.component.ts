@@ -50,7 +50,7 @@ export class SbmLtcCanceledTicketsPageComponent implements OnInit {
   emailSubmitSuccess: string = '';
   isSendingEmail: boolean = false;
   showEmailPopup: boolean = false;
-  selfAssociateEmail: string = '';
+  ownerAssociateEmail: string = '';
   managerAssociateEmail: string = '';
 
   constructor(
@@ -448,7 +448,7 @@ export class SbmLtcCanceledTicketsPageComponent implements OnInit {
 
   private getSelectedRecipientEmail(): string {
     if (this.selectedEmailOption === 'self') {
-      return this.selfAssociateEmail;
+      return this.ownerAssociateEmail;
     }
 
     if (this.selectedEmailOption === 'manager') {
@@ -464,7 +464,7 @@ export class SbmLtcCanceledTicketsPageComponent implements OnInit {
 
   onEmailClick($event: Event) {
     $event.preventDefault();
-    this.selectedEmailOption = this.selfAssociateEmail ? 'self' : (this.managerAssociateEmail ? 'manager' : 'custom');
+    this.selectedEmailOption = this.ownerAssociateEmail ? 'self' : (this.managerAssociateEmail ? 'manager' : 'custom');
     this.customEmailAddress = '';
     this.emailSubmitError = '';
     this.emailSubmitSuccess = '';

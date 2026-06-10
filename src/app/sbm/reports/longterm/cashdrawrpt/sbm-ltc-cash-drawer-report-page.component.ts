@@ -225,7 +225,7 @@ export class SbmLtcCashDrawerReportPageComponent implements OnInit {
 
   onEmailClick($event: Event): void {
     $event.preventDefault();
-    this.selectedEmailOption = this.selfAssociateEmail ? 'self' : (this.managerAssociateEmail ? 'manager' : 'custom');
+    this.selectedEmailOption = this.ownerAssociateEmail ? 'self' : (this.managerAssociateEmail ? 'manager' : 'custom');
     this.customEmailAddress = '';
     this.emailSubmitError = '';
     this.emailSubmitSuccess = '';
@@ -277,9 +277,8 @@ export class SbmLtcCashDrawerReportPageComponent implements OnInit {
   isSendingEmail: boolean = false;
   showEmailPopup: boolean = false;
 
-  get selfAssociateEmail(): string {
-    //return this.SaleAssocList.find(assoc => assoc.individualUID === this.indivId)?.emailAddress?.trim() || '';
-    return "";
+  get ownerAssociateEmail(): string {
+    return this.SaleAssocList.find(assoc => ((assoc.code || '').toUpperCase() === 'RLTYP_CONC_OWNR'))?.emailAddress?.trim() || '';
   }
 
   get managerAssociateEmail(): string {
@@ -288,7 +287,7 @@ export class SbmLtcCashDrawerReportPageComponent implements OnInit {
 
   onEmail($event: Event) {
     $event.preventDefault();
-    this.selectedEmailOption = this.selfAssociateEmail ? 'self' : (this.managerAssociateEmail ? 'manager' : 'custom');
+    this.selectedEmailOption = this.ownerAssociateEmail ? 'self' : (this.managerAssociateEmail ? 'manager' : 'custom');
     this.customEmailAddress = '';
     this.emailSubmitError = '';
     this.emailSubmitSuccess = '';
@@ -355,7 +354,7 @@ export class SbmLtcCashDrawerReportPageComponent implements OnInit {
 
   private getSelectedRecipientEmail(): string {
     if (this.selectedEmailOption === 'self') {
-      return this.selfAssociateEmail;
+      return this.ownerAssociateEmail;
     }
 
     if (this.selectedEmailOption === 'manager') {

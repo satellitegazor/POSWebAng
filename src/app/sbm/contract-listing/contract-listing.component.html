@@ -22,7 +22,7 @@
 		<div class="card-header">
 			<div class="row g-2 align-items-center">
 				<div class="col">
-					<h6 class="mb-0">Exchange Contracts</h6>
+					<h3 class="mb-0 white">Exchange Contracts</h3>
 				</div>
 				<div class="col-auto text-muted small" *ngIf="!isLoading">
 					{{ exchanges.length }} exchange(s)
@@ -34,15 +34,16 @@
 			<div *ngIf="isLoading" class="p-4 text-center text-muted">Loading contracts...</div>
 
 			<div *ngIf="!isLoading">
-				<div class="contract-list-header d-none d-md-grid contract-list-global-header">
+				<div class="contract-list-header">
 					<div class="contract-type">Type</div>
 					<div class="contract-main">Contract Number</div>
+					<div class="contract-actions-reports" style="justify-content: center;">	</div>
 					<div class="contract-date">Contract Start Date</div>
 					<div class="contract-date">Contract End Date</div>
 					<div class="contract-actions" style="justify-content: center;">
-						<span>Actions</span>
-						<div class="contract-start-event-slot"></div>
+						<span>Actions</span>						
 					</div>
+					<div class="contract-start-event-slot"></div>
 				</div>
 
 				<div class="card shadow-sm exchange-panel mb-3" *ngFor="let exchange of exchanges">
@@ -63,34 +64,31 @@
 					<div class="card-body pt-3 contract-listing-body">
 						<div class="contract-list card border-0 bg-light-subtle">
 							<div class="contract-item" *ngFor="let contract of exchange.contractsInExchange">
-
-
 								<div class="contract-type">
 									<b *ngIf="contract.appType === 1">R</b>
 								</div>								
-								
 								<div class="contract-main">
 									<div class="contract-number"><a (click)="navigateToPage(contract)" style="cursor: pointer;">{{ contract.venderData.vendorName }} ({{contract.venderData.vendorNumber}})</a></div>
 									<div class="contract-facilities" *ngIf="contract.facNumberList?.length">
 										{{ contract.facNumberList.join(', ') }}
 									</div>
 								</div>
-
+								<div class="contract-actions-reports text-md-end">
+									<button type="button" [id]="'reportBtn' + contract.contractId" class="btn btn-secondary btn-sm">Reports</button>
+								</div>
 								<div class="contract-date">
 									<span class="contract-label d-md-none">Start</span>
 									{{ formatContractDate(contract.contractStartDate) }}
 								</div>
-
 								<div class="contract-date">
 									<span class="contract-label d-md-none">End</span>
 									{{ formatContractDate(contract.contractEndDate) }}
 								</div>
-
-								<div class="contract-actions text-md-end">
-									<button type="button" class="btn btn-outline-secondary btn-sm">Ticket Look-up</button>
-									<div class="contract-start-event-slot">
-										<button *ngIf="contract.appType === 1" type="button" class="btn btn-outline-primary btn-sm">Start Event</button>
-									</div>
+								<div class="contract-actions-ticket-lookup text-md-end">
+									<button type="button" [id]="'ticketLookupBtn' + contract.contractId" class="btn btn-secondary btn-sm">Ticket Look-up</button>
+								</div>
+								<div class="contract-actions text-md-end contract-start-event-slot">
+									<button *ngIf="contract.appType === 1" type="button" [id]="'startEventBtn' + contract.contractId" class="btn btn-secondary btn-sm">Start Event</button>
 								</div>
 							</div>
 

@@ -439,7 +439,7 @@ export class SbmLtcSettlementReportPageComponent implements OnInit {
   }
 
   onEmail(): void {
-    this.selectedEmailOption = this.selfAssociateEmail ? 'self' : (this.managerAssociateEmail ? 'manager' : 'custom');
+    this.selectedEmailOption = this.ownerAssociateEmail ? 'self' : (this.managerAssociateEmail ? 'manager' : 'custom');
     this.customEmailAddress = '';
     this.emailSubmitError = '';
     this.emailSubmitSuccess = '';
@@ -492,9 +492,10 @@ export class SbmLtcSettlementReportPageComponent implements OnInit {
     });
   }
 
-  get selfAssociateEmail(): string {
-    return this.SaleAssocList.find(assoc => assoc.individualUID === Number(this.sbm_user_name))?.emailAddress?.trim() || '';
+  get ownerAssociateEmail(): string {
+    return this.SaleAssocList.find(assoc => ((assoc.code || '').toUpperCase() === 'RLTYP_CONC_OWNR'))?.emailAddress?.trim() || '';
   }
+
 
   get managerAssociateEmail(): string {
     return this.SaleAssocList.find(assoc => (assoc.code || '').toUpperCase() === 'RLTYP_CONC_MNGR')?.emailAddress?.trim() || '';
@@ -502,7 +503,7 @@ export class SbmLtcSettlementReportPageComponent implements OnInit {
 
   private getSelectedRecipientEmail(): string {
     if (this.selectedEmailOption === 'self') {
-      return this.selfAssociateEmail;
+      return this.ownerAssociateEmail;
     }
     if (this.selectedEmailOption === 'manager') {
       return this.managerAssociateEmail;

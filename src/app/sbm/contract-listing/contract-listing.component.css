@@ -12,7 +12,7 @@
 }
 
 .contract-listing-page .card-header {
-	background-color: navy !important;
+	background-color: #0000bb !important;
 }
 
 .contract-list-options {
@@ -36,6 +36,7 @@
 .exchange-panel .card-header {
 	padding-top: 0.5rem;
 	padding-bottom: 0.35rem;
+	background-color: #0000ef;
 }
 
 .exchange-panel .card-body {
@@ -67,10 +68,48 @@
 
 .contract-list-header,
 .contract-item {
-	display: grid;
-	grid-template-columns: 5% 50% 10% 10% 15%;
+	display: flex;
+	flex-wrap: nowrap;
 	gap: 0.75rem;
 	align-items: center;
+}
+
+.contract-list-header > *,
+.contract-item > * {
+	flex: 0 0 auto;
+	min-width: 0;
+}
+
+.contract-type {
+	width: 5%;
+	flex: 0 0 5%;
+}
+
+.contract-main {
+	width: 35%;
+	flex: 1 1 35%;
+	min-width: 0;
+}
+
+.contract-actions-reports {
+	width: 10%;
+	flex: 0 0 10%;
+	display: flex;
+	justify-content: center;
+}
+
+.contract-date {
+	width: 10%;
+	flex: 0 0 10%;
+	text-align: center;
+}
+
+.contract-actions-ticket-lookup,
+.contract-actions {
+	width: 10%;
+	flex: 0 0 10%;
+	display: flex;
+	justify-content: flex-end;
 }
 
 .contract-list-header {
@@ -148,12 +187,15 @@
 	}
 
 	.contract-item {
-		grid-template-columns: 1fr;
-		gap: 0.35rem;
+		overflow-x: auto;
+		padding-bottom: 0.35rem;
+	}
+
+	.contract-item > * {
+		white-space: nowrap;
 	}
 
 	.contract-actions {
-		flex-wrap: wrap;
 		justify-content: flex-start;
 	}
 
