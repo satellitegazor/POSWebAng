@@ -16,8 +16,8 @@ export class SbmLtcReportsMenuComponent implements OnInit {
   ngOnInit() {
     // Any initialization logic can go here
     this.activatedRoute.queryParams.subscribe(params => {
-      this.contractId = params['contractid'];
-      this.locationId = params['elocationIdentid'];
+      this.contractId = params['cid'];
+      this.locationId = params['lid'];
     });
   }
 
@@ -26,42 +26,42 @@ export class SbmLtcReportsMenuComponent implements OnInit {
   ) {}
 
   goToNoSaleReport() {
-    this.router.navigate(['/sbmltcnosalerpt'], { queryParams: { contractid: this.contractId, locationid: this.locationId } });
+    this.router.navigate(['/sbm/sbmltcnosalerpt'], { queryParams: { cid: this.contractId, lid: this.locationId } });
   }  
   
   goToSalesTransactionReport(): void {
-    this.router.navigate(['/sbmltcsalestranrpt'], { queryParams: { contractid: this.contractId, locationid: this.locationId } });
+    this.router.navigate(['/sbm/sbmltcsalestranrpt'], { queryParams: { cid: this.contractId, lid: this.locationId } });
   }
 
   goToSettlementReport(): void {
-    this.router.navigate(['/sbmltcsetlmntrpt'], { queryParams: { contractid: this.contractId, locationid: this.locationId } });
+    this.router.navigate(['/sbm/sbmltcsetlmntrpt'], { queryParams: { cid: this.contractId, lid: this.locationId } });
   }
 
   goTaxSettingsReport(): void {
-    this.router.navigate(['/sbmltcrpttaxsettings'], { queryParams: { contractid: this.contractId, locationid: this.locationId } });
+    this.router.navigate(['/sbm/sbmltcrpttaxsettings'], { queryParams: { cid: this.contractId, lid: this.locationId } });
   }
 
   goToDailyExchangeRateReport(): void {
-    this.router.navigate(['/sbmltcrptdlyexchrate'], { queryParams: { contractid: this.contractId, locationid: this.locationId } });
+    this.router.navigate(['/sbm/sbmltcrptdlyexchrate'], { queryParams: { cid: this.contractId, lid: this.locationId } });
   }
 
   goToCashDrawerReport() {
-    this.router.navigate(['/sbmltcrptcashdrw'], { queryParams: { contractid: this.contractId, locationid: this.locationId } });
+    this.router.navigate(['/sbm/sbmltccashdrawrpt'], { queryParams: { cid: this.contractId, lid: this.locationId } });
   }
 
   goToPriceListReport() {
-    this.router.navigate(['/sbmltcrptpricelist'], { queryParams: { contractid: this.contractId, locationid: this.locationId } });
+    this.router.navigate(['/sbm/sbmltcpricelistrpt'], { queryParams: { cid: this.contractId, lid: this.locationId } });
   }
 
   goToBalanceDueTickets() {
-    this.router.navigate(['/sbmltcrptbalancedue'], { queryParams: { contractid: this.contractId, locationid: this.locationId } });
+    this.router.navigate(['/sbm/sbmltcbalduerpt'], { queryParams: { cid: this.contractId, lid: this.locationId } });
   }
 
   goToCancelledTickets() {
-    this.router.navigate(['/sbmltcrptcancelled'], { queryParams: { contractid: this.contractId, locationid: this.locationId } });
+    this.router.navigate(['/sbm/sbmltccanceledrpt'], { queryParams: { cid: this.contractId, lid: this.locationId } });
   }
 
   goToSalesByAssociateReport() {
-    this.router.navigate(['/sbmltcrptsalesbyassoc'], { queryParams: { contractid: this.contractId, locationid: this.locationId } });
+    this.router.navigate(['/sbm/sbmltcrptsalesbyassoc'], { queryParams: { cid: this.contractId, lid: this.locationId } });
   }
 }

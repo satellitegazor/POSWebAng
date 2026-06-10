@@ -5,13 +5,14 @@ import { ContractListingComponent } from '../contract-listing/contract-listing.c
 import { ContractLtcPageComponent } from '../contract-ltc-page/contract-ltc-page.component';
 import { ContractRovPageComponent } from '../contract-rov-page/contract-rov-page.component';
 import { SbmRovReportsMenuComponent } from '../reports/roving/reports-menu/sbm-rov-reports-menu.component';
-import { SbmLtcCanceledTicketsPageComponent } from '../reports/longterm/cncledtkts/canceled-tickets-page.component';
+import { SbmLtcCanceledTicketsPageComponent } from '../reports/longterm/cncledtkts/sbm-ltc-canceled-tickets-page.component';
 import { SbmLtcSalesTranRptPageComponent } from '../reports/longterm/salestranrpt/sales-tran-rpt-page/sbm-ltc-sales-tran-rpt-page.component';
 import { SbmLtcNoSaleReportPageComponent } from '../reports/longterm/nosalerpt/no-sale-report-page.component';
 import { SbmLtcBalDueTktsPageComponent } from '../reports/longterm/balduetkts/sbm-ltc-bal-due-tkts-page.component';
 import { SbmLtcReportsMenuComponent } from '../reports/longterm/reports-menu/sbm-ltc-reports-menu.component';
 import { SbmLtcPriceListRptComponent } from '../reports/longterm/pricelist/price-list-rpt.component';
-import { SbmLtcSettlementReportPageComponent } from '../reports/longterm/settlement/settlement-report-page/settlement-report-page.component';
+import { SbmLtcSettlementReportPageComponent } from '../reports/longterm/settlement/settlement-report-page/sbm-ltc-settlement-report-page.component';
+import { SbmLtcCashDrawerReportPageComponent } from '../reports/longterm/cashdrawrpt/sbm-ltc-cash-drawer-report-page.component';
 
 const routes: Routes = [  
   { path: 'logon', component: SbmLoginComponent },
@@ -24,7 +25,7 @@ const routes: Routes = [
   { path: 'sbmltcnosalerpt', component: SbmLtcNoSaleReportPageComponent },
   { path: 'sbmltcsalestranrpt', component: SbmLtcSalesTranRptPageComponent },
   { path: 'sbmltccanceledrpt', component: SbmLtcCanceledTicketsPageComponent },
-  { path: 'sbmltccashdrawrpt', component: SbmLtcBalDueTktsPageComponent }, // Placeholder until cash drawer report component is created
+  { path: 'sbmltccashdrawrpt', component: SbmLtcCashDrawerReportPageComponent }, 
   { path: 'sbmltcpricelistrpt', component: SbmLtcPriceListRptComponent },
   { path: 'sbmltcsetlmntrpt', component: SbmLtcSettlementReportPageComponent }
 ];

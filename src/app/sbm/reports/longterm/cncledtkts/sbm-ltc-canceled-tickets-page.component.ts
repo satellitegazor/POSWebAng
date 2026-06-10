@@ -1,27 +1,30 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { LogonDataService } from '../../../../global/logon-data-service.service';
-import { ActivatedRoute, Router } from '@angular/router';
 import { ToastService } from '../../../../services/toast.service';
-import { LTC_BalanceDueTickets, LTC_BalanceDueTicketsResultsModel } from '../../../../longterm/models/balancedue.tickets.model'
-import { CommonModule} from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { LTC_CancelledTickets } from '../../../../longterm/models/canceled.tickets.model'
 import { PosApiService, SendEmailRequest } from '../../../../longterm/services/pos-api-service';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { LTC_Contract } from 'src/app/longterm/models/contract.models';
 import { SbmWebApiService } from 'src/app/sbm/services/sbm-web-api.service';
-import { useAnimation } from '@angular/animations';
+import { LTC_Contract } from 'src/app/longterm/models/contract.models';
 import { LTC_Associates, LTC_LocationAssociatesResultsModel } from 'src/app/longterm/models/location.associates';
+import { FormsModule } from '@angular/forms';
+
+interface CancelledTicketGroup {
+  locationUID: number;
+  locationName: string;
+  tickets: LTC_CancelledTickets[];
+}
 
 @Component({
-  selector: 'app-balance-due-tickets-page',
+  selector: 'app-sbm-ltc-canceled-tickets-page',
+  standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
-  templateUrl: './sbm-ltc-bal-due-tkts-page.component.html',
-  styleUrls: ['./sbm-ltc-bal-due-tkts-page.component.css']
+  templateUrl: './sbm-ltc-canceled-tickets-page.component.html',
+  styleUrls: ['./sbm-ltc-canceled-tickets-page.component.css']
 })
-export class SbmLtcBalDueTktsPageComponent {
+export class SbmLtcCanceledTicketsPageComponent implements OnInit {
+
 
   sbm_user_name: string = '';
   contractId: number = 0;
@@ -31,22 +34,31 @@ export class SbmLtcBalDueTktsPageComponent {
   contractNumber: string = '';
   vendorName: string = '';
   vendorNumber: string = '';
+
+  ltcContract: LTC_Contract | null = null;
+  SaleAssocList: LTC_Associates[] = [];
+
   fromDate: Date = new Date();
   toDate: Date = new Date();
-  public isLoading: boolean = false;
-  public hasTickets: boolean = false;
-  balDueTickets: LTC_BalanceDueTickets[] = [];
-  SaleAssocList: LTC_Associates[] = [];
-  showEmailPopup: boolean = false;
 
-  ltcContract: LTC_Contract = {} as LTC_Contract;
-  
+  isLoading: boolean = false;
+  cancelledTickets: LTC_CancelledTickets[] = [];
+
+  selectedEmailOption: 'self' | 'manager' | 'custom' = 'self';
+  customEmailAddress: string = '';
+  emailSubmitError: string = '';
+  emailSubmitSuccess: string = '';
+  isSendingEmail: boolean = false;
+  showEmailPopup: boolean = false;
+  selfAssociateEmail: string = '';
+  managerAssociateEmail: string = '';
+
   constructor(
-    private sbmApiService: SbmWebApiService,
-    private router: Router,
-    private toastService: ToastService,
-    private activatedRoute: ActivatedRoute,
     private posApiService: PosApiService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private sbmApiService: SbmWebApiService,
+    private toastSvc: ToastService
   ) {
     const now = new Date();
     this.fromDate = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -54,6 +66,8 @@ export class SbmLtcBalDueTktsPageComponent {
   }
 
   ngOnInit(): void {
+    
+    this.initializeParameters();
 
     this.activatedRoute.queryParams.subscribe(params => {
       this.contractId = params['cid'];
@@ -72,45 +86,82 @@ export class SbmLtcBalDueTktsPageComponent {
         this.vendorNumber = this.ltcContract?.vendorNumber || '';
 
         this.posApiService.getLocationAssociates(this.locationId, String(this.sbm_user_name)).subscribe((data: LTC_LocationAssociatesResultsModel) => {
-          this.SaleAssocList = data.associates;
+          this.SaleAssocList = data.associates.filter(a => a.code === 'RLTYP_CONC_ASSC')
+          this.managerAssociateEmail = data.associates.find(a => a.code === 'RLTYP_CONC_MNGR')?.emailAddress || '';
         });
-
       }
     });
-
-    this.getBalanceDueTicketsData();
+    this.getCancelledTicketsData();
   }
 
-  getBalanceDueTicketsData(): void {
 
+  private initializeParameters(): void {
+
+    this.contractId =  0;
+    this.locationId = 0;
+    this.locationName = '';
+    this.facilityNumber = '';
+    this.contractNumber = '';
+    this.vendorName = '';
+    this.vendorNumber = '';
+    
+
+    // Initialize date range: first day to last day of current month
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+   
+  }
+
+  get hasTickets(): boolean {
+    return this.cancelledTickets.length > 0;
+  }
+
+  get groupedTickets(): CancelledTicketGroup[] {
+    const grouped = new Map<number, CancelledTicketGroup>();
+
+    for (const ticket of this.cancelledTickets) {
+      const key = ticket.locationUID || 0;
+      if (!grouped.has(key)) {
+        grouped.set(key, {
+          locationUID: key,
+          locationName: ticket.locationName || this.locationName,
+          tickets: []
+        });
+      }
+      grouped.get(key)!.tickets.push(ticket);
+    }
+
+    return Array.from(grouped.values());
+  }
+
+  getCancelledTicketsData(): void {
+    const uid = String(this.sbm_user_name || '');
     this.isLoading = true;
+    this.cancelledTickets = [];
 
-    this.posApiService.getBalanceDueTickets(
+    this.posApiService.getCancelledTickets(
       this.contractId,
       this.locationId,
       this.facilityNumber,
       this.formatDate(this.fromDate),
       this.formatDate(this.toDate),
-      this.sbm_user_name
+      uid
     ).subscribe({
       next: (result) => {
         this.isLoading = false;
-        this.hasTickets = true;        
-        this.balDueTickets = result?.balDueTktSummary?.balDueTickets ?? [];
+        this.cancelledTickets = result?.ltcCancelledTickets?.cancelledTickets ?? [];
       },
       error: () => {
         this.isLoading = false;
-        
-        this.hasTickets = false;
-        this.balDueTickets = [];
-
-        this.toastService.error('Unable to load balance due tickets.');
+        this.cancelledTickets = [];
+        this.toastSvc.error('Unable to load cancelled tickets report.');
       }
     });
   }
 
   onRefreshClick(): void {
-    this.getBalanceDueTicketsData();
+    this.getCancelledTicketsData();
   }
 
   onFromDateChange(value: string): void {
@@ -127,21 +178,8 @@ export class SbmLtcBalDueTktsPageComponent {
     this.toDate = new Date(`${value}T00:00:00`);
   }
 
-  get tickets(): LTC_BalanceDueTickets[] {
-    return this.balDueTickets;
-  }
-
-  getAmount(ticket: LTC_BalanceDueTickets): number {
+  getAmount(ticket: LTC_CancelledTickets): number {
     return ticket.dfltCurrCode === 'USD' ? ticket.totalAmount : ticket.fcTotalAmount;
-  }
-
-  getBalanceDue(ticket: LTC_BalanceDueTickets): number {
-    return ticket.dfltCurrCode === 'USD' ? ticket.balanceDue : ticket.fcBalanceDue;
-  }
-
-  isValidDueDate(value: Date): boolean {
-    const date = new Date(value);
-    return !isNaN(date.getTime()) && date.getFullYear() > 1900;
   }
 
   formatPhone(phoneNumber: string, countryDialCode: string): string {
@@ -157,37 +195,28 @@ export class SbmLtcBalDueTktsPageComponent {
     return countryDialCode ? `(${countryDialCode}) ${formattedPhone}` : formattedPhone;
   }
 
-  selectedEmailOption: 'self' | 'manager' | 'custom' = 'self';
-  customEmailAddress: string = '';
-  emailSubmitError: string = '';
-  emailSubmitSuccess: string = '';
-  isSendingEmail: boolean = false;
-
-  get selfAssociateEmail(): string {
-    return this.SaleAssocList.filter(a => a.code === 'RLTYP_CONC_ASSC')[0]?.emailAddress?.trim() || '';
+  
+  goToReportsMenu(): void {
+    this.router.navigate(['/sbm/sbmltcrptmenu'], { queryParams: { cid: this.contractId, lid: this.locationId } });
   }
 
-  get managerAssociateEmail(): string {
-    return this.SaleAssocList.find(assoc => (assoc.code || '').toUpperCase() === 'RLTYP_CONC_MNGR')?.emailAddress?.trim() || '';
-  }
-
-  onEmail($event: Event): void {
-    $event.preventDefault();
-    this.selectedEmailOption = this.selfAssociateEmail ? 'self' : (this.managerAssociateEmail ? 'manager' : 'custom');
-    this.customEmailAddress = '';
-    this.emailSubmitError = '';
-    this.emailSubmitSuccess = '';
-    this.showEmailPopup = true;    
-  }
-
-  public formatDate(date: Date): string {
+  formatDate(date: Date): string {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
 
-  buildBalanceDueTicketsReportHtml(): string {
+  private isValidEmail(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  private buildEmailSubject(): string {
+    return `Canceled Tickets Report - ${this.locationName} (${this.fromDate} to ${this.toDate})`;
+  }
+
+  buildCanceledTicketsReportHtml(): string {
+
     const escapeHtml = (value: unknown): string => String(value ?? '')
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
@@ -209,30 +238,33 @@ export class SbmLtcBalDueTktsPageComponent {
     const formatCurrency = (amount: number): string => {
       const numericAmount = Number(amount);
       const safeAmount = isNaN(numericAmount) ? 0 : numericAmount;
-      return new Intl.NumberFormat('en-US', {
+      let retVal = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       }).format(safeAmount);
+      return safeAmount < 0 ? `(${retVal.replace('-', '')})` : retVal;
     };
 
     const selectedLocation = this.locationId === 0
       ? 'All'
       : this.ltcContract?.locations?.find(loc => Number(loc.locationUID) === Number(this.locationId))?.locationName || this.locationName || 'N/A';
 
-    const rowsHtml = this.balDueTickets.length
-      ? this.balDueTickets.map(ticket => `
+    const rowsHtml = this.cancelledTickets.length
+      ? this.cancelledTickets.map(ticket => `
           <tr>
-            <td class="text-center">${escapeHtml(ticket.ticketID)}</td>
-            <td class="text-center">${escapeHtml(formatReportDate(ticket.dropOffDate))}</td>
+          <td class="text-center">${escapeHtml(ticket.transactionID)}</td>
+          <td class="text-center">${escapeHtml(formatReportDate(ticket.dropOffDate))}</td>
+          <td class="text-center">${escapeHtml(formatReportDate(ticket.cancelDate))}</td>
             <td class="text-center">${escapeHtml(ticket.daysElapsed)}</td>
-            <td class="text-right">${escapeHtml(formatCurrency(this.getAmount(ticket)))}</td>
-            <td class="text-right">${escapeHtml(formatCurrency(this.getBalanceDue(ticket)))}</td>
-            <td class="text-center">${escapeHtml(this.isValidDueDate(ticket.payByDueDate) ? formatReportDate(ticket.payByDueDate) : 'N/A')}</td>
-            <td>${escapeHtml(ticket.customerName || 'N/A')}</td>
-            <td>${escapeHtml(ticket.emailAddress ? ticket.emailAddress.toLowerCase() : 'N/A')}</td>
-            <td>${escapeHtml(this.formatPhone(ticket.phoneNumber, ticket.countryDialCode))}</td>
+            <td class="text-end" [style.color]="(ticket.tenderAmount || 0) < 0 ? 'red' : 'black'">
+              ${escapeHtml(formatCurrency(this.getAmount(ticket)))}
+            </td>
+            <td class="text-center">${escapeHtml(ticket.customerName)}</td>
+            <td class="text-center">${escapeHtml(this.formatPhone(ticket.phoneNumber, ticket.countryDialCode))}</td>
+            <td class="text-center">${escapeHtml(ticket.reason)}</td>
+            <td class="text-center">${escapeHtml(ticket.associate)}</td>
           </tr>
         `).join('')
       : `
@@ -245,7 +277,7 @@ export class SbmLtcBalDueTktsPageComponent {
       <html>
         <head>
           <meta charset="utf-8">
-          <title>Balance Due Tickets Report</title>
+          <title>Canceled Tickets Report</title>
           <style>
             body {
               font-family: Arial, sans-serif;
@@ -323,37 +355,37 @@ export class SbmLtcBalDueTktsPageComponent {
         </head>
         <body>
           <div class="header">
-            <h1>Balance Due Tickets Report</h1>
+            <h1>Canceled Tickets Report</h1>
           </div>
 
           <div class="meta">
-            <table>
+            <table> 
               <tr>
                 <td><span class="label">Location</span>${escapeHtml(selectedLocation)}</td>
                 <td><span class="label">Contract Number</span>${escapeHtml(this.contractNumber || 'N/A')}</td>
                 <td><span class="label">Vendor</span>${escapeHtml(this.vendorName + (this.vendorNumber ? ` (${this.vendorNumber})` : '')) || 'N/A'}</td>
               </tr>
               <tr>
-                <td><span class="label">From Date</span>${escapeHtml(formatReportDate(this.fromDate))}</td>
-                <td><span class="label">To Date</span>${escapeHtml(formatReportDate(this.toDate))}</td>
+                <td><span class="label">From Date</span>${escapeHtml(this.fromDate)}</td>
+                <td><span class="label">To Date</span>${escapeHtml(this.toDate)}</td>
                 <td><span class="label">Facility Number</span>${escapeHtml(this.facilityNumber || 'N/A')}</td>
               </tr>
             </table>
           </div>
 
-          <div class="table-title">Balance Due Tickets</div>
+          <div class="table-title">Canceled Tickets Report</div>
           <table class="report">
             <thead>
               <tr>
-                <th class="text-center">Ticket ID</th>
-                <th class="text-center">Ticket Date</th>
-                <th class="text-center">Days Elapsed</th>
-                <th class="text-right">Total Amount</th>
-                <th class="text-right">Balance Due</th>
-                <th class="text-center">Payment Due Date</th>
-                <th>Customer Name</th>
-                <th>Customer Email</th>
-                <th>Phone Number</th>
+							<th class="text-center">Ticket ID</th>
+							<th class="text-center">Ticket Date</th>
+							<th class="text-center">Cancel Date</th>
+							<th class="text-center">Days Elapsed</th>
+							<th class="text-end">Total Amount</th>
+							<th>Customer Name</th>
+							<th class="text-center">Phone Number</th>
+							<th>Reason</th>
+							<th>Associate</th>
               </tr>
             </thead>
             <tbody>
@@ -367,32 +399,10 @@ export class SbmLtcBalDueTktsPageComponent {
     `;
   }
 
-  btnPrintClick($event: PointerEvent) {
-    const EmailContent = this.buildBalanceDueTicketsReportHtml();
-    const printWindow = window.open('', '_blank', 'width=1200,height=900');
-    if (printWindow) {
-      printWindow.document.write(EmailContent);
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
-    }
-  }
 
-  goToReportsMenu(): void {
-    this.router.navigate(['/sbm/sbmltcrptmenu'], { queryParams: { cid: this.contractId, lid: this.locationId } });
-  }
-
-  goToContractDetails($event: Event) {
-    $event.preventDefault();
-    this.router.navigate(['/sbm/ltcpage'], { queryParams: { cid: this.contractId } });
-  }
-
-  onLocationChange() {
-    this.getBalanceDueTicketsData();   
-  }
-
-  private isValidEmail(email: string): boolean {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  closeEmailPopup(): void {
+    this.showEmailPopup = false;
+    this.isSendingEmail = false;
   }
 
   submitEmailPopup(): void {
@@ -413,7 +423,7 @@ export class SbmLtcBalDueTktsPageComponent {
     const request: SendEmailRequest = {
       EmailAddress: recipientEmail,
       Subject: this.buildEmailSubject(),
-      EmailContent: this.buildBalanceDueTicketsReportHtml()
+      EmailContent: this.buildCanceledTicketsReportHtml()
     };
 
     this.isSendingEmail = true;
@@ -423,7 +433,7 @@ export class SbmLtcBalDueTktsPageComponent {
         if (result?.success) {
           this.emailSubmitSuccess = 'Email sent successfully.';
           this.showEmailPopup = false;
-          this.toastService.success('Email sent successfully.');
+          this.toastSvc.success('Email sent successfully.');
           return;
         }
 
@@ -434,10 +444,6 @@ export class SbmLtcBalDueTktsPageComponent {
         this.emailSubmitError = 'Unable to send email.';
       }
     });
-  }
-
-  private buildEmailSubject(): string {
-    return `Balance Due Tickets Report - ${this.locationName} (${this.fromDate} to ${this.toDate})`;
   }
 
   private getSelectedRecipientEmail(): string {
@@ -452,10 +458,34 @@ export class SbmLtcBalDueTktsPageComponent {
     return (this.customEmailAddress || '').trim();
   }
 
-  closeEmailPopup() {
-    this.showEmailPopup = false;
-    this.isSendingEmail = false;
+  onLocationChange() {
+    this.getCancelledTicketsData();
   }
 
+  onEmailClick($event: Event) {
+    $event.preventDefault();
+    this.selectedEmailOption = this.selfAssociateEmail ? 'self' : (this.managerAssociateEmail ? 'manager' : 'custom');
+    this.customEmailAddress = '';
+    this.emailSubmitError = '';
+    this.emailSubmitSuccess = '';
+    this.showEmailPopup = true;  
+  }
+
+  btnPrintClick($event: PointerEvent) {
+    $event.preventDefault();
+    const EmailContent = this.buildCanceledTicketsReportHtml();
+    const printWindow = window.open('', '_blank', 'width=1200,height=900');
+    if (printWindow) {
+      printWindow.document.write(EmailContent);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+    }
+  }
+
+  goToContractDetails($event: PointerEvent) {
+    $event.preventDefault();
+    this.router.navigate(['/sbm/ltcpage'], { queryParams: { cid: this.contractId } });
+  }
 
 }

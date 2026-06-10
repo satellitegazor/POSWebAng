@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SbmLtcCashDrawerReportPageComponent } from './cash-drawer-report-page.component';
+import { SbmLtcCashDrawerReportPageComponent } from './sbm-ltc-cash-drawer-report-page.component';
 
 describe('SbmLtcCashDrawerReportPageComponent', () => {
   let component: SbmLtcCashDrawerReportPageComponent;

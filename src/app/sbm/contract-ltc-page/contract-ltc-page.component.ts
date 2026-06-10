@@ -104,12 +104,12 @@ export class ContractLtcPageComponent implements OnInit {
 
 
     this.route.queryParamMap.subscribe(params => {
-      const ctrid = params.get('ctrid');
+      const cid = params.get('cid');
       const userIdStr = sessionStorage.getItem('sbm_employeeId');
-      const contractId = Number(ctrid);
+      const contractId = Number(cid);
       const userId = Number(userIdStr);
 
-      if (ctrid && userIdStr && !isNaN(contractId) && !isNaN(userId) && contractId > 0 && userId > 0) {
+      if (cid && userIdStr && !isNaN(contractId) && !isNaN(userId) && contractId > 0 && userId > 0) {
         this.LoadContract(contractId, userId);
         return;
       }
@@ -870,7 +870,7 @@ export class ContractLtcPageComponent implements OnInit {
   }
 
   btnReportsClick(locationUID: number): void {
-    this.router.navigate(['sbm/sbmltcsalestranrpt'], { queryParams: { cid: this.ltcContract?.contractUID, lid: locationUID } });
+    this.router.navigate(['sbm/sbmltcrptmenu'], { queryParams: { cid: this.ltcContract?.contractUID, lid: locationUID } });
   }  
 
   onBackToContractListing() {

@@ -21,7 +21,10 @@
         </div>
        <div class="col-md-4">
           <label class="form-label fw-bold">Location Name</label>
-          <input type="text" class="form-control form-control-sm" [value]="locationName" readonly />
+          <select class="form-select" [(ngModel)]="locationId" name="locationSelect" (change)="onLocationChange()">
+            <option [value]="0">All</option>
+            <option *ngFor="let loc of ltcContract?.locations" [value]="loc.locationUID">{{ loc.locationName }}</option>
+          </select>
         </div>
         <div class="col-md-4">
           <label class="form-label fw-bold">Contract Number</label>
@@ -119,89 +122,109 @@
   </div>
 </div>
 
+<div *ngIf="showEmailPopup" class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true"
+  aria-labelledby="emailReportModalTitle">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="emailReportModalTitle">Email Sales Transaction Report</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeEmailPopup()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="radio" name="emailOption" id="emailOptionOwner" value="owner"
+            [(ngModel)]="selectedEmailOption">
+          <label class="form-check-label" for="emailOptionOwner">
+            Option 1: Owner Email ({{selfAssociateEmail || 'Not Available'}})
+          </label>
+        </div>
+
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="radio" name="emailOption" id="emailOptionManager" value="manager"
+            [(ngModel)]="selectedEmailOption">
+          <label class="form-check-label" for="emailOptionManager">
+            Option 2: Concession Manager Email ({{managerAssociateEmail || 'Not Available'}})
+          </label>
+        </div>
+
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="radio" name="emailOption" id="emailOptionCustom" value="custom"
+            [(ngModel)]="selectedEmailOption">
+          <label class="form-check-label" for="emailOptionCustom">Option 3: Enter an email address</label>
+        </div>
+
+        <input type="email" class="form-control" placeholder="Enter email address" [(ngModel)]="customEmailAddress"
+          [disabled]="selectedEmailOption !== 'custom'">
+
+        <div *ngIf="emailSubmitError" class="alert alert-danger mt-3 mb-0">{{emailSubmitError}}</div>
+        <div *ngIf="emailSubmitSuccess" class="alert alert-success mt-3 mb-0">{{emailSubmitSuccess}}</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="closeEmailPopup()">Cancel</button>
+        <button type="button" class="btn btn-primary" [disabled]="isSendingEmail" (click)="submitEmailPopup()">
+          {{isSendingEmail ? 'Sending...' : 'Submit'}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="showEmailPopup" class="modal-backdrop fade show"></div>
 <!-- Fixed Footer with Action Buttons -->
 <div class="footer fixed-bottom cncsnFooter">
-
-  <!-- SBM Footer (Email, Print, Reports, Contract Listing) -->
-  <div *ngIf="source === 'S'" id="cdButtonBottomBarSBM" class="row g-0">
+  <div id="stButtonBottomBar" class="row g-0">
     <div class="col-12 col-md-3">
-      <button class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
-        aria-label="Email Cash Drawer Report" (click)="onEmailClick()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-fill" viewBox="0 0 16 16">
-          <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414z"/>
-          <path d="M0 4.697v7.104l5.803-3.558z"/>
-          <path d="M6.761 8.83 0 12.97A2 2 0 0 0 2 14h12a2 2 0 0 0 2-1.03L9.239 8.83 8 9.586z"/>
-          <path d="M16 4.697v7.104l-5.803-3.558z"/>
+      <button
+        class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
+        id="btnEmailSalesTranRpt" aria-label="Email Sales Transaction Report" (click)="onEmailClick($event)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-fill"
+          viewBox="0 0 16 16">
+          <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414z"></path>
+          <path d="M0 4.697v7.104l5.803-3.558z"></path>
+          <path d="M6.761 8.83 0 12.97A2 2 0 0 0 2 14h12a2 2 0 0 0 2-1.03L9.239 8.83 8 9.586z"></path>
+          <path d="M16 4.697v7.104l-5.803-3.558z"></path>
         </svg>
         <span>Email</span>
       </button>
     </div>
     <div class="col-12 col-md-3">
-      <button class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
-        aria-label="Print Cash Drawer Report" (click)="onPrintClick()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer-fill" viewBox="0 0 16 16">
-          <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2z"/>
-          <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v2H2a2 2 0 0 1-2-2z"/>
-          <path d="M11 13H5v2h6zm0-4H5v3h6z"/>
+      <button
+        class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
+        id="btnPrintSalesTranRpt" aria-label="Print Sales Transaction Report" (click)="btnPrintClick($event)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer-fill"
+          viewBox="0 0 16 16">
+          <path d="M2 1a1 1 0 0 0-1 1v4h1V2h12v4h1V2a1 1 0 0 0-1-1H2z"></path>
+          <path d="M0 7v5a2 2 0 0 0 2 2h1v-3a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v3h1a2 2 0 0 0 2-2V7H0z"></path>
+          <path d="M2 12v3h12v-3H2z"></path>
         </svg>
         <span>Print</span>
       </button>
     </div>
     <div class="col-12 col-md-3">
-      <button class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
-        aria-label="Go To Reports Menu" (click)="onReportsClick()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-fill" viewBox="0 0 16 16">
-          <path d="M0 0h1v15h15v1H0z"/>
-          <path d="M2 10h2v5H2zm4-6h2v11H6zm4 3h2v8h-2zm4-5h2v13h-2z"/>
+      <button
+        class="border border-white btn btn-info btn-lg ftrbtn goToST w-100 d-flex align-items-center justify-content-center gap-2"
+        id="btnReportsMenu" aria-label="Go To Reports Menu" (click)="goToReportsMenu()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-fill"
+          viewBox="0 0 16 16">
+          <path d="M0 0h1v15h15v1H0z"></path>
+          <path d="M2 10h2v5H2zm4-6h2v11H6zm4 3h2v8h-2zm4-5h2v13h-2z"></path>
         </svg>
         <span>Reports</span>
       </button>
     </div>
-    <div class="col-12 col-md-3">
-      <button class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
-        aria-label="Go To Contract Listing" (click)="onContractListingClick()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-text-fill" viewBox="0 0 16 16">
-          <path d="M12 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2M5 4h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1 0-1m-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5M5 8h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1 0-1m0 2h3a.5.5 0 0 1 0 1H5a.5.5 0 0 1 0-1"/>
+    <div class="col-12 col-md-3 ">
+      <button
+        class="border border-white btn btn-info btn-lg ftrbtn goToST w-100 d-flex align-items-center justify-content-center gap-2"
+        id="btnContractDetails" aria-label="Go To Contract Details" (click)="goToContractDetails($event)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-fill"
+          viewBox="0 0 16 16">
+          <path
+            d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5A.5.5 0 0 1 0 1.5">
+          </path>
+          <path d="M5 12a2 2 0 1 0 0 4a2 2 0 0 0 0-4m5 0a2 2 0 1 0 0 4a2 2 0 0 0 0-4"></path>
         </svg>
-        <span>Contract Listing</span>
+        <span>Contract Details</span>
       </button>
     </div>
   </div>
-
-  <!-- Vendor Footer (Email, Reports, Sales Transaction) -->
-  <div *ngIf="source !== 'S'" id="cdButtonBottomBarVdr" class="row g-0">
-    <div class="col-12 col-md-4">
-      <button class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
-        aria-label="Email Cash Drawer Report" (click)="onEmailClick()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-fill" viewBox="0 0 16 16">
-          <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414z"/>
-          <path d="M0 4.697v7.104l5.803-3.558z"/>
-          <path d="M6.761 8.83 0 12.97A2 2 0 0 0 2 14h12a2 2 0 0 0 2-1.03L9.239 8.83 8 9.586z"/>
-          <path d="M16 4.697v7.104l-5.803-3.558z"/>
-        </svg>
-        <span>Email</span>
-      </button>
-    </div>
-    <div class="col-12 col-md-4">
-      <button class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
-        aria-label="Go To Reports Menu" (click)="onReportsClick()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-fill" viewBox="0 0 16 16">
-          <path d="M0 0h1v15h15v1H0z"/>
-          <path d="M2 10h2v5H2zm4-6h2v11H6zm4 3h2v8h-2zm4-5h2v13h-2z"/>
-        </svg>
-        <span>Reports</span>
-      </button>
-    </div>
-    <div class="col-12 col-md-4">
-      <button class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
-        aria-label="Go To Sales Transaction" (click)="onSalesTransactionClick()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-fill" viewBox="0 0 16 16">
-          <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5A.5.5 0 0 1 0 1.5"/>
-          <path d="M5 12a2 2 0 1 0 0 4a2 2 0 0 0 0-4m5 0a2 2 0 1 0 0 4a2 2 0 0 0 0-4"/>
-        </svg>
-        <span>Sales Transaction</span>
-      </button>
-    </div>
-  </div>
-
 </div>
+

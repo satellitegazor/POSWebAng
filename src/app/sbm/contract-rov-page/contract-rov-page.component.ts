@@ -80,11 +80,11 @@ export class ContractRovPageComponent implements OnInit {
     });
 
     this.route.queryParamMap.subscribe(params => {
-      const ctrid = params.get('ctrid');
+      const cid = params.get('cid');
       const uid = sessionStorage.getItem('sbm_employeeId') || '';
-      const contractId = Number(ctrid);
+      const contractId = Number(cid);
 
-      if (ctrid && uid && !isNaN(contractId) && contractId > 0) {
+      if (cid && uid && !isNaN(contractId) && contractId > 0) {
         this.loadContract(contractId, uid);
         
         return;

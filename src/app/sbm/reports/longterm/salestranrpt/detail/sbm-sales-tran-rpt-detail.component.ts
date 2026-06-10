@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { ContractTransactionDetail } from 'src/app/models/sales.tran.report.models';
 
 type SortColumn =
@@ -18,11 +19,12 @@ type SortColumn =
 type SortDirection = 'asc' | 'desc';
 
 @Component({
-    selector: 'app-sbm-sales-tran-rpt-detail',
+  selector: 'app-sbm-sales-tran-rpt-detail',
+  standalone: true,
   templateUrl: './sbm-sales-tran-rpt-detail.component.html',
   styleUrls: ['./sbm-sales-tran-rpt-detail.component.css'],
-  imports: [CommonModule, FormsModule]
-  })
+  imports: [CommonModule, FormsModule, RouterModule]
+})
 export class SbmSalesTranRptDetailComponent implements OnInit {
 
   @Input() rptDetail: ContractTransactionDetail[] = [];

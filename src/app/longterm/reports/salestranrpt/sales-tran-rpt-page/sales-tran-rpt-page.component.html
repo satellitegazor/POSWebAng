@@ -304,14 +304,16 @@
                 </div>
 
                 <div class="form-check mb-3">
-                    <input class="form-check-input" type="radio" name="emailOption" id="emailOptionManager" value="manager" [(ngModel)]="selectedEmailOption">
+                    <input class="form-check-input" type="radio" name="emailOption" id="emailOptionManager" 
+                        value="manager" [(ngModel)]="selectedEmailOption">
                     <label class="form-check-label" for="emailOptionManager">
                         Option 2: Concession Manager email ({{managerAssociateEmail || 'Not Available'}})
                     </label>
                 </div>
 
                 <div class="form-check mb-3">
-                    <input class="form-check-input" type="radio" name="emailOption" id="emailOptionCustom" value="custom" [(ngModel)]="selectedEmailOption">
+                    <input class="form-check-input" type="radio" name="emailOption" id="emailOptionCustom" 
+                        value="custom" [(ngModel)]="selectedEmailOption">
                     <label class="form-check-label" for="emailOptionCustom">Option 3: Enter an email address</label>
                 </div>
 

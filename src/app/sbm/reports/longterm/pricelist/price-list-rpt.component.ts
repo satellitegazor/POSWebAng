@@ -2,10 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LogonDataService } from '../../../../global/logon-data-service.service';
 import { ToastService } from '../../../../services/toast.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LTC_ItemButtonMenuResults, LTC_ItemButtonMenuResultsModel } from '../../../../longterm/models/item.button.menu.models'
 import { currSymbls } from '../../../../models/CurrencySymbols';
 import { PosApiService } from '../../../../longterm/services/pos-api-service';
+import { LTC_Contract } from 'src/app/longterm/models/contract.models';
+import { LTC_Associates, LTC_LocationAssociatesResultsModel } from 'src/app/longterm/models/location.associates';
+import { SbmWebApiService } from 'src/app/sbm/services/sbm-web-api.service';
 
 // View models for grouped menu structure
 export interface LTC_Department {
@@ -96,22 +99,58 @@ export class SbmLtcPriceListRptComponent implements OnInit {
   vendorNumber: string = '';
   currencySymbol: string = '';
   source: string = 'V';   // 'S' = SBM, 'V' = Vendor
+  sbm_user_name: string = '';
 
+  contractId: number = 0;
+  locationId: number = 0;
+  managerAssociateEmail: string = '';
+
+  ltcContract: LTC_Contract | null = null;
+  SaleAssocList: LTC_Associates[] = [];
+  
   constructor(
     private posApiService: PosApiService,
-    private logonDataService: LogonDataService,
-    private router: Router
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private sbmApiService: SbmWebApiService,
+    private toastSvc: ToastService
   ) {}
 
   ngOnInit(): void {
-    const locCnfg = this.logonDataService.getLocationConfig();
-    this.locationName = locCnfg?.locationName || '';
-    this.facilityNumber = locCnfg?.facilityNumber || '';
-    this.contractNumber = locCnfg?.contractNumber || '';
-    this.vendorName = locCnfg?.vendorName || '';
-    this.vendorNumber = locCnfg?.vendorNumber || '';
-    this.source = locCnfg?.isVendorLogin ? 'V' : 'S';
-    this.loadConcessionMenuItems();
+    
+    this.locationName = '';
+    this.facilityNumber = '';
+    this.contractNumber = '';
+    this.vendorName = '';
+    this.vendorNumber = '';
+    this.source = 'V';
+    
+        this.activatedRoute.queryParams.subscribe(params => {
+          this.contractId = params['cid'];
+          this.locationId = params['lid'];
+        });
+        this.sbm_user_name = sessionStorage.getItem('sbm_name') || '';
+    
+        this.sbmApiService.loadLTCContract(this.contractId, this.sbm_user_name).subscribe({
+          next: (result) => {
+            this.ltcContract = result.contract;
+            this.locationId = this.ltcContract?.locations[0]?.locationUID || 0;
+            this.locationName = this.ltcContract?.locations[0]?.locationName || '';
+            this.contractNumber = this.ltcContract?.contractNumber || '';
+            this.facilityNumber = this.ltcContract?.locations[0]?.facilities[0]?.facilityNumber || '';
+            this.vendorName = this.ltcContract?.vendorName || '';
+            this.vendorNumber = this.ltcContract?.vendorNumber || '';
+    
+            this.posApiService.getLocationAssociates(this.locationId, String(this.sbm_user_name))
+              .subscribe((data: LTC_LocationAssociatesResultsModel) => {
+                this.SaleAssocList = data.associates.filter(a => a.code === 'RLTYP_CONC_ASSC')
+                this.managerAssociateEmail = data.associates.find(a => a.code === 'RLTYP_CONC_MNGR')?.emailAddress || '';
+            });
+            
+            this.loadConcessionMenuItems();
+          }
+        });
+    
   }
 
   onRefreshClick(): void {
@@ -119,13 +158,13 @@ export class SbmLtcPriceListRptComponent implements OnInit {
   }
 
   loadConcessionMenuItems(): void {
-    const locCnfg = this.logonDataService.getLocationConfig();
+    
 
-    const locationUID = locCnfg?.locationUID || 0;
-    const contractUID = locCnfg?.contractUID || 0;
-    const facilityUID = locCnfg?.facilityUID || 0;
-    const businessFunctionUID = locCnfg?.businessFunctionUID || 0;
-    const uid = locCnfg?.individualUID?.toString() || '0';
+    const locationUID = this.locationId || 0;
+    const contractUID = this.contractId || 0;
+    const facilityUID = this.ltcContract?.locations[0]?.facilities[0]?.facilityUID || 0;
+    const businessFunctionUID = 0;
+    
 
     this.loading = true;
     this.posApiService.getConcessionMenuItem(
@@ -135,7 +174,7 @@ export class SbmLtcPriceListRptComponent implements OnInit {
       businessFunctionUID,
       0,  // pSalesCatUID - default 0 for all categories
       0,  // pDepartmentUID - default 0 for all departments
-      uid
+      this.sbm_user_name
     ).subscribe({
       next: (result: LTC_ItemButtonMenuResultsModel) => {
         this.menuItems = result;

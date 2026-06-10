@@ -143,11 +143,11 @@ export class ContractListingComponent implements OnInit {
   }
 
   public onAddLtcContract(): void {
-    this.router.navigate(['sbm/ltcpage'], { queryParams: { ctrid: 0 } });
+    this.router.navigate(['sbm/ltcpage'], { queryParams: { cid: 0 } });
   }
 
   public onAddRovContract(): void {
-    this.router.navigate(['sbm/rovpage'], { queryParams: { ctrid: 0 } });
+    this.router.navigate(['sbm/rovpage'], { queryParams: { cid: 0 } });
   }
 
   public onListUserAuth(): void {
@@ -170,7 +170,7 @@ export class ContractListingComponent implements OnInit {
 
   public navigateToPage(contract: any): void {
     const route = contract.appType === 1 ? 'sbm/rovpage' : 'sbm/ltcpage';
-    this.router.navigate([route], { queryParams: { ctrid: contract.contractId } });
+    this.router.navigate([route], { queryParams: { cid: contract.contractId } });
   }
 }
 

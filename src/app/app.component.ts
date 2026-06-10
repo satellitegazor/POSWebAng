@@ -110,6 +110,24 @@ logonUserRoleType: string = '';
         return 'Save Ticket Success';
       case path.includes('/cashcheck'):
         return 'Cash/Check Tender';
+      case path.includes('/sbmrovrptmenu'): 
+        return 'Short Term Report Menu';
+      case path.includes('/sbmltcrptmenu'): 
+        return 'Long Term Report Menu';
+      case path.includes('/sbmltcbalduerpt'): 
+        return 'Balance Due Tickets Report';
+      case path.includes('/sbmltcnosalerpt'): 
+        return 'No Sale Report';
+      case path.includes('/sbmltcsalestranrpt'): 
+        return 'Sales Transaction Report';
+      case path.includes('/sbmltccanceledrpt'): 
+        return 'Cancelled Tickets Report';
+      case path.includes('/sbmltccashdrawrpt'): 
+        return 'Cash Drawer Report';
+      case path.includes('/sbmltcpricelistrpt'): 
+        return 'Price List Report';
+      case path.includes('/sbmltcsetlmntrpt'): 
+        return 'Settlement Report'; 	
       default:
         return 'Point of Sale';
     }

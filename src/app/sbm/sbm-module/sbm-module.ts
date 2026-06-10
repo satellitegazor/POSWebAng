@@ -15,7 +15,7 @@ import { SbmLtcReportsMenuComponent } from '../reports/longterm/reports-menu/sbm
 import { SbmLtcBalDueTktsPageComponent } from '../reports/longterm/balduetkts/sbm-ltc-bal-due-tkts-page.component';
 import { SbmLtcNoSaleReportPageComponent } from '../reports/longterm/nosalerpt/no-sale-report-page.component';
 import { SbmLtcSalesTranRptPageComponent } from '../reports/longterm/salestranrpt/sales-tran-rpt-page/sbm-ltc-sales-tran-rpt-page.component';
-import { SbmLtcCanceledTicketsPageComponent } from '../reports/longterm/cncledtkts/canceled-tickets-page.component';
+import { SbmLtcCanceledTicketsPageComponent } from '../reports/longterm/cncledtkts/sbm-ltc-canceled-tickets-page.component';
   
 
 @NgModule({

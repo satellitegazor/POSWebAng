@@ -22,7 +22,8 @@
 						<div class="col-12 col-md-4">
 							<select class="form-select" [(ngModel)]="locationId" name="locationSelect" (change)="onLocationChange()">
 								<option [value]="0">All</option>
-								<option *ngFor="let loc of ltcContract.locations" [value]="loc.locationUID">{{ loc.locationName }}</option>
+								<option *ngFor="let loc of ltcContract.locations" [value]="loc.locationUID"
+									[selected]="loc.locationUID === locationId">{{ loc.locationName }}</option>
 							</select>
 							<!-- <div class="border rounded p-2 bg-light">
 								<span id="ucrFacName">{{ displayLocationName }}</span>
@@ -487,9 +488,10 @@
 					</div>
 					<div class="modal-body">
 						<div class="form-check mb-3">
-							<input class="form-check-input" type="radio" name="emailOption" id="emailOptionSelf" value="self" [(ngModel)]="selectedEmailOption">
-							<label class="form-check-label" for="emailOptionSelf">
-								Option 1: My email ({{ selfAssociateEmail || 'Not Available' }})
+							<input class="form-check-input" type="radio" name="emailOption" id="emailOptionOwner" value="owner"
+								[(ngModel)]="selectedEmailOption">
+							<label class="form-check-label" for="emailOptionOwner">
+								Option 1: Owner Email ({{selfAssociateEmail || 'Not Available'}})
 							</label>
 						</div>
 
@@ -522,53 +524,63 @@
 		</div>
 		<div *ngIf="showEmailPopup" class="modal-backdrop fade show"></div>
 
-		<!-- Footer Actions -->
-		<div class="footer fixed-bottom cncsnFooter">
-			<div id="stButtonBottomBar" class="row g-0">
-				<div class="col-12 col-md-4">
-					<button
-						class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
-						id="btnEmailSettlementRpt"
-						aria-label="Email Settlement Report"
-						(click)="onEmail()">
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-fill" viewBox="0 0 16 16">
-							<path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414z"></path>
-							<path d="M0 4.697v7.104l5.803-3.558z"></path>
-							<path d="M6.761 8.83 0 12.97A2 2 0 0 0 2 14h12a2 2 0 0 0 2-1.03L9.239 8.83 8 9.586z"></path>
-							<path d="M16 4.697v7.104l-5.803-3.558z"></path>
-						</svg>
-						<span>Email</span>
-					</button>
-				</div>
-				<div class="col-12 col-md-4">
-					<button
-						class="border border-white btn btn-info btn-lg ftrbtn goToST w-100 d-flex align-items-center justify-content-center gap-2"
-						id="btnReportsMenu"
-						aria-label="Go To Reports Menu"
-						(click)="goToReportsMenu()">
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-fill" viewBox="0 0 16 16">
-							<path d="M0 0h1v15h15v1H0z"></path>
-							<path d="M2 10h2v5H2zm4-6h2v11H6zm4 3h2v8h-2zm4-5h2v13h-2z"></path>
-						</svg>
-						<span>Reports</span>
-					</button>
-				</div>
-				<div class="col-12 col-md-4">
-					<button
-						class="border border-white btn btn-info btn-lg ftrbtn goToST w-100 d-flex align-items-center justify-content-center gap-2"
-						id="btnSalesTran"
-						aria-label="Go To Sales Transaction"
-						(click)="goToSalesTransaction()">
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-fill" viewBox="0 0 16 16">
-							<path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5A.5.5 0 0 1 0 1.5"></path>
-							<path d="M5 12a2 2 0 1 0 0 4a2 2 0 0 0 0-4m5 0a2 2 0 1 0 0 4a2 2 0 0 0 0-4"></path>
-						</svg>
-						<span>Sales Transaction</span>
-					</button>
-				</div>
-			</div>
-		</div>
 
 	</ng-container>
-
+	<div class="footer fixed-bottom cncsnFooter">
+		<div id="stButtonBottomBar" class="row g-0">
+			<div class="col-12 col-md-3">
+				<button
+					class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
+					id="btnEmailSalesTranRpt" aria-label="Email Sales Transaction Report" (click)="onEmail()">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+						class="bi bi-envelope-fill" viewBox="0 0 16 16">
+						<path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414z"></path>
+						<path d="M0 4.697v7.104l5.803-3.558z"></path>
+						<path d="M6.761 8.83 0 12.97A2 2 0 0 0 2 14h12a2 2 0 0 0 2-1.03L9.239 8.83 8 9.586z"></path>
+						<path d="M16 4.697v7.104l-5.803-3.558z"></path>
+					</svg>
+					<span>Email</span>
+				</button>
+			</div>
+			<div class="col-12 col-md-3">
+				<button
+					class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
+					id="btnPrintSalesTranRpt" aria-label="Print Sales Transaction Report" (click)="btnPrintClick($event)">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+						class="bi bi-printer-fill" viewBox="0 0 16 16">
+						<path d="M2 1a1 1 0 0 0-1 1v4h1V2h12v4h1V2a1 1 0 0 0-1-1H2z"></path>
+						<path d="M0 7v5a2 2 0 0 0 2 2h1v-3a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v3h1a2 2 0 0 0 2-2V7H0z"></path>
+						<path d="M2 12v3h12v-3H2z"></path>
+					</svg>
+					<span>Print</span>
+				</button>
+			</div>
+			<div class="col-12 col-md-3">
+				<button
+					class="border border-white btn btn-info btn-lg ftrbtn goToST w-100 d-flex align-items-center justify-content-center gap-2"
+					id="btnReportsMenu" aria-label="Go To Reports Menu" (click)="goToReportsMenu()">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+						class="bi bi-bar-chart-fill" viewBox="0 0 16 16">
+						<path d="M0 0h1v15h15v1H0z"></path>
+						<path d="M2 10h2v5H2zm4-6h2v11H6zm4 3h2v8h-2zm4-5h2v13h-2z"></path>
+					</svg>
+					<span>Reports</span>
+				</button>
+			</div>
+			<div class="col-12 col-md-3 ">
+				<button
+					class="border border-white btn btn-info btn-lg ftrbtn goToST w-100 d-flex align-items-center justify-content-center gap-2"
+					id="btnContractDetails" aria-label="Go To Contract Details" (click)="goToContractDetails()">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+						class="bi bi-cart-fill" viewBox="0 0 16 16">
+						<path
+							d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5A.5.5 0 0 1 0 1.5">
+						</path>
+						<path d="M5 12a2 2 0 1 0 0 4a2 2 0 0 0 0-4m5 0a2 2 0 1 0 0 4a2 2 0 0 0 0-4"></path>
+					</svg>
+					<span>Contract Details</span>
+				</button>
+			</div>
+		</div>
+	</div>
 </div>

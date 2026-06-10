@@ -8,7 +8,7 @@ import { LTC_SettlementDetails, SettlementReportResultModel } from '../models';
 import { ToastService } from '../../../../../services/toast.service';
 import { SbmWebApiService } from '../../../../services/sbm-web-api.service';
 import { take } from 'rxjs';
-import { LTC_Contract } from '../../../../../longterm/models/contract.models';
+import { LTC_Contract, LTC_ContractResultsModel } from '../../../../../longterm/models/contract.models';
 import { LTC_LocationAssociatesResultsModel } from '../../../../../longterm/models/location.associates';
 import { LTC_StoreLocation } from '../../../../../longterm/models/store.location';
 import { MobileBase } from '../../../../../models/mobile.base';
@@ -58,8 +58,8 @@ export interface NonPacAccountingRow {
   selector: 'app-sbm-ltc-settlement-report-page',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './settlement-report-page.component.html',
-  styleUrls: ['./settlement-report-page.component.css']
+  templateUrl: './sbm-ltc-settlement-report-page.component.html',
+  styleUrls: ['./sbm-ltc-settlement-report-page.component.css']
 })
 export class SbmLtcSettlementReportPageComponent implements OnInit {
 
@@ -119,9 +119,9 @@ export class SbmLtcSettlementReportPageComponent implements OnInit {
       this.sbm_user_name = sessionStorage.getItem('sbm_name') || '';
 
       this.sbmWebApiService.loadLTCContract(this.contractId, this.sbm_user_name).subscribe({
-        next: (result) => {
+        next: (result: LTC_ContractResultsModel) => {
           this.ltcContract = result.contract;
-          this.locationId = this.ltcContract?.locations[0]?.locationUID || 0;
+          //this.locationId = this.ltcContract?.locations[0]?.locationUID || 0;
           this.locationName = this.ltcContract?.locations[0]?.locationName || '';
           this.contractNumber = this.ltcContract?.contractNumber || '';
           this.facilityNumber = this.ltcContract?.locations[0]?.facilities[0]?.facilityNumber || '';
@@ -661,10 +661,22 @@ export class SbmLtcSettlementReportPageComponent implements OnInit {
   }
 
   goToReportsMenu(): void {
-    this.router.navigate(['/rptmenu']);
+    this.router.navigate(['/sbm/sbm-ltc-rptmenu']);
   }
 
-  goToSalesTransaction(): void {
-    this.router.navigate(['/salestran']);
+  btnPrintClick($event: PointerEvent) {
+    const EmailContent = this.buildSettlementReportHtml();
+    const printWindow = window.open('', '_blank', 'width=1200,height=900');
+    if (printWindow) {
+      printWindow.document.write(EmailContent);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+    }
   }
+
+  goToContractDetails() {
+    this.router.navigate(['/sbm/ltcpage'], { queryParams: { cid: this.contractId } });
+  }
+
 }

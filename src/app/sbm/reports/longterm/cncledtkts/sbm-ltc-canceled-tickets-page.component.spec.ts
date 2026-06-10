@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SbmLtcCanceledTicketsPageComponent } from './canceled-tickets-page.component';
+import { SbmLtcCanceledTicketsPageComponent } from './sbm-ltc-canceled-tickets-page.component';
 
 describe('SbmLtcCanceledTicketsPageComponent', () => {
   let component: SbmLtcCanceledTicketsPageComponent;
