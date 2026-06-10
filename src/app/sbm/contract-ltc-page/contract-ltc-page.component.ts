@@ -161,20 +161,6 @@ export class ContractLtcPageComponent implements OnInit {
               this.ltcContract.currencyDesc = '';
               return;
             }
-
-            // this.sbmWebApiService.getCountryCurrencyCodes(this.ltcContract.regionCode).subscribe({
-            //   next: countryCurrencyResult => {
-            //     if (!this.ltcContract) {
-            //       return;
-            //     }
-
-            //     const selectedCurrency = countryCurrencyResult?.cposCurrency?.find(
-            //       (currency: { currencyCode: string; currencyDesc: string }) =>
-            //         currency.currencyCode === this.ltcContract?.currencyCode
-            //     );
-            //     this.ltcContract.currencyDesc = selectedCurrency?.currencyDesc || '';
-            //   }
-            // });
           }).catch(() => {});
         }
       }

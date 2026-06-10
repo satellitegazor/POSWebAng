@@ -14,6 +14,8 @@ import { LTC_Contract } from 'src/app/longterm/models/contract.models';
 import { SbmWebApiService } from 'src/app/sbm/services/sbm-web-api.service';
 import { useAnimation } from '@angular/animations';
 import { LTC_Associates, LTC_LocationAssociatesResultsModel } from 'src/app/longterm/models/location.associates';
+import { LTC_StoreLocation } from '../../../../longterm/models/store.location';
+import { LTC_ContractResultsModel } from '../../../../longterm/models/contract.models';
 
 @Component({
   selector: 'app-balance-due-tickets-page',
@@ -56,16 +58,25 @@ export class SbmLtcBalDueTktsPageComponent {
   ngOnInit(): void {
 
     this.activatedRoute.queryParams.subscribe(params => {
-      this.contractId = params['cid'];
-      this.locationId = params['lid'];
+      this.contractId = Number(params['cid'] || 0);
+      this.locationId = Number(params['lid'] || 0);
     });
     this.sbm_user_name = sessionStorage.getItem('sbm_name') || '';
 
     this.sbmApiService.loadLTCContract(this.contractId, this.sbm_user_name).subscribe({
-      next: (result) => {
+      next: (result: LTC_ContractResultsModel) => {
         this.ltcContract = result.contract;
-        this.locationId = this.ltcContract?.locations[0]?.locationUID || 0;
-        this.locationName = this.ltcContract?.locations[0]?.locationName || '';
+          if(this.locationId === 0) {
+            this.locationId = this.ltcContract?.locations?.[0]?.locationUID || 0;
+            this.locationName = this.ltcContract?.locations?.[0]?.locationName || '';
+          }
+          else {
+            this.ltcContract.locations.forEach((loc: LTC_StoreLocation) => {
+              if(loc.locationUID === this.locationId) {
+                this.locationName = loc.locationName || '';
+              }
+            });
+          }
         this.contractNumber = this.ltcContract?.contractNumber || '';
         this.facilityNumber = this.ltcContract?.locations[0]?.facilities[0]?.facilityNumber || '';
         this.vendorName = this.ltcContract?.vendorName || '';

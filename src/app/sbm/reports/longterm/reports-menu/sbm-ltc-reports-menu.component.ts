@@ -9,15 +9,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class SbmLtcReportsMenuComponent implements OnInit {
 
-
   locationId: number = 0;
   contractId: number = 0;
 
   ngOnInit() {
     // Any initialization logic can go here
     this.activatedRoute.queryParams.subscribe(params => {
-      this.contractId = params['cid'];
-      this.locationId = params['lid'];
+      this.contractId = Number(params['cid'] || 0);
+      this.locationId = Number(params['lid'] || 0);
     });
   }
 

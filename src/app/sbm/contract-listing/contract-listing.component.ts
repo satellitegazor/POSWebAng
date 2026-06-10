@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SbmWebApiService } from '../services/sbm-web-api.service';
-import { VendorContractDataModel } from '../models/contract.models';
+import { VendorContractData, VendorContractDataModel } from '../models/contract.models';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { ContractFilterDlgComponent } from '../contract-filter-dlg/contract-filter-dlg.component';
 
@@ -172,5 +172,24 @@ export class ContractListingComponent implements OnInit {
     const route = contract.appType === 1 ? 'sbm/rovpage' : 'sbm/ltcpage';
     this.router.navigate([route], { queryParams: { cid: contract.contractId } });
   }
+
+  btnOpenTicketLookupMenu(contractObj: any) {
+    //throw new Error('Method not implemented.');
+    this.router.navigate(['/sbm/sbmticketlookupmenu'], { queryParams: { cid: contractObj.contractId, lid: 0 } });
+  }
+
+  btnOpenReportsMenu(contractObj: any) {
+    
+    if(contractObj.appType === 1) {
+      this.router.navigate(['/sbm/sbmrovrptmenu'], { queryParams: { cid: contractObj.contractId, eid: 0 } });
+    } else {
+      this.router.navigate(['/sbm/sbmltcrptmenu'], { queryParams: { cid: contractObj.contractId, lid: 0 } });
+    }
+  }
+
+  btnStartEvent(_t45: any) {
+    throw new Error('Method not implemented.');
+  }
+
 }
 

@@ -12,6 +12,7 @@ import { LTC_Contract } from 'src/app/longterm/models/contract.models';
 import { TenderType } from 'src/app/longterm/models/tender.type';
 import { SbmSalesTranRptDetailComponent } from '../detail/sbm-sales-tran-rpt-detail.component';
 import { LTC_ContractResultsModel } from '../../../../../longterm/models/contract.models';
+import { LTC_StoreLocation } from '../../../../../longterm/models/store.location';
 
 @Component({
   selector: 'app-sbm-ltc-sales-tran-rpt-page',
@@ -98,6 +99,17 @@ export class SbmLtcSalesTranRptPageComponent {
       this.sbmApiSvc.loadLTCContract(this.contractId, this.sbm_user_name).subscribe({
         next: (result: LTC_ContractResultsModel) => {
           this.ltcContract = result.contract;
+          if(this.locationId === 0) {
+            this.locationId = this.ltcContract?.locations?.[0]?.locationUID || 0;
+            this.locationName = this.ltcContract?.locations?.[0]?.locationName || '';
+          }
+          else {
+            this.ltcContract.locations.forEach((loc: LTC_StoreLocation) => {
+              if(loc.locationUID === this.locationId) {
+                this.locationName = loc.locationName || '';
+              }
+            });
+          }
           this.locationName = this.ltcContract?.locations?.[0]?.locationName || '';
           this.contractNumber = this.ltcContract?.contractNumber || '';
           this.facilityNumber = this.ltcContract?.locations?.[0]?.facilities?.[0]?.facilityNumber || '';

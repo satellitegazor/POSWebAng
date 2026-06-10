@@ -134,6 +134,7 @@ logonUserRoleType: string = '';
   }
 
   public ngOnInit(): void {
+    
     this._store.pipe(
       select(getTktObjSelector),
       map((tktObj) => tktObj?.ticketNumber ?? 0),

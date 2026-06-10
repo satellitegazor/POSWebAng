@@ -74,7 +74,7 @@
 									</div>
 								</div>
 								<div class="contract-actions-reports text-md-end">
-									<button type="button" [id]="'reportBtn' + contract.contractId" class="btn btn-secondary btn-sm">Reports</button>
+									<button type="button" [id]="'reportBtn' + contract.contractId" (click)="btnOpenReportsMenu(contract)" class="btn btn-secondary btn-sm">Reports</button>
 								</div>
 								<div class="contract-date">
 									<span class="contract-label d-md-none">Start</span>
@@ -85,10 +85,10 @@
 									{{ formatContractDate(contract.contractEndDate) }}
 								</div>
 								<div class="contract-actions-ticket-lookup text-md-end">
-									<button type="button" [id]="'ticketLookupBtn' + contract.contractId" class="btn btn-secondary btn-sm">Ticket Look-up</button>
+									<button type="button" [id]="'ticketLookupBtn' + contract.contractId" (click)="btnOpenTicketLookupMenu(contract)" class="btn btn-secondary btn-sm">Ticket Look-up</button>
 								</div>
 								<div class="contract-actions text-md-end contract-start-event-slot">
-									<button *ngIf="contract.appType === 1" type="button" [id]="'startEventBtn' + contract.contractId" class="btn btn-secondary btn-sm">Start Event</button>
+									<button *ngIf="contract.appType === 1" type="button" [id]="'startEventBtn' + contract.contractId" (click)="btnStartEvent(contract)" class="btn btn-secondary btn-sm">Start Event</button>
 								</div>
 							</div>
 

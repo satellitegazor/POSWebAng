@@ -121,9 +121,17 @@ export class SbmLtcSettlementReportPageComponent implements OnInit {
       this.sbmWebApiService.loadLTCContract(this.contractId, this.sbm_user_name).subscribe({
         next: (result: LTC_ContractResultsModel) => {
           this.ltcContract = result.contract;
-          //this.locationId = this.ltcContract?.locations[0]?.locationUID || 0;
-          this.locationName = this.ltcContract?.locations[0]?.locationName || '';
-          this.contractNumber = this.ltcContract?.contractNumber || '';
+          if (this.locationId === 0) {
+            this.locationId = this.ltcContract?.locations?.[0]?.locationUID || 0;
+            this.locationName = this.ltcContract?.locations?.[0]?.locationName || '';
+          }
+          else {
+            this.ltcContract.locations.forEach((loc: LTC_StoreLocation) => {
+              if (loc.locationUID === this.locationId) {
+                this.locationName = loc.locationName || '';
+              }
+            });
+          }          this.contractNumber = this.ltcContract?.contractNumber || '';
           this.facilityNumber = this.ltcContract?.locations[0]?.facilities[0]?.facilityNumber || '';
           this.vendorName = this.ltcContract?.vendorName || '';
           this.vendorNumber = this.ltcContract?.vendorNumber || '';
