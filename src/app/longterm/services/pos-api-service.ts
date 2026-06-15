@@ -37,6 +37,7 @@ import { LTC_ItemButtonMenuResultsModel } from '../models/item.button.menu.model
 import { LTC_ContractResultsModel } from '../models/contract.models';
 import { LTC_TicketStatusLocationResult } from '../models/ticket.status.model';
 import { LTC_BalanceDueCountResultsModel, LTC_DailyExchRateHistResultsModel, Ltc_PinReqdSalTranResultsModel, LTC_Signature, LTC_SingleCustomerResultsModel, LTC_SingleTicketPaymentDetailsModel, LTC_SingleTransactionId, LtcFeeHResultsModel, SignatureData } from '../models/misc.models';
+import { SendEmailRequest} from '../../models/misc-models';
 
 
 @Injectable({
@@ -894,11 +895,7 @@ export interface AurusGiftCardRequest {
 
 }
 
-export interface SendEmailRequest {
-    EmailAddress: string;
-    EmailContent: string;
-    Subject: string;
-}
+
 // Add this interface if not already present
 export interface SaveLocationAssociatesRequest {
     // Define properties as per backend contract

@@ -1,0 +1,124 @@
+.reports-menu-wrap {
+	background: linear-gradient(180deg, #edf2f7 0%, #e6edf4 100%);
+	padding: var(--spacing-lg);
+}
+
+.reports-menu-table {
+	border-collapse: collapse;
+	margin: 0;
+	table-layout: fixed;
+	width: 100%;
+}
+
+.menu-col {
+	padding: 0 var(--spacing-md);
+	vertical-align: top;
+	width: 50%;
+}
+
+.reports-menu-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.reports-menu-item {
+	margin-bottom: var(--spacing-md);
+}
+
+.reports-menu-link {
+	background: linear-gradient(180deg, #3d5268 0%, #2f4358 100%);
+	border: 2px solid #2a3c50;
+	border-radius: var(--radius-lg);
+	box-shadow: 0 5px 12px rgba(22, 40, 58, 0.24);
+	color: var(--white);
+	display: block;
+	text-decoration: none;
+	transition: box-shadow 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.reports-menu-link:hover,
+.reports-menu-link:focus {
+	background: linear-gradient(180deg, #48637e 0%, #36506a 100%);
+	border-color: #6e92b7;
+	box-shadow: 0 8px 20px rgba(22, 40, 58, 0.32);
+	outline: none;
+}
+
+.reports-menu-link:active {
+	background: linear-gradient(180deg, #30465d 0%, #2a3d52 100%);
+}
+
+.reports-item-grid {
+	border-collapse: collapse;
+	table-layout: fixed;
+	width: 100%;
+}
+
+.reports-item-grid tr {
+	height: 82px;
+}
+
+.icon-cell,
+.arrow-cell {
+	vertical-align: middle;
+}
+
+.icon-cell {
+	padding: var(--spacing-md) var(--spacing-sm) var(--spacing-md) var(--spacing-lg);
+	width: 64px;
+}
+
+.menu-icon {
+	color: #e4eef8;
+	display: inline-block;
+	fill: currentColor;
+	height: 30px;
+	vertical-align: middle;
+	width: 30px;
+}
+
+.label-cell {
+	color: #ffffff;
+	font-size: 1.08rem;
+	font-weight: 600;
+	letter-spacing: 0.2px;
+	line-height: 1.35;
+	padding: var(--spacing-md) var(--spacing-sm) var(--spacing-md) var(--spacing-xs);
+	vertical-align: middle;
+}
+
+.arrow-cell {
+	color: #d9e6f3;
+	font-size: 1.7rem;
+	font-weight: 700;
+	line-height: 1;
+	padding: var(--spacing-md) var(--spacing-lg) var(--spacing-md) var(--spacing-xs);
+	text-align: right;
+	width: 32px;
+}
+
+.arrow-glyph {
+	display: inline-block;
+	transform: translateY(-1px);
+}
+
+@media (max-width: 991px) {
+	.menu-col {
+		display: block;
+		padding: 0;
+		width: 100%;
+	}
+
+	.reports-item-grid tr {
+		height: 78px;
+	}
+
+	.reports-menu-item {
+		margin-bottom: var(--spacing-sm);
+	}
+
+	.icon-cell {
+		padding-left: var(--spacing-md);
+	}
+}

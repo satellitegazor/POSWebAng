@@ -1,19 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { PosApiService } from '../../../../../longterm/services/pos-api-service';
-import { LTC_SettlementDetails, SettlementReportResultModel } from '../models';
-
-import { ToastService } from '../../../../../services/toast.service';
-import { SbmWebApiService } from '../../../../services/sbm-web-api.service';
-import { take } from 'rxjs';
-import { LTC_Contract, LTC_ContractResultsModel } from '../../../../../longterm/models/contract.models';
-import { LTC_LocationAssociatesResultsModel } from '../../../../../longterm/models/location.associates';
-import { LTC_StoreLocation } from '../../../../../longterm/models/store.location';
-import { MobileBase } from '../../../../../models/mobile.base';
-import { LTC_Associates} from '../../../../../longterm/models/location.associates'
-import { SendEmailRequest } from '../../../../../models/misc-models';
+import { Router } from '@angular/router';
+import { RovApiService } from '../../../short-term.service'
+import { SendEmailRequest } from '../../../../models/misc-models';
+import { LTC_SettlementDetails, SettlementReportResultModel } from './models';
+import { LogonDataService } from '../../../../global/logon-data-service.service';
+import { ToastService } from '../../../../services/toast.service';
 
 export interface FacilityGroup {
   facilityNumber: string;
@@ -56,18 +49,18 @@ export interface NonPacAccountingRow {
 }
 
 @Component({
-  selector: 'app-sbm-ltc-settlement-report-page',
+  selector: 'app-settlement-report-page',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './sbm-ltc-settlement-report-page.component.html',
-  styleUrls: ['./sbm-ltc-settlement-report-page.component.css']
+  templateUrl: './settlement-report-page.component.html',
+  styleUrls: ['./settlement-report-page.component.css']
 })
-export class SbmLtcSettlementReportPageComponent implements OnInit {
+export class SettlementReportPageComponent implements OnInit {
 
   stlmtRptDataMdl: SettlementReportResultModel | null = null;
   selectedMonth: number = new Date().getMonth() + 1;
   selectedYear: number = new Date().getFullYear();
-  sbm_user_name: string = '';
+  indivId: number = 0;
   public SaleAssocList: LTC_Associates[] = [];
   showEmailPopup: boolean = false;
   selectedEmailOption: 'self' | 'manager' | 'custom' = 'self';
@@ -75,16 +68,6 @@ export class SbmLtcSettlementReportPageComponent implements OnInit {
   emailSubmitError: string = '';
   emailSubmitSuccess: string = '';
   isSendingEmail: boolean = false;
-  ltcContract: LTC_Contract | null = null;
-  locationName: string = ''
-  locationId: number = 0;
-  contractId: number = 0;
-  facilityNumber: string = '';
-  fromDate: string = '';
-  toDate: string = '';
-  contractNumber: string = '';
-  vendorName: string = '';
-  vendorNumber: string = '';
 
   readonly months = [
     { value: 1, label: 'January' },  { value: 2, label: 'February' },
@@ -102,70 +85,33 @@ export class SbmLtcSettlementReportPageComponent implements OnInit {
 
   constructor(
     private posApiService: PosApiService,
-    private sbmWebApiService: SbmWebApiService,
+    private logonDataSvc: LogonDataService,
     private router: Router,
-    private toastService: ToastService,
-    private activRoute: ActivatedRoute
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
-    
-    
+    const locCnfg = this.logonDataSvc.getLocationConfig();
+    this.indivId = locCnfg.individualUID || 0;
     const month = this.getMonthToken();
-
-    this.activRoute.queryParams.pipe(take(1)).subscribe(params => {
-
-      this.contractId = +params['cid'] || 0;
-      this.locationId = +params['lid'] || 0;
-      this.sbm_user_name = sessionStorage.getItem('sbm_name') || '';
-
-      this.sbmWebApiService.loadLTCContract(this.contractId, this.sbm_user_name).subscribe({
-        next: (result: LTC_ContractResultsModel) => {
-          this.ltcContract = result.contract;
-          if (this.locationId === 0) {
-            this.locationId = this.ltcContract?.locations?.[0]?.locationUID || 0;
-            this.locationName = this.ltcContract?.locations?.[0]?.locationName || '';
-          }
-          else {
-            this.ltcContract.locations.forEach((loc: LTC_StoreLocation) => {
-              if (loc.locationUID === this.locationId) {
-                this.locationName = loc.locationName || '';
-              }
-            });
-          }          this.contractNumber = this.ltcContract?.contractNumber || '';
-          this.facilityNumber = this.ltcContract?.locations[0]?.facilities[0]?.facilityNumber || '';
-          this.vendorName = this.ltcContract?.vendorName || '';
-          this.vendorNumber = this.ltcContract?.vendorNumber || '';
-
-          this.getSettlmntRptData(this.ltcContract?.contractUID || 0, month, String(this.sbm_user_name), this.locationId);
-
-        }
-      });
-    });
+    this.getSettlmntRptData(locCnfg.contractUID, month, String(locCnfg.individualUID), locCnfg.locationUID);
   }
-
-  onLocationChange() {
-    this.getSettlmntRptData(this.ltcContract?.contractUID || 0, this.getMonthToken(), String(this.sbm_user_name), this.locationId);
-  }
-
 
   getSettlmntRptData(cid: number = 0, month: string = '', uid: string = '', lid: number = 0): void {
 
-    
+    const locCnfg = this.logonDataSvc.getLocationConfig();
     // Clear previous results so stale Fee Summary data is not displayed during/after refresh.
     this.stlmtRptDataMdl = null;
     this.SaleAssocList = [];
 
-    let rgnCode = sessionStorage.getItem('rgnCode') || '';
-
-    this.posApiService.getSettlementReport(cid, month, uid, lid, rgnCode)
+    this.posApiService.getSettlementReport(cid, month, uid, lid, locCnfg.rgnCode)
       .subscribe({
-        next: (result: SettlementReportResultModel) => {
+        next: result => {
           this.stlmtRptDataMdl = result;
           if (result.selectedMonth) this.selectedMonth = result.selectedMonth;
           if (result.selectedYear) this.selectedYear = result.selectedYear;
 
-          this.loadAssociateEmails(lid, this.sbm_user_name);
+          this.loadAssociateEmails(lid, Number(uid) || this.indivId);
         },
         error: () => {
           this.stlmtRptDataMdl = null;
@@ -174,9 +120,9 @@ export class SbmLtcSettlementReportPageComponent implements OnInit {
       });
   }
 
-  private loadAssociateEmails(locationId: number, individualUID: String): void {
+  private loadAssociateEmails(locationId: number, individualUID: number): void {
     this.posApiService.getLocationAssociates(locationId, String(individualUID)).subscribe({
-      next: (data: LTC_LocationAssociatesResultsModel) => {
+      next: data => {
         this.SaleAssocList = data?.associates ?? [];
       },
       error: () => {
@@ -186,9 +132,9 @@ export class SbmLtcSettlementReportPageComponent implements OnInit {
   }
 
   refreshReport(): void {
-    
+    const locCnfg = this.logonDataSvc.getLocationConfig();
     const month = this.getMonthToken();
-    this.getSettlmntRptData(this.contractId, month, String(this.sbm_user_name), this.locationId);
+    this.getSettlmntRptData(locCnfg.contractUID, month, String(locCnfg.individualUID), locCnfg.locationUID);
   }
 
   private getMonthToken(): string {
@@ -365,12 +311,12 @@ export class SbmLtcSettlementReportPageComponent implements OnInit {
   }
 
   get selectedLocation() {
-    const locations: LTC_StoreLocation[] = this.stlmtRptDataMdl?.contract?.locations ?? [];
+    const locations = this.stlmtRptDataMdl?.contract?.locations ?? [];
     if (!locations.length) {
       return null;
     }
 
-    const fallbackLocId = this.locationId;
+    const fallbackLocId = this.logonDataSvc.getLocationConfig()?.locationUID ?? 0;
     const locationId = this.stlmtRptDataMdl?.locationId ?? fallbackLocId;
     return locations.find(x => x.locationUID === locationId) ?? locations[0];
   }
@@ -448,7 +394,7 @@ export class SbmLtcSettlementReportPageComponent implements OnInit {
   }
 
   onEmail(): void {
-    this.selectedEmailOption = this.ownerAssociateEmail ? 'self' : (this.managerAssociateEmail ? 'manager' : 'custom');
+    this.selectedEmailOption = this.selfAssociateEmail ? 'self' : (this.managerAssociateEmail ? 'manager' : 'custom');
     this.customEmailAddress = '';
     this.emailSubmitError = '';
     this.emailSubmitSuccess = '';
@@ -481,9 +427,10 @@ export class SbmLtcSettlementReportPageComponent implements OnInit {
       EmailContent: this.buildSettlementReportHtml()
     };
 
+    const uid = this.logonDataSvc.getLocationConfig()?.individualUID || this.indivId;
     this.isSendingEmail = true;
-    this.posApiService.sendEmail(this.sbm_user_name, request).subscribe({
-      next: (result: MobileBase) => {
+    this.posApiService.sendEmail(String(uid), request).subscribe({
+      next: result => {
         this.isSendingEmail = false;
         if (result?.success) {
           this.emailSubmitSuccess = 'Email sent successfully.';
@@ -501,10 +448,9 @@ export class SbmLtcSettlementReportPageComponent implements OnInit {
     });
   }
 
-  get ownerAssociateEmail(): string {
-    return this.SaleAssocList.find(assoc => ((assoc.code || '').toUpperCase() === 'RLTYP_CONC_OWNR'))?.emailAddress?.trim() || '';
+  get selfAssociateEmail(): string {
+    return this.SaleAssocList.find(assoc => assoc.individualUID === this.indivId)?.emailAddress?.trim() || '';
   }
-
 
   get managerAssociateEmail(): string {
     return this.SaleAssocList.find(assoc => (assoc.code || '').toUpperCase() === 'RLTYP_CONC_MNGR')?.emailAddress?.trim() || '';
@@ -512,7 +458,7 @@ export class SbmLtcSettlementReportPageComponent implements OnInit {
 
   private getSelectedRecipientEmail(): string {
     if (this.selectedEmailOption === 'self') {
-      return this.ownerAssociateEmail;
+      return this.selfAssociateEmail;
     }
     if (this.selectedEmailOption === 'manager') {
       return this.managerAssociateEmail;
@@ -671,22 +617,10 @@ export class SbmLtcSettlementReportPageComponent implements OnInit {
   }
 
   goToReportsMenu(): void {
-    this.router.navigate(['/sbm/sbm-ltc-rptmenu']);
+    this.router.navigate(['/rptmenu']);
   }
 
-  btnPrintClick($event: PointerEvent) {
-    const EmailContent = this.buildSettlementReportHtml();
-    const printWindow = window.open('', '_blank', 'width=1200,height=900');
-    if (printWindow) {
-      printWindow.document.write(EmailContent);
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
-    }
+  goToSalesTransaction(): void {
+    this.router.navigate(['/salestran']);
   }
-
-  goToContractDetails() {
-    this.router.navigate(['/sbm/ltcpage'], { queryParams: { cid: this.contractId } });
-  }
-
 }

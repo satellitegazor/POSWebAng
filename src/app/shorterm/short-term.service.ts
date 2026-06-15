@@ -11,15 +11,26 @@ import {
   ROV_SingleTransactionIDResults,
   ROV_EventsResultModel,
   ROV_AssocLogoutHistory,
+  AssociateNamesListResultsModel,
+  ROV_SalesTranRptSummaryModel,
+  ROV_SalesTranRptDetailModel,
   ResetPinRequest,
   ROV_AssociatePINUpdateResultsModel,
   RLogonModel
 } from './models/models';
+import { SendEmailRequest } from '../models/misc-models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RovApiService {
+  public getEventAssociates(eventId: number, arg1: string): Observable<any> {
+    const url = GlobalConstants.CPOS_SVCS_URL + '/rov/GetEventAssociates?guid=' + encodeURIComponent(GlobalConstants.GET_GUID)
+      + '&eventId=' + eventId.toString()
+      + '&arg1=' + encodeURIComponent(arg1);
+
+    return this.httpClient.get<any>(url, { headers: this.headerObjs });
+  }
   private headerObjs: HttpHeaders;
 
   constructor(private httpClient: HttpClient) {
@@ -140,6 +151,21 @@ export class RovApiService {
     return this.httpClient.get<VendorLoginResultsModel>(url, { headers: this.headerObjs });
   }
 
+  public GetAssociateNamesList(
+    cid: number,
+    evid: number,
+    associateid: number,
+    uid: string
+  ): Observable<AssociateNamesListResultsModel> {
+    const url = GlobalConstants.CPOS_SVCS_URL + '/rov/GetAssociateNamesList?guid=' + encodeURIComponent(GlobalConstants.GET_GUID)
+      + '&cid=' + cid.toString()
+      + '&evid=' + evid.toString()
+      + '&associateid=' + associateid.toString()
+      + '&uid=' + encodeURIComponent(uid);
+
+    return this.httpClient.get<AssociateNamesListResultsModel>(url, { headers: this.headerObjs });
+  }
+
   public saveAssocRovLogoutHistory(request: SaveAssocRovLogoutHistoryRequest): Observable<ROV_AssocLogoutHistory> {
     const url = GlobalConstants.CPOS_SVCS_URL + '/rov/SaveAssocRovLogoutHistory?guid=' + encodeURIComponent(GlobalConstants.PUT_GUID);
 
@@ -178,6 +204,59 @@ export class RovApiService {
     const url = GlobalConstants.CPOS_SVCS_URL + '/rov/PutRovVendorPin?guid=' + encodeURIComponent(GlobalConstants.PUT_GUID);
     return this.httpClient.put<ROV_AssociatePINUpdateResultsModel>(url, JSON.stringify(request), { headers: this.headerObjs });
   }
+
+  public SalesTranReportDetail(
+    ContractId: number,
+    EventId: number,
+    IndividualId: number,
+    FromDate: string = '',
+    ToDate: string = '',
+    FrgnCurr: boolean = false,
+    uid: string
+  ): Observable<ROV_SalesTranRptDetailModel> {
+
+    const url = GlobalConstants.CPOS_SVCS_URL + '/rov/SalesTranReportDetail?guid=' + encodeURIComponent(GlobalConstants.GET_GUID)
+      + '&uid=' + encodeURIComponent(uid)
+      + '&ContractId=' + ContractId.toString()
+      + '&EventId=' + EventId.toString()
+      + '&IndividualId=' + IndividualId.toString()
+      + '&FromDate=' + encodeURIComponent(FromDate)
+      + '&ToDate=' + encodeURIComponent(ToDate)
+      + '&FrgnCurr=' + FrgnCurr;
+
+    return this.httpClient.get<ROV_SalesTranRptDetailModel>(url, { headers: this.headerObjs });
+  }
+
+  public SalesTranReportSummary(
+    ContractId: number,
+    EventId: number,
+    IndividualId: number,
+    FromDate: string = '',
+    ToDate: string = '',
+    FrgnCurr: boolean = false,
+    uid: string
+  ): Observable<ROV_SalesTranRptSummaryModel> {
+    const url = GlobalConstants.CPOS_SVCS_URL + '/rov/SalesTranReportSummary?guid=' + encodeURIComponent(GlobalConstants.GET_GUID)
+      + '&uid=' + encodeURIComponent(uid)
+      + '&ContractId=' + ContractId.toString()
+      + '&EventId=' + EventId.toString()
+      + '&IndividualId=' + IndividualId.toString()
+      + '&FromDate=' + encodeURIComponent(FromDate)
+      + '&ToDate=' + encodeURIComponent(ToDate)
+      + '&FrgnCurr=' + FrgnCurr;
+
+    return this.httpClient.get<ROV_SalesTranRptSummaryModel>(url, { headers: this.headerObjs });
+  }
+
+  public sendEmail(uid: string, request: SendEmailRequest, guid: string = GlobalConstants.POST_GUID): Observable<MobileBase> {
+      return this.httpClient.post<MobileBase>(
+          GlobalConstants.CPOS_SVCS_URL + '/common/SendEmail?guid=' + encodeURIComponent(guid)
+              + '&uid=' + encodeURIComponent(uid),
+          JSON.stringify(request),
+          { headers: this.headerObjs }
+      );
+  }
+
 
 }
 

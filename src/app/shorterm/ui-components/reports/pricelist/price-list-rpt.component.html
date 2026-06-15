@@ -1,0 +1,238 @@
+<div class="container-fluid mt-4">
+
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="alert alert-info text-center" role="alert">
+    <div class="spinner-border spinner-border-sm me-2" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    Loading Price List...
+  </div>
+
+  <!-- Report Parameters Card -->
+  <div class="card mb-4">
+    <div class="card-header rpt-header">
+      <h5 class="mb-0">Price List</h5>
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label fw-bold">Location Name</label>
+          <input type="text" class="form-control form-control-sm" [value]="locationName" readonly />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold">Vendor Number</label>
+          <input type="text" class="form-control form-control-sm" [value]="vendorName + ' (' + vendorNumber + ')'" readonly />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold">Contract Number</label>
+          <input type="text" class="form-control form-control-sm" [value]="contractNumber" readonly />
+        </div>
+      </div>
+      <div class="row g-3 mt-1">
+        <div class="col-md-4">
+          <label class="form-label fw-bold">Facility Number</label>
+          <input type="text" class="form-control form-control-sm" [value]="facilityNumber" readonly />
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+          <button class="btn btn-info btn-sm w-100" (click)="onRefreshClick()">
+            <span class="me-1">↻</span> Refresh
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Data Alert -->
+  <div *ngIf="!loading && !hasData" class="text-center mt-4">
+    <img src="assets/images/help-guy.jpg" alt="Help Guy" class="img-fluid mb-3" style="max-height: 150px;" />
+    <h5 class="text-danger">*** Vendor Does Not Have Sales Item Information For This Facility ***</h5>
+  </div>
+
+  <!-- Price List Data -->
+  <div *ngIf="!loading && hasData">
+
+    <!-- For each Location -->
+    <div *ngFor="let loc of menuModel!.locations" class="mb-4">
+
+      <!-- Location Header -->
+      <div class="location-header p-3 mb-2">
+        <h4 class="mb-1">LOCATION - {{ loc.locationName }}</h4>
+        <div class="row g-2 small">
+          <div class="col-auto">
+            <span class="fw-bold">Allow Tax Exemption:</span>
+            <span class="ms-1" [class.text-success]="loc.allowTaxExemption" [class.text-danger]="!loc.allowTaxExemption">
+              {{ loc.allowTaxExemption ? 'Yes' : 'No' }}
+            </span>
+          </div>
+          <div class="col-auto">
+            <span class="fw-bold">Apply Concession Discount:</span>
+            <span class="ms-1">{{ loc.vendCouponsAfterTax ? 'After Tax' : 'Before Tax' }}</span>
+          </div>
+          <div class="col-auto">
+            <span class="fw-bold">Apply Exchange Coupons:</span>
+            <span class="ms-1">{{ loc.exchCouponsAfterTax ? 'After Tax' : 'Before Tax' }}</span>
+          </div>
+          <div class="col-auto" *ngIf="loc.businessModel === '5'">
+            <span class="fw-bold">Open Cash Drawer for Tips:</span>
+            <span class="ms-1" [class.text-success]="loc.openCashDrwForTips" [class.text-danger]="!loc.openCashDrwForTips">
+              {{ loc.openCashDrwForTips ? 'Yes' : 'No' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- For each Department in this Location -->
+      <div *ngFor="let dept of getDepartmentsForLocation(loc.locationUID)" class="mb-4">
+
+        <!-- Department Header -->
+        <div class="dept-header text-center py-2 mb-3">
+          <h5 class="mb-0">{{ dept.description }}</h5>
+        </div>
+
+        <!-- For each Sales Category in this Department -->
+        <ng-container *ngFor="let sc of getCategoriesForDepartment(dept.locationUID, dept.departmentUID)">
+
+          <!-- Category has items set up -->
+          <ng-container *ngIf="hasSetupItems(dept.locationUID, dept.departmentUID, sc); else noItems">
+            <div class="card mb-3 category-card">
+              <button
+                type="button"
+                class="card-header category-header text-center d-flex justify-content-between align-items-center w-100 border-0"
+                (click)="toggleCategory(dept.locationUID, dept.departmentUID, sc.salesCategoryID)"
+                [attr.aria-expanded]="!isCategoryCollapsed(dept.locationUID, dept.departmentUID, sc.salesCategoryID)">
+                <strong>{{ sc.salesCategoryDescription }}</strong>
+                <span class="small">
+                  {{ isCategoryCollapsed(dept.locationUID, dept.departmentUID, sc.salesCategoryID) ? 'Show' : 'Hide' }}
+                </span>
+              </button>
+              <div class="card-body p-0" *ngIf="!isCategoryCollapsed(dept.locationUID, dept.departmentUID, sc.salesCategoryID)">
+                <table class="table table-striped table-hover table-sm mb-0">
+                  <thead class="rpt-table-head">
+                    <tr>
+                      <th class="text-start">{{ sc.salesCategoryDescription }}</th>
+                      <th class="text-end">Price</th>
+                      <th class="text-end">Sales Tax</th>
+                      <th class="text-end" *ngIf="sc.allowEnvTax">Environmental Tax</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <ng-container *ngFor="let si of getItemsForCategory(dept.locationUID, dept.departmentUID, sc.salesCategoryID); let j = index">
+                      <tr *ngIf="j < 30 && (si.price !== '0.00' || si.displayOrderItem === 0)">
+                        <td class="text-start">{{ si.salesItemDescription }}</td>
+                        <td class="text-end">{{ si.currencyCode }} {{ si.price }}</td>
+                        <td class="text-end">{{ (+si.salesTax).toFixed(3) }}%</td>
+                        <td class="text-end" *ngIf="sc.allowEnvTax">{{ si.envTax.toFixed(3) }}%</td>
+                      </tr>
+                    </ng-container>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Category NOT set up -->
+          <ng-template #noItems>
+            <div class="card mb-3 border-warning">
+              <div class="card-header d-flex justify-content-between align-items-center category-header-not-setup">
+                <span>{{ sc.salesCategoryDescription }}</span>
+                <span class="text-danger small fw-bold">Menu is currently not setup</span>
+              </div>
+            </div>
+          </ng-template>
+
+        </ng-container>
+
+      </div><!-- /department -->
+    </div><!-- /location -->
+
+  </div><!-- /hasData -->
+
+</div><!-- /container -->
+
+<!-- Fixed Footer -->
+<div class="footer fixed-bottom cncsnFooter">
+
+  <!-- SBM Footer (Email, Print, Reports, Contract Listing) -->
+  <div *ngIf="source === 'S'" id="plButtonBottomBarSBM" class="row g-0">
+    <div class="col-12 col-md-3">
+      <button class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
+        aria-label="Email Price List Report" (click)="onEmailClick()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-fill" viewBox="0 0 16 16">
+          <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414z"/>
+          <path d="M0 4.697v7.104l5.803-3.558z"/>
+          <path d="M6.761 8.83 0 12.97A2 2 0 0 0 2 14h12a2 2 0 0 0 2-1.03L9.239 8.83 8 9.586z"/>
+          <path d="M16 4.697v7.104l-5.803-3.558z"/>
+        </svg>
+        <span>Email</span>
+      </button>
+    </div>
+    <div class="col-12 col-md-3">
+      <button class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
+        aria-label="Print Price List Report" (click)="onPrintClick()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer-fill" viewBox="0 0 16 16">
+          <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2z"/>
+          <path d="M11 3H5v10h6z" style="display:none"/>
+          <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v2H2a2 2 0 0 1-2-2z"/>
+          <path d="M11 13H5v2h6zm0-4H5v3h6z"/>
+        </svg>
+        <span>Print</span>
+      </button>
+    </div>
+    <div class="col-12 col-md-3">
+      <button class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
+        aria-label="Go To Reports Menu" (click)="onReportsClick()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-fill" viewBox="0 0 16 16">
+          <path d="M0 0h1v15h15v1H0z"/>
+          <path d="M2 10h2v5H2zm4-6h2v11H6zm4 3h2v8h-2zm4-5h2v13h-2z"/>
+        </svg>
+        <span>Reports</span>
+      </button>
+    </div>
+    <div class="col-12 col-md-3">
+      <button class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
+        aria-label="Go To Contract Listing" (click)="onContractListingClick()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-text-fill" viewBox="0 0 16 16">
+          <path d="M12 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2M5 4h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1 0-1m-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5M5 8h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1 0-1m0 2h3a.5.5 0 0 1 0 1H5a.5.5 0 0 1 0-1"/>
+        </svg>
+        <span>Contract Listing</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Vendor Footer (Email, Reports, Sales Transaction) -->
+  <div *ngIf="source !== 'S'" id="plButtonBottomBarVdr" class="row g-0">
+    <div class="col-12 col-md-4">
+      <button class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
+        aria-label="Email Price List Report" (click)="onEmailClick()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-fill" viewBox="0 0 16 16">
+          <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414z"/>
+          <path d="M0 4.697v7.104l5.803-3.558z"/>
+          <path d="M6.761 8.83 0 12.97A2 2 0 0 0 2 14h12a2 2 0 0 0 2-1.03L9.239 8.83 8 9.586z"/>
+          <path d="M16 4.697v7.104l-5.803-3.558z"/>
+        </svg>
+        <span>Email</span>
+      </button>
+    </div>
+    <div class="col-12 col-md-4">
+      <button class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
+        aria-label="Go To Reports Menu" (click)="onReportsClick()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-fill" viewBox="0 0 16 16">
+          <path d="M0 0h1v15h15v1H0z"/>
+          <path d="M2 10h2v5H2zm4-6h2v11H6zm4 3h2v8h-2zm4-5h2v13h-2z"/>
+        </svg>
+        <span>Reports</span>
+      </button>
+    </div>
+    <div class="col-12 col-md-4">
+      <button class="border border-white btn btn-info btn-lg ftrbtn w-100 d-flex align-items-center justify-content-center gap-2"
+        aria-label="Go To Sales Transaction" (click)="onSalesTransactionClick()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-fill" viewBox="0 0 16 16">
+          <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5A.5.5 0 0 1 0 1.5"/>
+          <path d="M5 12a2 2 0 1 0 0 4a2 2 0 0 0 0-4m5 0a2 2 0 1 0 0 4a2 2 0 0 0 0-4"/>
+        </svg>
+        <span>Sales Transaction</span>
+      </button>
+    </div>
+  </div>
+
+</div>

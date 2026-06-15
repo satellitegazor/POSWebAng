@@ -130,7 +130,7 @@ export class RovLogonComponent implements OnInit {
         this._toastSvc.success('Vendor Logon successful, moving on to Sale Transaction...');
       }
 
-      sessionStorage.setItem("userType", "vendorlt");
+      sessionStorage.setItem("userType", "vendorst");
 
       let selectedEventId: number = this.selectedEventId;
       let eventSelected = this.eventList.filter(k => k.eventId == selectedEventId)[0];
@@ -154,7 +154,7 @@ export class RovLogonComponent implements OnInit {
       this._localStorageSvc.setItemData('jwtToken', data.tokenString);
       this._localStorageSvc.setItemData('apptype', 'longterm')
       //console.log('vendorlt sending data to subject');
-      this._rovLogonDataSvc.setLTVendorLogonData(data);
+      this._rovLogonDataSvc.setRovVendorLogonData(data);
 
       // Keep app header/login state in sync even when reset-PIN or training flows short-circuit.
       // this._locConfigStore.dispatch(updateLocationConfigPostLogon({
@@ -227,6 +227,10 @@ export class RovLogonComponent implements OnInit {
     });
   }
 
-  initOnSuccessfulLogon(data: VendorLoginResultsModel, locModel: RLogonModel) { }
+  initOnSuccessfulLogon(data: VendorLoginResultsModel, locModel: RLogonModel) {
+
+    this.router.navigate(['/rmainmenu']);
+
+  }
 
 }

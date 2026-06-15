@@ -1,0 +1,103 @@
+.pin-modal-header {
+	background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-dark-light) 100%);
+	border-bottom: none;
+	border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+	color: var(--white);
+	padding: var(--spacing-lg) var(--spacing-xl);
+}
+
+.modal-title {
+	color: var(--white);
+	font-size: var(--font-size-xl);
+	font-weight: 600;
+	letter-spacing: 0.4px;
+	margin: 0;
+}
+
+.pin-modal-subtitle {
+	color: rgba(255, 255, 255, 0.9);
+	font-size: var(--font-size-sm);
+	margin-top: var(--spacing-xs);
+}
+
+.pin-modal-content {
+	background-color: var(--neutral-bg-lighter);
+	padding: var(--spacing-xl);
+}
+
+.pin-panel {
+	background: var(--white);
+	border: 1px solid var(--neutral-border);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-md);
+	margin: 0 auto;
+	max-width: 420px;
+	padding: var(--spacing-xl);
+}
+
+.pin-label {
+	color: var(--neutral-text-primary);
+	display: inline-block;
+	font-size: var(--font-size-sm);
+	font-weight: 600;
+	letter-spacing: 0.3px;
+	margin-bottom: var(--spacing-sm);
+	text-transform: uppercase;
+}
+
+.pin-input {
+	border: 1px solid var(--neutral-border);
+	border-radius: var(--radius-md);
+	font-size: var(--font-size-lg);
+	font-weight: 600;
+	letter-spacing: 0.25em;
+	min-height: 44px;
+	text-align: center;
+}
+
+.pin-input:focus {
+	border-color: var(--primary-accent);
+	box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.2);
+}
+
+.pin-help {
+	color: var(--neutral-text-secondary);
+	font-size: var(--font-size-sm);
+	margin-top: var(--spacing-sm);
+}
+
+.pin-modal-footer {
+	background-color: var(--neutral-bg-light);
+	border-top: 1px solid var(--neutral-border);
+	border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+	padding: var(--spacing-lg) var(--spacing-xl);
+}
+
+.pin-actions {
+	display: flex;
+	gap: var(--spacing-sm);
+	justify-content: flex-end;
+	width: 100%;
+}
+
+.pin-actions .btn {
+	min-width: 120px;
+}
+
+@media (max-width: 576px) {
+	.pin-modal-content {
+		padding: var(--spacing-lg);
+	}
+
+	.pin-panel {
+		padding: var(--spacing-lg);
+	}
+
+	.pin-actions {
+		flex-direction: column;
+	}
+
+	.pin-actions .btn {
+		width: 100%;
+	}
+}

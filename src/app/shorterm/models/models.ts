@@ -422,6 +422,7 @@ export class ROV_SalesTranRptSummary {
 	couponTotal: number = 0;
 	vendorCoupons: number = 0;
 	exchangeCoupons: number = 0;
+	pct: number = 0;
 }
 
 export class ROV_SalesTranRptDetailModel {
@@ -459,6 +460,22 @@ export class ROV_SalesTranRptDetail {
 	shipHandling: number = 0;
 	formNumber: string = '';
 	diffDateDeposit: boolean = false;
+}
+
+export class AssociateNamesListDetail {
+	associateID: number = 0;
+	associateName: string = '';
+	emailAddress: string = '';
+	active: number = 0;
+}
+
+export class AssociateNamesList {
+	associateDetails: AssociateNamesListDetail[] = [];
+}
+
+export class AssociateNamesListResultsModel {
+	results: MobileBase = {} as MobileBase;
+	associateListSummary: AssociateNamesList = new AssociateNamesList();
 }
 
 export class ROVSignatureData {
