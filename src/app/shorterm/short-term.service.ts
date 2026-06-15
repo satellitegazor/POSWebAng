@@ -12,8 +12,9 @@ import {
   ROV_EventsResultModel,
   ROV_AssocLogoutHistory,
   ResetPinRequest,
-  ROV_AssociatePINUpdateResultsModel
-} from './models';
+  ROV_AssociatePINUpdateResultsModel,
+  RLogonModel
+} from './models/models';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,11 @@ export class RovApiService {
   constructor(private httpClient: HttpClient) {
     this.headerObjs = new HttpHeaders().set('Content-Type', 'application/json');
     this.headerObjs = this.headerObjs.append('Accept', '*/*');
+  }
+
+  public logonUser(mdl: RLogonModel): Observable<VendorLoginResultsModel> {
+          
+    return this.httpClient.post<VendorLoginResultsModel>(GlobalConstants.CPOS_SVCS_URL + '/rov/ValPin',  JSON.stringify(mdl) , { headers: this.headerObjs });
   }
 
   public getConcessionMenuItem(
@@ -100,6 +106,18 @@ export class RovApiService {
     return this.httpClient.get<ROV_EventsResultModel>(url, { headers: this.headerObjs });
   }
 
+    public getVendorFacEvents(
+      vid: string,
+      exchnum: string
+    ): Observable<ROV_EventsResultModel> {
+      const url = GlobalConstants.CPOS_SVCS_URL + '/rov/GetVendorFacEvents?guid=' + encodeURIComponent(GlobalConstants.GET_GUID)
+        + '&vid=' + encodeURIComponent(vid)
+        + '&exchnum=' + encodeURIComponent(exchnum)
+        + '&cliTimeVar=' + GlobalConstants.GetClientTimeVariance().toString();
+
+      return this.httpClient.get<ROV_EventsResultModel>(url, { headers: this.headerObjs });
+    }
+
 
   public getValidateRovingEvent(
     creds: string,
@@ -153,6 +171,11 @@ export class RovApiService {
 
   public resetRovAssociatePin(request: ResetPinRequest): Observable<ROV_AssociatePINUpdateResultsModel> {
     const url = GlobalConstants.CPOS_SVCS_URL + '/rov/ResetAssociatePIN?guid=' + encodeURIComponent(GlobalConstants.PUT_GUID);
+    return this.httpClient.put<ROV_AssociatePINUpdateResultsModel>(url, JSON.stringify(request), { headers: this.headerObjs });
+  }
+
+  public putRovVendorPinUpdate(request: ResetPinRequest): Observable<ROV_AssociatePINUpdateResultsModel> {
+    const url = GlobalConstants.CPOS_SVCS_URL + '/rov/PutRovVendorPin?guid=' + encodeURIComponent(GlobalConstants.PUT_GUID);
     return this.httpClient.put<ROV_AssociatePINUpdateResultsModel>(url, JSON.stringify(request), { headers: this.headerObjs });
   }
 

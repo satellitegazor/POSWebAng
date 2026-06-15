@@ -29,6 +29,7 @@ import { PosCurrency3Directive } from './directives/pos-currency.directive.3';
 import { ConfirmDialogComponent } from './shared/confirm-dialog';
 import { ToastComponent } from "./shared/toast/toast.component";
 import { LongTermModule } from './longterm/long-term.module';
+import { RovingModule } from './shorterm/roving.module';
 
  
 @NgModule({
@@ -60,6 +61,7 @@ import { LongTermModule } from './longterm/long-term.module';
     SharedSubjectModule,
     ToastComponent,
     NgbModalModule,
+    RovingModule,
     HttpClientModule,
     EffectsModule.forRoot([]),
     StoreModule.forRoot({}),

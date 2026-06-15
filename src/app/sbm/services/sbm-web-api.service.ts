@@ -8,7 +8,7 @@ import { ContractIdResultsModel, ROV_Contract, ROV_ContractResultsModel, VendorC
 import { LTC_Contract, LTC_ContractResultsModel, LTC_ReferenceResultsModel, ROV_ReferenceResultsModel } from '../../longterm/models/contract.models';
 import { FacilityModel } from '../../longterm/models/store.location';
 import { CPOS_RegionCountryCurrencyResultsModel } from '../../longterm/models/region.currency.models';
-import { EventStartOrEndRequest, ROV_StartOrEndModel } from '../../shorterm/models';
+import { EventStartOrEndRequest, ROV_StartOrEndModel } from '../../shorterm/models/models';
 
 @Injectable({
   providedIn: 'root'

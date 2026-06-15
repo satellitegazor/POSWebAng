@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { VendorLocationsResultModel, VLogonModel } from './models/vlogon.model';
+import { VendorLocationsResultModel, VLogonModel } from '../longterm/logon/models/vlogon.model';
 import { GlobalConstants } from '../global/global.constants';
 import { VendorLoginResultsModel } from '../models/vendor.login.results.model';
-import { AssociatePINUpdateResultsModel } from './models/associate.pin.update.Result.model';
+import { AssociatePINUpdateResultsModel } from '../logon/models/associate.pin.update.Result.model';
 import { MobileBase } from '../models/mobile.base';
 
 @Injectable({

@@ -1,31 +1,33 @@
 import { Component, OnInit } from '@angular/core';
 import { GlobalConstants } from '../../global/global.constants';
 import { LogonSvc } from '../logonsvc.service';
-import { AbbrLocationsModel, VLogonModel } from '../models/vlogon.model';
+import { AbbrLocationsModel, VLogonModel } from './models/vlogon.model';
 import { Router } from "@angular/router";
 import { LogonDataService } from '../../global/logon-data-service.service';
 import { LocalStorageService } from '../../global/local-storage.service';
-import { PosApiService } from '../../longterm/services/pos-api-service';
-import { LocationConfigState } from '../../longterm/saletran/store/locationconfigstore/locationconfig.state';
+import { PosApiService } from '../services/pos-api-service';
+import { AlertService } from '../../alertmsg/alert-message/alert-message.service';
+import { AlertOptions } from '../../alertmsg/alert-message/alert-message.model';
+import { LocationConfigState } from '../saletran/store/locationconfigstore/locationconfig.state';
 import { props, Store } from '@ngrx/store';
-import { setLocationConfig, updateLocationConfigPostLogon } from '../../longterm/saletran/store/locationconfigstore/locationconfig.action';
+import { setLocationConfig, updateLocationConfigPostLogon } from '../saletran/store/locationconfigstore/locationconfig.action';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ResetPinDlgComponent } from '../../common-ui-components/reset-pin-dlg/reset-pin-dlg.component';
-import { MandateTrainingComponent } from '../../common-ui-components/mandate-training/mandate-training.component';
+import { ResetPinDlgComponent } from './reset-pin-dlg/reset-pin-dlg.component';
+import { MandateTrainingComponent } from './mandate-training/mandate-training.component';
 import { ToastService } from '../../services/toast.service';
 import { HttpClient } from '@angular/common/http';
-import { addTabSerialToTktObj, initTktObj, loadTicket, loadTicketSuccess, updateCheckoutTotals } from '../../longterm/saletran/store/ticketstore/ticket.action';
+import { addTabSerialToTktObj, initTktObj, loadTicket, loadTicketSuccess, updateCheckoutTotals } from '../saletran/store/ticketstore/ticket.action';
 import { TktObjState } from '../../app.state';
 import { Actions, ofType } from '@ngrx/effects';
-import { CPOSWebSvcService } from '../../longterm/services/cposweb-svc.service';
-import { VendorLoginResultsModel } from 'src/app/models/vendor.login.results.model';
+import { CPOSWebSvcService } from '../services/cposweb-svc.service';
+import { VendorLoginResultsModel } from './models/vendor.login.results.model';
 import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-logon-vendorlt',
     templateUrl: './vendorlt.component.html',
     styleUrls: ['./vendorlt.component.css'],
-    standalone: false
+
 })
 export class VendorLTComponent implements OnInit {
 

@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { LogonSvc } from '../../logonsvc.service';
-import { Router } from '@angular/router';
+
 import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 @Component({
@@ -10,11 +9,8 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './reset-pin-dlg.component.css'
 })
 export class ResetPinDlgComponent {
-  constructor(private modalRef: NgbActiveModal, 
-    private logonSvc: LogonSvc, 
-    private router: Router) { 
-
-  }
+  constructor(private modalRef: NgbActiveModal) 
+  {   }
 
 public Cancel() {
     this.modalRef.dismiss();

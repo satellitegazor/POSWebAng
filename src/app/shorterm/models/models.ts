@@ -1,3 +1,29 @@
+import { CPOSDB } from "../../longterm/models/contract.models";
+import { MobileBase } from "../../models/mobile.base";
+import { SystemStatus } from "../../models/mobile.client.identity";
+
+export class RLogonModel {
+	public guid: string = '';
+        public vendorNumber: string = '';
+        public exchangeNumber: string = '';
+        public eventId: number = 0;
+        public eventName: string = '';
+        public individualUid: number = 0;
+        public pin: string = '';
+        public newPin: string = '';
+        public verifyPin: string = '';
+        public showPrivTrngConfrm: number = 0;
+		public privActConfmComplete: boolean = false;
+        public cliTimeVar: number = 0;
+        public pageId: number = 0;
+        public contractType: boolean = false;
+        public loggingOut: boolean = false;
+        public regionId: string = '';
+        public status: SystemStatus = new SystemStatus();
+        public dbRegion: CPOSDB = CPOSDB.Conus;
+
+    }
+
 export class ROV_EventEndStatRsltMdl {
 	results: any = null;
 	eventId: number = 0;
@@ -176,11 +202,11 @@ export class Rov_AssociateSaleTips {
 }
 
 export class ROV_StartOrEndModel {
-	results: any = null;
+	results: MobileBase = {} as MobileBase;
 }
 
 export class ROV_EventsResultModel {
-	results: any = null;
+	results: MobileBase = {} as MobileBase;
 	events: ROV_AbbrEventModel[] = [];
 	isForeignCurr: boolean = false;
 	currCode: string = '';
@@ -191,7 +217,7 @@ export class ROV_AbbrEventModel {
 	facilityNumber: string = '';
 	facilityUid: string = '';
 	eventName: string = '';
-	eventId: string = '';
+	eventId: number = 0;
 	eventEnded: boolean = false;
 	exchangeNumber: string = '';
 	vendorNumber: string = '';
@@ -240,6 +266,8 @@ export class ROV_AssociatePINUpdateResultsModel {
         public indvID: number = 0;
         public creds: string = '';
         public uid: string = '';
+		public veid: string = '';
+		public cliTimeVar: number = 0
     }
 
 export class ROV_TransactionDetailsModel {

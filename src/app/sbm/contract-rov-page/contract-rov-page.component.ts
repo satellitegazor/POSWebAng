@@ -11,7 +11,7 @@ import { ToastService } from '../../services/toast.service';
 import { UtilService } from '../../services/util.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CountryCode, getCountries, getCountryCallingCode } from 'libphonenumber-js';
-import { EventStartOrEndRequest, ResetPinRequest, ROV_AssociatePINUpdateResultsModel, ROV_StartOrEndModel, StartOrEOD } from '../../shorterm/models';
+import { EventStartOrEndRequest, ResetPinRequest, ROV_AssociatePINUpdateResultsModel, ROV_StartOrEndModel, StartOrEOD } from '../../shorterm/models/models';
 import { GlobalConstants } from '../../global/global.constants';
 import { RovApiService } from '../../shorterm/short-term.service';
 
@@ -786,7 +786,9 @@ export class ContractRovPageComponent implements OnInit {
       eventID: Number((event as any)?.eventID ?? 0),
       indvID: Number((associate as any)?.individualUID ?? 0),
       creds: '',
-      uid: sessionStorage.getItem('sbm_name') || ''
+      uid: sessionStorage.getItem('sbm_name') || '',
+      veid: event.vendorNumber || '',
+      cliTimeVar: GlobalConstants.GetClientTimeVariance()
     };
 
     this.rovApiService.resetRovAssociatePin(resetPinRequest).subscribe({

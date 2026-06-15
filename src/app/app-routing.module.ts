@@ -6,7 +6,7 @@ import { AppModule } from './app.module';
 const appRoutes: Routes = [
     { path: 'sbm', loadChildren: () => import('./sbm/sbm-module/sbm-module').then(mod => mod.SbmModule) },
     { path: 'vlogon', loadChildren: () => import('./logon/logon.module').then(mod => mod.LogonModule)  },
-    { path: 'rlogon', loadChildren: () => import('./logon/logon.module').then(mod => mod.LogonModule) },
+    { path: 'rov', loadChildren: () => import('./shorterm/roving.module').then(mod => mod.RovingModule) },
     { path: 'ltc', loadChildren: () => import('./longterm/long-term-route.module').then(mod => mod.LongTermRouteModule) },
     { path: 'reportsmenu', loadComponent: () => import('./longterm/menu/reports-menu/reports-menu.component').then(mod => mod.ReportsMenuComponent) },
     { path: 'salestranrpt', loadComponent: () => import('./longterm/reports/salestranrpt/sales-tran-rpt-page/sales-tran-rpt-page.component').then(mod => mod.SalesTranRptPageComponent) },

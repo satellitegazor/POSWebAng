@@ -67,7 +67,7 @@ export class ToastService {
   }
 
   error(message: string) {
-    this.show_wClick(message, 'error'); // Errors usually stay until clicked
+    this.show(message, 'error'); // Errors usually stay until clicked
   }
 
   error_wClick(message: string) {
