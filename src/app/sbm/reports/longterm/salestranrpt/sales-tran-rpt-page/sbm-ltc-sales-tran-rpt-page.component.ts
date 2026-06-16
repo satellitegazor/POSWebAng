@@ -4,15 +4,16 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { ToastService } from '../../../../../services/toast.service';
-import { PosApiService, SendEmailRequest } from '../../../../../longterm/services/pos-api-service';
+import { PosApiService } from '../../../../../longterm/services/pos-api-service';
 import { ContractSummaryGrouped, ContractTransactionDetail, SalesTranRptSummaryByFacility, VendorContractSummaryResultsModel } from '../../../../../models/saletran.report.model';
 import { LTC_Associates } from '../../../../../longterm/models/location.associates';
-import { SbmWebApiService } from 'src/app/sbm/services/sbm-web-api.service';
-import { LTC_Contract } from 'src/app/longterm/models/contract.models';
-import { TenderType } from 'src/app/longterm/models/tender.type';
+import { SbmWebApiService } from '../../../../services/sbm-web-api.service';
+import { LTC_Contract } from '../../../../../longterm/models/contract.models';
+import { TenderType } from '../../../../../longterm/models/tender.type';
 import { SbmSalesTranRptDetailComponent } from '../detail/sbm-sales-tran-rpt-detail.component';
 import { LTC_ContractResultsModel } from '../../../../../longterm/models/contract.models';
 import { LTC_StoreLocation } from '../../../../../longterm/models/store.location';
+import { SendEmailRequest } from '../../../../../models/misc-models';
 
 @Component({
   selector: 'app-sbm-ltc-sales-tran-rpt-page',

@@ -9,7 +9,7 @@ import { ContractSummaryGrouped, ContractTransactionDetail, SalesTranRptSummaryB
 import { LogonDataService } from '../../../../global/logon-data-service.service';
 import { Router } from '@angular/router';
 import { LTC_Associates } from '../../../../longterm/models/location.associates';
-import { SendEmailRequest } from '../../../../longterm/services/pos-api-service';
+import { SendEmailRequest } from '../../../../models/misc-models';
 import { ToastService } from '../../../../services/toast.service';
 
 

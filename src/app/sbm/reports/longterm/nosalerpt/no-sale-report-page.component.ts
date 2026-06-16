@@ -4,13 +4,14 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { LogonDataService } from '../../../../global/logon-data-service.service';
 import { ToastService } from '../../../../services/toast.service';
 import { LTC_NoSaleTicket } from '../../../../longterm/models/nosale.report.model';
-import { PosApiService, SendEmailRequest } from '../../../../longterm/services/pos-api-service';
-import { LTC_Contract } from 'src/app/longterm/models/contract.models';
-import { LTC_Associates, LTC_LocationAssociatesResultsModel } from 'src/app/longterm/models/location.associates';
-import { SbmWebApiService } from 'src/app/sbm/services/sbm-web-api.service';
+import { PosApiService } from '../../../../longterm/services/pos-api-service';
+import { LTC_Contract } from '../../../../longterm/models/contract.models';
+import { LTC_Associates, LTC_LocationAssociatesResultsModel } from '../../../../longterm/models/location.associates';
+import { SbmWebApiService } from '../../../../sbm/services/sbm-web-api.service';
 import { FormsModule } from '@angular/forms';
 import { LTC_StoreLocation } from '../../../../longterm/models/store.location';
 import { LTC_ContractResultsModel } from '../../../../longterm/models/contract.models';
+import { SendEmailRequest } from '../../../../models/misc-models';
 
 interface NoSaleTicketView {
   ticketId: number;

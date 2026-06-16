@@ -6,16 +6,17 @@ import { LTC_BalanceDueTickets, LTC_BalanceDueTicketsResultsModel } from '../../
 import { CommonModule} from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { PosApiService, SendEmailRequest } from '../../../../longterm/services/pos-api-service';
+import { PosApiService } from '../../../../longterm/services/pos-api-service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { LTC_Contract } from 'src/app/longterm/models/contract.models';
-import { SbmWebApiService } from 'src/app/sbm/services/sbm-web-api.service';
+import { LTC_Contract } from '../../../../longterm/models/contract.models';
+import { SbmWebApiService } from '../../../services/sbm-web-api.service';
 import { useAnimation } from '@angular/animations';
-import { LTC_Associates, LTC_LocationAssociatesResultsModel } from 'src/app/longterm/models/location.associates';
+import { LTC_Associates, LTC_LocationAssociatesResultsModel } from '../../../../longterm/models/location.associates';
 import { LTC_StoreLocation } from '../../../../longterm/models/store.location';
 import { LTC_ContractResultsModel } from '../../../../longterm/models/contract.models';
+import { SendEmailRequest } from '../../../../models/misc-models';
 
 @Component({
   selector: 'app-balance-due-tickets-page',
