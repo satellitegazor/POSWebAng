@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { TicketTotals } from 'src/app/models/ticket.split';
-import { Round2DecimalService } from 'src/app/services/round2-decimal.service';
+import { Round2DecimalService } from 'src/app/services-misc/round2-decimal.service';
 import { updatePartPayData } from '../../store/ticketstore/ticket.action';
 import { getIsCustomerAddedToTicket, getTicketTotals } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
-import { UtilService } from 'src/app/services/util.service';
+import { UtilService } from 'src/app/services-misc/util.service';
 import { DailyExchRate } from 'src/app/models/exchange.rate';
 
 @Component({

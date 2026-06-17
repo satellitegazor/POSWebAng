@@ -1,6 +1,6 @@
 ﻿import { SalesTransactionCheckoutItem } from "../longterm/models/salesTransactionCheckoutItem";
 import { LTC_Ticket } from "../longterm/models/ticket.list";
-import { UtilService } from "../services/util.service";
+import { UtilService } from "../services-misc/util.service";
 import { AssociateSaleTips } from "./associate.sale.tips";
 import { LTC_Customer } from "./customer";
 import { ExchCardTndr } from "./exch.card.tndr";

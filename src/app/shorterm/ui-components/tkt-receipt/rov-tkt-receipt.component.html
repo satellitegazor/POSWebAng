@@ -1,0 +1,483 @@
+<div class="receipt-wrap" *ngIf="isLoading">Loading receipt...</div>
+
+<div id="printArea" class="receipt-wrap" *ngIf="!isLoading && hasTicketData">
+	<input type="hidden" id="hdnContractId" [value]="ticket.contractUID" />
+	<input type="hidden" id="txnid" [value]="ticket.transactionID" />
+
+	<table class="table table-borderless receipt-table mb-0">
+		<tbody>
+			<tr>
+				<td colspan="6" class="text-center text-nowrap receipt-title">
+					<strong>{{ ticket.location.storeName }}</strong>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="6" class="text-center text-nowrap receipt-subtitle">{{ ticket.location.facilityNumber }}</td>
+			</tr>
+
+			<tr>
+				<td colspan="6" class="text-center text-nowrap">
+					
+                        <ng-container *ngIf="ticket.location.addressLine1 != null">
+                            {{ ticket.location.addressLine1 }}<br />
+                        </ng-container>
+						<ng-container *ngIf="ticket.location.addressLine2 != null">
+							{{ ticket.location.addressLine2 }}<br />
+						</ng-container>
+					
+					<span id="spnAddrCtyStZip">{{ ticket.location.city }}, {{ ticket.location.stateProvice }} {{ ticket.location.postalCode }}</span><br />
+					<span id="spnVendPhone">{{ ticket.location.phoneNumber }}</span><br />
+				</td>
+			</tr>
+
+			<tr *ngFor="let hrs of ticket.location.hoursOfOperations">
+				<td colspan="6" class="text-center text-nowrap">{{ getHoursText(hrs) }}</td>
+			</tr>
+
+			<tr><td colspan="6" class="spacer-row">&nbsp;</td></tr>
+
+			<tr>
+				<td colspan="6" class="text-center text-nowrap pb-2">
+					<strong *ngIf="busFunUID < 4">
+						TICKET #&nbsp;&nbsp;{{ ticket.ticketNumber }}&nbsp;&nbsp;&nbsp;&nbsp;
+					</strong>
+					{{ numOfPiecesLabel }}
+				</td>
+			</tr>
+
+			<tr><td colspan="6" class="spacer-row">&nbsp;</td></tr>
+
+			<ng-container *ngIf="ticket.customer.customerUID > 0">
+				<tr>
+					<td class="text-start text-nowrap"><strong>Customer:</strong></td>
+					<td colspan="5" class="text-start text-nowrap">
+						<strong>{{ ticket.customer.cLastName }}, {{ ticket.customer.cFirstName }}</strong>
+					</td>
+				</tr>
+				<tr>
+					<td class="text-start text-nowrap">Phone#:</td>
+					<td colspan="5" class="text-start text-nowrap" id="spnCustPhone">{{ ticket.customer.cPhoneNumber }}</td>
+				</tr>
+			</ng-container>
+
+			<tr *ngIf="isRefund">
+				<td colspan="6" class="text-center text-nowrap pt-5"><strong>*** REFUND ***</strong></td>
+			</tr>
+
+			<tr *ngIf="hasCancelledTicket">
+				<td colspan="6" class="text-center text-nowrap pt-5">
+					<strong>{{ isSysCancelled ? '*** SYS CANCEL ***' : '*** CANCELLED ***' }}</strong>
+				</td>
+			</tr>
+
+			<tr><td colspan="6" class="spacer-row">&nbsp;</td></tr>
+
+			<tr>
+				<td colspan="3" class="text-start text-nowrap"><strong>Item</strong></td>
+				<td class="text-center text-nowrap"><strong>Qty</strong></td>
+				<td class="text-start text-nowrap"></td>
+				<td class="text-end text-nowrap"><strong>Amount</strong></td>
+			</tr>
+
+			<ng-container *ngFor="let group of groupedItems">
+				<tr>
+					<td colspan="6" class="text-start text-nowrap pb-1"><strong>{{ group.name }}</strong></td>
+				</tr>
+
+				<ng-container *ngFor="let item of group.items; let itemIndex = index">
+					<tr>
+						<td colspan="3" class="text-start text-nowrap">{{ item.salesItemDesc }}</td>
+						<td class="text-center text-nowrap">{{ item.quantity }}</td>
+						<td class="text-start text-nowrap">{{ itemMarker(item, itemIndex + 1) }}</td>
+						<td class="text-end text-nowrap">
+							${{ formatCurrency(item.quantity * item.unitPrice) }}
+							<span *ngIf="isRefund">-</span>
+						</td>
+					</tr>
+
+					<tr *ngIf="item.businessFuncCode === 'BUSFNC_PSVCS_W_TIPS'">
+						<td colspan="6" class="text-start text-nowrap ps-2">
+							[By {{ (item.srvdByAssociateText || 'Unknown') }}]
+						</td>
+					</tr>
+
+					<tr *ngIf="item.discountAmount > 0">
+						<td colspan="3" class="text-start text-nowrap ps-2">Concession Discount</td>
+						<td class="text-center text-nowrap"></td>
+						<td class="text-center text-nowrap"></td>
+						<td class="text-end text-nowrap">${{ formatCurrency(item.discountAmount) }}-</td>
+					</tr>
+
+					<tr *ngIf="item.lineItmKatsaCpnAmt > 0">
+						<td colspan="3" class="text-start text-nowrap ps-2">KATUSA Coupon</td>
+						<td class="text-center text-nowrap"></td>
+						<td class="text-center text-nowrap"></td>
+						<td class="text-end text-nowrap">${{ formatCurrency(item.lineItmKatsaCpnAmt) }}-</td>
+					</tr>
+
+					<tr *ngIf="item.couponLineItemDollarAmount > 0">
+						<td colspan="3" class="text-start text-nowrap ps-2">Exchange Coupon</td>
+						<td class="text-center text-nowrap"></td>
+						<td class="text-center text-nowrap"></td>
+						<td class="text-end text-nowrap">${{ formatCurrency(item.couponLineItemDollarAmount) }}-</td>
+					</tr>
+				</ng-container>
+			</ng-container>
+
+			<tr><td colspan="6" class="spacer-row">&nbsp;</td></tr>
+			<tr><td colspan="6" class="spacer-row">&nbsp;</td></tr>
+
+			<tr>
+				<td colspan="3" class="text-start text-nowrap"><strong>Item Total</strong></td>
+				<td class="text-center text-nowrap"><strong>{{ receiptTotals.totalItems }}</strong></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-end text-nowrap"><strong>${{ formatCurrency(receiptTotals.itemTotal) }}<span *ngIf="isRefund">-</span></strong></td>
+			</tr>
+
+			<tr>
+				<td colspan="3" class="text-start text-nowrap">Sales Tax</td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-end text-nowrap">${{ formatCurrency(receiptTotals.totalSalesTax + ticket.shipHandlingTaxAmt) }}<span *ngIf="isRefund">-</span></td>
+			</tr>
+
+			<tr *ngIf="receiptTotals.totalEnvTax !== 0">
+				<td colspan="3" class="text-start text-nowrap">Environmental Tax</td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-end text-nowrap">${{ formatCurrency(receiptTotals.totalEnvTax) }}<span *ngIf="isRefund">-</span></td>
+			</tr>
+
+			<tr *ngIf="ticket.shipHandling > 0">
+				<td colspan="3" class="text-start text-nowrap"><strong>Shipping &amp; Handling</strong></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-end text-nowrap"><strong>${{ formatCurrency(ticket.shipHandling) }}<span *ngIf="isRefund">-</span></strong></td>
+			</tr>
+
+			<tr>
+				<td colspan="3" class="text-start text-nowrap"><strong>Grand Total</strong></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-end text-nowrap"><strong>${{ formatCurrency(receiptTotals.grandTotal) }}<span *ngIf="isRefund">-</span></strong></td>
+			</tr>
+
+			<tr *ngIf="busFunUID === 9 && !isRefund">
+				<td colspan="3" class="text-start text-nowrap"><strong>Tip</strong></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-end text-nowrap"><strong>${{ formatCurrency(receiptTotals.tipAmount) }}</strong></td>
+			</tr>
+
+			<tr *ngIf="busFunUID === 9 && !isRefund">
+				<td colspan="3" class="text-start text-nowrap"><strong>Grand Total</strong></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-end text-nowrap"><strong>${{ formatCurrency(receiptTotals.grandTotal + receiptTotals.tipAmount) }}</strong></td>
+			</tr>
+
+			<tr><td colspan="6" class="spacer-row">&nbsp;</td></tr>
+
+			<ng-container *ngFor="let tender of ticket.tenders">
+				<tr>
+					<td colspan="3" class="text-start text-nowrap pt-2"><strong>{{ displayTenderName(tender) }}</strong></td>
+					<td class="text-center text-nowrap"></td>
+					<td class="text-start text-nowrap"></td>
+					<td class="text-end text-nowrap pt-2">
+						<strong>
+							${{ formatCurrency(tender.tenderAmount + tender.changeDue) }}
+							<span *ngIf="isRefund">-</span>
+						</strong>
+					</td>
+				</tr>
+
+				<tr *ngIf="tender.changeDue > 0 || tender.fcChangeDue > 0">
+					<td colspan="3" class="text-start text-nowrap pt-2"><strong>Change Due (Cash)</strong></td>
+					<td class="text-center text-nowrap"></td>
+					<td class="text-center text-nowrap"></td>
+					<td class="text-end text-nowrap pt-2"><strong>${{ formatCurrency(tender.changeDue) }}</strong></td>
+				</tr>
+
+				<tr *ngIf="tender.cardEndingNbr.trim().length > 0">
+					<td colspan="6" class="text-start text-nowrap">
+						<ng-container *ngIf="tender.tenderTypeCode === 'XC' || tender.tenderTypeCode === 'XR'; else basicMaskedCard">
+							Account:&nbsp;{{ tender.exchCardType }}&nbsp;{{ formatMaskedCard(tender.cardEndingNbr) }}
+						</ng-container>
+						<ng-template #basicMaskedCard>{{ formatMaskedCard(tender.cardEndingNbr) }}</ng-template>
+					</td>
+				</tr>
+
+				<tr *ngIf="typeof(tender.authNbr) !== 'undefined' && tender.authNbr != null && tender.authNbr.length > 0">
+					<td colspan="6" class="text-start text-nowrap">Authorization Code:&nbsp;{{ tender.authNbr }}</td>
+				</tr>
+
+				<!-- <tr *ngIf="((typeof(tender.milstarPlanNum) !== 'undefined' && tender.milstarPlanNum != null && tender.milstarPlanNum.length || 0) > 0) && (tender.tenderTypeCode === 'MS' || tender.tenderTypeCode === 'MR')">
+					<td colspan="6" class="text-start text-nowrap">Promo Plan #&nbsp;{{ $any(tender).milstarPlanNum || '' }}</td>
+				</tr> -->
+			</ng-container>
+
+			<tr><td colspan="6" class="spacer-row">&nbsp;</td></tr>
+
+			<tr *ngIf="!isRefund && ticket.balanceDue > 0">
+				<td colspan="3" class="text-start text-nowrap"><strong>Amount Due</strong></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-end text-nowrap"><strong>${{ formatCurrency(ticket.balanceDue) }}</strong></td>
+			</tr>
+
+			<tr *ngIf="!isRefund && receiptTotals.totalSavings > 0">
+				<td colspan="3" class="text-start text-nowrap pb-1"><strong>Total Savings</strong></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-center text-nowrap"></td>
+				<td class="text-end text-nowrap"><strong>${{ formatCurrency(receiptTotals.totalSavings) }}</strong></td>
+			</tr>
+
+			<tr *ngIf="!isRefund && ticket.ticketInstructions.trim().length > 0 && busFunUID !== 4">
+				<td colspan="6" class="text-start pt-1">
+					<strong>Special Instructions:</strong><br />
+					{{ ticket.ticketInstructions }}
+				</td>
+			</tr>
+
+			<ng-container *ngIf="!isRefund && busFunUID !== 4 && getInstructionLines().length > 0">
+				<tr>
+					<td colspan="6" class="text-start pb-1"><strong>Special Instructions:</strong></td>
+				</tr>
+				<tr *ngFor="let instructionLine of getInstructionLines()">
+					<td colspan="6" class="text-start text-nowrap">{{ instructionLine }}</td>
+				</tr>
+			</ng-container>
+
+			<tr><td colspan="6" class="spacer-row">&nbsp;</td></tr>
+
+			<tr>
+				<td colspan="6" id="dispDate" class="text-center text-nowrap pb-2">
+					{{ ticket.transactionDate | date: 'dd MMM yyyy HH:mm' }}
+				</td>
+			</tr>
+
+			<tr>
+				<td colspan="6" class="text-center text-nowrap pb-2">
+					<strong>
+						TICKET #&nbsp;&nbsp;<span class="ticket-number">{{ ticket.ticketNumber }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+					</strong>
+					{{ numOfPiecesLabel }}
+				</td>
+			</tr>
+
+			<tr *ngIf="!isRefund && busFunUID !== 4 && ticket.ticketStatus.readyByDate">
+				<td colspan="6" class="text-center text-nowrap pb-1">
+					<strong>Ready By:&nbsp;</strong>{{ ticket.ticketStatus.readyByDate | date: 'dd MMM yyyy HH:mm' }}
+				</td>
+			</tr>
+
+			<tr *ngIf="!isRefund && !hasCancelledTicket && busFunUID > 4 && ticket.ticketStatus.payByDueDate">
+				<td colspan="6" class="text-center text-nowrap pb-1">
+					<strong>Payment Due By:&nbsp;</strong>{{ ticket.ticketStatus.payByDueDate | date: 'dd MMM yyyy' }}
+				</td>
+			</tr>
+
+			<ng-container *ngIf="!isRefund && busFunUID !== 4 && busFunUID !== 9 && busFunUID !== 10">
+				<tr>
+					<td colspan="6" class="text-start pt-3 text-nowrap"><strong>Property Clause:</strong></td>
+				</tr>
+				<tr>
+					<td colspan="6" class="text-start text-nowrap">
+						If the property identified on this order is not picked up within<br />
+						{{ ticket.prprtyClausDays ?? 120 }} days after the item is ready, the customer donated and<br />
+						transfers all rights, title, and interest in the property to the<br />
+						Exchange Service.
+					</td>
+				</tr>
+			</ng-container>
+
+			<tr>
+				<td colspan="6" class="text-center text-nowrap pb-3 dashed-line">
+					- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+				</td>
+			</tr>
+
+			<ng-container *ngIf="isRefund">
+				<tr>
+					<td colspan="6" class="text-start text-nowrap pt-3 refund-heading"><strong>Refund Reason:</strong></td>
+				</tr>
+				<tr>
+					<td colspan="6" class="text-start text-nowrap refund-detail">{{ ticket.refundReasonText || 'Reason Not Captured' }}</td>
+				</tr>
+			</ng-container>
+
+			<ng-container *ngIf="hasCancelledTicket">
+				<tr>
+					<td colspan="6" class="text-start text-nowrap pt-3 refund-heading"><strong>Cancellation Reason:</strong></td>
+				</tr>
+				<tr>
+					<td colspan="6" class="text-start text-nowrap refund-detail">{{ ticket.ticketCancel.otherReason || 'Reason Not Captured' }}</td>
+				</tr>
+			</ng-container>
+
+			<tr *ngIf="!hasSignatureImage && signatureStatement.trim().length > 0">
+				<td colspan="6" class="text-center text-nowrap pt-3 pb-1"><strong>{{ signatureStatement }}</strong></td>
+			</tr>
+
+			<tr *ngIf="hasSignatureImage">
+				<td colspan="6" class="text-start text-nowrap pt-3 refund-heading">
+					<strong>Customer Signature:</strong><br />
+					<img id="imgSign" [src]="signatureImageSrc" alt="Customer Signature" class="receipt-signature" />
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+<div class="footer fixed-bottom cncsnFooter receipt-footer">
+	<div class="receipt-footer-grid">
+		<div class="d-flex">
+			<button *ngIf="bDisplayAddlTagsBtn" class="border border-white btn btn-info btn-lg ftrbtn"
+				style="flex: 1 1 0; min-width: 0;" id="btnPrintAddlTags" aria-label="Left Align"
+				(click)="btnPrintAddlTags($event)">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer"
+					viewBox="0 0 16 16">
+					<path
+						d="M2 7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v2H5v-2H4a2 2 0 0 1-2-2V7zm3 5v1h6v-1H5zm6-6V3H5v3h6z">
+					</path>
+				</svg> Print Additional Tags
+			</button>
+			<button class="border border-white btn btn-info btn-lg ftrbtn" style="flex: 1 1 0; min-width: 0;"
+				id="btnPrintReceipt" aria-label="Left Align" (click)="btnPrintReceiptClick($event)">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer"
+					viewBox="0 0 16 16">
+					<path
+						d="M2 7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v2H5v-2H4a2 2 0 0 1-2-2V7zm3 5v1h6v-1H5zm6-6V3H5v3h6z">
+					</path>
+				</svg> Print Receipt
+			</button>
+			<button class="border border-white btn btn-info btn-lg ftrbtn" style="flex: 1 1 0; min-width: 0;" id="btnEReceipt"
+				aria-label="Left Align" (click)="btnEReceiptClick($event)">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-receipt"
+					viewBox="0 0 16 16">
+					<path
+						d="M1.92.506A.5.5 0 0 1 2.5 0h11a.5.5 0 0 1 .39.812L13 1.875l.89 1.063a.5.5 0 0 1 0 .624L13 4.625l.89 1.063a.5.5 0 0 1 0 .624L13 7.375l.89 1.063a.5.5 0 0 1 0 .624L13 10.125l.89 1.063a.5.5 0 0 1 0 .624L13 12.875l.89 1.063A.5.5 0 0 1 13.5 14h-11a.5.5 0 0 1-.39-.812L3 12.125l-.89-1.063a.5.5 0 0 1 0-.624L3 9.375l-.89-1.063a.5.5 0 0 1 0-.624L3 6.625l-.89-1.063a.5.5 0 0 1 0-.624L3 3.875l-.89-1.063a.5.5 0 0 1-.19-.312zM4 2v10h8V2H4zm1.5 2h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zm0 2h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zm0 2h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1z">
+					</path>
+				</svg> E-Receipt
+			</button>
+			<button *ngIf="bDisplayCheckoutBtn" class="border border-white btn btn-info btn-lg ftrbtn"
+				style="flex: 1 1 0; min-width: 0;" id="btnCheckout" aria-label="Left Align" (click)="btnCheckout($event)">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ticket-detailed"
+					viewBox="0 0 16 16">
+					<path
+						d="M0 4.5A1.5 1.5 0 0 1 1.5 3h13A1.5 1.5 0 0 1 16 4.5v2a1 1 0 0 0-1 1a1 1 0 0 0 1 1v2a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 10.5v-2a1 1 0 0 0 1-1a1 1 0 0 0-1-1v-2zM5 5a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 3a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1H5z">
+					</path>
+				</svg> Check Out
+			</button>
+			<button *ngIf="bDisplayCancelTicketBtn" class="border border-white btn btn-info btn-lg ftrbtn"
+				style="flex: 1 1 0; min-width: 0;" id="btnCancelTicket" aria-label="Left Align"
+				(click)="btnCancelTicket($event)">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ticket-detailed"
+					viewBox="0 0 16 16">
+					<path
+						d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z">
+					</path>
+				</svg> Cancel Ticket
+			</button>
+			<button *ngIf="bDisplayTicketStatusBtn" class="border border-white btn btn-info btn-lg ftrbtn"
+				style="flex: 1 1 0; min-width: 0;" id="btnTktStatus" aria-label="Left Align" (click)="btnTicketStatusClick($event)">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search"
+					viewBox="0 0 16 16">
+					<path
+						d="M8 1a7 7 0 1 0 4.473 12.39l2.568 2.568a.5.5 0 0 0 .707-.707l-2.568-2.568A7 7 0 0 0 8 1zm0 1a6 6 0 1 1 0 12A6 6 0 0 1 8 2z">
+					</path>
+				</svg> Ticket Status
+			</button>
+			<button class="border border-white btn btn-info btn-lg ftrbtn" style="flex: 1 1 0; min-width: 0;" id="btnTranDtls"
+				aria-label="Left Align" (click)="btnTranDetails($event)">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search"
+					viewBox="0 0 16 16">
+					<path
+						d="M2 1h12a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zm1 2v10h10V3H3zm1 1h8v1H4V4zm0 2h8v1H4V6zm0 2h5v1H4V8z">
+					</path>
+				</svg> Transaction Details
+			</button>
+			<button class="border border-white btn btn-info btn-lg ftrbtn" style="flex: 1 1 0; min-width: 0;" id="btnTktLookup"
+				aria-label="Left Align" (click)="btnTktLookup($event)">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search"
+					viewBox="0 0 16 16">
+					<path d="M11 6a5 5 0 1 1-10 0a5 5 0 0 1 10 0zM1.5 6a4.5 4.5 0 1 0 9 0a4.5 4.5 0 0 0-9 0z"></path>
+					<path d="M10.344 10.344a.5.5 0 0 1 .707 0l3.2 3.2a.5.5 0 0 1-.707.707l-3.2-3.2a.5.5 0 0 1 0-.707z"></path>
+				</svg> Ticket Look-Up
+			</button>
+			<button class="border border-white btn btn-info btn-lg ftrbtn" style="flex: 1 1 0; min-width: 0;" id="btnSalesTran"
+				aria-label="Left Align" (click)="btnSalesTranClick($event)">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ticket"
+					viewBox="0 0 16 16">
+					<path
+						d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 10H4a.5.5 0 0 1-.485-.379L1.61 2H.5a.5.5 0 0 1-.5-.5zM5 12a1.5 1.5 0 1 0 0 3a1.5 1.5 0 0 0 0-3zm7 0a1.5 1.5 0 1 0 0 3a1.5 1.5 0 0 0 0-3z">
+					</path>
+				</svg> Sales Transaction
+			</button>
+
+		<!-- <button class="border border-white btn btn-info btn-lg ftrbtn receipt-footer-btn" id="btnPrintAddlTags"
+			aria-label="Print Additional Tags" (click)="btnPrintAdditionalTagsClick($event)">
+			<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"
+				aria-hidden="true">
+				<path d="M2 2a1 1 0 0 0-1 1v3.586a1 1 0 0 0 .293.707l6.414 6.414a2 2 0 0 0 2.828 0l3.172-3.172a2 2 0 0 0 0-2.828L7.293 1.293A1 1 0 0 0 6.586 1H3a1 1 0 0 0-1 1zm1 1h3.586l6.414 6.414a1 1 0 0 1 0 1.414l-3.172 3.172a1 1 0 0 1-1.414 0L2 7.586V3z"></path>
+				<path d="M4.5 5.5A1.5 1.5 0 1 0 4.5 2.5a1.5 1.5 0 0 0 0 3zm0-1A.5.5 0 1 1 4.5 3.5a.5.5 0 0 1 0 1z"></path>
+			</svg>
+			<span>Print Additional Tags</span>
+		</button>		
+		<button
+			class="border border-white btn btn-info btn-lg ftrbtn receipt-footer-btn"
+			id="btnPrintReceipt"
+			aria-label="Print Receipt"
+			(click)="btnPrintReceiptClick($event)">
+			<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+				<path d="M2 7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3h-2v3H4v-3H2V7zm3 5h6V8H5v4z"></path>
+				<path d="M5 1h6v3H5V1zm7 3V0H4v4H1v6h2v4h10v-4h2V4h-3z"></path>
+			</svg>
+			<span>Print Receipt</span>
+		</button>
+
+		<button
+			class="border border-white btn btn-info btn-lg ftrbtn receipt-footer-btn"
+			id="btnEReceipt"
+			aria-label="E-Receipt"
+			(click)="btnEReceiptClick($event)">
+			<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+				<path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v.217L8 8.5.01 4.217V4z"></path>
+				<path d="M0 5.383v6.617a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5.383l-7.4 3.7a1 1 0 0 1-.894 0L0 5.383z"></path>
+			</svg>
+			<span>E-Receipt</span>
+		</button>
+
+		<button
+			class="border border-white btn btn-info btn-lg ftrbtn receipt-footer-btn"
+			id="btnTicketStatus"
+			aria-label="Ticket Status"
+			(click)="btnTicketStatusClick($event)">
+			<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+				<path d="M0 4a2 2 0 0 1 2-2h12v2a2 2 0 1 0 0 4v2a2 2 0 1 0 0 4v2H2a2 2 0 0 1-2-2V4zm5 1.5A.5.5 0 0 0 4.5 6v4a.5.5 0 0 0 1 0V6A.5.5 0 0 0 5 5.5zm2 0A.5.5 0 0 0 6.5 6v4a.5.5 0 0 0 1 0V6A.5.5 0 0 0 7 5.5zm2 0a.5.5 0 0 0-.5.5v4a.5.5 0 0 0 1 0V6A.5.5 0 0 0 9 5.5z"></path>
+			</svg>
+			<span>Ticket Status</span>
+		</button>
+
+		<button
+			class="border border-white btn btn-info btn-lg ftrbtn receipt-footer-btn"
+			id="btnSalesTranReport"
+			aria-label="Sales Transaction Report"
+			(click)="btnSalesTranReportClick($event)">
+			<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+				<path d="M0 0h1v15h15v1H0V0zm14 13V5.207l-3 3-2-2L5 10.207l-.5-.5 4.5-4.5 2 2 2.646-2.646.707.707V13H14z"></path>
+			</svg>
+			<span>Sales Transaction Report</span>
+		</button>
+
+		<button
+			class="border border-white btn btn-info btn-lg ftrbtn receipt-footer-btn"
+			id="btnSalesTran"
+			aria-label="Sales Transaction"
+			(click)="btnSalesTranClick($event)">
+			<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+				<path d="M0 1.5A1.5 1.5 0 0 1 1.5 0h11A1.5 1.5 0 0 1 14 1.5V4h.5A1.5 1.5 0 0 1 16 5.5v8a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 2 13.5V11h-.5A1.5 1.5 0 0 1 0 9.5v-8zM2 10V5.5A1.5 1.5 0 0 1 3.5 4H13V1.5a.5.5 0 0 0-.5-.5h-11a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5H2zm1.5-5a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-11z"></path>
+			</svg>
+			<span>Sales Transaction</span>
+		</button> -->
+	</div>
+</div>

@@ -8,7 +8,7 @@ import { VLogonModel } from '../../logon/models/vlogon.model';
 import { GlobalConstants } from '../../global/global.constants';
 import { AlertOptions } from '../../alertmsg/alert-message/alert-message.model';
 import { AlertService } from '../../alertmsg/alert-message/alert-message.service';
-import { ToastService } from '../../services/toast.service';
+import { ToastService } from '../../services-misc/toast.service';
 import { VendorLoginResultsModel } from '../../models/vendor.login.results.model';
 
 @Component({

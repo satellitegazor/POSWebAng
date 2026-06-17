@@ -7,11 +7,11 @@ import { PosApiService } from '../../../services/pos-api-service';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Store } from '@ngrx/store';
-import { UtilService } from 'src/app/services/util.service';
+import { UtilService } from 'src/app/services-misc/util.service';
 import { Router } from '@angular/router';
 import { getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import { updateCheckoutTotals, updateShipHandling } from '../../store/ticketstore/ticket.action';
-import { ToastService } from 'src/app/services/toast.service';
+import { ToastService } from 'src/app/services-misc/toast.service';
 
 @Component({
   selector: 'app-ship-handling',

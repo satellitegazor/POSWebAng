@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { PosApiService } from '../../../services/pos-api-service';
 import { LogonDataService } from '../../../../global/logon-data-service.service';
 import { Router } from '@angular/router';
-import { ToastService } from '../../../../services/toast.service';
+import { ToastService } from '../../../../services-misc/toast.service';
 import { LTC_BalanceDueTickets, LTC_BalanceDueTicketsResultsModel } from '../../../models/balancedue.tickets.model';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';

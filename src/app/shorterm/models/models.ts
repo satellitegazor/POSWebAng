@@ -1,26 +1,28 @@
+import { ROV_Event } from "src/app/longterm/models/ticket.list";
 import { CPOSDB } from "../../longterm/models/contract.models";
 import { MobileBase } from "../../models/mobile.base";
 import { SystemStatus } from "../../models/mobile.client.identity";
+import { TicketTender } from "src/app/models/ticket.tender";
 
 export class RLogonModel {
 	public guid: string = '';
         public vendorNumber: string = '';
         public exchangeNumber: string = '';
-        public eventId: number = 0;
+        public eventID: number = 0;
         public eventName: string = '';
-        public individualUid: number = 0;
-        public pin: string = '';
-        public newPin: string = '';
-        public verifyPin: string = '';
+        public individualUID: number = 0;
+        public pIN: string = '';
+        public newPIN: string = '';
+        public verifyPIN: string = '';
         public showPrivTrngConfrm: number = 0;
 		public privActConfmComplete: boolean = false;
         public cliTimeVar: number = 0;
-        public pageId: number = 0;
+        public pageID: number = 0;
         public contractType: boolean = false;
         public loggingOut: boolean = false;
         public regionId: string = '';
         public status: SystemStatus = new SystemStatus();
-        public dbRegion: CPOSDB = CPOSDB.Conus;
+        public dBRegion: CPOSDB = CPOSDB.Conus;
 
     }
 
@@ -91,43 +93,6 @@ export class VRoving_EventsResultModel {
 	events: VRoving_AbbrEventModel[] = [];
 }
 
-export class ROV_POSTicketSplit {
-	ticketRrn: string = '';
-	eventId: number = 0;
-	transactionDate: Date = new Date(0);
-	individualUid: number = 0;
-	locationUid: number = 0;
-	taxExempted: boolean = false;
-	transactionId: number = 0;
-	cancelTransactionId: number = 0;
-	isRefund: boolean = false;
-	balanceDue: number = 0;
-	instructions: string = '';
-	ticketTenderList: any[] = [];
-	updateCustomer: boolean = false;
-	customerId: number = 0;
-	customer: ROV_Customer | null = null;
-	totalSale: number = 0;
-	totalSaleFc: number = 0;
-	tktList: Rov_SalesTranCheckoutItem[] = [];
-	refundReason: string = '';
-	refundCode: string = '';
-	isPartialPay: boolean = false;
-	partialAmount: number = 0;
-	updateCoupons: boolean = false;
-	associateTips: any[] = [];
-	tCouponPerc: number = 0;
-	tCouponAmt: number = 0;
-	tdCouponAmt: number = 0;
-	orderFormNum: string = '';
-	shipHandling: number = 0;
-	shipHandlingTaxAmt: number = 0;
-	shipHandlingFc: number = 0;
-	shipHandlingTaxAmtFc: number = 0;
-	cliTimeVar: number = 0;
-	vmTndr: any = null;
-}
-
 export class ROV_Customer {
 	customerUid: number = 0;
 	cTitle: string = '';
@@ -148,52 +113,7 @@ export class ROV_Customer {
 	custMaintUserId: string = '';
 }
 
-export class Rov_SalesTranCheckoutItem {
-	ticketDetailId: number = 0;
-	tktTransactionId: number = 0;
-	salesItemDesc: string = '';
-	salesItemUid: number = 0;
-	salesCategoryUid: number = 0;
-	quantity: number = 0;
-	unitPrice: number = 0;
-	salesTaxPct: number = 0;
-	noOfTags: number = 0;
-	vendorCouponDiscountPct: number = 0;
-	discountAmount: number = 0;
-	exchangeCouponDiscountPct: number = 0;
-	couponLineItemDollarAmount: number = 0;
-	fcCouponLineItemDollarAmount: number = 0;
-	lineItemTaxAmount: number = 0;
-	lineItemDollarDisplayAmount: number = 0;
-	dtlMaintTimestamp: Date = new Date(0);
-	dtlMaintUserId: string = '';
-	isMiscellaneous: boolean = false;
-	locationUid: number = 0;
-	facilityUid: number = 0;
-	departmentUid: number = 0;
-	businessFunctionUid: number = 0;
-	deptName: string = '';
-	custInfoReq: boolean = false;
-	applyCouponsAfterTax: boolean = false;
-	allowPartPay: boolean = false;
-	allowSaveTkt: boolean = false;
-	instruction: string = '';
-	addlInstruction: string = '';
-	openCashDrwForTips: boolean = false;
-	allowTips: boolean = false;
-	srvdByAssociateVal: number = 0;
-	srvdByAssociateText: string = '';
-	businessFuncCode: string = '';
-	splInstUid: number = 0;
-	splInstDesc: string = '';
-	splInstOthRsn: string = '';
-	itemSaved: boolean = false;
-	dcCouponLineItemDollarAmount: number = 0;
-	dcDiscountAmount: number = 0;
-	dcLineItemDollarDisplayAmount: number = 0;
-	dcLineItemTaxAmount: number = 0;
-	dcUnitPrice: number = 0;
-}
+
 
 export class Rov_AssociateSaleTips {
 	tipAmount: number = 0;
@@ -217,7 +137,7 @@ export class ROV_AbbrEventModel {
 	facilityNumber: string = '';
 	facilityUid: string = '';
 	eventName: string = '';
-	eventId: number = 0;
+	eventID: number = 0;
 	eventEnded: boolean = false;
 	exchangeNumber: string = '';
 	vendorNumber: string = '';
@@ -349,8 +269,8 @@ export class ROV_Ticket {
 	cntrctCurrHtml: string = '';
 	cntrctCntryDialCode: string = '';
 	individual: any = null;
-	event: any = null;
-	tenders: any[] = [];
+	event: ROV_Event = {} as ROV_Event;
+	tenders: TicketTender[] = [];
 	items: any[] = [];
 	customer: any = null;
 	ticketCancel: any = null;

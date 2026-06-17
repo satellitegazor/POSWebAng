@@ -7,7 +7,7 @@ import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Store } from '@ngrx/store';
 import { addSaleItem, saveTicketDetail, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
 import { DailyExchRate } from 'src/app/models/exchange.rate';
-import { CPOSAppType, UtilService } from 'src/app/services/util.service';
+import { CPOSAppType, UtilService } from 'src/app/services-misc/util.service';
 import { PosCurrencyDirective } from 'src/app/directives/pos-currency.directive';
 import { PosCurrency3Directive } from 'src/app/directives/pos-currency.directive.3';
 import { GlobalConstants } from 'src/app/global/global.constants';

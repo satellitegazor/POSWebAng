@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LogonDataService } from '../../../../global/logon-data-service.service';
-import { ToastService } from '../../../../services/toast.service';
+import { ToastService } from '../../../../services-misc/toast.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LTC_ItemButtonMenuResults, LTC_ItemButtonMenuResultsModel } from '../../../../longterm/models/item.button.menu.models'
 import { currSymbls } from '../../../../models/CurrencySymbols';

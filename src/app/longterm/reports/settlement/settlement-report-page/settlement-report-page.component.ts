@@ -6,7 +6,7 @@ import { LTC_Associates } from '../../../models/location.associates';
 import { PosApiService } from '../../../services/pos-api-service';
 import { LTC_SettlementDetails, SettlementReportResultModel } from '../models';
 import { LogonDataService } from '../../../../global/logon-data-service.service';
-import { ToastService } from '../../../../services/toast.service';
+import { ToastService } from '../../../../services-misc/toast.service';
 import { SendEmailRequest } from '../../../../models/misc-models';
 
 export interface FacilityGroup {

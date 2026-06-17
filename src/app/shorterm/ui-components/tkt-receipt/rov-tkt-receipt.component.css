@@ -1,0 +1,100 @@
+.receipt-wrap {
+	max-width: 200px;
+	width: 200px;
+	font-size: 8pt;
+	padding-bottom: 92px;
+}
+
+.receipt-table {
+	width: 100%;
+	margin-left: 10px;
+	margin-top: 10px;
+	font-size: 8pt;
+	line-height: 1.25;
+}
+
+.receipt-table td {
+	border: 0;
+	padding: 1px 2px;
+	vertical-align: top;
+}
+
+.receipt-title {
+	font-size: 9pt;
+}
+
+.receipt-subtitle {
+	font-size: 7pt;
+}
+
+.ticket-number {
+	font-size: 16pt;
+	line-height: 1;
+}
+
+.spacer-row {
+	padding-bottom: 10px;
+}
+
+.dashed-line {
+	letter-spacing: 0.2px;
+}
+
+.refund-heading {
+	font-size: 12pt;
+}
+
+.refund-detail {
+	font-size: 10pt;
+}
+
+.receipt-signature {
+	width: 325px;
+	height: 75px;
+	padding-top: 10px;
+	max-width: none;
+}
+
+.receipt-footer {
+	padding: 6px;
+}
+
+.receipt-footer-grid {
+	display: grid;
+	grid-template-columns: repeat(6, minmax(0, 1fr));
+	gap: 3px;
+	align-items: stretch;
+}
+
+/* Ensure the live footer button row spans the full grid width */
+.receipt-footer-grid > .d-flex {
+	grid-column: 1 / -1;
+	width: 100%;
+	display: flex;
+}
+
+.receipt-footer-btn {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	min-height: 58px;
+	font-size: 12px;
+	line-height: 1.05;
+	padding: 5px 3px;
+	text-align: center;
+}
+
+.receipt-footer-btn svg {
+	width: 14px;
+	height: 14px;
+	flex-shrink: 0;
+}
+
+.receipt-footer-btn span {
+	white-space: normal;
+	font-size: 16px;
+	font-weight: 400;
+	line-height: 1.05;
+}

@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RovApiService } from '../../short-term.service';
 import { LocalStorageService } from 'src/app/global/local-storage.service';
 import { ResetPinRequest, RLogonModel, ROV_AbbrEventModel, ROV_EventsResultModel } from '../../models/models';
-import { ToastService } from '../../../services/toast.service';
+import { ToastService } from '../../../services-misc/toast.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { GlobalConstants } from '../../../global/global.constants';
 import { RovLogonDataService } from '../../rov-logon-data.service';
@@ -56,7 +56,7 @@ export class RovLogonComponent implements OnInit {
 
         if (this.eventList.length > 0) {
           const ary = this.eventList.filter((loc) => loc.eventName == this._localStorageSvc.getItemData('event_name'));
-          this.selectedEventId = +(ary.length > 0 ? ary[0].eventId : this.eventList[0].eventId);
+          this.selectedEventId = +(ary.length > 0 ? ary[0].eventID : this.eventList[0].eventID);
 
         } else {
           this._toastSvc.error('No events found for given Vendor, Exchange Number.');
@@ -89,23 +89,23 @@ export class RovLogonComponent implements OnInit {
   DoLogon(event: any) {
 
     let selectedEventId: number = this.selectedEventId;
-    let eventSelected = this.eventList.filter(k => k.eventId == selectedEventId)[0];
+    let eventSelected = this.eventList.filter(k => k.eventID == selectedEventId)[0];
     let rovModel = new RLogonModel();
 
     rovModel.exchangeNumber = eventSelected.exchangeNumber;
     ///rovModel.facilityNumber = eventSelected.eventName.toString();
     //rovModel.facilityName = eventSelected.eventName.toString();
     rovModel.vendorNumber = this.vendornum;
-    rovModel.pin = this.lpin;
-    rovModel.eventId = +selectedEventId;
+    rovModel.pIN = this.lpin;
+    rovModel.eventID = +selectedEventId;
     rovModel.cliTimeVar = GlobalConstants.GetClientTimeVariance();
     rovModel.guid = GlobalConstants.POST_GUID;
     rovModel.contractType = true;
-    rovModel.individualUid = 0;
+    rovModel.individualUID = 0;
     rovModel.loggingOut = false;
-    rovModel.newPin = "";
-    rovModel.verifyPin = "";
-    rovModel.pageId = 0;
+    rovModel.newPIN = "";
+    rovModel.verifyPIN = "";
+    rovModel.pageID = 0;
     //rovModel.privActConfmComplete = false;
     rovModel.showPrivTrngConfrm = 0;
     rovModel.regionId = "conus";
@@ -133,14 +133,16 @@ export class RovLogonComponent implements OnInit {
       sessionStorage.setItem("userType", "vendorst");
 
       let selectedEventId: number = this.selectedEventId;
-      let eventSelected = this.eventList.filter(k => k.eventId == selectedEventId)[0];
+      let eventSelected = this.eventList.filter(k => k.eventID == selectedEventId)[0];
 
+      this._localStorageSvc.setItemData('event_id', this.selectedEventId.toString());
       this._localStorageSvc.setItemData('contract_vendor_number', this.vendornum);
       this._localStorageSvc.setItemData('contract_exchange_number', eventSelected.exchangeNumber);
       this._localStorageSvc.setItemData('event_facility_number', eventSelected.facilityNumber);
       this._localStorageSvc.setItemData('event_ddlContract_Type', true.toString());
       //this._localStorageSvc.setItemData('event_facility_name', eventSelected.facilityName);
 
+      sessionStorage.setItem('event_id', this.selectedEventId.toString());
       sessionStorage.setItem('vendorNumber', this.vendornum);
       sessionStorage.setItem('facilityNumber', eventSelected.facilityNumber);
       sessionStorage.setItem("vendorName", data.userIdentity.fullName);
@@ -172,23 +174,23 @@ export class RovLogonComponent implements OnInit {
 
 
 
-      rovModel.individualUid = +data.individualUID;
+      rovModel.individualUID = +data.individualUID;
 
       if (data.resetPIN == 1) {
         const modalRef = this._modalService.open(ResetPinDlgComponent, { backdrop: 'static', keyboard: false, centered: true });
         modalRef.result.then((result) => {
-          if (result && result.newPin) {
+          if (result && result.newPIN) {
             //console.log('vendorlt reset pin dialog closed with new pin');
-            rovModel.newPin = result.newPin;
-            rovModel.verifyPin = result.newPin;
+            rovModel.newPIN = result.newPIN;
+            rovModel.verifyPIN = result.newPIN;
 
             let resetPinRequest: ResetPinRequest = {
               eventID: +selectedEventId,
-              uid: rovModel.individualUid.toString(),
-              creds: rovModel.newPin,
+              uid: rovModel.individualUID.toString(),
+              creds: rovModel.newPIN,
               veid: rovModel.vendorNumber,
               cliTimeVar: 0,
-              indvID: +rovModel.individualUid
+              indvID: +rovModel.individualUID
             };
 
             setTimeout(() => {
@@ -209,7 +211,7 @@ export class RovLogonComponent implements OnInit {
         modalRef.componentInstance.vendorName = data.associateName;
         modalRef.componentInstance.businessDate = new Date;
         modalRef.result.then((result: any) => {
-          rovModel.pageId = 2;
+          rovModel.pageID = 2;
           rovModel.privActConfmComplete = true;
           this._rovApiSvc.logonUser(rovModel).subscribe(() => {
             //this.router.navigate([inProgTranId > 0 ? '/checkout' : '/salestran']);

@@ -1,0 +1,183 @@
+import { Component, ElementRef, ViewChild } from '@angular/core';
+import { TenderStatusType, TicketTender } from 'src/app/models/ticket.tender';
+import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
+import { saleTranDataInterface } from '../../store/ticketstore/rticket.state';
+import { ActivatedRoute, Router } from '@angular/router';
+import { select, Store } from '@ngrx/store';
+import { LogonDataService } from 'src/app/global/logon-data-service.service';
+import { UtilService } from 'src/app/services-misc/util.service';
+import { TicketSplit } from 'src/app/models/ticket.split';
+import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
+import { firstValueFrom, forkJoin, Subscription, take } from 'rxjs';
+import { getIsSplitPayR5, getRemainingBal, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
+import { TenderUtil } from '../tender-util';
+import { addTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj } from '../../store/ticketstore/ticket.action';
+import { RedeemGiftCardTenders } from '../gc-redeem-services/redeem-gift-card-tenders';
+import { ToastService } from 'src/app/services-misc/toast.service';
+import { DecimalPipe } from '@angular/common';
+import { OConusRedeemGCWithPinPadService } from '../gc-redeem-services/oconus-redeeem-gc-with-pin-pad';
+import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
+
+
+@Component({
+  selector: 'app-eg-conc-tndr',
+  templateUrl: './eg-conc-tndr.component.html',
+  styleUrl: './eg-conc-tndr.component.css',
+  standalone: false,
+})
+export class EgConcTndrComponent {
+
+  private isSplitPay: boolean = false;
+
+
+  @ViewChild('btnApprove') btnApprove!: ElementRef<HTMLButtonElement>;
+  @ViewChild('btnDecline') btnDecline!: ElementRef<HTMLButtonElement>;
+  @ViewChild('btnCancel') btnCancel!: ElementRef<HTMLButtonElement>;
+
+  dcCurrSymbl: string | undefined;
+  ndcCurrSymbl: string | undefined;
+  tenderAmountNDC: number | undefined;
+  tenderAmountDC: number | undefined;
+  isOConusLocation: boolean = false;
+
+  constructor(private _cposWebSvc: CPOSWebSvcService,
+    private _store: Store<saleTranDataInterface>,
+    private activatedRoute: ActivatedRoute,
+    private route: Router,
+    private _logonDataSvc: LogonDataService,
+    private _utilSvc: UtilService,
+    private _toastSvc: ToastService,
+    private _oConusRedeemGCWithPinPad: OConusRedeemGCWithPinPadService,
+    private _conusRedeemGCWithAurusAPI: ConusRedeemGCwithAurusAPI) {
+    // Initialization logic can go here if needed
+    this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
+  }
+
+  private _tktObj: TicketSplit = {} as TicketSplit;
+  private _captureTranResponse: ExchCardTndr = {} as ExchCardTndr;
+  private subscription: Subscription = {} as Subscription;
+
+  private _tndrObj: TicketTender = new TicketTender();
+
+  ngOnInit(): void {
+
+    this.dcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getDfltCurrCode());
+    this.ndcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getNonDfltCurrCode());
+
+    forkJoin([
+      this._store.select(getRemainingBal).pipe(take(1)),
+      this._store.select(getIsSplitPayR5).pipe(take(1)),
+      this.activatedRoute.queryParams.pipe(take(1))
+    ]).subscribe(([tenderBal, isSplitPay, params]) => {
+
+      this.isSplitPay = isSplitPay;
+      if (!isSplitPay) {
+        this._tndrObj.tenderAmount = this.dcCurrSymbl == '$' ? tenderBal.amountUSD : tenderBal.amountFC;
+        this._tndrObj.fcTenderAmount = this.dcCurrSymbl == '$' ? tenderBal.amountFC : tenderBal.amountUSD;
+
+        this.tenderAmountDC = this.dcCurrSymbl == '$' ? tenderBal.amountUSD : tenderBal.amountFC;
+        this.tenderAmountNDC = this.dcCurrSymbl == '$' ? tenderBal.amountFC : tenderBal.amountUSD;
+      }
+      else {
+        
+        const hasQueryTenderAmount = params['tenderAmountDC'] !== undefined && params['tenderAmountDC'] !== null;
+
+        if (isSplitPay && hasQueryTenderAmount) {
+          this._tndrObj.tenderAmount = this.dcCurrSymbl == '$' ? parseFloat(params['tenderAmountDC']) : parseFloat(params['tenderAmountNDC']);
+          this._tndrObj.fcTenderAmount = this.dcCurrSymbl == '$' ? parseFloat(params['tenderAmountNDC']) : parseFloat(params['tenderAmountDC']);
+          this.tenderAmountDC = this.dcCurrSymbl == '$' ? this._tndrObj.tenderAmount : this._tndrObj.fcTenderAmount;
+          this.tenderAmountNDC = this.dcCurrSymbl == '$' ? this._tndrObj.fcTenderAmount : this._tndrObj.tenderAmount;
+        }
+      }
+      this._tndrObj.tenderTypeCode = params['code'] || 'EG';
+      this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
+
+    }).unsubscribe();
+
+    this._store.select(getTktObjSelector).subscribe(data => {
+      if (data == null)
+        return;
+      
+      this._tktObj = data;
+    }).unsubscribe()
+  }
+
+  async btnApproveClick(evt: Event) {
+
+    this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
+    this._tndrObj.tenderStatus = TenderStatusType.InProgress;
+    this._tndrObj.isAuthorized = true;
+    //this._tndrObj.tenderTypeCode = "EG";
+    this._tndrObj.tndMaintTimestamp = new Date(Date.now());
+    this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
+    this._tndrObj.tenderTypeDesc = this._utilSvc.tenderCodeDescMap.get(this._tndrObj.tenderTypeCode) || 'Eagle Cash';
+    this._tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+    this._tndrObj.ticketTenderId = -Date.now() % 10000;
+    this._store.dispatch(addTender({ tndrObj: this._tndrObj }));
+
+    var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+    if (tktObjData != null && TenderUtil.IsTicketComplete(tktObjData, this._logonDataSvc.getAllowPartPay())) {
+
+      if (tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0) {
+
+        if (this.isOConusLocation) {
+          // Redeem Gift Card Tenders
+          this._oConusRedeemGCWithPinPad.redeem(tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false)).subscribe({
+            next: () => {
+              this.markTicketComplete();
+              return true;
+            },
+            error: (error) => {
+              console.error('Error during gift card redemption: ', error);
+              return false;
+            }
+          });
+        }
+        else {
+          this._conusRedeemGCWithAurusAPI.redeem(tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false)).subscribe({
+            next: () => {
+              this.markTicketComplete();
+              return true;
+            },
+            error: (error) => {
+              console.error('Error during gift card redemption: ', error);
+              return false;
+            }
+          });
+
+        }
+      }
+      else {
+        this.markTicketComplete();
+      }   
+
+
+    }
+    else {
+      this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
+    }
+  }
+
+  async btnDeclineClick(evt: Event) {
+    this.route.navigate([this.isSplitPay ? '/splitpay' : '/checkout']);
+  }
+
+  async btnCancelClick(evt: Event) {
+    this.route.navigate([this.isSplitPay ? '/splitpay' : '/checkout']);
+  }
+
+  private async markTicketComplete() {
+    this._store.dispatch(markTendersComplete({ status: 4 }));
+    this._store.dispatch(markTicketComplete({ status: 2 }));
+    // Fetch the updated ticket object after marking complete
+    const tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    if (tktObjData1 != null) {
+      this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData1 }));
+      this.route.navigate(['/savetktsuccess']);
+    }
+    else {
+      this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
+    }
+  }
+
+}

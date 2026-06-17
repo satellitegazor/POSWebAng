@@ -1,0 +1,108 @@
+import { Component, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { LogonDataService } from 'src/app/global/logon-data-service.service';
+import { TicketTotals } from 'src/app/models/ticket.split';
+import { Round2DecimalService } from 'src/app/services-misc/round2-decimal.service';
+import { updatePartPayData } from '../../store/ticketstore/ticket.action';
+import { getIsCustomerAddedToTicket, getTicketTotals } from '../../store/ticketstore/ticket.selector';
+import { saleTranDataInterface } from '../../store/ticketstore/rticket.state';
+import { UtilService } from 'src/app/services-misc/util.service';
+import { DailyExchRate } from 'src/app/models/exchange.rate';
+
+@Component({
+  selector: 'app-part-pay',
+  templateUrl: './part-pay.component.html',
+  styleUrls: ['./part-pay.component.css'],
+  standalone: false
+})
+export class RovPartPayComponent implements OnInit {
+
+  constructor(private _store: Store<saleTranDataInterface>,
+    private logonSvc: LogonDataService,
+    private utilSvc: UtilService) { }
+
+  partPayAmount: number = 0;
+  partPayPercent: number = 0;
+  partPayAmountNDC: number = 0;
+
+  showPartPay: boolean = false;
+  disablePartPay: boolean = true;
+  grandTotalDC: number = 0;
+  grandTotalNDC: number = 0;
+  amtPaidDC: number = 0;
+  amtPaidNDC: number = 0;
+  defaultCurr: string = '$';
+  dailyExchRateObj: DailyExchRate = {} as DailyExchRate;
+
+  ngOnInit(): void {
+
+    this.showPartPay = this.logonSvc.getAllowPartPay();
+
+    this._store.select(getTicketTotals).subscribe(tktTotals => {
+
+
+      this.grandTotalDC = tktTotals.grandTotalDC;
+      this.grandTotalNDC = tktTotals.grandTotalNDC;
+
+      this.amtPaidDC = tktTotals.amtPaidDC;
+      this.amtPaidNDC = tktTotals.amtPaidNDC;
+
+      this.partPayAmount = tktTotals.partPayDC;
+
+      if (tktTotals.grandTotalDC > 0 && tktTotals.partPayNDC > 0) {
+        this.partPayPercent = Number(((tktTotals.partPayNDC / tktTotals.grandTotalDC) * 100).toCPOSFixed(2));
+      }
+    })
+
+    this._store.select(getIsCustomerAddedToTicket).subscribe(val => {
+      this.disablePartPay = !val;
+    })
+
+    this.defaultCurr = this.utilSvc.currencySymbols.get(this.logonSvc.getLocationConfig().defaultCurrency) ?? '$';
+    this.dailyExchRateObj = this.logonSvc.getDailyExchRate();
+  }
+
+  onPartPayPercent(event: any) {
+
+    this.partPayPercent = Round2DecimalService.round(event.target.value);
+
+    if (this.partPayPercent > 0) {
+      this.partPayAmount = Number(((this.grandTotalDC - this.amtPaidDC) * this.partPayPercent / 100).toCPOSFixed(2));
+      this.partPayAmountNDC = Number((this.partPayAmount * (this.dailyExchRateObj.isOneUSD ? this.dailyExchRateObj.oneUSDRate : (1 / this.dailyExchRateObj.oneUSDRate))).toCPOSFixed(2));
+      this._store.dispatch(updatePartPayData({ partPayFlag: true, partPayAmountDC: this.partPayAmount, partPayAmountNDC: this.partPayAmountNDC }));
+    }
+    else {
+      this._store.dispatch(updatePartPayData({ partPayFlag: false, partPayAmountDC: 0, partPayAmountNDC: 0 }));
+    }
+
+  }
+
+  onPartPayAmount(event: any) {
+    this.partPayAmount = Round2DecimalService.round(event.target.value);
+    if (this.partPayAmount > 0) {
+      this.partPayPercent = Number((this.partPayAmount / (this.grandTotalDC - this.amtPaidDC) * 100).toCPOSFixed(2));
+      this._store.dispatch(updatePartPayData({ partPayFlag: true, partPayAmountDC: this.partPayAmount, partPayAmountNDC: this.partPayAmount }));
+    }
+    else {
+      this._store.dispatch(updatePartPayData({ partPayFlag: false, partPayAmountDC: 0, partPayAmountNDC: 0 }));
+    }
+
+  }
+
+  keyValidate(event: any) {
+    var t = event.target.value;
+    var result = t.indexOf('.') >= 0 ? t.substr(0, t.indexOf('.')) + t.substr(t.indexOf('.'), 2) : t;
+    if (event.keyCode === 8) {
+      return true;
+    }
+    else if (event.keyCode !== 190 && (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105))
+      return false;
+    else {
+      if (result !== event.target.value)
+        return false;
+      else
+        return true;
+    }
+  }
+
+}

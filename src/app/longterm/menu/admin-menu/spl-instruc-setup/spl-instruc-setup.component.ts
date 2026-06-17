@@ -4,7 +4,7 @@
 import { Component } from '@angular/core';
 import { PosApiService } from '../../../services/pos-api-service';
 import { LogonDataService } from '../../../../global/logon-data-service.service';
-import { ToastService } from '../../../../services/toast.service';
+import { ToastService } from '../../../../services-misc/toast.service';
 import { Dept, SaleItem } from '../../../models/sale.item';
 import { LTCSpecialInstructions } from '../../../models/special.instructions.model';
 

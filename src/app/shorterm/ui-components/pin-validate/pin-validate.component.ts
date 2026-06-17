@@ -1,19 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { LogonDataService } from '../../../global/logon-data-service.service';
 import { PosApiService } from '../../../longterm/services/pos-api-service';
 import { LogonSvc } from '../../../logon/logonsvc.service';
-import { VLogonModel } from '../../../logon/models/vlogon.model';
 import { GlobalConstants } from '../../../global/global.constants';
 import { AlertOptions } from '../../../alertmsg/alert-message/alert-message.model';
 import { AlertService } from '../../../alertmsg/alert-message/alert-message.service';
-import { ToastService } from '../../../services/toast.service';
+import { ToastService } from '../../../services-misc/toast.service';
 import { VendorLoginResultsModel } from '../../../models/vendor.login.results.model';
+import { RovLogonDataService } from '../../rov-logon-data.service';
+import { RLogonModel } from '../../models/models';
+import { RovApiService } from '../../short-term.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-pin-validate',
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './pin-validate.component.html',
   styleUrls: ['./pin-validate.component.css']
 })
@@ -22,8 +26,8 @@ export class PinValidateComponent implements OnInit {
   constructor(private modal: NgbModal, 
     public activeModal: NgbActiveModal,
     private _saleTranSvc: PosApiService, 
-    private _logonSvc: LogonSvc, 
-    private _logonDataSvc: LogonDataService,
+    private _rovApiSvc: RovApiService, 
+    private _logonDataSvc: RovLogonDataService,
     private router: Router, 
     private _toastSvc: ToastService,) { 
 
@@ -44,30 +48,28 @@ export class PinValidateComponent implements OnInit {
 
     goToMainMenu(): void {
       this.activeModal.dismiss('main-menu');
-      this.router.navigate(['/mainmenu']);
+      this.router.navigate(['/rmainmenu']);
     }
 
     logout(): void {
       this.activeModal.dismiss('logout');
       this._logonDataSvc.clearTenderTypes();
-      this.router.navigate(['/vlogon']);
+      this.router.navigate(['/rov/rlogon']);
     }
 
     ValidatePin(pin: string) {
-      let logonMdl: VLogonModel = new VLogonModel();
-      logonMdl.locationUID = this._logonDataSvc.getLocationConfig().locationUID
-      logonMdl.pin = this.vpin;
-      logonMdl.vendorNumber = this._logonDataSvc.getLocationConfig().vendorNumber
-      logonMdl.exchangeNumber = this._logonDataSvc.getLocationConfig().facilityNumber.substring(0, 4);
-      logonMdl.facilityNumber = this._logonDataSvc.getLocationConfig().facilityNumber;
-      logonMdl.facilityName = this._logonDataSvc.getLocationConfig().facilityName;
+      let logonMdl: RLogonModel = new RLogonModel();
+      logonMdl.eventID = sessionStorage.getItem('event_id') ? +sessionStorage.getItem('event_id')! : 0;
+      logonMdl.pIN = this.vpin;
+      logonMdl.vendorNumber = sessionStorage.getItem('vendorNumber') ? sessionStorage.getItem('vendorNumber')! : '';
+      logonMdl.exchangeNumber = sessionStorage.getItem('facilityNumber') ? sessionStorage.getItem('facilityNumber')!.substring(0, 4) : '';
       //logonMdl.individualUID = this._logonDataSvc.getLocationConfig().individualUID;
       logonMdl.guid = GlobalConstants.POST_GUID;
       logonMdl.cliTimeVar = GlobalConstants.GetClientTimeVariance();
       logonMdl.contractType = true;
 
 
-      this._logonSvc.logonUser(logonMdl).subscribe(data => {
+      this._rovApiSvc.logonUser(logonMdl).subscribe(data => {
         // Handle the response data here
         if(data == null) {
           return;

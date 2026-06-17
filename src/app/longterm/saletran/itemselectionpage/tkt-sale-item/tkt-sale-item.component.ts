@@ -15,7 +15,7 @@ import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCh
 import { ConditionalExpr } from '@angular/compiler';
 import { getCheckoutItemsSelector, getTranIdTicketNumber } from '../../store/ticketstore/ticket.selector';
 import { Router } from '@angular/router';
-import { CPOSAppType } from 'src/app/services/util.service';
+import { CPOSAppType } from 'src/app/services-misc/util.service';
 
 import { currSymbls } from 'src/app/models/CurrencySymbols';
 

@@ -5,9 +5,9 @@ import { Router } from '@angular/router';
 import { PosApiService } from '../../../services/pos-api-service';
 import { LogonDataService } from '../../../../global/logon-data-service.service';
 import { LTC_Associates, LTC_LocationAssociatesResultsModel } from '../../../models/location.associates';
-import { UtilService } from '../../../../services/util.service';
+import { UtilService } from '../../../../services-misc/util.service';
 import { GlobalConstants } from '../../../../global/global.constants';
-import { ToastService } from '../../../../services/toast.service';
+import { ToastService } from '../../../../services-misc/toast.service';
 
 
 

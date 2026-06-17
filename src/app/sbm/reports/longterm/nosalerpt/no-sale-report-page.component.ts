@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { LogonDataService } from '../../../../global/logon-data-service.service';
-import { ToastService } from '../../../../services/toast.service';
+import { ToastService } from '../../../../services-misc/toast.service';
 import { LTC_NoSaleTicket } from '../../../../longterm/models/nosale.report.model';
 import { PosApiService } from '../../../../longterm/services/pos-api-service';
 import { LTC_Contract } from '../../../../longterm/models/contract.models';

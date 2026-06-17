@@ -6,10 +6,10 @@ import { catchError, concatMap, delay, finalize, from, map, Observable, of, swit
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Store } from '@ngrx/store';
 import { addTender, saveTenderObj } from '../../store/ticketstore/ticket.action';
-import { ToastService } from 'src/app/services/toast.service';
+import { ToastService } from 'src/app/services-misc/toast.service';
 import { UiBlockService } from 'src/app/services/ui-block.service';
 import { GlobalConstants } from 'src/app/global/global.constants';
-import { CPOSAppType } from 'src/app/services/util.service';
+import { CPOSAppType } from 'src/app/services-misc/util.service';
 
 @Injectable({
   providedIn: 'root'

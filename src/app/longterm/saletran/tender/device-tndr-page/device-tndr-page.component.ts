@@ -13,13 +13,13 @@ import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCh
 import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
 import { getLocCnfgIsAllowTipsSelector } from '../../store/locationconfigstore/locationconfig.selector';
 import { combineLatest, filter, firstValueFrom, forkJoin, map, Observable, Subscription, take, Subject, takeUntil } from 'rxjs';
-import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
-import { UtilService } from 'src/app/services/util.service';
+import { CPOSWebSvcService } from '../../../../services-pinpad/cposweb-svc.service';
+import { UtilService } from 'src/app/services-misc/util.service';
 import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
 import { Actions, ofType } from '@ngrx/effects';
-import { Round2DecimalService } from 'src/app/services/round2-decimal.service';
+import { Round2DecimalService } from 'src/app/services-misc/round2-decimal.service';
 import { RootObject } from 'src/app/app.state';
-import { ToastService } from 'src/app/services/toast.service';
+import { ToastService } from 'src/app/services-misc/toast.service';
 import { TenderUtil } from '../tender-util';
 import { RedeemGiftCardTenders } from '../gc-redeem-services/redeem-gift-card-tenders';
 import { OConusRedeemGCWithPinPadService } from '../gc-redeem-services/oconus-redeeem-gc-with-pin-pad';

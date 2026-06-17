@@ -1,0 +1,55 @@
+<div class="modal-header border-0 pb-2">
+    <h4 class="modal-title fw-bold">Refund Reason</h4>
+</div>
+
+<div class="modal-body px-3 py-3">
+    <div class="refund-reason-card">
+        <!-- Reason Selection Section -->
+        <div class="mb-3">
+            <label class="form-label fw-bold mb-2">Select the Refund Reason:</label>
+
+            <div class="dropdown-wrapper">
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary w-100 text-start d-flex justify-content-between align-items-center"
+                    (click)="toggleDropdown()"
+                >
+                    <span>{{ selectedReasonLabel }}</span>
+                    <span class="dropdown-arrow" [class.open]="isDropdownOpen">▼</span>
+                </button>
+
+                <div class="dropdown-menu" [class.show]="isDropdownOpen">
+                    <div *ngFor="let reason of refundReasons" class="dropdown-item">
+                        <button
+                            type="button"
+                            class="btn btn-link text-start w-100 px-3 py-2"
+                            [class.active]="selectedReasonCode === reason.code"
+                            (click)="selectReason(reason)"
+                        >
+                            {{ reason.label }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Other Reason Text Area -->
+        <div class="mb-3" *ngIf="showOtherReasonField">
+            <label for="otherReasonText" class="form-label fw-bold">Specify Other Reason:</label>
+            <textarea
+                id="otherReasonText"
+                [(ngModel)]="otherReason"
+                class="form-control"
+                placeholder="Enter reason here..."
+                rows="3"
+                maxlength="60"
+            ></textarea>
+            <small class="text-muted">{{ otherReason.length }}/60 characters</small>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer border-0 pt-2 justify-content-end gap-2">
+    <button type="button" class="btn btn-light" (click)="cancel()">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="ok()" [disabled]="!selectedReasonCode">OK</button>
+</div>

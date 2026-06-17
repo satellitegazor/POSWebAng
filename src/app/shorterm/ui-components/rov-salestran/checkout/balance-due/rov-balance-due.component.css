@@ -1,0 +1,38 @@
+.balance-due-container {
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+  margin: 5px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.balance-due-label {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+  letter-spacing: 0.5px;
+}
+
+.balance-due-label label,
+.balance-due-label {
+  font-family: "Segoe UI", "Inter", "Roboto", Arial, sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.3px;
+}
+
+.balance-due-amount {
+  color: #ffff00;
+  font-weight: 800;
+  font-size: 1.6rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+.balance-due-amount label,
+.balance-due-amount {
+  font-family: "Segoe UI", "Inter", "Roboto", Arial, sans-serif;
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: 0.3px;
+}

@@ -1,0 +1,76 @@
+<div class="panel">
+    <div class="panel-body">
+        <div class="tender-amounts-container" [class.single-card]="!isOConusLocation">
+            <div class="tender-amount-card">
+                <div class="tender-label">Tender Amount (Default Currency)</div>
+                <div class="tender-value dc-amount">{{dcCurrSymbl}}{{tenderAmountDC | number:'1.2-2'}}</div>
+            </div>
+            <div *ngIf="isOConusLocation" class="tender-amount-card">
+                <div class="tender-label">Tender Amount (Foreign Currency)</div>
+                <div class="tender-value fc-amount">{{ndcCurrSymbl}}{{tenderAmountNDC | number:'1.2-2'}}</div>
+            </div>
+        </div>
+        <p class="text-center">
+            <strong>Please click approve if Cash payment is received</strong>
+        </p>
+    </div>
+</div>
+<!-- Fast Cash Panel - 80% width, centered -->
+<div class="fast-cash-panel">
+    <h3 class="panel-title">Fast Cash Tender</h3>
+
+    <div class="fast-cash-container">
+        <!-- USD Fast Cash Buttons -->
+        <div class="currency-group" *ngIf="usdFastCashButtons.length > 0">
+            <h4 class="currency-title">{{dcCurrencyCode}}</h4>
+            <div class="buttons-grid">
+                <button *ngFor="let amount of usdFastCashButtons" class="quick-cash-btn"
+                    (click)="onUsdFastCashClick(amount)">
+                    {{dcCurrSymbl}}{{ amount.toFixed(2) }}
+                </button>
+            </div>
+        </div>
+
+        <div *ngIf="isOConusLocation && foreignFastCashButtons.length > 0" class="currency-group">
+            <h4 class="currency-title">{{ndcCurrencyCode}}</h4>
+            <div class="buttons-grid">
+                <button *ngFor="let amount of foreignFastCashButtons" class="quick-cash-btn"
+                    (click)="onForeignFastCashClick(amount)">
+                    {{ndcCurrSymbl}}{{ amount.toFixed(2) }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Optional: Exact Amount Button (outside grid for prominence) -->
+    <div class="exact-amount-wrapper">
+        <button data-testid="qa-button-onexactcash" class="exact-btn" (click)="onExactCash()">
+            Exact Amount: {{dcCurrSymbl}}{{ tenderAmountDC!.toFixed(2) }}
+        </button>
+    </div>
+</div>
+<div class="footer fixed-bottom cncsnFooter">
+    <div class="row">
+        <button #btnApprove class="border border-white btn btn-info btn-lg ftrbtn" id="btnApprove"
+            aria-label="Left Align" (click)="btnApproveClick($event)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill"
+                viewBox="0 0 16 16">
+                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+            </svg> Approve
+        </button>
+        <button #btnDecline class="border border-white btn btn-info btn-lg ftrbtn" id="btnDecline"
+            aria-label="Left Align" (click)="btnDeclineClick($event)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill"
+                viewBox="0 0 16 16">
+                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+            </svg> Decline
+        </button>
+        <button #btnCancel class="border border-white btn btn-info btn-lg ftrbtn" id="btnCancel" aria-label="Left Align"
+            (click)="btnCancelClick($event)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill"
+                viewBox="0 0 16 16">
+                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+            </svg> Cancelled
+        </button>
+    </div>
+</div>

@@ -3,9 +3,9 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TktObjState } from 'src/app/app.state';
+//import { TktObjState } from 'src/app/app.state';
 import { Store } from '@ngrx/store';
-import { addRefundReason } from '../store/ticketstore/ticket.action';
+//import { addRefundReason } from '../../../'
 
 
 interface RefundReason {
@@ -35,7 +35,7 @@ export class RefundReasonDlgComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    private _store: Store<TktObjState>,
+  //  private _store: Store<TktObjState>,
     private router: Router
   ) {}
 
@@ -78,7 +78,7 @@ export class RefundReasonDlgComponent implements OnInit {
       otherReason: this.otherReason
     };
 
-    this._store.dispatch(addRefundReason({ refundCode: result.reasonCode, refundReason: result.otherReason }));
+    //this._store.dispatch(addRefundReason({ refundCode: result.reasonCode, refundReason: result.otherReason }));
 
     this.activeModal.close(result);
   }

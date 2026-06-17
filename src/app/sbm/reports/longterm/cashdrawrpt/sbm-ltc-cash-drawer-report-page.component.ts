@@ -8,7 +8,7 @@ import { CashDrawerSummaryResultsModel, LTC_CashDrawerReportSummary, LTC_CashDra
 import { LTC_Contract } from '../../../../longterm/models/contract.models';
 import { SbmWebApiService } from '../../../services/sbm-web-api.service';
 import { LTC_Associates, LTC_LocationAssociatesResultsModel } from '../../../../longterm/models/location.associates';
-import { ToastService } from '../../../../services/toast.service';
+import { ToastService } from '../../../../services-misc/toast.service';
 import { LTC_StoreLocation } from '../../../../longterm/models/store.location';
 import { LTC_ContractResultsModel } from '../../../../longterm/models/contract.models';
 import { SendEmailRequest } from '../../../../models/misc-models';

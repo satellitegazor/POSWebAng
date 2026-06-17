@@ -7,10 +7,10 @@ import { LogonDataService } from '../../../../global/logon-data-service.service'
 import { updateCheckoutTotals, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn } from '../../store/ticketstore/ticket.action';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { currSymbls } from '../../../../models/CurrencySymbols';
-import { ToastService, ToastType } from '../../../../services/toast.service';
+import { ToastService, ToastType } from '../../../../services-misc/toast.service';
 import { TicketSplit } from '../../../../models/ticket.split';
 import { getTktObjSelector } from '../../store/ticketstore/ticket.selector';
-import { UtilService } from '../../../../services/util.service';
+import { UtilService } from '../../../../services-misc/util.service';
 
 @Component({
     selector: 'app-coupons',

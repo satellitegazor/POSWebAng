@@ -1,6 +1,6 @@
 // src/app/shared/components/toast/toast.component.ts
 import { Component, OnInit } from '@angular/core';
-import { ToastService, ToastMessage, ToastType } from '../../services/toast.service';
+import { ToastService, ToastMessage, ToastType } from '../../services-misc/toast.service';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 

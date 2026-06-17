@@ -10,7 +10,7 @@ import { removeTndrWithSaveCode, upsertAssocTips } from '../../store/ticketstore
 import { getCheckoutItemsSelector, getTicketTotals, getAssocTipList } from '../../store/ticketstore/ticket.selector';
 
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
-import { UtilService } from 'src/app/services/util.service';
+import { UtilService } from 'src/app/services-misc/util.service';
 
 @Component({
   selector: 'app-tips-modal-dlg',

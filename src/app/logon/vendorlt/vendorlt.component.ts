@@ -12,12 +12,12 @@ import { setLocationConfig, updateLocationConfigPostLogon } from '../../longterm
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ResetPinDlgComponent } from '../../common-ui-components/reset-pin-dlg/reset-pin-dlg.component';
 import { MandateTrainingComponent } from '../../common-ui-components/mandate-training/mandate-training.component';
-import { ToastService } from '../../services/toast.service';
+import { ToastService } from '../../services-misc/toast.service';
 import { HttpClient } from '@angular/common/http';
 import { addTabSerialToTktObj, initTktObj, loadTicket, loadTicketSuccess, updateCheckoutTotals } from '../../longterm/saletran/store/ticketstore/ticket.action';
 import { TktObjState } from '../../app.state';
 import { Actions, ofType } from '@ngrx/effects';
-import { CPOSWebSvcService } from '../../longterm/services/cposweb-svc.service';
+import { CPOSWebSvcService } from '../../services-pinpad/cposweb-svc.service';
 import { VendorLoginResultsModel } from 'src/app/models/vendor.login.results.model';
 import { environment } from '../../../environments/environment';
 

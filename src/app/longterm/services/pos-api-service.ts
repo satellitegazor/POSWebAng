@@ -35,8 +35,8 @@ import { LTC_CancelledTicketsResultsModel, TicketCancelResultsModel } from '../m
 import { CashDrawerSummaryResultsModel, LTC_CashDrawerVariance } from '../models/cash.drawer.model';
 import { LTC_ItemButtonMenuResultsModel } from '../models/item.button.menu.models';
 import { LTC_ContractResultsModel } from '../models/contract.models';
-import { LTC_TicketStatusLocationResult } from '../models/ticket.status.model';
-import { LTC_BalanceDueCountResultsModel, LTC_DailyExchRateHistResultsModel, Ltc_PinReqdSalTranResultsModel, LTC_Signature, LTC_SingleCustomerResultsModel, LTC_SingleTicketPaymentDetailsModel, LTC_SingleTransactionId, LtcFeeHResultsModel, SignatureData } from '../models/misc.models';
+import { LTC_TicketStatusLocationResult, UpdateTicketStatusLocationRequest } from '../models/ticket.status.model';
+import { AurusGiftCardRequest, Conus_GC_Balance_Model, InactiveTicketDetailRequest, InactiveTicketDetailResultModel, InProgressTendersResultModel, LTC_BalanceDueCountResultsModel, LTC_DailyExchRateHistResultsModel, Ltc_PinReqdSalTranResultsModel, LTC_Signature, LTC_SingleCustomerResultsModel, LTC_SingleTicketPaymentDetailsModel, CPOS_SingleTransactionId, LtcFeeHResultsModel, SaveLocationAssociatesRequest, SaveTicketDetailRequest, SaveTicketDetailResultModel, SignatureData, TranCountForLocEventResultModel, UpdateTicketStatusLocationResultModel } from '../models/misc.models';
 import { SendEmailRequest} from '../../models/misc-models';
 
 
@@ -696,10 +696,10 @@ export class PosApiService {
         return this.httpClient.delete<MobileBase>(url, { headers: this.headerObjs });
     }
 
-    public getTransactionID(uid: string, locationId: number, ticketNum: number): Observable<LTC_SingleTransactionId> {
+    public getTransactionID(uid: string, locationId: number, ticketNum: number): Observable<CPOS_SingleTransactionId> {
         const guid = GlobalConstants.GET_GUID;
         const url = `${GlobalConstants.CPOS_SVCS_URL}/ltc/GetTransactionID?guid=${encodeURIComponent(guid)}&uid=${encodeURIComponent(uid)}&locationId=${locationId}&ticketNum=${ticketNum}`;
-        return this.httpClient.get<LTC_SingleTransactionId>(url, { headers: this.headerObjs });
+        return this.httpClient.get<CPOS_SingleTransactionId>(url, { headers: this.headerObjs });
     }
 
     public getSingleTicketPaymentDetails(uid: string, pTransactionID: number): Observable<LTC_SingleTicketPaymentDetailsModel> {
@@ -763,144 +763,4 @@ export class PosApiService {
     }
 
 
-}
-
-export interface InProgressTendersResultModel {
-    results: MobileBase;
-    tenders: TicketTender[];
-    partialPayments: PartPaymentInfo[];
-    associateTips: AssociateSaleTips[];
-}
-
-export interface PartPaymentInfo {
-    partPayId: number;
-    partPayAmount: number;
-    partPayAmountFC: number;
-}
-
-export interface TranCountForLocEventResultModel {
-    results: MobileBase;
-    tranCount: number;
-    locEventId: number;
-}
-
-export interface SaveTicketDetailRequest {
-    appType: number;
-    transactionId: number;
-    ticketDetailId: number;
-    salesItemUID: number;
-    seqNbr: number;
-    itemDescription: string;
-    quantity: number;
-    unitPrice: number;
-    fcUnitPrice: number;
-    salesTaxPct: number;
-    envTaxPct: number;
-    discountAmount: number;
-    fcDiscountAmount: number;
-    couponLineItemDollarAmount: number;
-    fcCouponLineItemDollarAmount: number;
-    lineItemDollarDisplayAmount: number;
-    fcLineItemDollarDisplayAmount: number;
-    lineItemTaxAmount: number;
-    fcLineItemTaxAmount: number;
-    lineItemEnvTaxAmount: number;
-    fcLineItemEnvTaxAmount: number;
-    lineItmKatsaCpnAmt: number;
-    fcLineItmKatsaCpnAmt: number;
-    deptUID: number;
-    srvdByAssocVal: number;
-    isMisc: boolean;
-    isFulfilled: boolean;
-    isForeignCurr: boolean;
-    isDefaultUSD: boolean;
-    noOfTags: number;
-    maintUserId: number;
-    cliTimeVar: number;
-    active: boolean;
-}
-
-export interface SaveTicketDetailResultModel {
-    results: MobileBase;
-    ticketDetailId: number;
-    transactionId: number;
-    salesItemId: number;
-    itemDescription: string;
-}
-
-export interface InactiveTicketDetailRequest {
-    locEvtId: number;
-    tranId: number;
-    ticketDetailId: number;
-    appType: number;
-    userId: number;
-    voidTicket: boolean;
-    voidTypeCode: string;
-    voidOtherReason: string;
-}
-
-export interface InactiveTicketDetailResultModel {
-    results: MobileBase;
-}
-
-export interface UpdateTicketStatusLocationRequest {
-    transactionId: number;
-    readyByDate: Date | null;
-    statusId: number;
-    rackLocationId: number;
-    rckLocDesc: string;
-    payByDueDate: Date | null;
-    locationId: number;
-    userId: string;
-}
-
-export interface TicketStatusRackModel {
-    tktStatusRackId: number;
-    transactionId: number;
-    tktStatusId: number | null;
-    rackLocationId: number | null;
-    readyByDate: Date | null;
-    maintUserId: string;
-    maintTimeStamp: Date;
-    payByDueDate: Date | null;
-    rckLocDesc: string;
-}
-
-export interface UpdateTicketStatusLocationResultModel {
-    results: MobileBase;
-    data: TicketStatusRackModel;
-    queryStatus: number;
-    queryMessage: string;
-    errorNumber: number;
-}
-
-export interface Conus_GC_Balance_Model {
-    results: MobileBase;
-    sResp: string;
-    stAuth: string;
-    stReasonCode: string;
-    balance: number;
-}
-
-export interface AurusGiftCardRequest {
-    FacilityNumber: string;
-    TransactionAmount: number;
-    CardNumberEncrypted: string;
-    CardExpiryYear: number;
-    CardExpiryMonth: number;
-    TicketTenderId: number;
-    TransactionId: number;
-    RegionId: number;
-    AppType: number;
-
-}
-
-
-// Add this interface if not already present
-export interface SaveLocationAssociatesRequest {
-    // Define properties as per backend contract
-    // Example:
-    // locationId: number;
-    // associates: any[];
-    // ...
 }

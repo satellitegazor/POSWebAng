@@ -9,7 +9,7 @@ import { addSaleItem, saveTicketDetail, updateCheckoutTotals, updateServedByAsso
 import { getCheckoutItemsCount, getTranIdTicketNumber } from '../../store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { Observable, Subject } from 'rxjs';
-import { CPOSAppType, UtilService } from 'src/app/services/util.service';
+import { CPOSAppType, UtilService } from 'src/app/services-misc/util.service';
 
  
 @Component({

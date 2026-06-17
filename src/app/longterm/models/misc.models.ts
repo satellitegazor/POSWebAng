@@ -1,7 +1,9 @@
 
 // TypeScript models converted from C# classes
+import { AssociateSaleTips } from "../../models/associate.sale.tips";
 import { LTC_Customer } from "../../models/customer";
 import { MobileBase } from "../../models/mobile.base";
+import { TicketTender } from "../../models/ticket.tender";
 import { LTC_RackLocations, LTC_RefundReasonType, LTC_TicketStatusLocation, LTC_TicketStatusType } from "./ticket.status.model";
 
 // LTC_SingleTicketPaymentDetailsModel
@@ -225,10 +227,10 @@ export class LTC_SingleCustomerResultsModel {
 }
 
 // LTC_SingleTransactionID
-export class LTC_SingleTransactionId {
+export class CPOS_SingleTransactionId {
   results: MobileBase = {} as MobileBase;
   transactionId = 0;
-  constructor(init?: Partial<LTC_SingleTransactionId>) { Object.assign(this, init); }
+  constructor(init?: Partial<CPOS_SingleTransactionId>) { Object.assign(this, init); }
 }
 
 // LTC_FeeHResultsModel
@@ -351,3 +353,143 @@ export class SignatureData {
     constructor(init?: Partial<SignatureData>) { Object.assign(this, init); }
 }
 
+
+export interface InProgressTendersResultModel {
+  results: MobileBase;
+  tenders: TicketTender[];
+  partialPayments: PartPaymentInfo[];
+  associateTips: AssociateSaleTips[];
+}
+
+export interface PartPaymentInfo {
+  partPayId: number;
+  partPayAmount: number;
+  partPayAmountFC: number;
+}
+
+export interface TranCountForLocEventResultModel {
+  results: MobileBase;
+  tranCount: number;
+  locEventId: number;
+}
+
+export interface SaveTicketDetailRequest {
+  appType: number;
+  transactionId: number;
+  ticketDetailId: number;
+  salesItemUID: number;
+  seqNbr: number;
+  itemDescription: string;
+  quantity: number;
+  unitPrice: number;
+  fcUnitPrice: number;
+  salesTaxPct: number;
+  envTaxPct: number;
+  discountAmount: number;
+  fcDiscountAmount: number;
+  couponLineItemDollarAmount: number;
+  fcCouponLineItemDollarAmount: number;
+  lineItemDollarDisplayAmount: number;
+  fcLineItemDollarDisplayAmount: number;
+  lineItemTaxAmount: number;
+  fcLineItemTaxAmount: number;
+  lineItemEnvTaxAmount: number;
+  fcLineItemEnvTaxAmount: number;
+  lineItmKatsaCpnAmt: number;
+  fcLineItmKatsaCpnAmt: number;
+  deptUID: number;
+  srvdByAssocVal: number;
+  isMisc: boolean;
+  isFulfilled: boolean;
+  isForeignCurr: boolean;
+  isDefaultUSD: boolean;
+  noOfTags: number;
+  maintUserId: number;
+  cliTimeVar: number;
+  active: boolean;
+}
+
+export interface SaveTicketDetailResultModel {
+  results: MobileBase;
+  ticketDetailId: number;
+  transactionId: number;
+  salesItemId: number;
+  itemDescription: string;
+}
+
+export interface InactiveTicketDetailRequest {
+  locEvtId: number;
+  tranId: number;
+  ticketDetailId: number;
+  appType: number;
+  userId: number;
+  voidTicket: boolean;
+  voidTypeCode: string;
+  voidOtherReason: string;
+}
+
+export interface InactiveTicketDetailResultModel {
+  results: MobileBase;
+}
+
+export interface UpdateTicketStatusLocationRequest {
+  transactionId: number;
+  readyByDate: Date | null;
+  statusId: number;
+  rackLocationId: number;
+  rckLocDesc: string;
+  payByDueDate: Date | null;
+  locationId: number;
+  userId: string;
+}
+
+export interface TicketStatusRackModel {
+  tktStatusRackId: number;
+  transactionId: number;
+  tktStatusId: number | null;
+  rackLocationId: number | null;
+  readyByDate: Date | null;
+  maintUserId: string;
+  maintTimeStamp: Date;
+  payByDueDate: Date | null;
+  rckLocDesc: string;
+}
+
+export interface UpdateTicketStatusLocationResultModel {
+  results: MobileBase;
+  data: TicketStatusRackModel;
+  queryStatus: number;
+  queryMessage: string;
+  errorNumber: number;
+}
+
+export interface Conus_GC_Balance_Model {
+  results: MobileBase;
+  sResp: string;
+  stAuth: string;
+  stReasonCode: string;
+  balance: number;
+}
+
+export interface AurusGiftCardRequest {
+  FacilityNumber: string;
+  TransactionAmount: number;
+  CardNumberEncrypted: string;
+  CardExpiryYear: number;
+  CardExpiryMonth: number;
+  TicketTenderId: number;
+  TransactionId: number;
+  RegionId: number;
+  AppType: number;
+
+}
+
+
+// Add this interface if not already present
+export interface SaveLocationAssociatesRequest {
+  // Define properties as per backend contract
+  // Example:
+  // locationId: number;
+  // associates: any[];
+  // ...
+}

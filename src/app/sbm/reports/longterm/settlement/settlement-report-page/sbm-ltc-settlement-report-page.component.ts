@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PosApiService } from '../../../../../longterm/services/pos-api-service';
 import { LTC_SettlementDetails, SettlementReportResultModel } from '../models';
 
-import { ToastService } from '../../../../../services/toast.service';
+import { ToastService } from '../../../../../services-misc/toast.service';
 import { SbmWebApiService } from '../../../../services/sbm-web-api.service';
 import { take } from 'rxjs';
 import { LTC_Contract, LTC_ContractResultsModel } from '../../../../../longterm/models/contract.models';

@@ -6,7 +6,7 @@ import { EMPTY, of } from 'rxjs';
 import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 import { TicketTender } from '../../../models/ticket.tender';
 import { LogonDataService } from '../../../global/logon-data-service.service';
-import { ToastService } from '../../../services/toast.service';
+import { ToastService } from '../../../services-misc/toast.service';
 import { Actions, ofType } from '@ngrx/effects';
 
 import {
@@ -23,7 +23,7 @@ import { TicketStatusDlgComponent } from '../../saletran/ticket-status-dlg/ticke
 import { TktObjState } from '../../../app.state';
 import { Store } from '@ngrx/store';
 import { addTabSerialToTktObj, loadTicket, loadTicketSuccess, updateCheckoutTotals } from '../../saletran/store/ticketstore/ticket.action';
-import { CPOSWebSvcService } from '../../services/cposweb-svc.service';
+import { CPOSWebSvcService } from '../../../services-pinpad/cposweb-svc.service';
 import { CustomerSearchComponent } from '../../customer-search/customer-search.component';
 
 type TicketItem = LTC_Ticket['items'][number];

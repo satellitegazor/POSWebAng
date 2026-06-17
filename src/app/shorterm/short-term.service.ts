@@ -14,11 +14,13 @@ import {
   AssociateNamesListResultsModel,
   ROV_SalesTranRptSummaryModel,
   ROV_SalesTranRptDetailModel,
+  ROV_SingleTransactionResultsModel,
   ResetPinRequest,
   ROV_AssociatePINUpdateResultsModel,
   RLogonModel
 } from './models/models';
 import { SendEmailRequest } from '../models/misc-models';
+import { ROV_Event, SingleTransactionId } from '../longterm/models/ticket.list';
 
 @Injectable({
   providedIn: 'root'
@@ -115,6 +117,17 @@ export class RovApiService {
       + '&uid=' + encodeURIComponent(uid);
 
     return this.httpClient.get<ROV_EventsResultModel>(url, { headers: this.headerObjs });
+  }
+
+  public GetRovEvent(
+    EventId: number,
+    uid: string
+  ): Observable<ROV_Event> {
+    const url = GlobalConstants.CPOS_SVCS_URL + '/rov/GetRovEvent?guid=' + encodeURIComponent(GlobalConstants.GET_GUID)
+      + '&EventId=' + EventId.toString()
+      + '&uid=' + encodeURIComponent(uid);
+
+    return this.httpClient.get<ROV_Event>(url, { headers: this.headerObjs });
   }
 
     public getVendorFacEvents(
@@ -257,7 +270,31 @@ export class RovApiService {
       );
   }
 
+  public getTranIdForTicketNum(pEventId: number, pTicketNum: number, pIndividualId: number) {
 
+      return this.httpClient.get<SingleTransactionId>(GlobalConstants.CPOS_SVCS_URL + '/rov/GetTranId?guid=' + GlobalConstants.GET_GUID + 
+          '&uid=' + pIndividualId.toString() + '&TicketNum=' + pTicketNum.toString() + '&EventId=' + pEventId, 
+          {headers: this.headerObjs});
+  }
+
+  public getSingleTransaction(
+    uid: number,
+    pTransactionID: number,
+    pGetCancelTndr: boolean = false,
+    PartPayId: number = 0,
+    bFrmSalesTranRpt: boolean = false,
+    DPayRcpt: boolean = false
+  ): Observable<ROV_SingleTransactionResultsModel> {
+    const url = GlobalConstants.CPOS_SVCS_URL + '/rov/GetSingleTransaction?guid=' + encodeURIComponent(GlobalConstants.GET_GUID)
+      + '&uid=' + uid.toString()
+      + '&pTransactionID=' + pTransactionID.toString()
+      + '&pGetCancelTndr=' + pGetCancelTndr
+      + '&PartPayId=' + PartPayId.toString()
+      + '&bFrmSalesTranRpt=' + bFrmSalesTranRpt
+      + '&DPayRcpt=' + DPayRcpt;
+
+    return this.httpClient.get<ROV_SingleTransactionResultsModel>(url, { headers: this.headerObjs });
+  }
 }
 
 export interface SaveAssocRovLogoutHistoryRequest {

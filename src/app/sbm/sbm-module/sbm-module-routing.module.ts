@@ -14,20 +14,20 @@ import { SbmLtcPriceListRptComponent } from '../reports/longterm/pricelist/price
 import { SbmLtcSettlementReportPageComponent } from '../reports/longterm/settlement/settlement-report-page/sbm-ltc-settlement-report-page.component';
 import { SbmLtcCashDrawerReportPageComponent } from '../reports/longterm/cashdrawrpt/sbm-ltc-cash-drawer-report-page.component';
 
-const routes: Routes = [  
-  { path: 'logon', component: SbmLoginComponent },
-  { path: 'clist', component: ContractListingComponent },
-  { path: 'ltcpage', component: ContractLtcPageComponent },
-  { path: 'rovpage', component: ContractRovPageComponent },
-  { path: 'sbmrovrptmenu', component: SbmRovReportsMenuComponent },
-  { path: 'sbmltcrptmenu', component: SbmLtcReportsMenuComponent },
-  { path: 'sbmltcbalduerpt', component: SbmLtcBalDueTktsPageComponent },
-  { path: 'sbmltcnosalerpt', component: SbmLtcNoSaleReportPageComponent },
-  { path: 'sbmltcsalestranrpt', component: SbmLtcSalesTranRptPageComponent },
-  { path: 'sbmltccanceledrpt', component: SbmLtcCanceledTicketsPageComponent },
-  { path: 'sbmltccashdrawrpt', component: SbmLtcCashDrawerReportPageComponent }, 
-  { path: 'sbmltcpricelistrpt', component: SbmLtcPriceListRptComponent },
-  { path: 'sbmltcsetlmntrpt', component: SbmLtcSettlementReportPageComponent }
+export const SBM_ROUTES: Routes = [  
+  { path: './logon', component: SbmLoginComponent },
+  { path: './clist', component: ContractListingComponent },
+  { path: './ltcpage', component: ContractLtcPageComponent },
+  { path: './rovpage', component: ContractRovPageComponent },
+  { path: './sbmrovrptmenu', component: SbmRovReportsMenuComponent },
+  { path: './sbmltcrptmenu', component: SbmLtcReportsMenuComponent },
+  { path: './sbmltcbalduerpt', component: SbmLtcBalDueTktsPageComponent },
+  { path: './sbmltcnosalerpt', component: SbmLtcNoSaleReportPageComponent },
+  { path: './sbmltcsalestranrpt', component: SbmLtcSalesTranRptPageComponent },
+  { path: './sbmltccanceledrpt', component: SbmLtcCanceledTicketsPageComponent },
+  { path: './sbmltccashdrawrpt', component: SbmLtcCashDrawerReportPageComponent }, 
+  { path: './sbmltcpricelistrpt', component: SbmLtcPriceListRptComponent },
+  { path: './sbmltcsetlmntrpt', component: SbmLtcSettlementReportPageComponent }
 ];
 
 @NgModule({

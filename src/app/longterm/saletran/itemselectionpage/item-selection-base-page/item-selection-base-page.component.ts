@@ -25,11 +25,11 @@ import { TicketLookupComponent } from '../../../ticket-lookup/ticket-lookup.comp
 import { getCheckoutItemsCount, getTicketTotals, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
 import {initialLocationConfigState, LocationConfigState} from '../../store/locationconfigstore/locationconfig.state';
 import { Router } from '@angular/router';
-import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
+import { CPOSWebSvcService } from '../../../../services-pinpad/cposweb-svc.service';
 import { VerifoneCommStatus } from '../../../models/general-classes';
 import { AddMiscItemDlgComponent } from '../add-misc-item-dlg/add-misc-item-dlg.component';
 import { DailyExchRate } from '../../../../models/exchange.rate';
-import { UtilService } from '../../../../services/util.service';
+import { UtilService } from '../../../../services-misc/util.service';
 
 @Component({
     selector: 'app-item-selection-base-page',

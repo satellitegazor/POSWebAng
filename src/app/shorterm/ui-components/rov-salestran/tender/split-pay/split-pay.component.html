@@ -1,0 +1,122 @@
+<div class="panel">
+    <div *ngIf="isVoidingPayments" class="void-refund-overlay" aria-live="polite" aria-busy="true">
+        <div class="void-refund-overlay-content">
+            {{ voidRefundProgressMessage || 'Processing payment void/refund...' }}
+        </div>
+    </div>
+    <div class="panel-body">
+        <ng-template #voidPaymentsConfirmDialog>
+            <div class="modal-header">
+                <h4 class="modal-title">Void Payments</h4>
+                <button type="button" class="btn-close" aria-label="Close" [disabled]="isVoidingPayments" (click)="dismissVoidPaymentsDialog()"></button>
+            </div>
+            <div class="modal-body">
+                <p>Do you want to void the Sale Transaction Payments?</p>
+            </div>
+            <div class="modal-footer">
+                <button data-testid="qa-button-dismissvoidpaymentsdialog" type="button" class="btn btn-secondary" [disabled]="isVoidingPayments" (click)="dismissVoidPaymentsDialog()">No</button>
+                <button data-testid="qa-button-confirmvoidpayments" type="button" class="btn btn-danger" [disabled]="isVoidingPayments" (click)="confirmVoidPayments()">
+                    {{ isVoidingPayments ? 'Voiding...' : 'Yes' }}
+                </button>
+            </div>
+        </ng-template>
+
+        <table class="table table-striped">
+            <tr class="total-payment-section">
+                <td class="firstcolumn">
+                    <h5 class="section-title">Total Payment Amount</h5>
+                </td>
+                <td class="secondcolumn">
+                    <div class="payment-display-item">
+                        <div class="payment-display-value dc-amount">
+                            {{dcCurrSymbl}} {{totalToPayDC | number:'1.2-2'}}
+                        </div>
+                    </div>
+                </td>
+                <td *ngIf="isOConusLocation" class="thirdcolumn">
+                    <div class="payment-display-item">
+                        <div class="payment-display-value fc-amount">
+                            {{ndcCurrSymbl}} {{totalToPayNDC | number:'1.2-2'}}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr class="applied-tender-section">
+                <td class="firstcolumn">
+                    <h5 class="section-title">{{tndrs.length > 0 ? "Applied Tender Payments" : "No Tenders applied yet"}}</h5>
+                </td>
+                <td class="secondcolumn"></td>
+                <td *ngIf="isOConusLocation" class="thirdcolumn"></td>
+            </tr>
+            <tr *ngFor="let tndr of tndrs" class="applied-tender-section">
+                <td class="firstcolumn">
+                    <div class="tender-desc">{{tenderDescrition(tndr.tenderTypeCode)}}
+                        {{(tndr.tenderTypeDesc == 'pinpad') ? tndr.cardEndingNbr : ''}}
+                    </div>
+                </td>
+                <td class="secondcolumn">
+                    <div class="tender-amount payment-display-value">{{dcCurrSymbl}} {{(dcCurrSymbl == '$' ? tndr.tenderAmount : tndr.fcTenderAmount) | number:'1.2-2'}}</div>
+                </td>
+                <td *ngIf="isOConusLocation" class="thirdcolumn">
+                    <div class="tender-amount payment-display-value">{{ndcCurrSymbl}} {{(dcCurrSymbl != '$' ? tndr.tenderAmount : tndr.fcTenderAmount) | number:'1.2-2'}}</div>
+                </td>
+            </tr>
+            <tr class="split-payment-section">
+                <td class="firstcolumn">
+                    <h5 class="section-title">Enter Split Payment Amount</h5>
+                </td>
+                <td class="secondcolumn">
+                    <div class="currency-input-group">
+                        <span class="currency-symbol">{{dcCurrSymbl}}</span>
+                        <input type="text" #dcTndrAmt id="dcTndrAmt" autocomplete="off" class="form-control currency-input"
+                            [(ngModel)]="yetToPayDC" (change)="PaymentAmountChanged($event)" appPosCurrency
+                            placeholder="0.00" />
+                    </div>
+                </td>
+                <td *ngIf="isOConusLocation" class="thirdcolumn">
+                    <div  class="currency-input-group">
+                        <span class="currency-symbol">{{ndcCurrSymbl}}</span>
+                        <input type="text" id="ndcTndrAmt" autocomplete="off" class="form-control currency-input"
+                            [(ngModel)]="yetToPayNDC" appPosCurrency placeholder="0.00" />
+                    </div>
+                </td>
+            </tr>
+            <tr></tr>
+        </table>
+
+        <div class="instruction-message-container">
+            <div class="instruction-message">
+                <div class="instruction-icon">i</div>
+                <div class="instruction-text">
+                    <strong>Split Payment Instructions:</strong> {{splitPayMsg}}
+                </div>
+            </div>
+        </div>
+            <div class="text-center mt-3">
+                <button type="button" class="btn btn-secondary btn-lg" (click)="onCancelClick()" id="btnCancelSplitPay">Cancel 
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-octagon-fill"
+                        viewBox="0 0 16 16">
+                        <path
+                            d="M11.46.146A.5.5 0 0 0 11.107 0H4.893a.5.5 0 0 0-.353.146L.146 4.54A.5.5 0 0 0 0 4.893v6.214a.5.5 0 0 0 .146.353l4.394 4.394a.5.5 0 0 0 .353.146h6.214a.5.5 0 0 0 .353-.146l4.394-4.394a.5.5 0 0 0 .146-.353V4.893a.5.5 0 0 0-.146-.353zm-6.106 4.5L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708" />
+                    </svg>
+                </button>
+            </div>
+
+
+    </div>
+</div>
+<div class="footer fixed-bottom cncsnFooter">
+    <div class="row">
+        <div class="tender-buttons-container">
+            <button *ngFor="let tndr of _displayTenders" class="border border-white btn btn-info btn-lg tender-btn"
+                id="{{tndr.tenderTypeCode}}" [ngStyle]="{width: tenderButtonWidthPercent + '%'}"
+                [attr.aria-label]="tndr.tenderTypeDesc" (click)="btnTndrClick($event)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-wallet2"
+                    viewBox="0 0 16 16">
+                    <path
+                        d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5z" />
+                </svg> {{tndr.tenderTypeDesc}}
+            </button>
+        </div>
+    </div>
+</div>

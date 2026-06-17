@@ -12,13 +12,13 @@ import { LocationConfigState } from '../../saletran/store/locationconfigstore/lo
 import { saleTranDataInterface } from '../../saletran/store/ticketstore/ticket.state';
 import { Subject } from 'rxjs';
 import { VendorLoginResultsModel } from 'src/app/models/vendor.login.results.model';
-import { CPOSAppType, UtilService } from 'src/app/services/util.service';
+import { CPOSAppType, UtilService } from 'src/app/services-misc/util.service';
 import { GlobalConstants } from 'src/app/global/global.constants';
 import { SalesTransactionCheckoutItem } from '../../models/salesTransactionCheckoutItem';
 import { ThisReceiver } from '@angular/compiler';
 import { SaleItemButton } from '../../models/sale.item.button';
 import { LTC_SalesItems, LTC_SaveSalesItemModelParameters } from '../../models/long-term-sale-item';
-import { ToastService } from 'src/app/services/toast.service';
+import { ToastService } from 'src/app/services-misc/toast.service';
 import { Router } from '@angular/router';
 
 @Component({

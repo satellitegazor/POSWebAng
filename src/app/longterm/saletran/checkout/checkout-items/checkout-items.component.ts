@@ -12,7 +12,7 @@ import { tktObjInitialState, saleTranDataInterface } from '../../store/ticketsto
 import { CouponsModalDlgComponent } from '../coupons/coupons.component';
 import { TipsModalDlgComponent } from '../tips-modal-dlg/tips-modal-dlg.component';
 import { currSymbls } from 'src/app/models/CurrencySymbols';
-import { UtilService } from 'src/app/services/util.service';
+import { UtilService } from 'src/app/services-misc/util.service';
 import { ShipHandlingComponent } from '../ship-handling/ship-handling.component';
 
 @Component({

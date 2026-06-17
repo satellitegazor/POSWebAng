@@ -5,7 +5,7 @@ import { map, Subject, takeUntil } from 'rxjs';
 import { getTktObjSelector } from './longterm/saletran/store/ticketstore/ticket.selector';
 import { saleTranDataInterface } from './longterm/saletran/store/ticketstore/ticket.state';
 import { LogonDataService } from './global/logon-data-service.service';
-import { UiBlockService } from './services/ui-block.service';
+import { UiBlockService } from './services-misc/ui-block.service';
 import { getLocCnfgHeaderContextSelector } from './longterm/saletran/store/locationconfigstore/locationconfig.selector';
 
 @Component({

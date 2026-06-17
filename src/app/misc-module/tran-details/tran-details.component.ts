@@ -7,7 +7,7 @@ import { LTC_TransactionDetails } from '../../longterm/models/ticket.list';
 import { PinValidateComponent } from '../../longterm/pin-validate/pin-validate.component';
 import { PosApiService } from '../../longterm/services/pos-api-service';
 import { VendorLoginResultsModel } from '../../models/vendor.login.results.model';
-import { UtilService } from '../../services/util.service';
+import { UtilService } from '../../services-misc/util.service';
 
 @Component({
     selector: 'app-tran-details',

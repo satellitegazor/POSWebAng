@@ -16,7 +16,7 @@ import { Store } from '@ngrx/store';
 import { TktObjState } from '../../../app.state';
 import { getSavedTicketResult, getTktObjSelector } from '../store/ticketstore/ticket.selector';
 import { SaveTicketResultsModel } from '../../../models/ticket.split';
-import { ToastService } from '../../../services/toast.service';
+import { ToastService } from '../../../services-misc/toast.service';
 
 @Component({
   selector: 'app-ticket-status-dlg',

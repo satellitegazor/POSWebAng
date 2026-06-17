@@ -1,11 +1,11 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { TenderStatusType, TicketTender, TranStatusType } from '../../../../models/ticket.tender';
-import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
+import { CPOSWebSvcService } from '../../../../services-pinpad/cposweb-svc.service';
 import { saleTranDataInterface } from '../../store/ticketstore/ticket.state';
 import { ActivatedRoute, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { LogonDataService } from '../../../../global/logon-data-service.service';
-import { UtilService } from '../../../../services/util.service';
+import { UtilService } from '../../../../services-misc/util.service';
 import { TicketSplit } from '../../../../models/ticket.split';
 import { ExchCardTndr } from '../../../../models/exch.card.tndr';
 import { firstValueFrom, forkJoin, Subscription, take } from 'rxjs';
@@ -13,7 +13,7 @@ import { getIsSplitPayR5, getRemainingBal, getTktObjSelector } from '../../store
 import { TenderUtil } from '../tender-util';
 import { addTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj } from '../../store/ticketstore/ticket.action';
 import { RedeemGiftCardTenders } from '../gc-redeem-services/redeem-gift-card-tenders';
-import { ToastService } from '../../../../services/toast.service';
+import { ToastService } from '../../../../services-misc/toast.service';
 import { OConusRedeemGCWithPinPadService } from '../gc-redeem-services/oconus-redeeem-gc-with-pin-pad';
 import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
 

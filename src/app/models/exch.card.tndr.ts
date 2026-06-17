@@ -1,4 +1,4 @@
-﻿import { PinPadResult } from "../longterm/saletran/services/models/pinpad-result";
+﻿import { PinPadResult } from "../services-pinpad/models/pinpad-result";
 
 export class ExchCardTndr {
     public rslt: PinPadResult = new PinPadResult();

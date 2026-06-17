@@ -10,7 +10,7 @@ import { LogonDataService } from '../../../../global/logon-data-service.service'
 import { Router } from '@angular/router';
 import { LTC_Associates } from '../../../../longterm/models/location.associates';
 import { SendEmailRequest } from '../../../../models/misc-models';
-import { ToastService } from '../../../../services/toast.service';
+import { ToastService } from '../../../../services-misc/toast.service';
 
 
 @Component({

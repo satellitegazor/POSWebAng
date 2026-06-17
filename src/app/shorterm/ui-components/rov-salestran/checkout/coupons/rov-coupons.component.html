@@ -1,0 +1,33 @@
+<div class="modal-header">
+    <h4 class="modal-title">{{CpnType}}</h4>
+</div>
+<div class="modal-content">
+    <div class="panel coupon-panel">
+        <div class="panel-title">{{DiscountName}}</div>
+        <div class="panel-body">
+            <table class="table table-striped coupon-table">
+                <tr>
+                    <td class="item-name">{{ItemName}}</td>
+                    <td class="ra">%</td>
+                    <td>
+                        <input class="form-control" type="text" name="percentage" id="percentage"
+                            (change)="percentChanged()" [(ngModel)]="DiscountPct" appPosCurrency/>
+                    </td>
+                    <td class="spacer">&nbsp;</td>
+                    <td class="ra">{{dfltCurrSymbl}}</td>
+                    <td>
+                        <input #amountInput class="form-control" type="text" name="amount" id="amount"
+                            (change)="amountChanged()" [(ngModel)]="DiscountAmt" appPosCurrency/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+</div>
+<div class="modal-footer">
+    <div class="coupon-actions">
+        <button data-testid="qa-button-apply" class="btn btn-info" (click)="Apply()">Apply</button>
+        <button data-testid="qa-button-cancel" class="btn btn-info" (click)="Cancel()">Cancel</button>
+    </div>
+</div>

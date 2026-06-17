@@ -1,16 +1,17 @@
 import {createAction, props} from '@ngrx/store';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
-import { LTC_Customer } from 'src/app/models/customer';
-import { SaveTicketResultsModel, TicketSplit } from 'src/app/models/ticket.split';
-import { SaveTenderResultModel, SaveTenderResult, TicketTender } from 'src/app/models/ticket.tender';
+import { LogonDataService } from "../../../../global/logon-data-service.service"
+//import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
+import { AssociateSaleTips } from "../../../../models/associate.sale.tips"
+import { LTC_Customer } from '../../../../models/customer';
+import { SaveTicketResultsModel, TicketSplit } from '../../../../models/ticket.split';
+import { SaveTenderResultModel, SaveTenderResult, TicketTender } from '../../../../models/ticket.tender';
 import { LocationConfig } from '../../../models/location-config';
 import { LTC_Associates } from '../../../models/location.associates';
 import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCheckoutItem';
-import { ExchCardTndr, SaveExchCardTndrResult } from 'src/app/models/exch.card.tndr';
-import { LTC_Ticket } from 'src/app/longterm/models/ticket.list';
-import { DailyExchRate } from 'src/app/models/exchange.rate';
-import { InactiveTicketDetailRequest, InactiveTicketDetailResultModel, SaveTicketDetailRequest, SaveTicketDetailResultModel } from '../../../services/pos-api-service';
+import { ExchCardTndr, SaveExchCardTndrResult } from '../../../../models/exch.card.tndr';
+import { LTC_Ticket } from '../../../../longterm/models/ticket.list';
+import { DailyExchRate } from '../../../../models/exchange.rate';
+import { InactiveTicketDetailRequest, InactiveTicketDetailResultModel, SaveTicketDetailRequest, SaveTicketDetailResultModel } from '../../../models/misc.models';
  
 export const ADD_SALE_ITEM = 'addSaleItem';
 export const INC_SALE_ITEM_QTY = 'incSaleItemQty';

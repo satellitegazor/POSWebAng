@@ -19,7 +19,7 @@ import { firstValueFrom, Observable, Subscription, take, map } from 'rxjs';
 import { Actions, ofType } from '@ngrx/effects';
 import { TicketSplit } from '../../../../models/ticket.split';
 import { DailyExchRate } from '../../../../models/exchange.rate';
-import { UtilService } from '../../../../services/util.service';
+import { UtilService } from '../../../../services-misc/util.service';
 import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCheckoutItem';
 
 @Component({
