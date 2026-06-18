@@ -11,12 +11,14 @@ import {
   PickUpStatusMasterData,
   TicketStatusLocationData,
 } from '../../models/ticket.status.location.models';
-import { PosApiService, UpdateTicketStatusLocationRequest } from '../../services/pos-api-service';
+import { PosApiService } from '../../services/pos-api-service';
 import { Store } from '@ngrx/store';
 import { TktObjState } from '../../../app.state';
 import { getSavedTicketResult, getTktObjSelector } from '../store/ticketstore/ticket.selector';
 import { SaveTicketResultsModel } from '../../../models/ticket.split';
 import { ToastService } from '../../../services-misc/toast.service';
+import { UpdateTicketStatusLocationRequest } from '../../models/ticket.status.model';
+
 
 @Component({
   selector: 'app-ticket-status-dlg',

@@ -1,22 +1,18 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { AuthState } from 'src/app/authstate/auth.state';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { SharedSubjectService } from '../../../../shared-subject/shared-subject.service';
-import { LTC_Associates } from '../../../models/location.associates';
-import { SaleItem } from '../../../models/sale.item'; 
-import { TktSaleItem } from '../../../../models/ticket.detail';
-import { getLocationAssocSelector } from '../../store/localtionassociates/locationassociates.selector';
-import { getLocCnfgIsAllowTipsSelector } from '../../store/locationconfigstore/locationconfig.selector';
-import { PosApiService } from '../../../services/pos-api-service';
-import { saleTranDataInterface } from '../../store/ticketstore/rticket.state';
-import { addSaleItem, updateServedByAssociate, decSaleitemQty, delSaleitemZeroQty, incSaleitemQty, updateAssocInAssocTips, updateCheckoutTotals, inactiveTicketDetail } from '../../store/ticketstore/ticket.action';
-import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCheckoutItem';
+import { RovLogonDataService } from '../../../../rov-logon-data.service';
+import { SharedSubjectService } from '../../../../../shared-subject/shared-subject.service';
+import { AssociateNamesListDetail } from "../../../../models/models"
+import { RovApiService } from "../../../../short-term.service";
+import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
+import { addSaleItem, updateServedByAssociate, decSaleitemQty, 
+    delSaleitemZeroQty, incSaleitemQty, updateAssocInAssocTips, 
+    updateCheckoutTotals, inactiveTicketDetail } from '../../../../store/ticketstore/rticket.action';
+import { Rov_SalesTranCheckoutItem } from '../../../../models/r-salestran-checkout-item';
 import { ConditionalExpr } from '@angular/compiler';
-import { getCheckoutItemsSelector, getTranIdTicketNumber } from '../../store/ticketstore/ticket.selector';
+import { getRCheckoutItemsSelector, getRTranIdTicketNumber } from '../../../../store/ticketstore/rticket.selector';
 import { Router } from '@angular/router';
 import { CPOSAppType } from 'src/app/services-misc/util.service';
-
 import { currSymbls } from 'src/app/models/CurrencySymbols';
 
 @Component({
@@ -27,14 +23,14 @@ import { currSymbls } from 'src/app/models/CurrencySymbols';
 })
 export class RovTktSaleItemComponent implements OnInit {
 
-    constructor(private _saleTranSvc: PosApiService,
-        private _logonDataSvc: LogonDataService,
-        private _store: Store<saleTranDataInterface>,
+    constructor(private _saleTranSvc: RovApiService,
+        private _logonDataSvc: RovLogonDataService,
+        private _store: Store<RovSaleTranDataInterface>,
         private _router: Router) { }
 
-    tktSaleItems: SalesTransactionCheckoutItem[] = [];
+    tktSaleItems: Rov_SalesTranCheckoutItem[] = [];
     public allowTips: boolean = false;
-    public SaleAssocList: LTC_Associates[] = [];
+    public SaleAssocList: AssociateNamesListDetail[] = [];
     public indivId: number = 0;
 
     public dfltCurrSymbl: string = '$'
@@ -42,17 +38,17 @@ export class RovTktSaleItemComponent implements OnInit {
     public dfltCurrCode: string = 'USD'
 
     public transactionId: number = 0;
-    public locationId: number = 0;
+    public eventId: number = 0;
 
     @Output() addMiscItemClicked: EventEmitter<void> = new EventEmitter<void>();
 
     ngOnInit(): void {
 
-        this._store.select(getTranIdTicketNumber).subscribe(data => {
+        this._store.select(getRTranIdTicketNumber).subscribe(data => {
             this.transactionId = data.tranId;
-            this.locationId = data.locationId;});
+            this.eventId = data.locationId;});
 
-        this._store.select(getCheckoutItemsSelector).subscribe(data => {
+        this._store.select(getRCheckoutItemsSelector).subscribe(data => {
         
             if(data == undefined)
                 return;
@@ -60,11 +56,11 @@ export class RovTktSaleItemComponent implements OnInit {
             this.tktSaleItems = data;          
         });
 
-        const locConfig = this._logonDataSvc.getLocationConfig();
+        const locConfig = this._logonDataSvc.getRovEventConfig();
         this.allowTips = locConfig.allowTips;
-        this.indivId = +this._logonDataSvc.getLTVendorLogonData().individualUID;        
+        this.indivId = +this._logonDataSvc.getRovVendorLogonData().individualUID;        
 
-        this._saleTranSvc.getLocationAssociates(this.locationId, String(this.indivId)).subscribe(data => {
+        this._saleTranSvc.getEventAssociates(this.eventId, String(this.indivId)).subscribe(data => {
             this.SaleAssocList = data.associates
         })
 
@@ -82,7 +78,7 @@ export class RovTktSaleItemComponent implements OnInit {
                 this._store.dispatch(inactiveTicketDetail({
                     uid: this.indivId,
                     request: {
-                        locEvtId: this.locationId,
+                        locEvtId: this.eventId,
                         tranId: this.transactionId,
                         ticketDetailId: this.tktSaleItems[i].ticketDetailId,
                         appType: CPOSAppType.LongTerm,

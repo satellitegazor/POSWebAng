@@ -372,7 +372,6 @@ export interface TranCountForLocEventResultModel {
   tranCount: number;
   locEventId: number;
 }
-
 export interface SaveTicketDetailRequest {
   appType: number;
   transactionId: number;

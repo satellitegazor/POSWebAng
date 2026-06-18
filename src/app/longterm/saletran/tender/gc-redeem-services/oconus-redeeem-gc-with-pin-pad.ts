@@ -8,7 +8,7 @@ import { Store } from '@ngrx/store';
 import { addTender, saveTenderObj } from '../../store/ticketstore/ticket.action';
 import { ToastService } from 'src/app/services-misc/toast.service';
 import { GCRedeemInput } from '../../../../services-pinpad/models/aurus-gift-card-redeem-resp';
-import { UiBlockService } from 'src/app/services/ui-block.service';
+import { UiBlockService } from 'src/app/services-misc/ui-block.service';
 import { UtilService } from 'src/app/services-misc/util.service';
 
 @Injectable({

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { BusinessFunctionCode, GlobalConstants } from '../../../../global/global.constants';
+import { LTCBusinessFunctionCode, GlobalConstants } from '../../../../global/global.constants';
 import { LogonDataService } from '../../../../global/logon-data-service.service';
 import { TicketSplit } from '../../../../models/ticket.split';
 import { VendorLoginResultsModel } from '../../../../models/vendor.login.results.model';
@@ -279,8 +279,8 @@ export class ItemSelectionBasePageComponent implements OnInit, OnDestroy {
     }
 
     btnCheckoutClick(evt: Event) {
-        const isLaundry = this.locationConfig.busFuncCode == BusinessFunctionCode.BUSFNC_LNDRYCLN
-            || this.locationConfig.busFuncCode == BusinessFunctionCode.BUSFNC_LNDRYCLN_WALT;
+        const isLaundry = this.locationConfig.busFuncCode == LTCBusinessFunctionCode.BUSFNC_LNDRYCLN
+            || this.locationConfig.busFuncCode == LTCBusinessFunctionCode.BUSFNC_LNDRYCLN_WALT;
         
 
         const isCustomerMissing = this.tktCustomerId === 0 && (this.tktCustomerLastName ?? '').trim().length === 0;

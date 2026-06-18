@@ -31,7 +31,7 @@ export const SBM_ROUTES: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
+  imports: [RouterModule.forChild(SBM_ROUTES)],
   exports: [RouterModule]
 })
 export class SbmRoutingModule { }

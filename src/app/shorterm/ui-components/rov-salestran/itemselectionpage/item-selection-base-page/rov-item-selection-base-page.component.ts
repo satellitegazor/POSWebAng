@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { BusinessFunctionCode, GlobalConstants } from '../../../../../global/global.constants';
+import { GlobalConstants, ROVBusinessFunctionCode } from '../../../../../global/global.constants';
 import { RovLogonDataService } from '../../../../rov-logon-data.service';
 import { ROV_POSTicketSplit } from '../../../../models/rticket.split';
 import { VendorLoginResultsModel } from '../../../../../models/vendor.login.results.model';
@@ -14,16 +14,14 @@ import { CustomerSearchComponent } from '../../../../../longterm/customer-search
 import { getEventSaleItemsStart, getEventSaleItemsActionSuccess, getEventSaleitemsFail } from '../../../../store/saleitemstore/saleitem.action';
 import { props, Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
-import { getSaleItemListSelector } from '../../store/saleitemstore/saleitem.selector';
+import { getSaleItemListSelector } from '../../../../store/saleitemstore/saleitem.selector';
 import { getEventConfigSelector } from "../../../../store/roveventconfigstore/roveventconfig.selector"
 import { getEventConfigStart, setEventConfig } from '../../../../store/roveventconfigstore/roveventconfig.action';
-import { getAuthLoginSelector } from '../../../../authstate/auth.selector';
-//import { LocationConfig, LocationIndividual } from '../../../models/location-config';
 import { EventConfig } from '../../../../models/event.config';
-import { saleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
+import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
 import { addTabSerialToTktObj, initTktObj } from '../../../../store/ticketstore/rticket.action';
 import { RovTicketLookupComponent } from '../../../ticket-lookup/rov-ticket-lookup.component';
-import { getRCheckoutItemsCount, getTicketTotals, getRTktObjSelector } from '../../../../store/ticketstore/rticket.selector';
+import { getRCheckoutItemsCount, getRTicketTotals, getRTktObjSelector } from '../../../../store/ticketstore/rticket.selector';
 import { initialROVEventConfigState, ROVEventConfigState } from '../../../../store/roveventconfigstore/roveventconfig.state';
 import { Router } from '@angular/router';
 import { CPOSWebSvcService } from "../../../../../services-pinpad/cposweb-svc.service";
@@ -53,7 +51,7 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
         private _logonDataSvc: RovLogonDataService,
         private _sharedSubSvc: SharedSubjectService, 
         private modalService: NgbModal, 
-        private _store: Store<saleTranDataInterface>,
+        private _store: Store<RovSaleTranDataInterface>,
         private router: Router,
         private _rovEventConfigStore: Store<ROVEventConfigState>,
         private _cposWebSvc: CPOSWebSvcService,
@@ -111,15 +109,15 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
     private initializeItemSelectionPage(): void {
 
         //console.log('SalesCart ngOnInit')
-        this.vendorLoginResult = this._logonDataSvc.getLTVendorLogonData();
-        this.defaultCurrencyCode = this._logonDataSvc.getDfltCurrCode?.() ?? this._logonDataSvc.getLocationConfig()?.defaultCurrency ?? 'USD';
+        this.vendorLoginResult = this._logonDataSvc.getRovVendorLogonData();
+        this.defaultCurrencyCode = this._logonDataSvc.getDfltCurrCode?.() ?? this._logonDataSvc.getRovEventConfig()?.defaultCurrency ?? 'USD';
         
         this.isDefaultCurrencyUsd = this.defaultCurrencyCode.toUpperCase() === 'USD';
         
         let exchRateObj = this._logonDataSvc.getDailyExchRate();
         this.isForeignCurrency = exchRateObj?.isForeignCurr ?? false;
 
-        this.individualId = +this._logonDataSvc.getLTVendorLogonData().individualUID;
+        this.individualId = +this._logonDataSvc.getRovVendorLogonData().individualUID;
         
         if(this.isForeignCurrency) {
 
@@ -139,24 +137,23 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
         
 
         this._buildTktObj();
-        this._rovApiSvc.getSaleItemListFromDB(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0, 0, 0, 0).subscribe(data => {
-            if(data.itemButtonMenuResults == null || data.itemButtonMenuResults.length == 0) {
+        this._rovApiSvc.getConcessionMenuItem(this.individualId.toString(), this.vendorLoginResult.eventId, 0, true).subscribe(data => {
+            if(data.lstItemButtons == null || data.lstItemButtons.length == 0) {
                 this.router.navigate(['/itembtnmenu']);
                 return;
             }
-            this.allItemButtonMenuList = data.itemButtonMenuResults;
+            this.allItemButtonMenuList = data.lstItemButtons;
             this.getDeptList();
         });
 
         
 
-        this._rovApiSvc.getLocationConfig(+this.vendorLoginResult.locationUID, +this.vendorLoginResult.individualUID).subscribe(data => {
+        this._rovApiSvc.GetEventConfig(+this.vendorLoginResult.eventId, this.vendorLoginResult.individualUID).subscribe(data => {
 
-            this.locationConfig = data.configs[0];
-            this.locationIndividuals = data.individuals;
-            this._locConfigStore.dispatch(setLocationConfig({ locationConfig: data.configs[0] }));
+            this.eventConfig = data.config;
+            this._rovEventConfigStore.dispatch(setEventConfig({ eventConfig: data.config }));
 
-            if(this.locationConfig.rgnCode == "CON") {
+            if(this.eventConfig.rgnCode == "CON") {
                 this._cposWebSvc.getsysinfo("asdf").subscribe((data) => {
                     if (data.IsSuccess) {
                         console.log("SysInfo Success: ", data);
@@ -175,11 +172,11 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
             }         
         });
 
-        this._store.select(getCheckoutItemsCount).subscribe(itemCount => {
+        this._store.select(getRCheckoutItemsCount).subscribe(itemCount => {
             this.disableCheckoutBtn = (itemCount == 0);
         })
 
-        this._store.select(getTktObjSelector).subscribe(tktObj => {
+        this._store.select(getRTktObjSelector).subscribe(tktObj => {
 
             this.customerReqdForSaleItems = (tktObj?.tktList?.filter(item => item.custInfoReq).length ?? 0) > 0;
 
@@ -194,7 +191,7 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
             }
         })
 
-        this._store.select(getTicketTotals).subscribe(tktTotals => {
+        this._store.select(getRTicketTotals).subscribe(tktTotals => {
             
             if (!tktTotals) {
                 this.dcSubtotal = 0;
@@ -279,15 +276,14 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
     }
 
     btnCheckoutClick(evt: Event) {
-        const isLaundry = this.locationConfig.busFuncCode == BusinessFunctionCode.BUSFNC_LNDRYCLN
-            || this.locationConfig.busFuncCode == BusinessFunctionCode.BUSFNC_LNDRYCLN_WALT;
-        
+        const isCustomerSaveReqd = this.eventConfig.busFuncCode == ROVBusinessFunctionCode.BUSFNC_LTR_OTHER_CASH_CARRY
+            || this.eventConfig.busFuncCode == ROVBusinessFunctionCode.BUSFNC_LTR_PHOTOGRAPHY;
 
         const isCustomerMissing = this.tktCustomerId === 0 && (this.tktCustomerLastName ?? '').trim().length === 0;
 
-        if ((isLaundry || this.customerReqdForSaleItems) && isCustomerMissing ) {
+        if ((isCustomerSaveReqd || this.customerReqdForSaleItems) && isCustomerMissing ) {
             this.pendingCheckoutAfterCustomer = true;
-            this.btnCustDetailsClick(new Event('isLaundry'));
+            this.btnCustDetailsClick(new Event('isCustomerSaveReqd'));
             return;
         }
 

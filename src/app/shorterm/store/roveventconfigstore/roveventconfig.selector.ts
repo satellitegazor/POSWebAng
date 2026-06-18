@@ -9,13 +9,6 @@ export const getEventConfigSelector = createSelector(getLocConfigState,
         return state ? state.eventConfig : null;
     });
 
-export const getEventConfigIsAllowTipsSelector = createSelector(getLocConfigState,
-    (state) => {
-        if (state.eventConfig == null)
-            return;
-
-        return state && state.eventConfig && state.eventConfig != null && state.eventConfig.allowTips != null ? state.eventConfig.allowTips : false;
-    })
 
 export const getEventConfigHeaderContextSelector = createSelector(getLocConfigState,
     (state) => {

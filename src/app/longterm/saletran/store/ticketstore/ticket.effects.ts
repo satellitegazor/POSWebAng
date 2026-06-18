@@ -7,8 +7,8 @@ import { PosApiService } from "../../../services/pos-api-service";
 import { saveTicketForGuestCheck, saveTicketForGuestCheckSuccess, saveTicketForGuestCheckFailed, saveCompleteTicketSplit, saveCompleteTicketSplitSuccess, saveCompleteTicketSplitFailed, saveTenderObj, saveTenderObjSuccess, saveTenderObjFailed, saveTicketDetail, saveTicketDetailSuccess, saveTicketDetailFailed, inactiveTicketDetail, inactiveTicketDetailSuccess, inactiveTicketDetailFailed, savePinpadResponse, savePinpadResponseFailed, savePinpadResponseSuccess, loadTicket, loadTicketSuccess, loadTicketFail, loadInProgressTenders, loadInProgressTendersSuccess, loadInProgressTendersFail, deleteDeclinedTenderFromStore } from "./ticket.action";
 import { saleTranDataInterface } from "./ticket.state";
 import { getTktObjSelector } from './ticket.selector';
-import { CPOSAppType } from "src/app/services/util.service";
-import { TenderStatusType, TranStatusType } from "src/app/models/ticket.tender";
+import { TenderStatusType, TranStatusType } from "../../../../models/ticket.tender";
+import { CPOSAppType} from "../../../../services-misc/util.service"
 
 
 @Injectable()

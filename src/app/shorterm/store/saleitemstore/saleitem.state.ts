@@ -2,10 +2,10 @@
 import { GetSaleItemMenuReducer } from "./saleitem.reducers";
 import { RDeptCategoryResultModels } from "../../models/models";
 
-export interface SaleItemsState {
+export interface RovSaleItemsState {
     saleItemRsltsMdl: RDeptCategoryResultModels | null;
 }
 
-export const initialSaleItemState: SaleItemsState = {
+export const initialRovSaleItemState: RovSaleItemsState = {
     saleItemRsltsMdl: null
 }

@@ -2,16 +2,16 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { SalesTransactionCheckoutItem } from 'src/app/longterm/models/salesTransactionCheckoutItem';
-import { saleTranDataInterface } from '../../store/ticketstore/rticket.state';
+import { Rov_SalesTranCheckoutItem } from '../../../../models/r-salestran-checkout-item';
+import { RovSaleTranDataInterface } from "../../../../store/ticketstore/rticket.state";
 import { Store } from '@ngrx/store';
-import { addSaleItem, saveTicketDetail, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
-import { DailyExchRate } from 'src/app/models/exchange.rate';
-import { CPOSAppType, UtilService } from 'src/app/services-misc/util.service';
-import { PosCurrencyDirective } from 'src/app/directives/pos-currency.directive';
-import { PosCurrency3Directive } from 'src/app/directives/pos-currency.directive.3';
-import { GlobalConstants } from 'src/app/global/global.constants';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
+import { addSaleItem, saveTicketDetail, updateCheckoutTotals } from "../../../../store/ticketstore/rticket.action";
+import { DailyExchRate } from '../../../../../models/exchange.rate';
+import { CPOSAppType, UtilService } from '../../../../../services-misc/util.service';
+import { PosCurrencyDirective } from '../../../../../directives/pos-currency.directive';
+import { PosCurrency3Directive } from '../../../../../directives/pos-currency.directive.3';
+import { GlobalConstants } from '../../../../../global/global.constants';
+import { RovLogonDataService } from "../../../../rov-logon-data.service";
 
 interface MiscDeptOption {
   id: number;
@@ -37,7 +37,7 @@ interface AddMiscItemDialogResult {
 export class RovAddMiscItemDlgComponent {
 
   data: unknown;
-  public allSaleItems: SalesTransactionCheckoutItem[] = [];
+  public allSaleItems: Rov_SalesTranCheckoutItem[] = [];
   public dailyExchRate: DailyExchRate = {} as DailyExchRate;
 
   showEnvTax = false;
@@ -55,9 +55,9 @@ export class RovAddMiscItemDlgComponent {
   public individualId: number = 0;
 
   constructor(private activeModal: NgbActiveModal,
-    private _store: Store<saleTranDataInterface>,
+    private _store: Store<RovSaleTranDataInterface>,
     private _utilSvc: UtilService,
-    private _logonDataSvc: LogonDataService) { }
+    private _logonDataSvc: RovLogonDataService) { }
 
   ngOnInit(): void {
     this.defaultCurrSymbl = this._utilSvc.currencySymbols.get(this.dailyExchRate.dfltCurrCode) || '$';
@@ -93,13 +93,12 @@ export class RovAddMiscItemDlgComponent {
 
     try {
 
-      let newMiscItem = SalesTransactionCheckoutItem.deepCopy(this.allSaleItems.filter(itm => itm.departmentUID === result.departmentId)[0]);
+      let newMiscItem = Rov_SalesTranCheckoutItem.deepCopy(this.allSaleItems.filter(itm => itm.departmentUID === result.departmentId)[0]);
       newMiscItem.departmentUID = result.departmentId;
       newMiscItem.salesItemDesc = result.itemDescription;
       newMiscItem.unitPrice = this.defaultCurrSymbl == '$' ? result.price : parseFloat((result.price / this.dailyExchRate.exchangeRate).toCPOSFixed(2));
       newMiscItem.fcUnitPrice = this.defaultCurrSymbl == '$' ? parseFloat((result.price * this.dailyExchRate.exchangeRate).toCPOSFixed(2)) : result.price;
       newMiscItem.salesTaxPct = result.taxPct;
-      newMiscItem.envrnmtlTaxPct = result.envTaxPct;
       newMiscItem.noOfTags = result.tags;
       newMiscItem.isMiscellaneous = true;
       newMiscItem.salesItemUID = -1 * new Date().getTime() % 1000; // Generate a temporary unique ID for the misc item (negative to avoid conflicts with real items)
@@ -130,7 +129,6 @@ export class RovAddMiscItemDlgComponent {
             unitPrice: newMiscItem.unitPrice,
             fcUnitPrice: newMiscItem.fcUnitPrice,
             salesTaxPct: newMiscItem.salesTaxPct,
-            envTaxPct: newMiscItem.envrnmtlTaxPct,
             discountAmount: newMiscItem.discountAmount,
             fcDiscountAmount: newMiscItem.fcDiscountAmount,
             couponLineItemDollarAmount: newMiscItem.couponLineItemDollarAmount,
@@ -139,10 +137,6 @@ export class RovAddMiscItemDlgComponent {
             fcLineItemDollarDisplayAmount: newMiscItem.fcLineItemDollarDisplayAmount,
             lineItemTaxAmount: newMiscItem.lineItemTaxAmount,
             fcLineItemTaxAmount: newMiscItem.fcLineItemTaxAmount,
-            lineItemEnvTaxAmount: newMiscItem.lineItemEnvTaxAmount,
-            fcLineItemEnvTaxAmount: newMiscItem.fcLineItemEnvTaxAmount,
-            lineItmKatsaCpnAmt: newMiscItem.lineItmKatsaCpnAmt,
-            fcLineItmKatsaCpnAmt: newMiscItem.fcLineItmKatsaCpnAmt,
             deptUID: newMiscItem.departmentUID,
             srvdByAssocVal: newMiscItem.srvdByAssociateVal,
             isMisc: newMiscItem.isMiscellaneous,

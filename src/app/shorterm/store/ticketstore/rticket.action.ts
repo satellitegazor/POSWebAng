@@ -12,6 +12,7 @@ import { Rov_SalesTranCheckoutItem } from "../../models/r-salestran-checkout-ite
 import { ExchCardTndr, SaveExchCardTndrResult } from '../../..//models/exch.card.tndr';
 import { DailyExchRate } from '../../../models/exchange.rate';
 import { InactiveTicketDetailRequest, InactiveTicketDetailResultModel, SaveTicketDetailRequest, SaveTicketDetailResultModel } from '../../../longterm/models/misc.models';
+import { RovSaveTicketDetailRequest } from '../../models/models';
  
 export const ADD_SALE_ITEM = 'addSaleItem';
 export const INC_SALE_ITEM_QTY = 'incSaleItemQty';
@@ -125,9 +126,9 @@ export const saveTenderObjFailed = createAction(SAVE_TENDER_OBJ_FAILED,
     props<{data: SaveTenderResultModel}>());
 
 export const saveTicketDetail = createAction(SAVE_TICKET_DETAIL,
-    props<{uid: number, appType: number, request: SaveTicketDetailRequest}>());
+    props<{uid: number, appType: number, request: RovSaveTicketDetailRequest}>());
 export const saveTicketDetailSuccess = createAction(SAVE_TICKET_DETAIL_SUCCESS,
-    props<{data: SaveTicketDetailResultModel, request: SaveTicketDetailRequest}>());
+    props<{data: SaveTicketDetailResultModel, request: RovSaveTicketDetailRequest}>());
 export const saveTicketDetailFailed = createAction(SAVE_TICKET_DETAIL_FAILED,
     props<{error: any}>());
 

@@ -3,7 +3,8 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LogonDataService } from '../../global/logon-data-service.service';
-import { PosApiService, UpdateTicketStatusLocationRequest } from '../services/pos-api-service';
+import { PosApiService } from '../services/pos-api-service';
+import { UpdateTicketStatusLocationRequest } from "../models/misc.models";
 import {
   LoadTicketStatLocRequest,
   LoadTicketStatLocResultModel,

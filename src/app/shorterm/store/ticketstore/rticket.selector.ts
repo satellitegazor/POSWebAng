@@ -4,10 +4,10 @@ import { EventConfig } from "../../models/event.config";
 import { RSaveTicketResultsModel, RTicketTotals } from "../../models/rticket.split";
 import { Round2DecimalService } from "../../../services-misc/round2-decimal.service";
 import { Rov_SalesTranCheckoutItem } from "../../models/r-salestran-checkout-item";
-import { saleTranDataInterface } from "./rticket.state";
+import { RovSaleTranDataInterface } from "./rticket.state";
 
 export const R_TKT_OBJ_STATE = 'RTktObjState'
-const getRTktObjState = createFeatureSelector<saleTranDataInterface>(R_TKT_OBJ_STATE)
+const getRTktObjState = createFeatureSelector<RovSaleTranDataInterface>(R_TKT_OBJ_STATE)
 
 export const getRTktObjSelector = createSelector(getRTktObjState,
   (state) => {
@@ -103,7 +103,7 @@ export const getRCheckoutItemsCount = createSelector(getRTktObjState,
     return state.tktObj.tktList.length;
   });
 
-export const getTicketTotals = createSelector(getRTktObjState,
+export const getRTicketTotals = createSelector(getRTktObjState,
   (state) => {
     return state.tktTotals;
   })

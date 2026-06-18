@@ -3,6 +3,7 @@ import { CPOSDB } from "../../longterm/models/contract.models";
 import { MobileBase } from "../../models/mobile.base";
 import { SystemStatus } from "../../models/mobile.client.identity";
 import { TicketTender } from "../../models/ticket.tender"
+import { ROV_Ticket } from "./rticket.split";
 
 export class RLogonModel {
 	public guid: string = '';
@@ -229,54 +230,6 @@ export class ROV_SingleTransactionIDResults {
 export class ROV_SingleTransactionID {
 	transactionId: number = 0;
 	cancelled: boolean = false;
-}
-
-export class ROV_Ticket {
-	eventId: number = 0;
-	ticketNumber: number = 0;
-	transactionId: number = 0;
-	transactionDate: Date = new Date(0);
-	taxExempted: number = 0;
-	ticketInstructions: string = '';
-	maintTimestamp: Date = new Date(0);
-	maintUserId: string = '';
-	amountPaid: number = 0;
-	amountPaidFc: number = 0;
-	balanceDue: number = 0;
-	balanceDueFc: number = 0;
-	partPayments: number = 0;
-	isPartial: number = 0;
-	isFullyPaid: boolean = false;
-	exchCouponsAfterTax: boolean = false;
-	vendCouponsAfterTax: boolean = false;
-	allowTaxExemption: boolean = false;
-	refundReasonCode: string = '';
-	refundReasonText: string = '';
-	tranCouponPercent: number = 0;
-	tranCouponAmount: number = 0;
-	fcTranCouponAmount: number = 0;
-	isSignCaptured: boolean = false;
-	orderFormNum: string = '';
-	shipHandling: number = 0;
-	shipHandlingTaxAmt: number = 0;
-	shipHandlingFc: number = 0;
-	shipHandlingTaxAmtFc: number = 0;
-	bfCode: string = '';
-	totalPaidAmount: number = 0;
-	dfltCurrSymbol: string = '';
-	cntrctCurrSymbol: string = '';
-	dfltCurrHtml: string = '';
-	cntrctCurrHtml: string = '';
-	cntrctCntryDialCode: string = '';
-	individual: any = null;
-	event: ROV_Event = {} as ROV_Event;
-	tenders: TicketTender[] = [];
-	items: any[] = [];
-	customer: any = null;
-	ticketCancel: any = null;
-	hoursOfOperations: any[] = [];
-	ticketStatus: any = null;
-	dailyExchRate: any = null;
 }
 
 export class ROV_SingleTransactionResultsModel {
@@ -786,4 +739,35 @@ export class EventStartOrEndRequest {
 	startOrEnd: StartOrEOD = StartOrEOD.DayStarted;
 	uid: string = '';
 	cliTimeVar: number = 0;
+}
+
+export interface RovSaveTicketDetailRequest {
+	appType: number;
+	transactionId: number;
+	ticketDetailId: number;
+	salesItemUID: number;
+	seqNbr: number;
+	itemDescription: string;
+	quantity: number;
+	unitPrice: number;
+	fcUnitPrice: number;
+	salesTaxPct: number;
+	discountAmount: number;
+	fcDiscountAmount: number;
+	couponLineItemDollarAmount: number;
+	fcCouponLineItemDollarAmount: number;
+	lineItemDollarDisplayAmount: number;
+	fcLineItemDollarDisplayAmount: number;
+	lineItemTaxAmount: number;
+	fcLineItemTaxAmount: number;
+	deptUID: number;
+	srvdByAssocVal: number;
+	isMisc: boolean;
+	isFulfilled: boolean;
+	isForeignCurr: boolean;
+	isDefaultUSD: boolean;
+	noOfTags: number;
+	maintUserId: number;
+	cliTimeVar: number;
+	active: boolean;
 }

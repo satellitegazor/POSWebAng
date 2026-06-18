@@ -151,58 +151,54 @@ export class RTicketTotals {
     public shipHandlingTaxAmtNDC: number = 0;
 }
 
+export class ROV_Ticket {
+    public eventID: number = 0;
+    public ticketNumber: number = 0;
+    public transactionID: number = 0;
+    public contractUID: number = 0;
+    public transactionDate: Date = {} as Date;
+    public taxExempted: number = 0;
+    public ticketInstructions: string = '';
+    public maintTimestamp: Date = {} as Date;
+    public maintUserId: string = '';
+    public amountPaid: number = 0;
+    public amountPaidFC: number = 0;
+    public balanceDue: number = 0;
+    public balanceDueFC: number = 0;
+    public partPayments: number = 0;
+    public isPartial: number = 0;
+    public isFullyPaid: boolean = false;
+    public exchCouponsAfterTax: boolean = false;
+    public vendCouponsAfterTax: boolean = false;
+    public allowTaxExemption: boolean = false;
+    public refundReasonCode: string = '';
+    public refundReasonText: string = '';
+    public tranCouponPercent: number = 0;
+    public tranCouponAmount: number = 0;
+    public fCTranCouponAmount: number = 0;
+    public isSignCaptured: boolean = false;
+    public isOConus: boolean = false;
+    public dfltCurrCode: string = '';
+    public cntrctCurrCode: string = '';
+    public dfltCurrSymbol: string = '';
+    public cntrctCurrSymbol: string = '';
+    public dfltCurrHtml: string = '';
+    public cntrctCurrHtml: string = '';
+    public cntrctCntryDialCode: string = '';
 
-export class ROV_Ticket
-{
-    //-- 1. Ticket Header
-    public  eventID: number = 0;
-    public  ticketNumber: number = 0;
-    public  transactionID: number = 0;
-    public  individualLocationUID: number = 0;
-    public  contractUID: number = 0;
-    public  transactionDate: Date = {} as Date;
-    public  taxExempted: number = 0;
-    public  ticketInstructions: string = '';
-    public  maintTimestamp: Date = {} as Date;
-    public  maintUserId: string = '';
-    public  amountPaid: number = 0;
-    public  amountPaidFC: number = 0;
-    public  balanceDue: number = 0;
-    public  balanceDueFC: number = 0;
-    public  partPayments: number = 0;
-    public  isPartial: number = 0;
-    public  isFullyPaid: boolean = false;
-    public  exchCouponsAfterTax: boolean = false;
-    public  vendCouponsAfterTax: boolean = false;
-    public  allowTaxExemption: boolean = false;
-    public  refundReasonCode: string = '';
-    public  refundReasonText: string = '';
-    public  tranCouponPercent: number = 0;
-    public  tranCouponAmount: number = 0;
-    public  fCTranCouponAmount: number = 0;
-    public  isSignCaptured: boolean = false;
-    public  isOConus: boolean = false;
-    public  cntrctCntryDialCode: string = '';
-    public  dfltCurrCode: string = '';
-    public  cntrctCurrCode: string = '';
-    public  dfltCurrSymbol: string = '';
-    public  cntrctCurrSymbol: string = '';
-    public  dfltCurrHtml: string = '';
-    public  cntrctCurrHtml: string = '';
-    public  individual: LTC_Individual = {} as LTC_Individual;
-    public  event: ROV_Event = {} as ROV_Event;
-
-    public  tenders: TicketTender[] = [];
-    public  items: Rov_SalesTranCheckoutItem[] = [];
-    public  customer: LTC_Customer = {} as LTC_Customer;
-    public  ticketCancel: ROV_TicketCancel = {} as ROV_TicketCancel;
-
-
-    public  shipHandling: number = 0;
-    public  shipHandlingTaxAmt: number = 0;
-    public  fCShipHandling: number = 0;
-    public  fCShipHandlingTaxAmt: number = 0;
-    public  prprtyClausDays: string = '';
+    public individual: LTC_Individual = {} as LTC_Individual;
+    public event: ROV_Event = {} as ROV_Event;
+    public tenders: TicketTender[] = [];
+    public items: Rov_SalesTranCheckoutItem[] = [];
+    public customer: LTC_Customer = {} as LTC_Customer;
+    public ticketCancel: ROV_TicketCancel = {} as ROV_TicketCancel;
+    public shipHandling: number = 0;
+    public shipHandlingTaxAmt: number = 0;
+    public fCShipHandling: number = 0;
+    public fCShipHandlingTaxAmt: number = 0;
+    public prprtyClausDays: string = '';
+    public bfCode: string = '';
+    public dailyExchRate: any = null;
 }
 
 export class ROV_TicketCancel {

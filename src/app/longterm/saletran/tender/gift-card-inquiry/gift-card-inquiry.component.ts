@@ -18,8 +18,9 @@ import { AurusGiftCardRedeemResp, GCRedeemInput } from '../../../../services-pin
 import { OConusRedeemGCWithPinPadService } from '../gc-redeem-services/oconus-redeeem-gc-with-pin-pad';
 import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
 import { HTTP_TRANSFER_CACHE_ORIGIN_MAP } from '@angular/common/http';
-import { PosApiService, Conus_GC_Balance_Model } from '../../../services/pos-api-service';
+import { PosApiService } from '../../../services/pos-api-service';
 import { GlobalConstants } from 'src/app/global/global.constants';
+import { Conus_GC_Balance_Model } from '../../../models/misc.models';
 @Component({
   selector: 'app-gift-card-inquiry',
   templateUrl: './gift-card-inquiry.component.html',

@@ -8,14 +8,14 @@ import { RovApiService } from "../../short-term.service";
 import { 
     getEventSaleItemsActionSuccess, getEventSaleItemsStart, getEventSaleitemsFail
 } from "./saleitem.action";
-import { SaleItemsState } from './saleitem.state';
+import { RovSaleItemsState } from './saleitem.state';
 import { getSaleItemListSelector } from './saleitem.selector';
 
 
 @Injectable()
 export class SaleItemEffects {
 
-    constructor(private action$: Actions, private rovApiSvc: RovApiService, private store: Store<SaleItemsState>) { }
+    constructor(private action$: Actions, private rovApiSvc: RovApiService, private store: Store<RovSaleItemsState>) { }
 
     loadSaleItems$ = createEffect(() => {
         return this.action$.pipe(
