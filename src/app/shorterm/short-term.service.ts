@@ -21,6 +21,7 @@ import {
 } from './models/models';
 import { SendEmailRequest } from '../models/misc-models';
 import { ROV_Event, SingleTransactionId } from '../longterm/models/ticket.list';
+import { EventConfigModel } from './models/event.config';
 
 @Injectable({
   providedIn: 'root'
@@ -128,6 +129,17 @@ export class RovApiService {
       + '&uid=' + encodeURIComponent(uid);
 
     return this.httpClient.get<ROV_Event>(url, { headers: this.headerObjs });
+  }
+
+  public GetEventConfig(
+    eventId: number,
+    uid: string
+  ): Observable<EventConfigModel> {
+    const url = GlobalConstants.CPOS_SVCS_URL + '/rov/GetEventConfig?guid=' + encodeURIComponent(GlobalConstants.GET_GUID)
+      + '&eventId=' + eventId.toString()
+      + '&uid=' + encodeURIComponent(uid);
+
+    return this.httpClient.get<EventConfigModel>(url, { headers: this.headerObjs });
   }
 
     public getVendorFacEvents(

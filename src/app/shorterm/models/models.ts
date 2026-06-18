@@ -1,8 +1,8 @@
-import { ROV_Event } from "src/app/longterm/models/ticket.list";
+import { ROV_Event } from "../../longterm/models/ticket.list"
 import { CPOSDB } from "../../longterm/models/contract.models";
 import { MobileBase } from "../../models/mobile.base";
 import { SystemStatus } from "../../models/mobile.client.identity";
-import { TicketTender } from "src/app/models/ticket.tender";
+import { TicketTender } from "../../models/ticket.tender"
 
 export class RLogonModel {
 	public guid: string = '';

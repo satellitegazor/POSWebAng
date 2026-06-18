@@ -11,19 +11,20 @@ import { RovTktSaleItemComponent } from '../tkt-sale-item/rov-tkt-sale-item.comp
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { CustomerSearchComponent } from '../../../../../longterm/customer-search/customer-search.component';
 
-import { getSaleItemsStart, getSaleItemsActionSuccess, getSaleitemsFail } from '../../store/saleitemstore/saleitem.action';
+import { getEventSaleItemsStart, getEventSaleItemsActionSuccess, getEventSaleitemsFail } from '../../../../store/saleitemstore/saleitem.action';
 import { props, Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
 import { getSaleItemListSelector } from '../../store/saleitemstore/saleitem.selector';
-import { getLocationConfigSelector } from '../../store/locationconfigstore/locationconfig.selector';
-import { getLocationConfigStart, setLocationConfig } from '../../store/locationconfigstore/locationconfig.action';
+import { getEventConfigSelector } from "../../../../store/roveventconfigstore/roveventconfig.selector"
+import { getEventConfigStart, setEventConfig } from '../../../../store/roveventconfigstore/roveventconfig.action';
 import { getAuthLoginSelector } from '../../../../authstate/auth.selector';
-import { LocationConfig, LocationIndividual } from '../../../models/location-config';
-import { saleTranDataInterface } from '../../store/ticketstore/rticket.state';
-import { addTabSerialToTktObj, initTktObj } from '../../store/ticketstore/ticket.action';
+//import { LocationConfig, LocationIndividual } from '../../../models/location-config';
+import { EventConfig } from '../../../../models/event.config';
+import { saleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
+import { addTabSerialToTktObj, initTktObj } from '../../../../store/ticketstore/rticket.action';
 import { RovTicketLookupComponent } from '../../../ticket-lookup/rov-ticket-lookup.component';
-import { getCheckoutItemsCount, getTicketTotals, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
-import { initialLocationConfigState, LocationConfigState} from '../../store/locationconfigstore/locationconfig.state';
+import { getRCheckoutItemsCount, getTicketTotals, getRTktObjSelector } from '../../../../store/ticketstore/rticket.selector';
+import { initialROVEventConfigState, ROVEventConfigState } from '../../../../store/roveventconfigstore/roveventconfig.state';
 import { Router } from '@angular/router';
 import { CPOSWebSvcService } from "../../../../../services-pinpad/cposweb-svc.service";
 import { VerifoneCommStatus } from "../../../../../longterm/models/general-classes"
@@ -49,12 +50,12 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
     individualId: number = 0;
         
     constructor(private _rovApiSvc: RovApiService, 
-        private _logonDataSvc: LogonDataService,
+        private _logonDataSvc: RovLogonDataService,
         private _sharedSubSvc: SharedSubjectService, 
         private modalService: NgbModal, 
         private _store: Store<saleTranDataInterface>,
         private router: Router,
-        private _locConfigStore: Store<LocationConfigState>,
+        private _rovEventConfigStore: Store<ROVEventConfigState>,
         private _cposWebSvc: CPOSWebSvcService,
         private _utilSvc: UtilService) {
 
@@ -77,8 +78,7 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
     displayTicketLookupDlg: string = '';
     showErrMsg: boolean = false;
     
-    locationConfig: LocationConfig = {} as LocationConfig;
-    locationIndividuals: LocationIndividual[] = [];
+    eventConfig: EventConfig = {} as EventConfig;
 
     disableCheckoutBtn: boolean = true;
     activeSalesCatId: number = 0;

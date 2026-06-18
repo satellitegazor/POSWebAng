@@ -1,6 +1,7 @@
 import { Action, createReducer, on } from "@ngrx/store";
-import { getEventConfigSuccess, setEventConfig, updateEventConfigPostLogon } from ".roveventconfig.action";
+import { getEventConfigSuccess, setEventConfig, updateEventConfigPostLogon } from "./roveventconfig.action";
 import { initialROVEventConfigState, ROVEventConfigState } from "./roveventconfig.state";
+import { EventConfig } from "../../models/event.config";
 
 const mergeNonNull = <T extends Record<string, any>>(existingObj: T, incomingObj: Partial<T>): T => {
     const mergedObj = { ...existingObj } as T;
@@ -18,8 +19,8 @@ const mergeNonNull = <T extends Record<string, any>>(existingObj: T, incomingObj
 export const _getEventConfigReducer = createReducer(
     initialROVEventConfigState,
     on(getEventConfigSuccess, (state, action) => {
-        const primaryConfig = action.eventCnfg 
-            ? action.eventCnfg
+        const primaryConfig = action.eventConfig 
+            ? action.eventConfig as EventConfig
             : null;
 
         return {
@@ -34,20 +35,20 @@ export const _getEventConfigReducer = createReducer(
 
         return {
             ...state,
-            eventCnfg: state.eventCnfg
-                ? mergeNonNull(state.eventCnfg as any, action.eventConfig as any)
+            eventCnfg: state.eventConfig
+                ? mergeNonNull(state.eventConfig as any, action.eventConfig as any)
                 : action.eventConfig
         };
     }),
     on(updateEventConfigPostLogon, (state, action) => {
-        if (!state.eventCnfg) {
+        if (!state.eventConfig) {
             return state;
         }
 
         return {
             ...state,
             eventCnfg: {
-                ...state.eventCnfg,
+                ...state.eventConfig,
                 associateName: action.associateName,
                 associateRole: action.associateRole,
                 associateRoleDesc: action.associateRoleDesc,
