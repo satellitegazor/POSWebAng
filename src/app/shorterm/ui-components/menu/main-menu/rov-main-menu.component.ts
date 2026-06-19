@@ -7,12 +7,14 @@ import { ToastService } from '../../../../services-misc/toast.service';
 import { LogonDataService } from '../../../../global/logon-data-service.service';
 import { LocalStorageService } from '../../../../global/local-storage.service';
 import { RefundReasonDlgComponent } from '../../refund-reason-dlg/refund-reason-dlg.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-rov-main-menu',
   templateUrl: './rov-main-menu.component.html',
   styleUrls: ['./rov-main-menu.component.css'],
-  standalone: false
+  imports: [CommonModule, FormsModule, PinValidateComponent, RefundReasonDlgComponent]
 })
 export class RovMainMenuComponent {
   private readonly pinModalOptions: NgbModalOptions = {

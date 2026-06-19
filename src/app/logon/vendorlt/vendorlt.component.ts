@@ -107,7 +107,7 @@ export class VendorLTComponent implements OnInit {
                 this._toastSvc.success('Vendor Logon successful, moving on to Sale Transaction...');
             }
 
-            sessionStorage.setItem("userType", "vendorlt");
+            this._localStorageSvc.setItemData("userType", "vendorlt");
 
             let selectedLocId: number = this.selectedLocationId;
             let location = this.LocationList.filter(k => k.locationUID == selectedLocId)[0];

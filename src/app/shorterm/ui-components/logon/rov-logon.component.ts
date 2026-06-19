@@ -12,6 +12,11 @@ import { ResetPinDlgComponent } from '../../../common-ui-components/reset-pin-dl
 import { MandateTrainingComponent } from '../../../common-ui-components/mandate-training/mandate-training.component';
 import { Router } from '@angular/router';
 import { VendorLoginResultsModel } from 'src/app/models/vendor.login.results.model';
+import { RovTktObjState } from 'src/app/app.state';
+import { Store } from '@ngrx/store';
+import { addTabSerialToTktObj, initTktObj, loadTicket, loadTicketSuccess, updateCheckoutTotals } from '../../store/ticketstore/rticket.action';
+import { CPOSWebSvcService } from 'src/app/services-pinpad/cposweb-svc.service';
+import { ofType } from '@ngrx/effects';
 
 
 @Component({
@@ -27,6 +32,7 @@ export class RovLogonComponent implements OnInit {
   vendornum: string = '';
   selectedEventId: number = 0;
   lpin: string = '';
+  actions$: any;
 
   constructor(
     private _rovApiSvc: RovApiService,
@@ -34,7 +40,9 @@ export class RovLogonComponent implements OnInit {
     private _toastSvc: ToastService,
     private _modalService: NgbModal,
     private _rovLogonDataSvc: RovLogonDataService,
-    private router: Router) { }
+    private router: Router,
+    private _tktObjStore: Store<RovTktObjState>,
+    private _cposWebSvc: CPOSWebSvcService) { }
 
   ngOnInit() {
 
@@ -130,7 +138,7 @@ export class RovLogonComponent implements OnInit {
         this._toastSvc.success('Vendor Logon successful, moving on to Sale Transaction...');
       }
 
-      sessionStorage.setItem("userType", "vendorst");
+      this._localStorageSvc.setItemData("userType", "vendorst");
 
       let selectedEventId: number = this.selectedEventId;
       let eventSelected = this.eventList.filter(k => k.eventID == selectedEventId)[0];
@@ -231,8 +239,49 @@ export class RovLogonComponent implements OnInit {
 
   initOnSuccessfulLogon(data: VendorLoginResultsModel, locModel: RLogonModel) {
 
-    this.router.navigate(['/rmainmenu']);
+    //this.router.navigate(['/rmainmenu']);
+    this._rovApiSvc.GetEventConfig(data.eventId, data.individualUID.toString()).subscribe(evtConfigMdl => {
 
+      this._rovLogonDataSvc.setRovEventConfig(evtConfigMdl?.config ?? null);
+      let evConfig = this._rovLogonDataSvc.getRovEventConfig();
+      this._tktObjStore.dispatch(initTktObj({ eventConfig: evConfig, individualUID: +locModel.individualUID }));
+
+      this._rovApiSvc.getTenderTypes(+locModel.individualUID).subscribe(tenderTypes => {
+        this._rovLogonDataSvc.setTenderTypes(tenderTypes);
+      });
+
+      let today = new Date();
+      today.toDateString()
+      this._rovApiSvc.getDailyExchRate(data.eventId, today.toDateString(), data.individualUID.toString()).subscribe(exchRateMdl => {
+        this._rovLogonDataSvc.setDailyExchRate(exchRateMdl.data);
+      });
+
+      let inProgTranId = 0;
+      if(evConfig.inProgTranId > 0) {
+
+        this._toastSvc.info("An incomplete ticket has been found. Please complete it or void it!!");
+        inProgTranId = evConfig.inProgTranId;
+        this._tktObjStore.dispatch(loadTicket({ eventId: data.eventId, tranId: inProgTranId, indivId: +locModel.individualUID }));
+
+        this.actions$.pipe(ofType(loadTicketSuccess)).subscribe(() => {
+            setTimeout((logonDataSvc, tktObjStore, routr) => {
+              routr.navigate(['rov/rchekout']);
+              tktObjStore.dispatch(updateCheckoutTotals({ logonDataSvc: this._rovLogonDataSvc }))
+            }, 800, this._rovLogonDataSvc, this._tktObjStore, this.router);
+        });
+      }
+      else {
+
+        locModel.privActConfmComplete = data.privActConfmComplete;
+        this._rovLogonDataSvc.setRovEventConfig(evtConfigMdl?.config ?? null);
+        this.router.navigate(['rov/rmainmenu']);        
+      }
+
+      this._cposWebSvc.pinpadHeartbeat("PING").subscribe(data => {
+          if (data.IsSuccess) {
+              this._tktObjStore.dispatch(addTabSerialToTktObj({ tabSerialNum: data.TabMachineName, ipAddress: data.IpAddress }));
+          }
+      });
+    });
   }
-
 }

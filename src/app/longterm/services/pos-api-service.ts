@@ -36,7 +36,11 @@ import { CashDrawerSummaryResultsModel, LTC_CashDrawerVariance } from '../models
 import { LTC_ItemButtonMenuResultsModel } from '../models/item.button.menu.models';
 import { LTC_ContractResultsModel } from '../models/contract.models';
 import { LTC_TicketStatusLocationResult, UpdateTicketStatusLocationRequest } from '../models/ticket.status.model';
-import { AurusGiftCardRequest, Conus_GC_Balance_Model, InactiveTicketDetailRequest, InactiveTicketDetailResultModel, InProgressTendersResultModel, LTC_BalanceDueCountResultsModel, LTC_DailyExchRateHistResultsModel, Ltc_PinReqdSalTranResultsModel, LTC_Signature, LTC_SingleCustomerResultsModel, LTC_SingleTicketPaymentDetailsModel, CPOS_SingleTransactionId, LtcFeeHResultsModel, SaveLocationAssociatesRequest, SaveTicketDetailRequest, SaveTicketDetailResultModel, SignatureData, TranCountForLocEventResultModel, UpdateTicketStatusLocationResultModel } from '../models/misc.models';
+import { AurusGiftCardRequest, Conus_GC_Balance_Model, InactiveTicketDetailRequest, 
+    InactiveTicketDetailResultModel, InProgressTendersResultModel, LTC_BalanceDueCountResultsModel, 
+    LTC_DailyExchRateHistResultsModel, Ltc_PinReqdSalTranResultsModel, LTC_Signature, 
+    LTC_SingleCustomerResultsModel, LTC_SingleTicketPaymentDetailsModel, CPOS_SingleTransactionId, 
+    LtcFeeHResultsModel, SaveLocationAssociatesRequest, SaveTicketDetailRequest, SaveTicketDetailResultModel, SignatureData, TranCountForLocEventResultModel, UpdateTicketStatusLocationResultModel } from '../models/misc.models';
 import { SendEmailRequest} from '../../models/misc-models';
 
 
@@ -210,7 +214,7 @@ export class PosApiService {
     public getTenderTypes(appType: number, individualUID: number) {
 
         return this.httpClient.get<TenderTypeModel>(GlobalConstants.CPOS_SVCS_URL + '/common/GetTenderTypes?guid=' + GlobalConstants.GET_GUID +
-            '&uid=' + individualUID.toString() + '&AppType=' + appType.toString(),
+            '&uid=' + individualUID.toString() + '&AppType=1',
             { headers: this.headerObjs });
     }
 

@@ -22,6 +22,8 @@ import {
 import { SendEmailRequest } from '../models/misc-models';
 import { ROV_Event, SingleTransactionId } from '../longterm/models/ticket.list';
 import { EventConfigModel } from './models/event.config';
+import { TenderTypeModel } from '../longterm/models/tender.type';
+import { DailyExchRateMdl } from '../models/exchange.rate';
 
 @Injectable({
   providedIn: 'root'
@@ -306,6 +308,20 @@ export class RovApiService {
       + '&DPayRcpt=' + DPayRcpt;
 
     return this.httpClient.get<ROV_SingleTransactionResultsModel>(url, { headers: this.headerObjs });
+  }
+
+  public getTenderTypes(individualUID: number) {
+
+      return this.httpClient.get<TenderTypeModel>(GlobalConstants.CPOS_SVCS_URL + '/common/GetTenderTypes?guid=' + GlobalConstants.GET_GUID +
+          '&uid=' + individualUID.toString() + '&AppType=2',
+          { headers: this.headerObjs });
+  }
+
+  public getDailyExchRate(eventId: number, busDate: string, uid: string) {
+
+    return this.httpClient.get<DailyExchRateMdl>(GlobalConstants.CPOS_SVCS_URL + '/rov/GetDailyExchRate?guid=' + encodeURIComponent(GlobalConstants.GET_GUID) +
+        '&eventId=' + eventId.toString() + '&busDate=' + encodeURIComponent(busDate) + '&uid=' + encodeURIComponent(uid),
+        { headers: this.headerObjs });
   }
 }
 

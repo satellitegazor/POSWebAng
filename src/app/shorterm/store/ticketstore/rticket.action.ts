@@ -92,13 +92,13 @@ export const delSaleitemZeroQty = createAction(DELETE_SALE_ITEM,
     props<{ saleItemId: number, tktDtlId: number, defCurrSymbl: string, dailyExchRateObj: DailyExchRate }>());    
 
 export const initTktObj = createAction(INIT_TKT_OBJ, 
-    props<{locConfig: EventConfig, individualUID: number}>());
+    props<{eventConfig: EventConfig, individualUID: number}>());
 
 export const addTabSerialToTktObj = createAction(ADD_TAB_SERIAL_TO_TKT_OBJ,
     props<{ tabSerialNum: string, ipAddress: string }>());
 
 export const resetTktObj = createAction(RESET_TKT_OBJ, 
-    props<{ locConfig: EventConfig }>());
+    props<{ eventConfig: EventConfig }>());
 
 export const saveTicketForGuestCheck = createAction(SAVE_TICKET_SPLIT,
     props<{tktObj: ROV_POSTicketSplit}>());

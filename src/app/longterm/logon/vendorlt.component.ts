@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GlobalConstants } from '../../global/global.constants';
-import { LogonSvc } from '../logonsvc.service';
+import { LogonSvc } from '../../logon/logonsvc.service';
 import { AbbrLocationsModel, VLogonModel } from './models/vlogon.model';
 import { Router } from "@angular/router";
 import { LogonDataService } from '../../global/logon-data-service.service';
@@ -12,15 +12,15 @@ import { LocationConfigState } from '../saletran/store/locationconfigstore/locat
 import { props, Store } from '@ngrx/store';
 import { setLocationConfig, updateLocationConfigPostLogon } from '../saletran/store/locationconfigstore/locationconfig.action';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ResetPinDlgComponent } from './reset-pin-dlg/reset-pin-dlg.component';
-import { MandateTrainingComponent } from './mandate-training/mandate-training.component';
-import { ToastService } from '../../services/toast.service';
+import { ResetPinDlgComponent } from "../../common-ui-components/reset-pin-dlg/reset-pin-dlg.component"
+import { MandateTrainingComponent } from '../../common-ui-components/mandate-training/mandate-training.component';
+import { ToastService } from '../../services-misc/toast.service';
 import { HttpClient } from '@angular/common/http';
 import { addTabSerialToTktObj, initTktObj, loadTicket, loadTicketSuccess, updateCheckoutTotals } from '../saletran/store/ticketstore/ticket.action';
 import { TktObjState } from '../../app.state';
 import { Actions, ofType } from '@ngrx/effects';
-import { CPOSWebSvcService } from '../services/cposweb-svc.service';
-import { VendorLoginResultsModel } from './models/vendor.login.results.model';
+import { CPOSWebSvcService } from '../../services-pinpad/cposweb-svc.service';
+import { VendorLoginResultsModel } from '../../models/vendor.login.results.model';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -109,7 +109,7 @@ export class VendorLTComponent implements OnInit {
                 this._toastSvc.success('Vendor Logon successful, moving on to Sale Transaction...');
             }
 
-            sessionStorage.setItem("userType", "vendorlt");
+            this._localStorageSvc.setItemData("userType", "vendorlt");
 
             let selectedLocId: number = this.selectedLocationId;
             let location = this.LocationList.filter(k => k.locationUID == selectedLocId)[0];
@@ -148,8 +148,6 @@ export class VendorLTComponent implements OnInit {
                 vendorNumber: this.vendornum,
                 vendorName: data.userIdentity.fullName
             }));
-
-
 
             locModel.individualUID = +data.individualUID;
 

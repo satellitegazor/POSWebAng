@@ -34,7 +34,7 @@ import { UtilService } from "../../../../../services-misc/util.service"
     selector: 'app-rov-item-selection-base-page',
     templateUrl: './rov-item-selection-base-page.component.html',
     styleUrls: ['./rov-item-selection-base-page.component.css'],
-    standalone: false
+    imports: [RovTktSaleItemComponent, CustomerSearchComponent, RovTicketLookupComponent, RovAddMiscItemDlgComponent]   
 })
 export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
 

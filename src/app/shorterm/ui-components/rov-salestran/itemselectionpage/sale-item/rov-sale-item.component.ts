@@ -1,17 +1,16 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { SharedSubjectService } from '../../../../shared-subject/shared-subject.service';
-import { RovCheckoutItemsComponent } from '../../checkout/checkout-items/checkout-items.component';
-import { SaleItem } from '../../../models/sale.item';
-import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCheckoutItem';
-import { addSaleItem, saveTicketDetail, updateCheckoutTotals, updateServedByAssociate } from '../../store/ticketstore/ticket.action';
-import { getCheckoutItemsCount, getTranIdTicketNumber } from '../../store/ticketstore/ticket.selector';
-import { saleTranDataInterface } from '../../store/ticketstore/rticket.state';
+import { SharedSubjectService } from '../../../../../shared-subject/shared-subject.service';
+import { RovCheckoutItemsComponent } from '../../checkout/checkout-items/rov-checkout-items.component';
+import { Rov_SalesTranCheckoutItem } from 'src/app/shorterm/models/r-salestran-checkout-item';
+import { addSaleItem, saveTicketDetail, updateCheckoutTotals, updateServedByAssociate } from '../../../../store/ticketstore/rticket.action';
+import { getRCheckoutItemsCount, getRTranIdTicketNumber } from '../../../../store/ticketstore/rticket.selector';
+import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
 import { Observable, Subject } from 'rxjs';
 import { CPOSAppType, UtilService } from 'src/app/services-misc/util.service';
+import { RovLogonDataService } from 'src/app/shorterm/rov-logon-data.service';
 
- 
 @Component({
     selector: 'app-rov-sale-item',
   templateUrl: './rov-sale-item.component.html',
@@ -20,7 +19,11 @@ import { CPOSAppType, UtilService } from 'src/app/services-misc/util.service';
 })
 export class RovSaleItemComponent implements OnInit {
 
-    constructor(private _logonDataSvc: LogonDataService, private _store: Store<saleTranDataInterface>, private _utilSvc: UtilService) { }
+    constructor(
+      private _rovLogonDataSvc: RovLogonDataService, 
+      private _store: Store<RovSaleTranDataInterface>, 
+      private _utilSvc: UtilService) 
+      { }
     @Input() saleItemList: SaleItem[] = [];
     @Input() salesItemListRefreshEvent: Observable<boolean> = new Observable<boolean>();
     activeId: number = 0;
@@ -31,7 +34,7 @@ export class RovSaleItemComponent implements OnInit {
     
     ngOnInit(): void {
 
-      this.dcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getDfltCurrCode()) || '';
+      this.dcCurrSymbl = this._utilSvc.currencySymbols.get(this._rovLogonDataSvc.getDfltCurrCode()) || '';
       if(this.saleItemList.length > 0) {
         this.activeId = this.saleItemList[0].salesItemID;
       }
@@ -43,7 +46,7 @@ export class RovSaleItemComponent implements OnInit {
         }
       });
 
-      this._store.select(getTranIdTicketNumber).subscribe(data => {
+      this._store.select(getRTranIdTicketNumber).subscribe(data => {
         //console.log('tranId: ' + data.tranId + ' ticketNumber: ' + data.ticketNumber);
         this.transactionId = data.tranId;
         this.ticketNumber = data.ticketNumber;
@@ -55,13 +58,12 @@ export class RovSaleItemComponent implements OnInit {
         const saleCheckoutItem = this.getSaleCheckOutItem(
           this.saleItemList.filter(itm => itm.salesItemID == itemId)[0]);
 
-        saleCheckoutItem.srvdByAssociateText = this._logonDataSvc.getLTVendorLogonData().associateName;
-        this._store.dispatch(addSaleItem({saleItem: saleCheckoutItem, defCurrSymbl: this.dcCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));       
-
+        saleCheckoutItem.srvdByAssociateText = this._rovLogonDataSvc.getRovVendorLogonData().associateName;
+        this._store.dispatch(addSaleItem({saleItem: saleCheckoutItem, defCurrSymbl: this.dcCurrSymbl, dailyExchRateObj: this._rovLogonDataSvc.getDailyExchRate()}));       
 
         if(this.transactionId > 0) {
           // If transactionId is present, means ticket is already saved once and we are adding item to existing ticket, so we need to update served by associate for the new item
-          const individualUid = Number(this._logonDataSvc.getLTVendorLogonData().individualUID || 0);
+          const individualUid = Number(this._rovLogonDataSvc.getRovVendorLogonData().individualUID || 0);
           this._store.dispatch(saveTicketDetail({
             uid: individualUid,
             appType: CPOSAppType.LongTerm,
@@ -76,7 +78,7 @@ export class RovSaleItemComponent implements OnInit {
               unitPrice: saleCheckoutItem.unitPrice,
               fcUnitPrice: saleCheckoutItem.fcUnitPrice,
               salesTaxPct: saleCheckoutItem.salesTaxPct,
-              envTaxPct: saleCheckoutItem.envrnmtlTaxPct,
+              
               discountAmount: saleCheckoutItem.discountAmount,
               fcDiscountAmount: saleCheckoutItem.fcDiscountAmount,
               couponLineItemDollarAmount: saleCheckoutItem.couponLineItemDollarAmount,
@@ -85,35 +87,31 @@ export class RovSaleItemComponent implements OnInit {
               fcLineItemDollarDisplayAmount: saleCheckoutItem.fcLineItemDollarDisplayAmount,
               lineItemTaxAmount: saleCheckoutItem.lineItemTaxAmount,
               fcLineItemTaxAmount: saleCheckoutItem.fcLineItemTaxAmount,
-              lineItemEnvTaxAmount: saleCheckoutItem.lineItemEnvTaxAmount,
-              fcLineItemEnvTaxAmount: saleCheckoutItem.fcLineItemEnvTaxAmount,
-              lineItmKatsaCpnAmt: saleCheckoutItem.lineItmKatsaCpnAmt,
-              fcLineItmKatsaCpnAmt: saleCheckoutItem.fcLineItmKatsaCpnAmt,
               deptUID: saleCheckoutItem.departmentUID,
               srvdByAssocVal: saleCheckoutItem.srvdByAssociateVal,
               isMisc: saleCheckoutItem.isMiscellaneous,
               isFulfilled: false,
-              isForeignCurr: this._logonDataSvc.getIsForeignCurr(),
-              isDefaultUSD: this._logonDataSvc.getDfltCurrCode() == 'USD',
+              isForeignCurr: this._rovLogonDataSvc.getIsForeignCurr(),
+              isDefaultUSD: this._rovLogonDataSvc.getDfltCurrCode() == 'USD',
               noOfTags: saleCheckoutItem.noOfTags,
               maintUserId: individualUid,
-              cliTimeVar: this._logonDataSvc.getLTVendorLogonData().cliTimeVar,
+              cliTimeVar: this._rovLogonDataSvc.getRovVendorLogonData().cliTimeVar,
               active: true
             }
           }));
         }
 
-        if(this._logonDataSvc.getAllowTips()) {
+        if(this._rovLogonDataSvc.getAllowTips()) {
           
           this._store.dispatch(updateServedByAssociate({ saleItemId: saleCheckoutItem.salesItemUID, indx: 0, 
             indLocId: saleCheckoutItem.srvdByAssociateVal, srvdByAssociateName: saleCheckoutItem.srvdByAssociateText}))
         }
-      this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
+      this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._rovLogonDataSvc }));
     }
 
-    private getSaleCheckOutItem(si: SaleItem): SalesTransactionCheckoutItem {
+    private getSaleCheckOutItem(si: SaleItem): Rov_SalesTranCheckoutItem {
 
-      let coItm: SalesTransactionCheckoutItem = {} as SalesTransactionCheckoutItem;      
+      let coItm: Rov_SalesTranCheckoutItem = {} as Rov_SalesTranCheckoutItem;      
       coItm.allowPartPay = si.allowPartPay;
       coItm.allowSaveTkt = si.allowSaveTkt;
       coItm.businessFunctionUID = si.businessFunctionUID;
@@ -130,17 +128,13 @@ export class RovSaleItemComponent implements OnInit {
       coItm.fcLineItemTaxAmount = 0;
       coItm.facilityUID = si.facilityUID;
       coItm.fcCouponLineItemDollarAmount = 0;
-      coItm.fcLineItemEnvTaxAmount = 0;
-      coItm.fcLineItmKatsaCpnAmt = 0;
 
       coItm.exchangeCouponDiscountPct = 0;
-      coItm.envrnmtlTaxPct = si.envTax != null ? si.envTax : 0;
 
       coItm.lineItemDollarDisplayAmount = 0;
-      coItm.lineItemEnvTaxAmount = 0;
-      coItm.lineItemTaxAmount = 0;
-      coItm.lineItmKatsaCpnAmt = 0;
-      coItm.locationUID = si.locationUID;
+      coItm.eventID = si.eventID;
+      coItm.instruction = si.instruction;
+      coItm.addlInstruction = si.addlInstruction;
 
       coItm.noOfTags = si.noOfTags;
       coItm.openCashDrwForTips = si.openCashDrwForTips;
@@ -151,8 +145,8 @@ export class RovSaleItemComponent implements OnInit {
       coItm.salesItemUID = si.salesItemID;
       coItm.salesTaxPct = si.salesTax;
 
-      coItm.srvdByAssociateText = this._logonDataSvc.getLTVendorLogonData().associateName;
-      coItm.srvdByAssociateVal = +this._logonDataSvc.getLocationConfig().indLocUID;
+      coItm.srvdByAssociateText = this._rovLogonDataSvc.getRovVendorLogonData().associateName;
+      coItm.srvdByAssociateVal = +this._rovLogonDataSvc.getRovEventConfig().indLocUID;
       coItm.ticketDetailId = 0;
 
       coItm.unitPrice = si.price;
