@@ -3,14 +3,9 @@
     [deptListRefreshEvent]="deptListRefreshEvent">
     </app-deptlist>
 </div>
-<div class="container-fluid" style="width:100%">
-    <app-sales-category [saleCatList]="saleCatList" (saleCatClicked)="saleCatClicked($event)"
-            [salesCategoryListRefreshEvent]="salesCategoryListRefreshEvent.asObservable()" 
-    ></app-sales-category>
-</div>
 <div class="container-fluid row" style="width:100%">
     <div class="col-md-5 saleitems">
-        <app-sale-item [saleItemList]="saleItemList" (saleItemClicked)="saleItemClicked($event)"></app-sale-item>
+        <app-rov-key-pad [deptList]="deptList" (deptClicked)="deptClicked($event)"></app-rov-key-pad>
     </div>
     <div class="col-md-7">
         <app-tkt-sale-item

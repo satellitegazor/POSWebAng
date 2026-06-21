@@ -4,29 +4,32 @@ import { Router } from '@angular/router';
 
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap'
 import { select, Store } from '@ngrx/store';
-import { LogonDataService } from '../../../../global/logon-data-service.service';
-import { TenderStatusType, TicketTender } from '../../../../models/ticket.tender';
-import { SharedSubjectService } from '../../../../shared-subject/shared-subject.service';
-import { CustomerSearchComponent } from '../../../customer-search/customer-search.component';
-import { LocationConfig } from '../../../models/location-config';
-import { TenderType, TenderTypeModel } from '../../../models/tender.type';
-import { PosApiService } from '../../../services/pos-api-service';
-import { addTender, removeTndrWithSaveCode, saveTicketForGuestCheck, updateCheckoutTotals, saveTicketForGuestCheckSuccess, isSplitPayR5 } from '../../store/ticketstore/ticket.action';
-import { getCheckoutItemsSelector, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
-import { saleTranDataInterface } from '../../store/ticketstore/rticket.state';
-import { RovTipsModalDlgComponent } from '../tips-modal-dlg/rov-tips-modal-dlg.component';
+import { RovLogonDataService } from '../../../../rov-logon-data.service';
+import { TenderStatusType, TicketTender } from '../../../../../models/ticket.tender';
+import { SharedSubjectService } from '../../../../../shared-subject/shared-subject.service';
+import { CustomerSearchComponent } from '../../../../../longterm/customer-search/customer-search.component';
+import { EventConfig } from '../../../../models/event.config';
+import { TenderType, TenderTypeModel } from '../../../../../longterm/models/tender.type';
+
+import { addTender, removeTndrWithSaveCode, saveTicketForGuestCheck, updateCheckoutTotals, saveTicketForGuestCheckSuccess, isSplitPayR5 } from '../../../../store/ticketstore/rticket.action';
+import { getRCheckoutItemsSelector, getRTktObjSelector } from '../../../../store/ticketstore/rticket.selector';
+import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
+
 import { firstValueFrom, Observable, Subscription, take, map } from 'rxjs';
 import { Actions, ofType } from '@ngrx/effects';
-import { TicketSplit } from '../../../../models/rticket.split';
-import { DailyExchRate } from '../../../../models/exchange.rate';
-import { UtilService } from '../../../../services/util.service';
-import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCheckoutItem';
+import { ROV_POSTicketSplit } from '../../../../models/rticket.split';
+import { DailyExchRate } from '../../../../../models/exchange.rate';
+import { UtilService } from '../../../../../services-misc/util.service';
+import { Rov_SalesTranCheckoutItem } from '../../../../models/r-salestran-checkout-item';
+import { RovApiService } from '../../../../short-term.service';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-rov-checkout-page',
-  templateUrl: './checkout-page.component.html',
-  styleUrls: ['./checkout-page.component.css'],
-  standalone: false
+  templateUrl: './rov-checkout-page.component.html',
+  styleUrls: ['./rov-checkout-page.component.css'],
+  imports: [CommonModule, FormsModule],
 })
 export class RovCheckoutPageComponent implements OnInit {
 
@@ -39,11 +42,11 @@ export class RovCheckoutPageComponent implements OnInit {
   private _clickDebounceMs: number = 2000; // 2 second debounce window
   private _lastClickTime: number = 0;
 
-  constructor(private _saleTranSvc: PosApiService,
-    private _logonDataSvc: LogonDataService,
+  constructor(private _saleTranSvc: RovApiService,
+    private _logonDataSvc: RovLogonDataService,
     private _sharedSubSvc: SharedSubjectService,
     private modalService: NgbModal,
-    private _store: Store<saleTranDataInterface>,
+    private _store: Store<RovSaleTranDataInterface>,
     private router: Router,
     private _utilSvc: UtilService,
     private actions$: Actions) { }
@@ -54,7 +57,7 @@ export class RovCheckoutPageComponent implements OnInit {
   errMessage: string = "";
   dfltCurrSymbl: string = '';
 
-  locationConfig: LocationConfig = {} as LocationConfig;
+  evtConfig: EventConfig = {} as EventConfig;
   isOConus: boolean = false;
   tenderAmount: number = 0;
   fcTenderAmount: number = 0;
@@ -69,16 +72,16 @@ export class RovCheckoutPageComponent implements OnInit {
   public ngOnInit(): void {
 
     //console.log('CheckoutPage component ngOnInit called');
-    this.locationConfig = this._logonDataSvc.getLocationConfig();
-    this.isInCompleteTicket = this.locationConfig.inProgTranId > 0;
-    this.isOConus = this.locationConfig.rgnCode != "CON";
+    this.evtConfig = this._logonDataSvc.getRovEventConfig();
+    this.isInCompleteTicket = this.evtConfig.inProgTranId > 0;
+    this.isOConus = this.evtConfig.rgnCode != "CON";
     this.dfltCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getDfltCurrCode()) ?? '';
 
     this._tenderTypesModel = this._logonDataSvc.getTenderTypes();
     this.isRefund = this._logonDataSvc.getTranIsRefund();
     this.tenderButtonUIDisplay();
 
-    this._store.select(getCheckoutItemsSelector).subscribe(items => {
+    this._store.select(getRCheckoutItemsSelector).subscribe(items => {
 
       if (items == null)
         return;
@@ -86,13 +89,13 @@ export class RovCheckoutPageComponent implements OnInit {
       this.tenderAmount = 0;
       this.fcTenderAmount = 0;
 
-      items.forEach((itm: SalesTransactionCheckoutItem) => {
+      items.forEach((itm: Rov_SalesTranCheckoutItem) => {
         this.tenderAmount += itm.lineItemDollarDisplayAmount ?? 0;
         this.fcTenderAmount += itm.fcLineItemDollarDisplayAmount ?? 0;
       })
     })
 
-    this._store.select(getTktObjSelector).subscribe(tktObj => {
+    this._store.select(getRTktObjSelector).subscribe(tktObj => {
       if (tktObj) {
         this.tenderAmount += (tktObj.shipHandling + tktObj.shipHandlingTaxAmt);
         this.fcTenderAmount += (tktObj.shipHandlingFC + tktObj.shipHandlingTaxAmtFC);
@@ -148,7 +151,7 @@ export class RovCheckoutPageComponent implements OnInit {
     this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
     this._store.dispatch(isSplitPayR5({ isSplitPayR5: (tndrCode == 'btnSplitPay') }));
 
-    if ((tndrCode == 'btnSplitPay' && this.locationConfig.inProgTranId > 0) || this._logonDataSvc.getTranIsRefund()) {
+    if ((tndrCode == 'btnSplitPay' && this.evtConfig.inProgTranId > 0) || this._logonDataSvc.getTranIsRefund()) {
       this._navigateToTenderPage(tndrCode);
       return
     }
@@ -163,9 +166,9 @@ export class RovCheckoutPageComponent implements OnInit {
       tndrObj.tndMaintTimestamp = new Date(Date.now())
       tndrObj.rrn = this._utilSvc.getUniqueRRN();
       tndrObj.tenderStatus = TenderStatusType.Complete;
-      tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+      tndrObj.fcCurrCode = this._logonDataSvc.getRovEventConfig().currCode;
       this._store.dispatch(addTender({ tndrObj }));
-      var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+      var tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1)));
       if (tktObjData) {
         this._store.dispatch(saveTicketForGuestCheck({ tktObj: tktObjData }));
 
@@ -195,10 +198,10 @@ export class RovCheckoutPageComponent implements OnInit {
       tndrObj.tndMaintTimestamp = new Date(Date.now())
       tndrObj.rrn = this._utilSvc.getUniqueRRN();
       tndrObj.tenderStatus = TenderStatusType.Complete;
-      tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+      tndrObj.fcCurrCode = this._logonDataSvc.getRovEventConfig().currCode;
       this._store.dispatch(addTender({ tndrObj }));
 
-      var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+      var tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1)));
       if (tktObjData) {
         this._store.dispatch(saveTicketForGuestCheck({ tktObj: tktObjData }));
 
@@ -215,13 +218,13 @@ export class RovCheckoutPageComponent implements OnInit {
           // tndrObj.tenderTransactionId = this._transactionId;
           // this._store.dispatch(addTender({ tndrObj }));
 
-          if (tktObjData?.tipAmountDC == 0) {
-            const modalRef = this.modalService.open(RovTipsModalDlgComponent, this.modalOptions);
-            modalRef.componentInstance.tndrCode = tndrCode;
-          }
-          else {
+          // if (tktObjData?.tipAmountDC == 0) {
+          //   const modalRef = this.modalService.open(RovTipsModalDlgComponent, this.modalOptions);
+          //   modalRef.componentInstance.tndrCode = tndrCode;
+          // }
+          // else {
             this._navigateToTenderPage(tndrCode);
-          }
+          // }
         });
       }
     }
@@ -253,7 +256,7 @@ export class RovCheckoutPageComponent implements OnInit {
 
   public tenderButtonUIDisplay(): void {
 
-    this._displayTenders = this._tenderTypesModel.types?.filter((tndr) => tndr.isRefundType == this.isRefund && tndr.tenderTypeCode);
+    this._displayTenders = this._tenderTypesModel.types?.filter((tndr: TenderType) => tndr.isRefundType == this.isRefund && tndr.tenderTypeCode);
 
     this.tenderButtonWidthPercent = 99 / (this._displayTenders?.length + (this.isRefund ? 1 : 2)); // +1 for split pay button
   }

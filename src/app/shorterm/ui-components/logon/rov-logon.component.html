@@ -16,7 +16,7 @@
                         (change)="OnChangeVendorNum($event)" />
                 </div>
                 <div class="mb-3">
-                    <label for="ddlEvent">Location</label>
+                    <label for="ddlEvent">Event</label>
                     <select #ddlEvent id="ddlEvent" class="form-select dropdown"
                         (change)="onEventChange($event, ddlEvent.value)">
                         <option *ngFor="let ev of eventList" [selected]="ev.eventId == selectedEventId"
@@ -77,8 +77,8 @@
                     </button>
                 </div>
             </div>
-            <div id="nolocationsalert" class="alert alert-warning" role="alert" style="display:none">
-                No Locations matched the given Exchange Number
+            <div id="noEventsalert" class="alert alert-warning" role="alert" style="display:none">
+                No Events matched the given Exchange Number
             </div>
             <div id="logonSuccessMsg" class="bar bar-footer bar-balanced alert alert-success alert-dismissible fade"
                 [style.display]="successMsgDisplay">

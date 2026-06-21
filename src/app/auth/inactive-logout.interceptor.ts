@@ -39,7 +39,7 @@ export class InactiveLogoutInterceptor implements HttpInterceptor {
         this._store.dispatch(resetTktObj({ locConfig: locConfig }));
       }
       else if(appType == 'shortterm') {
-        this._router.navigateByUrl('/rlogon');
+        this._router.navigateByUrl('/rov/rlogon');
         this._store.dispatch(resetTktObj({ locConfig: locConfig }));
       } 
       else if(appType == 'sbm') {

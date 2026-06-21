@@ -1,15 +1,15 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
+import { LogonDataService } from '../../../../../global/logon-data-service.service';
 import { SharedSubjectService } from '../../../../../shared-subject/shared-subject.service';
 import { RovCheckoutItemsComponent } from '../../checkout/checkout-items/rov-checkout-items.component';
-import { Rov_SalesTranCheckoutItem } from 'src/app/shorterm/models/r-salestran-checkout-item';
+import { Rov_SalesTranCheckoutItem } from '../../../../models/r-salestran-checkout-item';
 import { addSaleItem, saveTicketDetail, updateCheckoutTotals, updateServedByAssociate } from '../../../../store/ticketstore/rticket.action';
 import { getRCheckoutItemsCount, getRTranIdTicketNumber } from '../../../../store/ticketstore/rticket.selector';
 import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
 import { Observable, Subject } from 'rxjs';
-import { CPOSAppType, UtilService } from 'src/app/services-misc/util.service';
-import { RovLogonDataService } from 'src/app/shorterm/rov-logon-data.service';
+import { CPOSAppType, UtilService } from '../../../../../services-misc/util.service';
+import { RovLogonDataService } from '../../../../rov-logon-data.service';
 
 @Component({
     selector: 'app-rov-sale-item',
@@ -24,7 +24,7 @@ export class RovSaleItemComponent implements OnInit {
       private _store: Store<RovSaleTranDataInterface>, 
       private _utilSvc: UtilService) 
       { }
-    @Input() saleItemList: SaleItem[] = [];
+    @Input() saleItemList: Rov_SalesTranCheckoutItem[] = [];
     @Input() salesItemListRefreshEvent: Observable<boolean> = new Observable<boolean>();
     activeId: number = 0;
     dcCurrSymbl: string = '';
@@ -109,7 +109,7 @@ export class RovSaleItemComponent implements OnInit {
       this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._rovLogonDataSvc }));
     }
 
-    private getSaleCheckOutItem(si: SaleItem): Rov_SalesTranCheckoutItem {
+    private getSaleCheckOutItem(si: Rov_SalesTranCheckoutItem): Rov_SalesTranCheckoutItem {
 
       let coItm: Rov_SalesTranCheckoutItem = {} as Rov_SalesTranCheckoutItem;      
       coItm.allowPartPay = si.allowPartPay;
