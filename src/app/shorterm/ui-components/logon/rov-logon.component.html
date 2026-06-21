@@ -38,24 +38,6 @@
             <div class="test-devices-container">
                 <h6 class="test-devices-title">Test Devices</h6>
                 <div class="test-buttons-grid">
-                    <button data-testid="qa-button-testreceiptprinter" class="btn btn-test test-receipt-printer"
-                        (click)="testReceiptPrinter()" title="Test Receipt Printer">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                            viewBox="0 0 16 16">
-                            <path
-                                d="M5 1a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h3V1zm0 5a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
-                        </svg>
-                        <span>Test Receipt Printer</span>
-                    </button>
-                    <button data-testid="qa-button-testtagprinter" class="btn btn-test test-tag-printer"
-                        (click)="testTagPrinter()" title="Test Tag Printer">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                            viewBox="0 0 16 16">
-                            <path
-                                d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-3-3H8a3 3 0 0 0-3 3v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2z" />
-                        </svg>
-                        <span>Test Tag Printer</span>
-                    </button>
                     <button data-testid="qa-button-testpinpad" class="btn btn-test test-pinpad" (click)="testPinpad()"
                         title="Test Pinpad">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
@@ -66,15 +48,6 @@
                         </svg>
                         <span>Test Pinpad</span>
                     </button>
-                    <button data-testid="qa-button-testsignaturepad" class="btn btn-test test-signature-pad"
-                        (click)="testSignaturePad()" title="Test Signature Pad">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                            viewBox="0 0 16 16">
-                            <path
-                                d="M8.5.5a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 12.293V1a.5.5 0 0 1 .5-.5z" />
-                        </svg>
-                        <span>Test Signature Pad</span>
-                    </button>
                 </div>
             </div>
             <div id="noEventsalert" class="alert alert-warning" role="alert" style="display:none">
@@ -82,7 +55,7 @@
             </div>
             <div id="logonSuccessMsg" class="bar bar-footer bar-balanced alert alert-success alert-dismissible fade"
                 [style.display]="successMsgDisplay">
-                <strong>Success!</strong> Your message has been sent successfully.
+                <strong>Success!</strong> You have successfully logged in.
                 <button aria-label="Close" type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
             <div id="logonFailMsg" class="alert alert-danger alert-dismissible fade" [style.display]="errorMsgDisplay">
