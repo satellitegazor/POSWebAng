@@ -1,0 +1,101 @@
+<div class="container-fluid p-3">
+
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body">
+
+            <!-- Title -->
+            <div class="mb-4">
+                <h5 class="fw-semibold mb-0">Customer Lookup</h5>
+                <small class="text-muted">Search by phone or name</small>
+            </div>
+
+            <!-- Search Fields -->
+            <div class="row align-items-center mb-3">
+
+                <div class="col-md-4">
+                    <label class="col-auto col-form-label fw-bold">
+                        Phone
+                    </label>
+                    <input name="telephone" class="form-control" [(ngModel)]="telephone" autocomplete="off"
+                        autocorrect="off" autocapitalize="off" spellcheck="false" (keyup.enter)="search()" />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="col-auto col-form-label fw-bold">
+                        First Name
+                    </label>
+                    <input name="firstName" class="form-control" [(ngModel)]="firstName" autocomplete="off"
+                        autocorrect="off" autocapitalize="off" spellcheck="false" (keyup.enter)="search()" />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="col-auto col-form-label fw-bold">
+                        Last Name
+                    </label>
+                    <input name="lastName" class="form-control" [(ngModel)]="lastName" autocomplete="off"
+                        autocorrect="off" autocapitalize="off" spellcheck="false" (keyup.enter)="search()" />
+                </div>
+                            <div class="d-flex justify-content-end gap-2 mt-4">
+                            
+                                <button data-testid="qa-button-cancel" type="button" class="btn btn-light" (click)="cancel()">
+                                    Cancel
+                                </button>
+                            
+                                <button data-testid="qa-button-newcust" type="button" class="btn btn-outline-primary" (click)="newcust()">
+                                    + New Customer
+                                </button>
+                            
+                                <button data-testid="qa-button-search" type="submit" class="btn btn-primary" (click)="search()">
+                                                Search
+                                            </button>
+                            
+                            </div>
+            </div>
+
+            <!-- Results -->
+            <div class="border rounded-3">
+
+                <div class="px-3 py-2 border-bottom bg-light">
+                    <span class="fw-semibold">Results</span>
+                </div>
+
+                <div class="customer-list-scrollbar">
+
+                    <div *ngIf="CustomerList.length === 0 && showErrMsg" class="text-muted text-center py-3">
+                        No customers found.
+                    </div>
+
+                    <div class="list-group list-group-flush">
+
+                        <button *ngFor="let cust of CustomerList" type="button"
+                            class="list-group-item list-group-item-action" (click)="customerSelected(cust.customerUID)">
+
+                            <div class="fw-semibold">
+                                {{cust.cFirstName}} {{cust.cLastName}}
+                            </div>
+
+                            <div class="text-muted small" *ngIf="cust.cPhoneNumber">
+                                {{maskPhone(cust.cPhoneNumber)}}
+                            </div>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Footer Buttons -->
+
+
+            <!-- Error -->
+            <div *ngIf="showErrMsg" class="alert alert-danger mt-3">
+                <strong>{{strongErrMessage}}</strong>
+                <div>{{errMessage}}</div>
+            </div>
+
+        </div>
+    </div>
+
+</div>

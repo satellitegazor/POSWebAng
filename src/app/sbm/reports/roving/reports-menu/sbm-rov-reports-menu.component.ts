@@ -1,9 +1,11 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-sbm-rov-reports-menu',
-  standalone: false,
+  imports: [CommonModule, FormsModule],
   templateUrl: './sbm-rov-reports-menu.component.html',
   styleUrls: ['./sbm-rov-reports-menu.component.css']
 })

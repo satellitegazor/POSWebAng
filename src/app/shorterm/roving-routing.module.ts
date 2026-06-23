@@ -5,12 +5,14 @@ import { RovMainMenuComponent } from './ui-components/menu/main-menu/rov-main-me
 import { Rov_SalesTranCheckoutItem } from './models/r-salestran-checkout-item';
 import { RovItemSelectionBasePageComponent } from './ui-components/rov-salestran/itemselectionpage/item-selection-base-page/rov-item-selection-base-page.component';
 import { RovCheckoutPageComponent } from './ui-components/rov-salestran/checkout/checkout-page/rov-checkout-page.component';
+import { RovItemButtonPageComponent } from './ui-components/itembuttonmenu/item-button-page/rov-item-button-page.component';
 
 export const ROV_ROUTES: Routes = [
   { path: 'rlogon', component: RovLogonComponent },
   { path: 'rmainmenu', component: RovMainMenuComponent },
   { path: 'ritemsel', component: RovItemSelectionBasePageComponent },
-  { path: 'rchekout', component: RovCheckoutPageComponent }
+  { path: 'rchekout', component: RovCheckoutPageComponent },
+  { path: 'ritembtnmenu', component: RovItemButtonPageComponent}
 ];
 
 @NgModule({

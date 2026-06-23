@@ -1,4 +1,4 @@
-import { ROV_Event } from "../../longterm/models/ticket.list"
+import { ROV_Department, ROV_Event } from "../../longterm/models/ticket.list"
 import { CPOSDB } from "../../longterm/models/contract.models";
 import { MobileBase } from "../../models/mobile.base";
 import { SystemStatus } from "../../models/mobile.client.identity";
@@ -76,7 +76,7 @@ export class ROV_SaleItemTaxModel {
 
 export class RDeptCategoryResultModels {
 	results: any = null;
-	lstItemButtons: any[] = [];
+	lstItemButtons: ROV_Department[] = [];
 }
 
 export class VRoving_AbbrEventModel {

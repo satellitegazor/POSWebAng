@@ -14,6 +14,8 @@ import { CountryCode, getCountries, getCountryCallingCode } from 'libphonenumber
 import { EventStartOrEndRequest, ResetPinRequest, ROV_AssociatePINUpdateResultsModel, ROV_StartOrEndModel, StartOrEOD } from '../../shorterm/models/models';
 import { GlobalConstants } from '../../global/global.constants';
 import { RovApiService } from '../../shorterm/short-term.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 type CountryDialOption = {
   iso2: CountryCode;
@@ -25,7 +27,7 @@ type CountryDialOption = {
   selector: 'app-contract-rov-page',
   templateUrl: './contract-rov-page.component.html',
   styleUrls: ['./contract-rov-page.component.css'],
-  standalone: false
+  imports: [CommonModule, FormsModule]
 })
 export class ContractRovPageComponent implements OnInit {
 

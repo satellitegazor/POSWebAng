@@ -1,0 +1,27 @@
+ .editable-btn {
+
+    font-size: 1.rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.editable-btn:hover {
+    border-color: #9abcee;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin-top: 10px;
+        margin-bottom: 10px;
+}
+
+.pencil-icon {
+    font-size: 1.4rem;
+    transition: opacity 0.2s;
+}
+
+input {
+    border: none;
+    outline: none;
+    background: transparent;
+}

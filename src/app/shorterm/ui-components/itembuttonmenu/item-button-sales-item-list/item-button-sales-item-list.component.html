@@ -1,0 +1,84 @@
+<div class="panel">
+    <div class="panel-body ms-2 me-2 mt-2 mb-2">
+        <form [formGroup] = "saleItemForm">
+            <div formArrayName="saleItemList">
+        <table class="table table-hover table-bordered align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">Item Description</th>
+                    <th scope="col" class="text-center">Price</th>
+                    <th scope="col" class="text-center">Sales Tax (%)</th>
+                    <th scope="col" class="text-center">Order</th>
+                    <th scope="col" class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr *ngFor="let itemCtrl of saleItemListArray.controls; let i = index" 
+                    [formGroupName]="i" [attr.data-salesitem-id]="itemCtrl.get('id')?.value"
+                    [attr.data-departmentuid]="itemCtrl.get('departmentUID')?.value"
+                    [attr.data-categoryuid]="itemCtrl.get('salesCategoryUID')?.value">
+        
+                    <!-- Item Description -->
+                    <td>
+                        <input data-testid="qa-input-action" type="text" class="form-control" style="text-transform: capitalize;"
+                            placeholder="Enter Item Description Here"
+                            formControlName="description">
+                        <input data-testid="qa-input-id" type="hidden" formControlName="id">
+                        <input data-testid="qa-input-salescategoryuid" type="hidden" formControlName="salesCategoryUID">
+                        <input data-testid="qa-input-departmentuid" type="hidden" formControlName="departmentUID">
+                        <input data-testid="qa-input-displayorder" type="hidden" formControlName="displayOrder">
+                    </td>
+        
+                    <!-- Price -->
+                    <td class="text-center">
+                        <input data-testid="qa-input-action-2" type="number" class="form-control text-center" 
+                            appPosCurrency  
+                            placeholder="Price" formControlName="price">
+                    </td>
+        
+                    <!-- Sales Tax + Default Tax Button -->
+                    <td>
+                        <table style="width:100%;">
+                            <tr>
+                                <td style="width:90%;">
+                        <div class="input-group">
+                            <input data-testid="qa-input-action-3" type="text" class="form-control text-center" 
+                                appPosCurrency3 name="saleTax_{{i}}"
+                                placeholder="Tax %" formControlName="salesTax">
+                        </div></td>
+                                <td style="width:10%; padding-left:5px;">
+
+                            <button *ngIf="i==0" class="btn btn-outline-success btn-sm" type="button" title="Set Default Sales Tax"
+                                (click)="setDefaultTax(itemCtrl.get('salesTax')?.value)">
+                                <i class="bi bi-check-lg"></i>
+                            </button>
+                            </td>
+                            </tr></table>
+                    </td>
+        
+                    <!-- Reorder Buttons -->
+                    <td class="text-center">
+                        <div class="btn-group-vertical btn-group-sm row" role="group">
+                            <button data-testid="qa-button-moveitemup" type="button" class="btn btn-outline-secondary" (click)="moveItemUp(i)"
+                                [disabled]="i === 0">
+                                <i class="bi bi-arrow-up"></i>
+                            </button>
+                            <button data-testid="qa-button-moveitemdown" type="button" class="btn btn-outline-secondary" (click)="moveItemDown(i)"
+                                [disabled]="i === saleItemList.length - 1">
+                                <i class="bi bi-arrow-down"></i>
+                            </button>
+                        </div>
+                    </td>
+        
+                    <!-- Delete Action -->
+                    <td class="text-center">
+                        <button data-testid="qa-button-deleteitem" type="button" class="btn btn-danger btn-sm" (click)="deleteItem(i)" title="Delete Item">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table></div></form>
+    </div>
+</div>

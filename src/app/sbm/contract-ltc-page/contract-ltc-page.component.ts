@@ -12,6 +12,7 @@ import { CountryCode, getCountries, getCountryCallingCode } from 'libphonenumber
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { CPOS_RegionCountryCurrencyResultsModel } from '../../longterm/models/region.currency.models';
 import { RegionCurrencyDlgComponent, RegionCurrencySelectionResult } from '../region-currency-dlg/region-currency-dlg.component';
+import { CommonModule } from '@angular/common';
 
 type CountryDialOption = {
   iso2: CountryCode;
@@ -28,7 +29,8 @@ type HoursTimeOption = {
   selector: 'app-contract-ltc-page',
   templateUrl: './contract-ltc-page.component.html',
   styleUrls: ['./contract-ltc-page.component.css'],
-  standalone: false
+  imports: [CommonModule, FormsModule]
+  
 })
 export class ContractLtcPageComponent implements OnInit {
 

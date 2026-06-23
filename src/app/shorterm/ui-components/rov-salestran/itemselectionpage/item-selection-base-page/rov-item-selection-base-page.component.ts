@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { GlobalConstants, ROVBusinessFunctionCode } from '../../../../../global/global.constants';
 import { RovLogonDataService } from '../../../../rov-logon-data.service';
@@ -19,7 +20,7 @@ import { getEventConfigSelector } from "../../../../store/roveventconfigstore/ro
 import { getEventConfigStart, setEventConfig } from '../../../../store/roveventconfigstore/roveventconfig.action';
 import { EventConfig } from '../../../../models/event.config';
 import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
-import { addTabSerialToTktObj, initTktObj } from '../../../../store/ticketstore/rticket.action';
+import { addTabSerialToRovTktObj, rovInitTktObj } from '../../../../store/ticketstore/rticket.action';
 import { RovTicketLookupComponent } from '../../../ticket-lookup/rov-ticket-lookup.component';
 import { getRCheckoutItemsCount, getRTicketTotals, getRTktObjSelector } from '../../../../store/ticketstore/rticket.selector';
 import { initialROVEventConfigState, ROVEventConfigState } from '../../../../store/roveventconfigstore/roveventconfig.state';
@@ -29,12 +30,22 @@ import { VerifoneCommStatus } from "../../../../../longterm/models/general-class
 import { RovAddMiscItemDlgComponent } from '../add-misc-item-dlg/rov-add-misc-item-dlg.component';
 import { DailyExchRate } from '../../../../../models/exchange.rate';
 import { UtilService } from "../../../../../services-misc/util.service"
+import { RovCustomerSearchComponent } from '../../../customer-search/rov-customer-search.component';
+import { RovKeyPadComponent } from '../rov-key-pad/rov-key-pad.component';
+import { RovDeptListComponent } from '../salesdept/rov-deptlist.component';
+import { ROV_Department } from '../../../../../longterm/models/ticket.list';
+import { ROV_SaleTaxSaveStatusResultModel } from '../../../../models/models';
+
+
 
 @Component({
     selector: 'app-rov-item-selection-base-page',
     templateUrl: './rov-item-selection-base-page.component.html',
     styleUrls: ['./rov-item-selection-base-page.component.css'],
-    imports: [RovTktSaleItemComponent, CustomerSearchComponent, RovTicketLookupComponent, RovAddMiscItemDlgComponent]   
+    imports: [CommonModule, RovTktSaleItemComponent, RovCustomerSearchComponent, 
+        RovTicketLookupComponent, RovAddMiscItemDlgComponent, 
+        RovKeyPadComponent, RovDeptListComponent, RovTktSaleItemComponent
+        ]   
 })
 export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
 
@@ -67,7 +78,7 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
     saleCatList: SalesCat[] = [];
     vendorLoginResult: VendorLoginResultsModel = {} as VendorLoginResultsModel;
 
-    allItemButtonMenuList: SaleItem[] = [];
+    allItemButtonMenuList: ROV_Department[] = [];
     salesItemRsltMdl!: Observable<SaleItemResultsModel>;
 
     strongErrMessage: string = "";
@@ -103,11 +114,20 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
     private tktSaleItemComponent: RovTktSaleItemComponent = {} as RovTktSaleItemComponent;
 
     ngOnInit(): void {
-        this.initializeItemSelectionPage();
+
+        this._rovApiSvc.checkSalesTaxSaveStatus(this._logonDataSvc.getRovEventConfig().eventID, this.individualId).subscribe((data: ROV_SaleTaxSaveStatusResultModel) => {
+            if (data.saveStatus == false && (typeof data.defaultCurrency === 'undefined' || data.defaultCurrency.trim().length === 0)) {
+                this.router.navigate(['/rov/ritembtnmenu']);
+                return;
+            }
+            this.initializeItemSelectionPage();
+        });
     }
 
     private initializeItemSelectionPage(): void {
 
+
+        
         //console.log('SalesCart ngOnInit')
         this.vendorLoginResult = this._logonDataSvc.getRovVendorLogonData();
         this.defaultCurrencyCode = this._logonDataSvc.getDfltCurrCode?.() ?? this._logonDataSvc.getRovEventConfig()?.defaultCurrency ?? 'USD';
@@ -137,7 +157,7 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
         
 
         this._buildTktObj();
-        this._rovApiSvc.getConcessionMenuItem(this.individualId.toString(), this.vendorLoginResult.eventId, 0, true).subscribe(data => {
+        this._rovApiSvc.getConcessionMenuItem(this.individualId.toString(), this._logonDataSvc.getRovEventConfig().eventID, 0, true).subscribe(data => {
             if(data.lstItemButtons == null || data.lstItemButtons.length == 0) {
                 this.router.navigate(['/itembtnmenu']);
                 return;
@@ -148,7 +168,7 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
 
         
 
-        this._rovApiSvc.GetEventConfig(+this.vendorLoginResult.eventId, this.vendorLoginResult.individualUID).subscribe(data => {
+        this._rovApiSvc.GetEventConfig(+this._logonDataSvc.getRovEventConfig().eventID, this.vendorLoginResult.individualUID).subscribe(data => {
 
             this.eventConfig = data.config;
             this._rovEventConfigStore.dispatch(setEventConfig({ eventConfig: data.config }));
@@ -157,7 +177,7 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
                 this._cposWebSvc.getsysinfo("asdf").subscribe((data) => {
                     if (data.IsSuccess) {
                         console.log("SysInfo Success: ", data);
-                        this._store.dispatch(addTabSerialToTktObj({ tabSerialNum: data.TabMachineName, ipAddress: data.IPAddress }));
+                        this._store.dispatch(addTabSerialToRovTktObj({ tabSerialNum: data.TabMachineName, ipAddress: data.IPAddress }));
                     }
                 });
             }
@@ -166,7 +186,7 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
                     if (data.IsSuccess) {
                         pinpadStatus = data;
                         console.log("Pinpad Heartbeat Success: ", pinpadStatus);
-                        this._store.dispatch(addTabSerialToTktObj({ tabSerialNum: pinpadStatus.TabMachineName, ipAddress: pinpadStatus.IpAddress }));
+                        this._store.dispatch(addTabSerialToRovTktObj({ tabSerialNum: pinpadStatus.TabMachineName, ipAddress: pinpadStatus.IpAddress }));
                     }
                 });   
             }         
@@ -211,60 +231,60 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
             if (dptCount == 0) {
                 let dpt = new Dept();
                 dpt.departmentUID = item.departmentUID;
-                dpt.departmentName = item.departmentName;
+                dpt.departmentName = item.description;
                 this.deptList.push(dpt);
             }
         });
         this.deptListRefreshEvent.next(true);
 
-        this.getSalesCategoryList(this.deptList[0].departmentUID);
+        //this.getSalesCategoryList(this.deptList[0].departmentUID);
     }
 
-    public getSalesCategoryList(deptId: number): void {
+    // public getSalesCategoryList(deptId: number): void {
 
-        this.saleCatList = [];
-        let allDeptList = this.allItemButtonMenuList.filter(item => item.departmentUID == deptId);
-        allDeptList.forEach(itm => {
-            let k = this.saleCatList.filter(ct => ct.salesCategoryUID == itm.salesCategoryID);
-            if (k.length == 0) {
-                let cat = new SalesCat();
-                cat.salesCategoryUID = itm.salesCategoryID;
-                cat.description = itm.salesCategoryDescription;
-                cat.departmentName = itm.departmentName;
-                cat.departmentUID = itm.departmentUID;
-                cat.active = itm.salesCatActive;
-                cat.salesCatTypeUID = itm.salesCatTypeUID;
-                this.saleCatList.push(cat);
-            }
-        });
-        //console.log('setting salesCategoryListRefresh to true');
-        this.salesCategoryListRefreshEvent.next(true);
+    //     this.saleCatList = [];
+    //     let allDeptList = this.allItemButtonMenuList.filter(item => item.departmentUID == deptId);
+    //     allDeptList.forEach(itm => {
+    //         let k = this.saleCatList.filter(ct => ct.salesCategoryUID == itm.salesCategoryID);
+    //         if (k.length == 0) {
+    //             let cat = new SalesCat();
+    //             cat.salesCategoryUID = itm.salesCategoryID;
+    //             cat.description = itm.salesCategoryDescription;
+    //             cat.departmentName = itm.description;
+    //             cat.departmentUID = itm.departmentUID;
+    //             cat.active = itm.salesCatActive;
+    //             cat.salesCatTypeUID = itm.salesCatTypeUID;
+    //             this.saleCatList.push(cat);
+    //         }
+    //     });
+    //     //console.log('setting salesCategoryListRefresh to true');
+    //     this.salesCategoryListRefreshEvent.next(true);
 
-        this.getSaleItemList(this.saleCatList[0].salesCategoryUID);
-    }
+    //     this.getSaleItemList(this.saleCatList[0].salesCategoryUID);
+    // }
 
-    public getSaleItemList(categoryId: number): void {
+    // public getSaleItemList(categoryId: number): void {
         
-        this.saleItemList = [];
-        let allCatList = this.allItemButtonMenuList.filter(item => item.salesCategoryID == categoryId);
-        allCatList.forEach(itm => {
-            let k = this.saleItemList.filter(si => si.salesItemID == itm.salesItemID);
-            if (k.length == 0) {
-                this.saleItemList.push(itm);
-            }
-        });
-        //console.log('setting salesItemListRefresh to true');
-        this.salesItemListRefresh.next(true)
-    }
+    //     this.saleItemList = [];
+    //     let allCatList = this.allItemButtonMenuList.filter(item => item.salesCategoryID == categoryId);
+    //     allCatList.forEach(itm => {
+    //         let k = this.saleItemList.filter(si => si.salesItemID == itm.salesItemID);
+    //         if (k.length == 0) {
+    //             this.saleItemList.push(itm);
+    //         }
+    //     });
+    //     //console.log('setting salesItemListRefresh to true');
+    //     this.salesItemListRefresh.next(true)
+    // }
 
     deptClicked(id: any) {
         this.activeDeptId = Number(id) || 0;
-        this.getSalesCategoryList(id);
+        //this.getSalesCategoryList(id);
     }
 
     saleCatClicked(id: any) {
         this.activeSalesCatId = Number(id) || 0;
-        this.getSaleItemList(id);
+        //this.getSaleItemList(id);
     }
 
     saleItemClicked(id: any) {

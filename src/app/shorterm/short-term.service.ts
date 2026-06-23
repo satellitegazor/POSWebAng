@@ -17,13 +17,17 @@ import {
   ROV_SingleTransactionResultsModel,
   ResetPinRequest,
   ROV_AssociatePINUpdateResultsModel,
-  RLogonModel
+  RLogonModel,
+  ROV_SaleTaxSaveStatusResultModel,
+  ROV_SaleTaxSaveModel
 } from './models/models';
 import { SendEmailRequest } from '../models/misc-models';
 import { ROV_Event, SingleTransactionId } from '../longterm/models/ticket.list';
 import { EventConfigModel } from './models/event.config';
 import { TenderTypeModel } from '../longterm/models/tender.type';
 import { DailyExchRateMdl } from '../models/exchange.rate';
+import { TranCountForLocEventResultModel } from '../longterm/models/misc.models';
+import { CPOSAppType } from '../services-misc/util.service';
 
 @Injectable({
   providedIn: 'root'
@@ -323,6 +327,43 @@ export class RovApiService {
         '&eventId=' + eventId.toString() + '&busDate=' + encodeURIComponent(busDate) + '&uid=' + encodeURIComponent(uid),
         { headers: this.headerObjs });
   }
+
+  public checkSalesTaxSaveStatus(
+    EventId: number,
+    uid: number,
+    bWrite: boolean = false
+  ): Observable<ROV_SaleTaxSaveStatusResultModel> {
+    const url = GlobalConstants.CPOS_SVCS_URL + '/rov/CheckSalesTaxSaveStatus?guid=' 
+      + encodeURIComponent(GlobalConstants.GET_GUID)
+      + '&EventId=' + EventId.toString()
+      + '&uid=' + uid.toString()
+      + '&bWrite=' + bWrite;
+
+    return this.httpClient.get<ROV_SaleTaxSaveStatusResultModel>(url, { headers: this.headerObjs });
+  }
+
+  public loadSaleTaxPct(
+    EventId: number,
+    uid: number
+  ): Observable<ROV_SaleTaxSaveModel> {
+    const url = GlobalConstants.CPOS_SVCS_URL + '/rov/LoadSaleTaxPct?guid=' + encodeURIComponent(GlobalConstants.GET_GUID)
+      + '&EventId=' + EventId.toString()
+      + '&uid=' + uid.toString();
+
+    return this.httpClient.get<ROV_SaleTaxSaveModel>(url, { headers: this.headerObjs });
+  }
+
+  public getTranCountForEvent(eventId: number, uid: string): Observable<TranCountForLocEventResultModel> {
+      return this.httpClient.get<TranCountForLocEventResultModel>(
+          GlobalConstants.CPOS_SVCS_URL + '/ltc/GetTranCountForLocEvent?guid=' + GlobalConstants.GET_GUID
+              + '&locEvtId=' + eventId.toString()
+              + '&appType=' + CPOSAppType.ShortTerm.toString()
+              + '&uid=' + uid,
+          { headers: this.headerObjs }
+      );
+  }
+
+  
 }
 
 export interface SaveAssocRovLogoutHistoryRequest {

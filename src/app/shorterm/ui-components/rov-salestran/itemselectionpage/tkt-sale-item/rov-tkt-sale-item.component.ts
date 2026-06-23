@@ -12,14 +12,16 @@ import { Rov_SalesTranCheckoutItem } from '../../../../models/r-salestran-checko
 import { ConditionalExpr } from '@angular/compiler';
 import { getRCheckoutItemsSelector, getRTranIdTicketNumber } from '../../../../store/ticketstore/rticket.selector';
 import { Router } from '@angular/router';
-import { CPOSAppType } from 'src/app/services-misc/util.service';
-import { currSymbls } from 'src/app/models/CurrencySymbols';
+import { CPOSAppType } from '../../../../../services-misc/util.service';
+import { currSymbls } from '../../../../../models/CurrencySymbols';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-rov-tkt-sale-item',
     templateUrl: './rov-tkt-sale-item.component.html',
     styleUrls: ['./rov-tkt-sale-item.component.css'],
-    standalone: false
+    imports: [CommonModule, FormsModule]
 })
 export class RovTktSaleItemComponent implements OnInit {
 

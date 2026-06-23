@@ -7,13 +7,14 @@ import { LTC_Customer } from '../../../models/customer';
 import { Router } from '@angular/router';
 import { RovLogonDataService } from "../../rov-logon-data.service";
 import { RovApiService } from '../../short-term.service';
-
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-rov-ticket-lookup',
   templateUrl: './rov-ticket-lookup.component.html',
     styleUrls: ['./rov-ticket-lookup.component.css'],
-    standalone: false
+    imports: [CommonModule, FormsModule]
 })
 export class RovTicketLookupComponent implements OnInit {
 

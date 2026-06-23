@@ -17,8 +17,8 @@ import { RovSaveTicketDetailRequest } from '../../models/models';
 export const ADD_SALE_ITEM = 'addSaleItem';
 export const INC_SALE_ITEM_QTY = 'incSaleItemQty';
 export const DEC_SALE_ITEM_QTY = 'decSaleItemQty';
-export const INIT_TKT_OBJ = 'initTktObj';
-export const ADD_TAB_SERIAL_TO_TKT_OBJ = 'addTabSerialToTktObj';
+export const ROV_INIT_TKT_OBJ = 'rovInitTktObj';
+export const ADD_TAB_SERIAL_TO_ROV_TKT_OBJ = 'addTabSerialToRovTktObj';
 export const RESET_TKT_OBJ = 'resetTktObj';
 export const SAVE_TICKET_SPLIT = '[SaveTicket] Start'
 export const SAVE_TICKET_SPLIT_SUCCESS = '[SaveTicket] Success'
@@ -91,10 +91,10 @@ export const decSaleitemQty = createAction(DEC_SALE_ITEM_QTY,
 export const delSaleitemZeroQty = createAction(DELETE_SALE_ITEM,
     props<{ saleItemId: number, tktDtlId: number, defCurrSymbl: string, dailyExchRateObj: DailyExchRate }>());    
 
-export const initTktObj = createAction(INIT_TKT_OBJ, 
+export const rovInitTktObj = createAction(ROV_INIT_TKT_OBJ, 
     props<{eventConfig: EventConfig, individualUID: number}>());
 
-export const addTabSerialToTktObj = createAction(ADD_TAB_SERIAL_TO_TKT_OBJ,
+export const addTabSerialToRovTktObj = createAction(ADD_TAB_SERIAL_TO_ROV_TKT_OBJ,
     props<{ tabSerialNum: string, ipAddress: string }>());
 
 export const resetTktObj = createAction(RESET_TKT_OBJ, 

@@ -4,12 +4,14 @@ import { SbmWebApiService } from '../services/sbm-web-api.service';
 import { VendorContractData, VendorContractDataModel } from '../models/contract.models';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { ContractFilterDlgComponent } from '../contract-filter-dlg/contract-filter-dlg.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-contract-listing',
-  standalone: false,
   templateUrl: './contract-listing.component.html',
-  styleUrls: ['./contract-listing.component.css']
+  styleUrls: ['./contract-listing.component.css'],
+  imports: [CommonModule, FormsModule]
 })
 export class ContractListingComponent implements OnInit {
 

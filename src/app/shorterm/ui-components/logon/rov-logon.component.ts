@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RovApiService } from '../../short-term.service';
-import { LocalStorageService } from 'src/app/global/local-storage.service';
+import { LocalStorageService } from '../../../global/local-storage.service';
 import { ResetPinRequest, RLogonModel, ROV_AbbrEventModel, ROV_EventsResultModel } from '../../models/models';
 import { ToastService } from '../../../services-misc/toast.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -11,11 +11,11 @@ import { RovLogonDataService } from '../../rov-logon-data.service';
 import { ResetPinDlgComponent } from '../../../common-ui-components/reset-pin-dlg/reset-pin-dlg.component';
 import { MandateTrainingComponent } from '../../../common-ui-components/mandate-training/mandate-training.component';
 import { Router } from '@angular/router';
-import { VendorLoginResultsModel } from 'src/app/models/vendor.login.results.model';
-import { RovTktObjState } from 'src/app/app.state';
+import { VendorLoginResultsModel } from '../../../models/vendor.login.results.model';
+import { RovTktObjState } from "../../../app.state";
 import { Store } from '@ngrx/store';
-import { addTabSerialToTktObj, initTktObj, loadTicket, loadTicketSuccess, updateCheckoutTotals } from '../../store/ticketstore/rticket.action';
-import { CPOSWebSvcService } from 'src/app/services-pinpad/cposweb-svc.service';
+import { addTabSerialToRovTktObj, rovInitTktObj, loadTicket, loadTicketSuccess, updateCheckoutTotals } from '../../store/ticketstore/rticket.action';
+import { CPOSWebSvcService } from '../../../services-pinpad/cposweb-svc.service';
 import { ofType } from '@ngrx/effects';
 
 
@@ -244,7 +244,7 @@ export class RovLogonComponent implements OnInit {
 
       this._rovLogonDataSvc.setRovEventConfig(evtConfigMdl?.config ?? null);
       let evConfig = this._rovLogonDataSvc.getRovEventConfig();
-      this._tktObjStore.dispatch(initTktObj({ eventConfig: evConfig, individualUID: +locModel.individualUID }));
+      this._tktObjStore.dispatch(rovInitTktObj({ eventConfig: evConfig, individualUID: +locModel.individualUID }));
 
       this._rovApiSvc.getTenderTypes(+locModel.individualUID).subscribe(tenderTypes => {
         this._rovLogonDataSvc.setTenderTypes(tenderTypes);
@@ -274,12 +274,13 @@ export class RovLogonComponent implements OnInit {
 
         locModel.privActConfmComplete = data.privActConfmComplete;
         this._rovLogonDataSvc.setRovEventConfig(evtConfigMdl?.config ?? null);
-        this.router.navigate(['rov/rmainmenu']);        
+        //this.router.navigate(['rov/rmainmenu']);        
+        this.router.navigate(["rov/ritembtnmenu"]);
       }
 
       this._cposWebSvc.pinpadHeartbeat("PING").subscribe(data => {
           if (data.IsSuccess) {
-              this._tktObjStore.dispatch(addTabSerialToTktObj({ tabSerialNum: data.TabMachineName, ipAddress: data.IpAddress }));
+              this._tktObjStore.dispatch(addTabSerialToRovTktObj({ tabSerialNum: data.TabMachineName, ipAddress: data.IpAddress }));
           }
       });
     });

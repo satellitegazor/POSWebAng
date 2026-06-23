@@ -1,13 +1,14 @@
 
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-contract-filter-dlg',
-  standalone: false,
-  imports: [],
+  imports: [FormsModule, CommonModule],
   templateUrl: './contract-filter-dlg.component.html',
-  styleUrl: './contract-filter-dlg.component.css'
+  styleUrls: ['./contract-filter-dlg.component.css']
 })
 export class ContractFilterDlgComponent {
 

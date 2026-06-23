@@ -3,12 +3,15 @@ import { SbmWebApiService } from '../services/sbm-web-api.service';
 import { LogonModel } from '../models/logon.model';
 import { SbmStorageService } from '../services/sbm-session-storage.service';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-sbm-login',
   templateUrl: './sbm-login.component.html',
-  styleUrl: './sbm-login.component.css',
-  standalone: false
+  styleUrls: ['./sbm-login.component.css'],
+  standalone: true,
+  imports: [CommonModule, FormsModule]
 })
 export class SbmLoginComponent {
 

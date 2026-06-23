@@ -6,8 +6,6 @@ import { Router } from "@angular/router";
 import { LogonDataService } from '../../global/logon-data-service.service';
 import { LocalStorageService } from '../../global/local-storage.service';
 import { PosApiService } from '../services/pos-api-service';
-import { AlertService } from '../../alertmsg/alert-message/alert-message.service';
-import { AlertOptions } from '../../alertmsg/alert-message/alert-message.model';
 import { LocationConfigState } from '../saletran/store/locationconfigstore/locationconfig.state';
 import { props, Store } from '@ngrx/store';
 import { setLocationConfig, updateLocationConfigPostLogon } from '../saletran/store/locationconfigstore/locationconfig.action';
@@ -262,11 +260,11 @@ export class VendorLTComponent implements OnInit {
                     this.selectedLocationId = ary.length > 0 ? ary[0].locationUID : this.LocationList[0].locationUID;
                    
                 } else {
-                    alert('No locations found for given Vendor, Exchange Number.');
+                    this._toastSvc.error('No locations found for given Vendor, Exchange Number.');
                 }
             },
             error: err => {
-                alert('No locations found for given Vendor, Exchange Number.');
+                this._toastSvc.error('No locations found for given Vendor, Exchange Number.');
                 //console.log(err);
             }
         })

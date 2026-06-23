@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-rov-key-pad',
   imports: [],
   templateUrl: './rov-key-pad.component.html',
-  styleUrl: './rov-key-pad.component.css'
+  styleUrls: ['./rov-key-pad.component.css']
 })
 export class RovKeyPadComponent {
 

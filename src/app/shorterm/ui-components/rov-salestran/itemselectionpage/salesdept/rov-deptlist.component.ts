@@ -1,19 +1,20 @@
 import { Component, OnInit, Input, EventEmitter, Output, SimpleChanges } from '@angular/core';
-import { Dept } from '../../../models/sale.item';
-import { PosApiService } from '../../../services/pos-api-service';
+import { Rov_SalesTranCheckoutItem  } from "../../../../models/r-salestran-checkout-item"
 import { Subject } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
  
 @Component({
     selector: 'app-rov-deptlist',
     templateUrl: './rov-deptlist.component.html',
     styleUrls: ['./rov-deptlist.component.css'],
-    standalone: false
+    imports: [CommonModule, FormsModule]
 })
 export class RovDeptListComponent implements OnInit {
 
-    constructor(private _saleTranSvc: PosApiService) { }
-    @Input() deptList: Dept[] = [];
-    @Output() deptClicked: EventEmitter<number> = new EventEmitter();
+    constructor() { }
+    @Input() deptList: Rov_SalesTranCheckoutItem[] = [];
+    @Output() deptClicked: EventEmitter<number> = new EventEmitter<number>();
     @Input() deptListRefreshEvent: Subject<boolean> = new Subject<boolean>();
     activeId: number = 0;
     public ngOnInit() {
@@ -23,6 +24,7 @@ export class RovDeptListComponent implements OnInit {
                 this.activeId = this.deptList[0].departmentUID;
             }
         })
+
     }
 
     ngOnChanges(changes: SimpleChanges): void {

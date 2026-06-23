@@ -34,20 +34,20 @@ goToEnterSalesTransRefund() {
     const modalRef = this._modalService.open(RefundReasonDlgComponent, this.pinModalOptions);
     modalRef.result.then(() => {
       this._logonDataSvc.setTranIsRefund(true);
-      this.router.navigate(['/salestran'], { queryParams: { refund: true } });
+      this.router.navigate(['rov/rovsalestran'], { queryParams: { refund: true } });
     }).catch(() => undefined);
   });
 }
 goToTicketStatus() {
-  this.router.navigate(['/ticketstatus']);
+  this.router.navigate(['rov/ticketstatus']);
 }
 goToEndOfDayReport() {
-  this.openPinValidate(() => this.router.navigate(['/rovrptnosale']));
+  this.openPinValidate(() => this.router.navigate(['rov/rovrptnosale']));
 }
 goToAdminMenu() {
   this.openPinValidate((loginResult) => {
     if (this.isManagerUser(loginResult)) {
-      this.router.navigate(['/rovadminmenu']);
+      this.router.navigate(['rov/rovadminmenu']);
       return;
     }
 
@@ -63,11 +63,11 @@ goToAdminMenu() {
   ) {}
 
   goToSalesTransaction(): void {
-    this.openPinValidate(() => this.router.navigate(['/rovsalestran']));
+    this.openPinValidate(() => this.router.navigate(['rov/ritemsel']));
   }
 
   goToReports(): void {
-    this.openPinValidate(() => this.router.navigate(['/rovreportsmenu']));
+    this.openPinValidate(() => this.router.navigate(['rov/rovreportsmenu']));
   }
 
   private openPinValidate(onAuthorized: (loginResult: VendorLoginResultsModel) => void): void {
