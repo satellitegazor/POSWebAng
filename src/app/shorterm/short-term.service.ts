@@ -26,7 +26,7 @@ import { ROV_Event, SingleTransactionId } from '../longterm/models/ticket.list';
 import { EventConfigModel } from './models/event.config';
 import { TenderTypeModel } from '../longterm/models/tender.type';
 import { DailyExchRateMdl } from '../models/exchange.rate';
-import { TranCountForLocEventResultModel } from '../longterm/models/misc.models';
+import { SaveTicketDetailRequest, SaveTicketDetailResultModel, TranCountForLocEventResultModel } from '../longterm/models/misc.models';
 import { CPOSAppType } from '../services-misc/util.service';
 import { ROV_POSTicketSplit } from './models/rticket.split';
 import { SaveTenderResultModel, TicketTender } from '../models/ticket.tender';
@@ -237,14 +237,15 @@ export class RovApiService {
     return this.httpClient.put<SaveTenderResultModel>(url, JSON.stringify(tndrObj), { headers: this.headerObjs });
   }
 
-  public saveROVTicketDetail(tndrObj: ROV): Observable<SaveTenderResultModel> {
-    const url = GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveTender?guid=' + encodeURIComponent(GlobalConstants.PUT_GUID)
-      + '&uid=' + encodeURIComponent(tndrObj.tndMaintUserId)
-      + '&appType=' + CPOSAppType.ShortTerm.toString()
-      + '&bFromLinuxTab=true';
-
-    return this.httpClient.put<SaveTenderResultModel>(url, JSON.stringify(tndrObj), { headers: this.headerObjs });
-  }
+    public saveRovTicketDetail(uid: number, request: SaveTicketDetailRequest): Observable<SaveTicketDetailResultModel> {
+        return this.httpClient.put<SaveTicketDetailResultModel>(
+            GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveTicketDetail?guid=' + GlobalConstants.PUT_GUID
+                + '&uid=' + uid.toString()
+                + '&appType=' + CPOSAppType.ShortTerm.toString(),
+            JSON.stringify(request),
+            { headers: this.headerObjs }
+        );
+    }
 
   public resetRovAssociatePin(request: ResetPinRequest): Observable<ROV_AssociatePINUpdateResultsModel> {
     const url = GlobalConstants.CPOS_SVCS_URL + '/rov/ResetAssociatePIN?guid=' + encodeURIComponent(GlobalConstants.PUT_GUID);

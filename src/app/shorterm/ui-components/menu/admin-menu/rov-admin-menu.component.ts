@@ -10,14 +10,14 @@ export class RovAdminMenuComponent {
   constructor(private router: Router) {}
 
   gotoAssocMaint() {
-    this.router.navigate(['/assocmaint']);
+    this.router.navigate(['/rov/rassocmaint']);
   }
 
   gotoItemBtnMenu() {
-    this.router.navigate(['/itembtnmenu']);
+    this.router.navigate(['/rov/ritembtnmenu']);
   }
 
   gotoSplInstr() {
-    this.router.navigate(['/splinstr']);
+    this.router.navigate(['/rov/rsplinstr']);
   }
 }
