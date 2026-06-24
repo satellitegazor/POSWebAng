@@ -1015,8 +1015,8 @@ export class ContractRovPageComponent implements OnInit {
         mappedDepartment.facilityUID = existingDepartment?.facilityUID ?? facility.facilityUid;
         mappedDepartment.departmentUID = existingDepartment?.departmentUID ?? 0;
         mappedDepartment.description = existingDepartment?.description || department.deptName || '';
-        mappedDepartment.locationUID = existingDepartment?.locationUID ?? 0;
-        mappedDepartment.locationName = existingDepartment?.locationName ?? '';
+        mappedDepartment.eventUID = existingDepartment?.eventUID ?? 0;
+        mappedDepartment.eventName = existingDepartment?.eventName ?? '';
         mappedDepartment.allowTags = existingDepartment?.allowTags ?? Boolean(department.allowTags);
         mappedDepartment.custInfoReq = existingDepartment?.custInfoReq ?? Boolean(department.custInfoReq);
         mappedDepartment.feePercent = existingDepartment?.feePercent ?? 0;

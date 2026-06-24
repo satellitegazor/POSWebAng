@@ -262,11 +262,11 @@ export class VendorLTComponent implements OnInit {
                     this.selectedLocationId = ary.length > 0 ? ary[0].locationUID : this.LocationList[0].locationUID;
                    
                 } else {
-                    alert('No locations found for given Vendor, Exchange Number.');
+                    this._toastSvc.error('No locations found for given Vendor, Exchange Number.');
                 }
             },
             error: err => {
-                alert('No locations found for given Vendor, Exchange Number.');
+                this._toastSvc.error('No locations found for given Vendor, Exchange Number.');
                 //console.log(err);
             }
         })

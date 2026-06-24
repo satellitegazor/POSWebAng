@@ -330,14 +330,13 @@ export class RovApiService {
 
   public checkSalesTaxSaveStatus(
     EventId: number,
-    uid: number,
-    bWrite: boolean = false
+    uid: number
   ): Observable<ROV_SaleTaxSaveStatusResultModel> {
+    
     const url = GlobalConstants.CPOS_SVCS_URL + '/rov/CheckSalesTaxSaveStatus?guid=' 
       + encodeURIComponent(GlobalConstants.GET_GUID)
       + '&EventId=' + EventId.toString()
-      + '&uid=' + uid.toString()
-      + '&bWrite=' + bWrite;
+      + '&uid=' + uid.toString();
 
     return this.httpClient.get<ROV_SaleTaxSaveStatusResultModel>(url, { headers: this.headerObjs });
   }
@@ -351,6 +350,18 @@ export class RovApiService {
       + '&uid=' + uid.toString();
 
     return this.httpClient.get<ROV_SaleTaxSaveModel>(url, { headers: this.headerObjs });
+  }
+
+  public saveSaleTaxPct(
+    EventId: number,
+    uid: string,
+    stm: ROV_SaleTaxSaveModel
+  ): Observable<ROV_SaleTaxSaveModel> {
+    const url = GlobalConstants.CPOS_SVCS_URL + '/rov/SaveSaleTaxPct?guid=' + encodeURIComponent(GlobalConstants.PUT_GUID)
+      + '&EventId=' + EventId.toString()
+      + '&uid=' + encodeURIComponent(uid);
+
+    return this.httpClient.put<ROV_SaleTaxSaveModel>(url, JSON.stringify(stm), { headers: this.headerObjs });
   }
 
   public getTranCountForEvent(eventId: number, uid: string): Observable<TranCountForLocEventResultModel> {

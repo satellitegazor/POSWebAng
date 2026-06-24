@@ -34,7 +34,7 @@ import { RovCustomerSearchComponent } from '../../../customer-search/rov-custome
 import { RovKeyPadComponent } from '../rov-key-pad/rov-key-pad.component';
 import { RovDeptListComponent } from '../salesdept/rov-deptlist.component';
 import { ROV_Department } from '../../../../../longterm/models/ticket.list';
-import { ROV_SaleTaxSaveStatusResultModel } from '../../../../models/models';
+import { RDeptCategoryResultModels, ROV_SaleTaxSaveStatusResultModel } from '../../../../models/models';
 
 
 
@@ -73,12 +73,10 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
     }
 
     public deptListRefreshEvent: Subject<boolean> = new Subject<boolean>();
-    deptList: Dept[] = [];
-    saleItemList: SaleItem[] = [];
-    saleCatList: SalesCat[] = [];
+
     vendorLoginResult: VendorLoginResultsModel = {} as VendorLoginResultsModel;
 
-    allItemButtonMenuList: ROV_Department[] = [];
+    deptCategoryList: ROV_Department[] = [];
     salesItemRsltMdl!: Observable<SaleItemResultsModel>;
 
     strongErrMessage: string = "";
@@ -120,13 +118,22 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
                 this.router.navigate(['/rov/ritembtnmenu']);
                 return;
             }
+
+            this._rovApiSvc.getConcessionMenuItem(this._logonDataSvc.getRovVendorLogonData().individualUID.toString(), 
+            this._logonDataSvc.getRovEventConfig().eventID, 
+            0, 
+            true).subscribe((data: RDeptCategoryResultModels) => {   
+
+                this.deptCategoryList = data.lstItemButtons;
+
+            });
             this.initializeItemSelectionPage();
         });
     }
 
     private initializeItemSelectionPage(): void {
 
-
+        this.eventConfig = this._logonDataSvc.getRovEventConfig();
         
         //console.log('SalesCart ngOnInit')
         this.vendorLoginResult = this._logonDataSvc.getRovVendorLogonData();
@@ -154,21 +161,16 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
 
         let pinpadStatus: VerifoneCommStatus = new VerifoneCommStatus();
 
-        
-
-        this._buildTktObj();
-        this._rovApiSvc.getConcessionMenuItem(this.individualId.toString(), this._logonDataSvc.getRovEventConfig().eventID, 0, true).subscribe(data => {
-            if(data.lstItemButtons == null || data.lstItemButtons.length == 0) {
-                this.router.navigate(['/itembtnmenu']);
+        this._rovApiSvc.checkSalesTaxSaveStatus(this.eventConfig.eventID, 0)
+            .subscribe((data: ROV_SaleTaxSaveStatusResultModel) => {
+            if(data.saveStatus == null || data.saveStatus == false) {
+                this.router.navigate(['rov/ritembtnmenu']);
                 return;
             }
-            this.allItemButtonMenuList = data.lstItemButtons;
-            this.getDeptList();
-        });
+        });        
+        this._buildTktObj();
 
-        
-
-        this._rovApiSvc.GetEventConfig(+this._logonDataSvc.getRovEventConfig().eventID, this.vendorLoginResult.individualUID).subscribe(data => {
+        this._rovApiSvc.GetEventConfig(+this.eventConfig.eventID, this.vendorLoginResult.individualUID).subscribe(data => {
 
             this.eventConfig = data.config;
             this._rovEventConfigStore.dispatch(setEventConfig({ eventConfig: data.config }));
@@ -224,21 +226,7 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {}
 
-    public getDeptList(): void {
-        
-        this.allItemButtonMenuList.forEach(item => {
-            let dptCount = this.deptList.filter(d => d.departmentUID == item.departmentUID).length;
-            if (dptCount == 0) {
-                let dpt = new Dept();
-                dpt.departmentUID = item.departmentUID;
-                dpt.departmentName = item.description;
-                this.deptList.push(dpt);
-            }
-        });
-        this.deptListRefreshEvent.next(true);
 
-        //this.getSalesCategoryList(this.deptList[0].departmentUID);
-    }
 
     // public getSalesCategoryList(deptId: number): void {
 
@@ -343,12 +331,12 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
         });
 
         modalRef.componentInstance.data = {
-            departmentNames: this.deptList.map(dept => ({
+            departmentNames: this.deptCategoryList.map(dept => ({
                 departmentUID: dept.departmentUID,
-                departmentName: dept.departmentName
+                departmentName: dept.description
             }))
         };
-        modalRef.componentInstance.allSaleItems = this.allItemButtonMenuList;
+        modalRef.componentInstance.allSaleItems = this.deptCategoryList;
         modalRef.componentInstance.dailyExchRate = this._logonDataSvc ? this._logonDataSvc.getDailyExchRate() : {} as DailyExchRate;
         modalRef.componentInstance.transactionId = this.transactionId;
         modalRef.componentInstance.individualId = this.individualId;

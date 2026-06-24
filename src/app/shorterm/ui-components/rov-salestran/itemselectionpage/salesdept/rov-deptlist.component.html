@@ -5,7 +5,7 @@
             <div class="col-md-3" *ngFor="let dept of deptList;">
                 <button type="button" [ngClass]="[ activeId === dept.departmentUID ? 'dpt btn btn-block btn-primary' : 'dpt btn btn-block btn-secondary' ]"
                         style="margin-top: 10px;margin-bottom: 10px;" 
-                        id="{{dept.departmentUID}}" (click)="deptClick($event, dept.departmentUID);">{{dept.departmentName}}</button>
+                        id="{{dept.departmentUID}}" (click)="deptClick($event, dept.departmentUID);">{{dept.description}}</button>
             </div>
         </div>
     </div>

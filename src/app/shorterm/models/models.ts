@@ -40,10 +40,13 @@ export class ROV_SaleTaxSaveStatusResultModel {
 }
 
 export class ROV_SaleTaxSave {
-	eventId: number = 0;
-	deptId: number = 0;
+	eventUID: number = 0;
+	departmentUID: number = 0;
 	deptName: string = '';
-	saleTaxPct: number = 0;
+	salesTaxPct: number = 0;
+	departmentTypeUID: number = 0;
+	facilityUID: number = 0;
+	feePercent: number = 0;
 }
 
 export class ROV_SaleItemTax {

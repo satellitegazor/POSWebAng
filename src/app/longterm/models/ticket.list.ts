@@ -108,8 +108,6 @@ export class ROV_Department {
     maintUserId: number = 0;
     eventUID: number = 0;
     eventName: string = '';
-    locationUID: number = 0;
-    locationName: string = '';
     allowTaxExemption: boolean = false;
     exchCouponsAfterTax: boolean = false;
     vendCouponsAfterTax: boolean = false;

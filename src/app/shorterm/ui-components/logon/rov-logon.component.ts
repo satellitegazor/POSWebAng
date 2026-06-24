@@ -274,8 +274,8 @@ export class RovLogonComponent implements OnInit {
 
         locModel.privActConfmComplete = data.privActConfmComplete;
         this._rovLogonDataSvc.setRovEventConfig(evtConfigMdl?.config ?? null);
-        //this.router.navigate(['rov/rmainmenu']);        
-        this.router.navigate(["rov/ritembtnmenu"]);
+        this.router.navigate(['rov/rmainmenu']);        
+        //this.router.navigate(["rov/ritembtnmenu"]);
       }
 
       this._cposWebSvc.pinpadHeartbeat("PING").subscribe(data => {

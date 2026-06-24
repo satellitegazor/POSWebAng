@@ -93,7 +93,7 @@ import { ROV_Department } from '../../../../longterm/models/ticket.list';
 
     this.vendorLoginResult = this._logonDataSvc.getRovVendorLogonData();
 
-    this._rovApiSvc.loadSaleTaxPct(this.eventId, +this.vendorLoginResult.individualUID).subscribe({
+    this._rovApiSvc.loadSaleTaxPct(this.eventId, eventConfig.individualUID).subscribe({
       next: (response: ROV_SaleTaxSaveModel) => {
         // Handle the response if needed
         this.defaultCurrency = response?.defaultCurrency ?? this.defaultCurrency;
@@ -168,212 +168,44 @@ import { ROV_Department } from '../../../../longterm/models/ticket.list';
     //this.getSalesCategoryList(this.deptIdSelected > 0 ? this.deptIdSelected : this.deptList[0].departmentUID);
   }
 
-  // public getSalesCategoryList(deptId: number): void {
-
-  //   this.saleCatList = [];
-  //   let allDeptList = this.allItemButtonMenuList.filter(item => item.departmentUID == deptId && item.salesCatActive);
-  //   allDeptList.forEach(itm => {
-  //     let k = this.saleCatList.filter(ct => ct.salesCategoryUID == itm.salesCategoryID);
-
-  //     if (k.length == 0) {
-  //       let cat = new SalesCat();
-  //       cat.salesCategoryUID = itm.salesCategoryID;
-  //       cat.description = itm.salesCategoryDescription;
-  //       cat.departmentName = itm.departmentName;
-  //       cat.departmentUID = itm.departmentUID;
-  //       cat.salesCatTypeUID = itm.salesCatTypeUID;
-  //       cat.displayOrder = itm.displayOrder;
-  //       cat.cliTimeVar = GlobalConstants.GetClientTimeVariance();
-  //       cat.maintUserId = +this.vendorLoginResult.individualUID
-  //       cat.active = itm.salesCatActive
-        
-  //       this.saleCatList.push(cat);
-  //     }
-
-  //     this.salesCatIdSelected = (this.salesCatIdSelected > 0 && this.saleCatList.filter(cat => cat.salesCategoryUID == this.salesCatIdSelected).length == 0) ? 
-  //       this.saleCatList[0].salesCategoryUID : this.salesCatIdSelected;
-  //   });
-  //   //console.log('setting salesCategoryListRefresh to true');
-  //   this.salesCategoryListRefreshEvent.next(true);
-
-  //   this.getSaleItemList(this.salesCatIdSelected > 0 ? this.salesCatIdSelected : this.saleCatList[0].salesCategoryUID);
-  // }
-
-  // public getSaleItemList(categoryId: number): void {
-
-  //   this.saleItemList = [];
-  //   let allCatList = this.allItemButtonMenuList.filter(item => item.salesCategoryID == categoryId);
-
-  //   allCatList.forEach(itm => {
-  //     let k = this.saleItemList.filter(si => si.id == itm.salesItemID);
-  //     if (k.length == 0) {
-  //       itm.price = itm.price ?? 0;
-  //       itm.salesTax = itm.salesTax ?? 0;
-  //       this.saleItemList.push(new SaleItemButton(itm));
-  //     }
-  //   });
-    
-  //   let inActiveSaleItems = this.saleItemList.filter(item => item.active == false);
-  //   this.saleItemList = this.saleItemList.length == 1 && this.saleItemList.filter(si => si.description == 'Enter Item Description Here' && si.id > 0).length == 1 ?
-  //       this.saleItemList : this.saleItemList.filter(si => si.active);
-
-   
-  //   if(this.saleItemList.length > 0) {
-  //     let emptySaleItem = inActiveSaleItems.filter(item => item.description == 'Enter Item Description Here' && item.price == 0 && item.salesTax == 0)[0]
-  //     this.saleItemList = this.saleItemList.concat(emptySaleItem ? [emptySaleItem] : []);
-  //   }
-
-  //   this.saleItemList.sort((a, b) => (a.active ? 0 : 1) - (b.active ? 0 : 1) || (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
-
-  //   //console.log('setting salesItemListRefresh to true');
-  //   this.salesItemListRefresh.next(true)
-  //   this.listInitialized = true;
-  // }
+  
 
   deptClicked(id: any) {
-  //  this.getSalesCategoryList(id);
     this.deptIdSelected = id;
   }
 
-  // saleCatClicked(id: any) {
-  //   this.getSaleItemList(id);
-  //   this.salesCatIdSelected = id;
-  // }
-
-  saleItemClicked(id: any) {
-    //console.log('Sale Item Clicked: ' + id);
-  }
 
 
 
   public deptList: ROV_Department[] = [];
-  // public saleItemList: SaleItemButton[] = [];
-  // public saleCatList: SalesCat[] = [];
+  
 
-  // btnAddItemClick($event: PointerEvent) {
-
-  //   let saleItemCount = this.allItemButtonMenuList.filter(item => item.departmentUID == this.deptIdSelected && item.salesCategoryID == this.salesCatIdSelected).length;
-  //   if(saleItemCount == 30) {
-  //     this._toastSvc.error('Maximum of 30 items allowed per category.');
-  //     return;
-  //   }
-
-  //   const saleItems = this.salesItemListChild.getChangedItems();
-    
-  //   if (saleItems && saleItems.length > 0) {
-  //     this._toastSvc.warning('Please save the recently added item before adding a new one.');
-  //     return;
-  //   }     
-
-  //   let newSaleItem: SaleItem = JSON.parse(JSON.stringify(this.allItemButtonMenuList.filter(item => item.departmentUID == this.deptIdSelected && item.salesCategoryID == this.salesCatIdSelected)[0]));
-    
-  //   let newSaleItemButton = new SaleItemButton(newSaleItem);
-  //   newSaleItemButton.id = 0;
-  //   newSaleItemButton.description = 'Enter Item Description Here';
-  //   newSaleItemButton.price = 0;
-  //   newSaleItemButton.salesTax = 0;
-  //   newSaleItemButton.displayOrder = this.saleItemList.length + 1;
-
-  //   this.saleItemList.push(newSaleItemButton);
-  //   this.salesItemListRefresh.next(true);
-  // }
-
-  btnSalesTranClick($event: PointerEvent) {
-    this._router.navigate(['/salestran']);
-  }
 
   btnSaveClick() {
 
+    let saveModel = new ROV_SaleTaxSaveModel();
+    saveModel.bApplyConcDiscounts = this.concessionDiscountAfterTax;
+    saveModel.bApplyExchCoupons = this.exchangeCouponAfterTax;
+    saveModel.defaultCurrency = this.defaultCurrency;
+    saveModel.currencyCode = this.currCode;
+    saveModel.lstSaleTax = this.saleTaxItems;
 
-    const payload1 = {
-      department: this.deptIdSelected,
+    this._rovApiSvc.saveSaleTaxPct(this.eventId, 
+      this.vendorLoginResult.individualUID, saveModel).subscribe({
+      next: (response) => {
+        this._toastSvc.success('Sale Tax Percent saved successfully.');   
+      },
+      error: (error) => {
+        this._toastSvc.error('Error saving Sale Tax Percent.');
+      }
+    });
+  }
 
-    }
-
-    // let payload: LTC_SaveSalesItemModelParameters = {
-    //   ContractUID: +this.vendorLoginResult.contractUID,
-    //   AllowTaxExemption: this.allowTaxExemption,
-    //   ExchCouponsAfterTax: this.exchangeCouponAfterTax,
-    //   VendCouponsAfterTax: this.concessionDiscountAfterTax,
-    //   OpenCashDrawerForTips: this.openCashDrawerForTips,
-    //   DefaultCurrency: this.defaultCurrency,  
-    //   SalesItems: saleItems.length > 0 ? saleItems.map<LTC_SalesItems>(item => {
- 
-    //     let salesItem = new LTC_SalesItems();
-    //     salesItem.DisplayOrderItem = item.displayOrder;
-    //     salesItem.FacilityUID = +this.vendorLoginResult.locationUID;
-    //     salesItem.LocationUID = +this.vendorLoginResult.locationUID;
-    //     salesItem.BusinessFunctionID = 0;
-    //     salesItem.SalesCategoryID = item.salesCategoryID;
-    //     salesItem.SalesItemID = item.id;
-    //     salesItem.SalesItemDescription = item.description;
-    //     salesItem.Price = item.price;
-    //     salesItem.SalesTax = item.salesTax;
-    //     salesItem.Action = item.id > 0 ? 2 : 1; // 2 = update, 1 = insert
-    //     return salesItem;
-    //   }) : [] as LTC_SalesItems[],
-    // }
-
-    // console.log('Saving payload: ', payload);
-    // this._saleTranSvc.saveItemButtonMenu(payload, +this.vendorLoginResult.individualUID).subscribe(response => {
-    //   this.getAllSaleItems(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0, 0, 0, 0);
-    //   this._toastSvc.success('Menu Items saved successfully.');
-    //   console.log('Save response: ', response);
-    // });
+  openMainMenu() {
+    this._router.navigate(['rov/rmainmenu']);
   }
 
   onSalesCategoryListRefresh() {
-    this.getAllSaleItems(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0, 0, 0, 0);
-  }
-
-  deleteItem($event: ROV_Department) {
-    // let itemToBeDeleted = this.saleItemList.find(item => item.id === $event.salesItemID);
-    // if (itemToBeDeleted) {
-    //   this.saleItemList = this.saleItemList.filter(item => item.id !== itemToBeDeleted!.id);
-    //   this.salesItemListRefresh.next(true);
-    // }
-
-    // let salesItemToDelete = new LTC_SalesItems();
-    // salesItemToDelete.DisplayOrderItem = itemToBeDeleted!.displayOrder;
-    // salesItemToDelete.FacilityUID = +this.vendorLoginResult.locationUID;
-    // salesItemToDelete.LocationUID = +this.vendorLoginResult.locationUID;
-    // salesItemToDelete.BusinessFunctionID = 0;
-    // salesItemToDelete.SalesCategoryID = itemToBeDeleted!.salesCategoryID;
-    // salesItemToDelete.SalesItemID = itemToBeDeleted!.id;
-    // salesItemToDelete.SalesItemDescription = itemToBeDeleted!.description;
-    // salesItemToDelete.Price = itemToBeDeleted!.price;
-    // salesItemToDelete.SalesTax = itemToBeDeleted!.salesTax;
-    // salesItemToDelete.Action = 3; // 3 = delete
-
-    // let payload: LTC_SaveSalesItemModelParameters = {
-    //   ContractUID: +this.vendorLoginResult.contractUID,
-    //   AllowTaxExemption: this.allowTaxExemption,
-    //   ExchCouponsAfterTax: this.exchangeCouponAfterTax,
-    //   VendCouponsAfterTax: this.concessionDiscountAfterTax,
-    //   OpenCashDrawerForTips: this.openCashDrawerForTips,
-    //   DefaultCurrency: this.defaultCurrency,
-    //   SalesItems: [salesItemToDelete]
-    // };
-
-    // this._saleTranSvc.saveItemButtonMenu(payload, +this.vendorLoginResult.individualUID).subscribe(response => {
-    //   this.getAllSaleItems(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0, 0, 0, 0);
-    //   this._toastSvc.success('Item Button Menu saved successfully.');
-    //   console.log('Save response: ', response);
-    // });
-
-
-  }
-  updateItem($event: ROV_Department) {
-    this.btnSaveClick();    
-  }
-
-  addItem($event: ROV_Department) {
-    this.getAllSaleItems(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0, 0, 0, 0);
-  }
-  updateCategory($event: Event) {
-    this.getAllSaleItems(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0, 0, 0, 0);
-  }
-  addCategory($event: Event) {
     this.getAllSaleItems(+this.vendorLoginResult.locationUID, this.vendorLoginResult.contractUID, 0, 0, 0, 0);
   }
 
@@ -382,18 +214,14 @@ import { ROV_Department } from '../../../../longterm/models/ticket.list';
       return;
     }
 
-    const firstSaleTaxPct = this.saleTaxItems[0]?.saleTaxPct;
+    const firstSaleTaxPct = this.saleTaxItems[0]?.salesTaxPct;
     this.saleTaxItems.forEach((item, index) => {
       if (index > 0) {
-        item.saleTaxPct = firstSaleTaxPct;
+        item.salesTaxPct = firstSaleTaxPct;
       }
     });
   }
 
-  openAdminMenu() {
-    console.log('Navigating to Admin Menu');
-    this._router.navigate(['/adminmenu']);
-  }
 
 
 }
