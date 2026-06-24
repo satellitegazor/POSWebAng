@@ -28,6 +28,8 @@ import { TenderTypeModel } from '../longterm/models/tender.type';
 import { DailyExchRateMdl } from '../models/exchange.rate';
 import { TranCountForLocEventResultModel } from '../longterm/models/misc.models';
 import { CPOSAppType } from '../services-misc/util.service';
+import { ROV_POSTicketSplit } from './models/rticket.split';
+import { SaveTenderResultModel, TicketTender } from '../models/ticket.tender';
 
 @Injectable({
   providedIn: 'root'
@@ -221,9 +223,27 @@ export class RovApiService {
     return this.httpClient.post<MobileBase>(url, JSON.stringify(request), { headers: this.headerObjs });
   }
 
-  public saveSplitPayments(request: SaveSplitPaymentsRequest): Observable<SaveTicketResultsModel> {
+  public saveSplitPayments(request: ROV_POSTicketSplit): Observable<SaveTicketResultsModel> {
     const url = GlobalConstants.CPOS_SVCS_URL + '/rov/SaveSplitPayments?guid=' + encodeURIComponent(GlobalConstants.PUT_GUID);
     return this.httpClient.put<SaveTicketResultsModel>(url, JSON.stringify(request), { headers: this.headerObjs });
+  }
+
+  public saveROVTenderObj(tndrObj: TicketTender): Observable<SaveTenderResultModel> {
+    const url = GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveTender?guid=' + encodeURIComponent(GlobalConstants.PUT_GUID)
+      + '&uid=' + encodeURIComponent(tndrObj.tndMaintUserId)
+      + '&appType=' + CPOSAppType.ShortTerm.toString()
+      + '&bFromLinuxTab=true';
+
+    return this.httpClient.put<SaveTenderResultModel>(url, JSON.stringify(tndrObj), { headers: this.headerObjs });
+  }
+
+  public saveROVTicketDetail(tndrObj: ROV): Observable<SaveTenderResultModel> {
+    const url = GlobalConstants.CPOS_SVCS_URL + '/ltc/SaveTender?guid=' + encodeURIComponent(GlobalConstants.PUT_GUID)
+      + '&uid=' + encodeURIComponent(tndrObj.tndMaintUserId)
+      + '&appType=' + CPOSAppType.ShortTerm.toString()
+      + '&bFromLinuxTab=true';
+
+    return this.httpClient.put<SaveTenderResultModel>(url, JSON.stringify(tndrObj), { headers: this.headerObjs });
   }
 
   public resetRovAssociatePin(request: ResetPinRequest): Observable<ROV_AssociatePINUpdateResultsModel> {
@@ -404,7 +424,7 @@ export interface LogDeclinedTransactionRequest {
 
 export interface SaveSplitPaymentsRequest {
   uid: string;
-  model: any;
+  model: ROV_POSTicketSplit;
 }
 
 export interface LTC_CardCancelReultsModel {

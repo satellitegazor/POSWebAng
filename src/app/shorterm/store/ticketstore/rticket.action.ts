@@ -14,78 +14,78 @@ import { DailyExchRate } from '../../../models/exchange.rate';
 import { InactiveTicketDetailRequest, InactiveTicketDetailResultModel, SaveTicketDetailRequest, SaveTicketDetailResultModel } from '../../../longterm/models/misc.models';
 import { RovSaveTicketDetailRequest } from '../../models/models';
  
-export const ADD_SALE_ITEM = 'addSaleItem';
-export const INC_SALE_ITEM_QTY = 'incSaleItemQty';
-export const DEC_SALE_ITEM_QTY = 'decSaleItemQty';
+export const ADD_ROV_SALE_ITEM = 'addRovSaleItem';
+export const INC_ROV_SALE_ITEM_QTY = 'incRovSaleItemQty';
+export const DEC_ROV_SALE_ITEM_QTY = 'decRovSaleItemQty';
 export const ROV_INIT_TKT_OBJ = 'rovInitTktObj';
 export const ADD_TAB_SERIAL_TO_ROV_TKT_OBJ = 'addTabSerialToRovTktObj';
-export const RESET_TKT_OBJ = 'resetTktObj';
-export const SAVE_TICKET_SPLIT = '[SaveTicket] Start'
-export const SAVE_TICKET_SPLIT_SUCCESS = '[SaveTicket] Success'
-export const SAVE_TICKET_SPLIT_FAILED = '[SaveTicket] Failure'
+export const RESET_ROV_TKT_OBJ = 'resetRovTktObj';
+export const SAVE_ROV_TICKET_SPLIT = '[SaveRovTicket] Start'
+export const SAVE_ROV_TICKET_SPLIT_SUCCESS = '[SaveRovTicket] Success'
+export const SAVE_ROV_TICKET_SPLIT_FAILED = '[SaveRovTicket] Failure'
 
-export const SAVE_COMPLETE_TICKET_SPLIT = '[SaveCompleteTicket] Start'
-export const SAVE_COMPLETE_TICKET_SPLIT_SUCCESS = '[SaveCompleteTicket] Success'
-export const SAVE_COMPLETE_TICKET_SPLIT_FAILED = '[SaveCompleteTicket] Failure'
+export const SAVE_COMPLETE_ROV_TICKET_SPLIT = '[SaveCompleteRovTicket] Start'
+export const SAVE_COMPLETE_ROV_TICKET_SPLIT_SUCCESS = '[SaveCompleteRovTicket] Success'
+export const SAVE_COMPLETE_ROV_TICKET_SPLIT_FAILED = '[SaveCompleteRovTicket] Failure'
 
-export const ADD_CUST_ID = 'add CustomerId to TktObj';
-export const ADD_NEW_CUST = 'add New Customer to TktObj';
-export const ADD_TENDER_OBJ = 'addTenderToTktObj';
+export const ADD_CUST_ID = 'add CustomerId to RovTktObj';
+export const ADD_NEW_CUST = 'add New Customer to RovTktObj';
+export const ADD_TENDER_OBJ = 'addTenderToRovTktObj';
 export const ADD_PINPAD_RESP = 'addPinpadResponse';
 export const APP_REFUND_REASON = 'addRefundReason';
-export const UPD_SALE_ITEM = 'updSaleItems';
-export const UPD_CHK_OUT_TOTALS = 'updCheckoutTotals';
-export const UPD_SRVD_BY_ASSOC = 'updateServedByAssociate';
-export const UPSERT_ASSOC_TIPS = 'upsertAssocTips';
-export const DELETE_SALE_ITEM = 'delSaleitemZeroQty';
-export const UPDATE_TAX_EXEMPT = 'updateTaxExempt';
-export const UPDATE_ASSOC_IN_ASSOCTIPS = 'updateAssocInAssocTips';
+export const UPD_SALE_ITEM = 'updRovSaleItems';
+export const UPD_CHK_OUT_TOTALS = 'updRovCheckoutTotals';
+export const UPD_SRVD_BY_ASSOC = 'updateRovServedByAssociate';
+export const UPSERT_ASSOC_TIPS = 'upsertRovAssocTips';
+export const DELETE_SALE_ITEM = 'delRovSaleitemZeroQty';
+export const UPDATE_TAX_EXEMPT = 'updateRovTaxExempt';
+export const UPDATE_ASSOC_IN_ASSOCTIPS = 'updateRovAssocInAssocTips';
 
-export const SAVE_TENDER_OBJ = 'saveTenderObj';
-export const SAVE_TENDER_OBJ_SUCCESS = 'saveTenderObjSuccess';
-export const SAVE_TENDER_OBJ_FAILED = 'saveTenderObjFailed';
+export const SAVE_TENDER_OBJ = 'saveRovTenderObj';
+export const SAVE_TENDER_OBJ_SUCCESS = 'saveRovTenderObjSuccess';
+export const SAVE_TENDER_OBJ_FAILED = 'saveRovTenderObjFailed';
 
-export const SAVE_TICKET_DETAIL = 'saveTicketDetail';
-export const SAVE_TICKET_DETAIL_SUCCESS = 'saveTicketDetailSuccess';
-export const SAVE_TICKET_DETAIL_FAILED = 'saveTicketDetailFailed';
+export const SAVE_TICKET_DETAIL = 'saveRovTicketDetail';
+export const SAVE_TICKET_DETAIL_SUCCESS = 'saveRovTicketDetailSuccess';
+export const SAVE_TICKET_DETAIL_FAILED = 'saveRovTicketDetailFailed';
 
-export const INACTIVE_TICKET_DETAIL = 'inactiveTicketDetail';
-export const INACTIVE_TICKET_DETAIL_SUCCESS = 'inactiveTicketDetailSuccess';
-export const INACTIVE_TICKET_DETAIL_FAILED = 'inactiveTicketDetailFailed';
+export const INACTIVE_TICKET_DETAIL = 'inactiveRovTicketDetail';
+export const INACTIVE_TICKET_DETAIL_SUCCESS = 'inactiveRovTicketDetailSuccess';
+export const INACTIVE_TICKET_DETAIL_FAILED = 'inactiveRovTicketDetailFailed';
 
-export const DELETE_DECLINED_TNDR = 'deleteDeclinedTender';
+export const DELETE_DECLINED_TNDR = 'deleteRovDeclinedTender';
 
-export const SAVE_PINPAD_RESP = 'savePinpadResponse';
-export const SAVE_PINPAD_RESP_SUCCESS = 'savePinpadResponseSuccess';
-export const SAVE_PINPAD_RESP_FAILED = 'savePinpadResponseFailed';
+export const SAVE_PINPAD_RESP = 'saveRovPinpadResponse';
+export const SAVE_PINPAD_RESP_SUCCESS = 'saveRovPinpadResponseSuccess';
+export const SAVE_PINPAD_RESP_FAILED = 'saveRovPinpadResponseFailed';
 
 
-export const UPSERT_SALE_ITEM_EXCH_CPN = 'upsertSaleItemExchCpn';
-export const UPSERT_SALE_ITEM_VND_CPN = 'upsertSaleItemVndCpn';
-export const UPSERT_TRAN_EXCH_CPN = 'upsertTranExchCpn';
+export const UPSERT_SALE_ITEM_EXCH_CPN = 'upsertRovSaleItemExchCpn';
+export const UPSERT_SALE_ITEM_VND_CPN = 'upsertRovSaleItemVndCpn';
+export const UPSERT_TRAN_EXCH_CPN = 'upsertRovTranExchCpn';
 
-export const UPDATE_PARTPAY_DATA = 'updatePartpayData';
+export const UPDATE_PARTPAY_DATA = 'updateRovPartpayData';
 
-export const UPDATE_LOCATION_CONFIG = 'updateEventConfig';
-export const REMOVE_TNDR_SAVE_CODE = "removeTenderWithSaveCode";
-export const UPDATE_TENDER_RRN = 'updateTenderRRN';
-export const IS_SPLIT_PAY_R5 = 'isSplitPayR5';
+export const UPDATE_LOCATION_CONFIG = 'updateRovEventConfig';
+export const REMOVE_TNDR_SAVE_CODE = "removeRovTenderWithSaveCode";
+export const UPDATE_TENDER_RRN = 'updateRovTenderRRN';
+export const IS_SPLIT_PAY_R5 = 'isRovSplitPayR5';
 
-export const LOAD_TICKET = '[EventConfig] Load Ticket'
-export const LOAD_TICKET_SUCCESS = '[EventConfig] Load Ticket Success'
-export const LOAD_TICKET_FAIL = '[EventConfig] Load Ticket Fail'
+export const LOAD_TICKET = '[RovEventConfig] Load Ticket'
+export const LOAD_TICKET_SUCCESS = '[RovEventConfig] Load Ticket Success'
+export const LOAD_TICKET_FAIL = '[RovEventConfig] Load Ticket Fail'
 
-export const LOAD_INPROGRESS_TENDERS = '[EventConfig] Load InProgress Tenders'
-export const LOAD_INPROGRESS_TENDERS_SUCCESS = '[EventConfig] Load InProgress Tenders Success'
-export const LOAD_INPROGRESS_TENDERS_FAIL = '[EventConfig] Load InProgress Tenders Fail'
+export const LOAD_INPROGRESS_TENDERS = '[RovEventConfig] Load InProgress Tenders'
+export const LOAD_INPROGRESS_TENDERS_SUCCESS = '[RovEventConfig] Load InProgress Tenders Success'
+export const LOAD_INPROGRESS_TENDERS_FAIL = '[RovEventConfig] Load InProgress Tenders Fail'
 
-export const addSaleItem = createAction(ADD_SALE_ITEM,
+export const addSaleItem = createAction(ADD_ROV_SALE_ITEM,
     props<{saleItem: Rov_SalesTranCheckoutItem, defCurrSymbl: string, dailyExchRateObj: DailyExchRate}>());
 
-export const incSaleitemQty = createAction(INC_SALE_ITEM_QTY,
+export const incSaleitemQty = createAction(INC_ROV_SALE_ITEM_QTY,
     props<{ saleItemId: number, tktDtlId: number, defCurrSymbl: string, dailyExchRateObj: DailyExchRate }>());
  
-export const decSaleitemQty = createAction(DEC_SALE_ITEM_QTY,
+export const decSaleitemQty = createAction(DEC_ROV_SALE_ITEM_QTY,
     props<{ saleItemId: number, tktDtlId: number, defCurrSymbl: string, dailyExchRateObj: DailyExchRate }>());
 
 export const delSaleitemZeroQty = createAction(DELETE_SALE_ITEM,
@@ -97,122 +97,117 @@ export const rovInitTktObj = createAction(ROV_INIT_TKT_OBJ,
 export const addTabSerialToRovTktObj = createAction(ADD_TAB_SERIAL_TO_ROV_TKT_OBJ,
     props<{ tabSerialNum: string, ipAddress: string }>());
 
-export const resetTktObj = createAction(RESET_TKT_OBJ, 
+export const resetTktObj = createAction(RESET_ROV_TKT_OBJ, 
     props<{ eventConfig: EventConfig }>());
 
-export const saveTicketForGuestCheck = createAction(SAVE_TICKET_SPLIT,
+export const saveRovTicketForGuestCheck = createAction(SAVE_ROV_TICKET_SPLIT,
     props<{tktObj: ROV_POSTicketSplit}>());
 
-export const saveTicketForGuestCheckSuccess = createAction(SAVE_TICKET_SPLIT_SUCCESS,
+export const saveRovTicketForGuestCheckSuccess = createAction(SAVE_ROV_TICKET_SPLIT_SUCCESS,
     props<{rslt: RSaveTicketResultsModel}>());
 
-export const saveTicketForGuestCheckFailed = createAction(SAVE_TICKET_SPLIT_FAILED,
+export const saveRovTicketForGuestCheckFailed = createAction(SAVE_ROV_TICKET_SPLIT_FAILED,
         props<{rslt: RSaveTicketResultsModel}>());
 
-export const saveCompleteTicketSplit = createAction(SAVE_COMPLETE_TICKET_SPLIT,
+export const saveCompleteRovTicketSplit = createAction(SAVE_COMPLETE_ROV_TICKET_SPLIT,
     props<{tktObj: ROV_POSTicketSplit}>());
 
-export const saveCompleteTicketSplitSuccess = createAction(SAVE_COMPLETE_TICKET_SPLIT_SUCCESS,
+export const saveCompleteRovTicketSplitSuccess = createAction(SAVE_COMPLETE_ROV_TICKET_SPLIT_SUCCESS,
     props<{rslt: RSaveTicketResultsModel}>());
 
-export const saveCompleteTicketSplitFailed = createAction(SAVE_COMPLETE_TICKET_SPLIT_FAILED,
+export const saveCompleteRovTicketSplitFailed = createAction(SAVE_COMPLETE_ROV_TICKET_SPLIT_FAILED,
         props<{rslt: RSaveTicketResultsModel}>());
         
-export const saveTenderObj = createAction(SAVE_TENDER_OBJ,
+export const saveRovTenderObj = createAction(SAVE_TENDER_OBJ,
     props<{tndrObj: TicketTender}>());
-export const saveTenderObjSuccess = createAction(SAVE_TENDER_OBJ_SUCCESS,
+export const saveRovTenderObjSuccess = createAction(SAVE_TENDER_OBJ_SUCCESS,
     props<{data: SaveTenderResultModel, tndrObj?: TicketTender}>());
-export const saveTenderObjFailed = createAction(SAVE_TENDER_OBJ_FAILED,
+export const saveRovTenderObjFailed = createAction(SAVE_TENDER_OBJ_FAILED,
     props<{data: SaveTenderResultModel}>());
 
-export const saveTicketDetail = createAction(SAVE_TICKET_DETAIL,
-    props<{uid: number, appType: number, request: RovSaveTicketDetailRequest}>());
-export const saveTicketDetailSuccess = createAction(SAVE_TICKET_DETAIL_SUCCESS,
-    props<{data: SaveTicketDetailResultModel, request: RovSaveTicketDetailRequest}>());
-export const saveTicketDetailFailed = createAction(SAVE_TICKET_DETAIL_FAILED,
+export const saveRovTicketDetail = createAction(SAVE_TICKET_DETAIL,
+    props<{uid: number, appType: number, request: SaveTicketDetailRequest}>());
+export const saveRovTicketDetailSuccess = createAction(SAVE_TICKET_DETAIL_SUCCESS,
+    props<{data: SaveTicketDetailResultModel, request: SaveTicketDetailRequest}>());
+export const saveRovTicketDetailFailed = createAction(SAVE_TICKET_DETAIL_FAILED,
     props<{error: any}>());
 
-export const inactiveTicketDetail = createAction(INACTIVE_TICKET_DETAIL,
+export const inactiveRovTicketDetail = createAction(INACTIVE_TICKET_DETAIL,
     props<{uid: number, request: InactiveTicketDetailRequest}>());
-export const inactiveTicketDetailSuccess = createAction(INACTIVE_TICKET_DETAIL_SUCCESS,
+export const inactiveRovTicketDetailSuccess = createAction(INACTIVE_TICKET_DETAIL_SUCCESS,
     props<{data: InactiveTicketDetailResultModel, request: InactiveTicketDetailRequest}>());
-export const inactiveTicketDetailFailed = createAction(INACTIVE_TICKET_DETAIL_FAILED,
+export const inactiveRovTicketDetailFailed = createAction(INACTIVE_TICKET_DETAIL_FAILED,
     props<{error: any}>());
 
 export const deleteDeclinedTenderFromStore = createAction(DELETE_DECLINED_TNDR, props<{rrn: string}>());
 
-export const savePinpadResponse = createAction(SAVE_PINPAD_RESP,
+export const saveRovPinpadResponse = createAction(SAVE_PINPAD_RESP,
     props<{respObj: ExchCardTndr}>());
-export const savePinpadResponseSuccess = createAction(SAVE_PINPAD_RESP,
+export const saveRovPinpadResponseSuccess = createAction(SAVE_PINPAD_RESP_SUCCESS,
     props<{respObj: SaveExchCardTndrResult}>());
-export const savePinpadResponseFailed = createAction(SAVE_PINPAD_RESP,
+export const saveRovPinpadResponseFailed = createAction(SAVE_PINPAD_RESP_FAILED,
     props<{msg: string}>());
 
-export const addCustomerId = createAction(ADD_CUST_ID, 
+export const addRovCustomerId = createAction(ADD_CUST_ID, 
     props<{custId: number}>());
 
-export const addNewCustomer = createAction(ADD_CUST_ID, 
+export const addNewRovCustomer = createAction(ADD_CUST_ID, 
     props<{custObj: LTC_Customer}>());
 
-export const addTender = createAction(ADD_TENDER_OBJ,
+export const addRovTender = createAction(ADD_TENDER_OBJ,
     props<{tndrObj: TicketTender}>());
 
-export const addPinpadResp = createAction(ADD_PINPAD_RESP,
+export const addRovPinpadResp = createAction(ADD_PINPAD_RESP,
     props<{respObj: ExchCardTndr}>());
 
-export const updateTenderRRN = createAction(UPDATE_TENDER_RRN,
+export const updateRovTenderRRN = createAction(UPDATE_TENDER_RRN,
     props<{oldRRN: string, newRRN: string}>());
 
-export const updateSaleitems = createAction(UPD_SALE_ITEM,
+export const updateRovSaleitems = createAction(UPD_SALE_ITEM,
     props<{item: Rov_SalesTranCheckoutItem}>());
 
-export const removeTndrWithSaveCode = createAction(REMOVE_TNDR_SAVE_CODE,
+export const removeRovTndrWithSaveCode = createAction(REMOVE_TNDR_SAVE_CODE,
     props<{tndrCode: string}>());
 
-export const markTendersComplete = createAction('SAVE_COMPLETE_TENDER',
+export const markRovTendersComplete = createAction('SAVE_COMPLETE_TENDER',
     props<{status: number}>());
 
-export const markTicketComplete = createAction('SAVE_COMPLETE_TICKET',
+export const markRovTicketComplete = createAction('SAVE_COMPLETE_TICKET',
     props<{status: number}>());
 
-export const updateCheckoutTotals = createAction(UPD_CHK_OUT_TOTALS, props<{logonDataSvc: RovLogonDataService}>());
+export const updateRovCheckoutTotals = createAction(UPD_CHK_OUT_TOTALS, props<{logonDataSvc: RovLogonDataService}>());
 
-export const updateServedByAssociate = createAction(UPD_SRVD_BY_ASSOC, props<{saleItemId:number, indx:number, indLocId: number, srvdByAssociateName: string}>());
 
-export const updateAssocInAssocTips = createAction(UPDATE_ASSOC_IN_ASSOCTIPS, props<{saleItemId: number, indLocId: number}>());
+export const updateRovTaxExempt = createAction(UPDATE_TAX_EXEMPT, props<{taxExempt: boolean}>());
 
-export const upsertAssocTips = createAction(UPSERT_ASSOC_TIPS, props<{ assocTipsList: AssociateSaleTips[], totalTipAmtDC: number, totalTipAmtNDC: number, logonDataSvc: RovLogonDataService }>());
+export const upsertRovSaleItemExchCpn = createAction(UPSERT_SALE_ITEM_EXCH_CPN, props<{logonDataSvc: RovLogonDataService, saleItemId: number, tktDtlId: number, cpnPct: number, cpnAmt: number}>());
+export const upsertRovSaleItemVndCpn = createAction(UPSERT_SALE_ITEM_VND_CPN, props<{logonDataSvc: RovLogonDataService, saleItemId: number, tktDtlId: number, cpnPct: number, cpnAmt: number}>());
+export const upsertRovTranExchCpn = createAction(UPSERT_TRAN_EXCH_CPN, props<{logonDataSvc: RovLogonDataService, cpnPct: number, cpnAmt: number}>());
 
-export const updateTaxExempt = createAction(UPDATE_TAX_EXEMPT, props<{taxExempt: boolean}>());
+export const updateRovPartPayData = createAction(UPDATE_PARTPAY_DATA, props<{partPayFlag: boolean, partPayAmountDC: number, partPayAmountNDC: number}>());
 
-export const upsertSaleItemExchCpn = createAction(UPSERT_SALE_ITEM_EXCH_CPN, props<{logonDataSvc: RovLogonDataService, saleItemId: number, tktDtlId: number, cpnPct: number, cpnAmt: number}>());
-export const upsertSaleItemVndCpn = createAction(UPSERT_SALE_ITEM_VND_CPN, props<{logonDataSvc: RovLogonDataService, saleItemId: number, tktDtlId: number, cpnPct: number, cpnAmt: number}>());
-export const upsertTranExchCpn = createAction(UPSERT_TRAN_EXCH_CPN, props<{logonDataSvc: RovLogonDataService, cpnPct: number, cpnAmt: number}>());
+export const isSplitPayRovR5 = createAction(IS_SPLIT_PAY_R5, props<{isSplitPayR5: boolean}>());
 
-export const updatePartPayData = createAction(UPDATE_PARTPAY_DATA, props<{partPayFlag: boolean, partPayAmountDC: number, partPayAmountNDC: number}>());
-
-export const isSplitPayR5 = createAction(IS_SPLIT_PAY_R5, props<{isSplitPayR5: boolean}>());
-
-export const loadTicket = createAction(LOAD_TICKET,
+export const loadRovTicket = createAction(LOAD_TICKET,
     props<{ tranId: number, eventId: number, indivId: number }>());
 
-export const loadTicketSuccess = createAction(LOAD_TICKET_SUCCESS,
+export const loadRovTicketSuccess = createAction(LOAD_TICKET_SUCCESS,
     props<{ tktObj: ROV_POSTicketSplit }>());
 
-export const loadTicketFail = createAction(LOAD_TICKET_FAIL,
+export const loadRovTicketFail = createAction(LOAD_TICKET_FAIL,
     props<{ errMessage: String }>());
 
-export const loadInProgressTenders = createAction(LOAD_INPROGRESS_TENDERS,
+export const loadRovInProgressTenders = createAction(LOAD_INPROGRESS_TENDERS,
     props<{ tranId: number, appType: number, tenderStatus: number, uid: number }>());
 
-export const loadInProgressTendersSuccess = createAction(LOAD_INPROGRESS_TENDERS_SUCCESS,
+export const loadRovInProgressTendersSuccess = createAction(LOAD_INPROGRESS_TENDERS_SUCCESS,
     props<{ tenders: TicketTender[] }>());
 
-export const loadInProgressTendersFail = createAction(LOAD_INPROGRESS_TENDERS_FAIL,
+export const loadRovInProgressTendersFail = createAction(LOAD_INPROGRESS_TENDERS_FAIL,
     props<{ errMessage: String }>());
 
-export const updateShipHandling = createAction('updateShipHandling', props<{dfltCurrSymbl: string,shipHandlingAmountDC: number, shipHandlingTaxDC: number, shipHandlingAmountNDC: number, shipHandlingTaxNDC: number}>());
+export const updateRovShipHandling = createAction('updateShipHandling', props<{dfltCurrSymbl: string,shipHandlingAmountDC: number, shipHandlingTaxDC: number, shipHandlingAmountNDC: number, shipHandlingTaxNDC: number}>());
 
-export const addRefundReason = createAction(APP_REFUND_REASON, props<{ refundCode: string, refundReason: string}>());
+export const addRovRefundReason = createAction(APP_REFUND_REASON, props<{ refundCode: string, refundReason: string}>());
 
 //export const updateEventConfig = createAction(UPDATE_LOCATION_CONFIG, props<{}>)

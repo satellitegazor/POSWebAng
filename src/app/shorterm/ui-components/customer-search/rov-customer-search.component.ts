@@ -5,7 +5,7 @@ import { first } from 'rxjs';
 import { LTC_Customer } from '../../../models/customer';
 import { RovApiService } from '../../short-term.service';
 import { PosApiService } from '../../../longterm/services/pos-api-service';
-import { addCustomerId } from '../../store/ticketstore/rticket.action';
+import { addRovCustomerId } from '../../store/ticketstore/rticket.action';
 import { RovSaleTranDataInterface } from '../../store/ticketstore/rticket.state';
 import { RovLogonDataService } from "../../rov-logon-data.service";
 import { FormsModule } from '@angular/forms';
@@ -79,7 +79,7 @@ export class RovCustomerSearchComponent implements OnInit {
 
   customerSelected(custId: number) {
     
-    this._store.dispatch(addCustomerId({custId}));    
+    this._store.dispatch(addRovCustomerId({custId}));    
     this.cancel();
   }
 

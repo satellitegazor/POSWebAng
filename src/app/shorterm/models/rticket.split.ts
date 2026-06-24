@@ -12,7 +12,6 @@ export class ROV_POSTicketSplit {
     eventId: number = 0;
     transactionDate: Date = new Date(0);
     individualUid: number = 0;
-    locationUid: number = 0;
     taxExempted: boolean = false;
     transactionID: number = 0;
     ticketNumber: number = 0;

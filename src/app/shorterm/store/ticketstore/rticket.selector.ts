@@ -6,8 +6,8 @@ import { Round2DecimalService } from "../../../services-misc/round2-decimal.serv
 import { Rov_SalesTranCheckoutItem } from "../../models/r-salestran-checkout-item";
 import { RovSaleTranDataInterface } from "./rticket.state";
 
-export const R_TKT_OBJ_STATE = 'RTktObjState'
-const getRTktObjState = createFeatureSelector<RovSaleTranDataInterface>(R_TKT_OBJ_STATE)
+export const ROV_TKT_OBJ_STATE = 'RovTktObjState'
+const getRTktObjState = createFeatureSelector<RovSaleTranDataInterface>(ROV_TKT_OBJ_STATE)
 
 export const getRTktObjSelector = createSelector(getRTktObjState,
   (state) => {

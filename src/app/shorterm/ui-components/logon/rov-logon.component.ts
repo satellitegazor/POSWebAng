@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 import { VendorLoginResultsModel } from '../../../models/vendor.login.results.model';
 import { RovTktObjState } from "../../../app.state";
 import { Store } from '@ngrx/store';
-import { addTabSerialToRovTktObj, rovInitTktObj, loadTicket, loadTicketSuccess, updateCheckoutTotals } from '../../store/ticketstore/rticket.action';
+import { addTabSerialToRovTktObj, rovInitTktObj, loadRovTicket, loadRovTicketSuccess, updateRovCheckoutTotals } from '../../store/ticketstore/rticket.action';
 import { CPOSWebSvcService } from '../../../services-pinpad/cposweb-svc.service';
 import { ofType } from '@ngrx/effects';
 
@@ -261,12 +261,12 @@ export class RovLogonComponent implements OnInit {
 
         this._toastSvc.info("An incomplete ticket has been found. Please complete it or void it!!");
         inProgTranId = evConfig.inProgTranId;
-        this._tktObjStore.dispatch(loadTicket({ eventId: data.eventId, tranId: inProgTranId, indivId: +locModel.individualUID }));
+        this._tktObjStore.dispatch(loadRovTicket({ eventId: data.eventId, tranId: inProgTranId, indivId: +locModel.individualUID }));
 
-        this.actions$.pipe(ofType(loadTicketSuccess)).subscribe(() => {
+        this.actions$.pipe(ofType(loadRovTicketSuccess)).subscribe(() => {
             setTimeout((logonDataSvc, tktObjStore, routr) => {
               routr.navigate(['rov/rchekout']);
-              tktObjStore.dispatch(updateCheckoutTotals({ logonDataSvc: this._rovLogonDataSvc }))
+              tktObjStore.dispatch(updateRovCheckoutTotals({ logonDataSvc: this._rovLogonDataSvc }))
             }, 800, this._rovLogonDataSvc, this._tktObjStore, this.router);
         });
       }

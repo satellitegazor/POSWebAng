@@ -5,7 +5,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Rov_SalesTranCheckoutItem } from '../../../../models/r-salestran-checkout-item';
 import { RovSaleTranDataInterface } from "../../../../store/ticketstore/rticket.state";
 import { Store } from '@ngrx/store';
-import { addSaleItem, saveTicketDetail, updateCheckoutTotals } from "../../../../store/ticketstore/rticket.action";
+import { addSaleItem, saveRovTicketDetail, updateRovCheckoutTotals } from "../../../../store/ticketstore/rticket.action";
 import { DailyExchRate } from '../../../../../models/exchange.rate';
 import { CPOSAppType, UtilService } from '../../../../../services-misc/util.service';
 import { PosCurrencyDirective } from '../../../../../directives/pos-currency.directive';
@@ -115,11 +115,11 @@ export class RovAddMiscItemDlgComponent {
       if (this.transactionId > 0) {
         // If transactionId is present, means ticket is already saved once and we are adding item to existing ticket, so we need to update served by associate for the new item
         const individualUid = this.individualId;
-        this._store.dispatch(saveTicketDetail({
+        this._store.dispatch(saveRovTicketDetail({
           uid: individualUid,
-          appType: CPOSAppType.LongTerm,
+          appType: CPOSAppType.ShortTerm,
           request: {
-            appType: CPOSAppType.LongTerm,
+            appType: CPOSAppType.ShortTerm,
             transactionId: this.transactionId,
             ticketDetailId: newMiscItem.ticketDetailId,
             salesItemUID: newMiscItem.salesItemUID,
@@ -146,12 +146,17 @@ export class RovAddMiscItemDlgComponent {
             noOfTags: newMiscItem.noOfTags,
             maintUserId: individualUid,
             cliTimeVar: GlobalConstants.GetClientTimeVariance(),
-            active: true
+            active: true,
+            envTaxPct: 0,
+            lineItemEnvTaxAmount: 0,
+            fcLineItemEnvTaxAmount: 0,
+            lineItmKatsaCpnAmt: 0,
+            fcLineItmKatsaCpnAmt: 0
           }
         }));
       }
 
-      this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc}));
+      this._store.dispatch(updateRovCheckoutTotals({ logonDataSvc: this._logonDataSvc}));
 
     } finally {
       this.activeModal.close(result);

@@ -7,9 +7,17 @@ import { AssociateSaleTips } from "../../..//models/associate.sale.tips";
 import { LTC_Customer } from "../../../models/customer";
 import { TenderStatusType, TicketTender, TranStatusType } from "../../../models/ticket.tender";
 import { Rov_SalesTranCheckoutItem } from "../../models/r-salestran-checkout-item";
-import { addSaleItem, incSaleitemQty, decSaleitemQty, initTktObj, addCustomerId, addNewCustomer, addTender, updateSaleitems, updateCheckoutTotals, updateServedByAssociate, upsertAssocTips, delSaleitemZeroQty, updateTaxExempt, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn, saveTicketForGuestCheckSuccess, resetTktObj, updateAssocInAssocTips, updatePartPayData, removeTndrWithSaveCode, saveCompleteTicketSplitSuccess, addPinpadResp, saveTenderObjSuccess, saveTicketDetailSuccess, inactiveTicketDetailSuccess, savePinpadResponse, updateTenderRRN, markTendersComplete, markTicketComplete, addTabSerialToTktObj, isSplitPayR5, deleteDeclinedTenderFromStore, loadTicketSuccess, loadInProgressTendersSuccess, updateShipHandling, addRefundReason } from "./ticket.action";
+import { addSaleItem, incSaleitemQty, decSaleitemQty, rovInitTktObj, addRovCustomerId, 
+   addNewRovCustomer, addRovTender, updateRovSaleitems, updateRovCheckoutTotals, 
+   delSaleitemZeroQty, updateRovTaxExempt, upsertRovSaleItemExchCpn, upsertRovSaleItemVndCpn, 
+   upsertRovTranExchCpn, saveRovTicketForGuestCheckSuccess, resetTktObj, updateRovPartPayData, 
+   removeRovTndrWithSaveCode, saveCompleteRovTicketSplitSuccess, addRovPinpadResp, 
+   saveRovTenderObjSuccess, saveRovTicketDetailSuccess, inactiveRovTicketDetailSuccess, 
+   saveRovPinpadResponse, updateRovTenderRRN, markRovTendersComplete, markRovTicketComplete, 
+   addTabSerialToRovTktObj, isSplitPayRovR5, deleteDeclinedTenderFromStore, loadRovTicketSuccess, 
+   loadRovInProgressTendersSuccess, updateRovShipHandling, addRovRefundReason } from "./rticket.action";
 import { Round2DecimalService } from "../../../services-misc/round2-decimal.service";
-import { rTktObjInitialState, saleTranDataInterface } from "./rticket.state";
+import { RovTktObjInitialState, RovSaleTranDataInterface } from "./rticket.state";
 import { ExchCardTndr } from "../../../models/exch.card.tndr";
 import { UtilService } from "../../../services-misc/util.service";
 import { mapLtcTicketToTicketSplit, TicketDetailListAry } from "../../../models/ticket.split";
@@ -17,15 +25,15 @@ import { ROV_Ticket } from "../../models/rticket.split";
 import { timeInterval } from "rxjs";
 
 export const _tktObjReducer = createReducer(
-   rTktObjInitialState,
-   on(initTktObj, (state, action) => {
+   RovTktObjInitialState,
+   on(rovInitTktObj, (state, action) => {
       let _utilSvc = new UtilService();
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
-            locationUID: action.locConfig.locationUID,
-            individualUID: action.locConfig.individualUID,
+            eventId: action.eventConfig.eventID,
+            individualUID: action.eventConfig.individualUID,
             cliTimeVar: GlobalConstants.GetClientTimeVariance(),
             transactionDate: new Date(Date.now()),
             ticketRRN: _utilSvc.getUniqueRRN(),
@@ -47,7 +55,7 @@ export const _tktObjReducer = createReducer(
 
 
 
-   on(removeTndrWithSaveCode, (state, action) => {
+   on(removeRovTndrWithSaveCode, (state, action) => {
       let tndrCode: string = action.tndrCode;
       //console.log("removeTndrWithSaveCode called with code: " + tndrCode);
       state.tktObj.ticketTenderList.forEach((tndr: TicketTender) => { console.log("Tender Code: " + tndr.tenderTypeCode); });
@@ -70,22 +78,21 @@ export const _tktObjReducer = createReducer(
       let _utilSvc = new UtilService();
 
       //let logonDataSvc = action._logonDataSvc;
-      let locationCnfg = action.locConfig;
+      let eventConfig = action.eventConfig;
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
-            locationUID: locationCnfg.locationUID,
-            individualUID: locationCnfg.individualUID,
+            eventId: eventConfig.eventID,
+            individualUID: eventConfig.individualUID,
             tktList: [] as Rov_SalesTranCheckoutItem[],
             transactionDate: new Date(Date.now()),
             ticketTenderList: [] as TicketTender[],
             associateTips: [] as AssociateSaleTips[],
             balanceDue: 0,
-            cancelTransactionID: 0,
+            cancelTransactionId: 0,
             customer: {} as LTC_Customer,
             customerId: 0,
-            eventId: 0,
             instructions: '',
             isPartialPay: false,
             isRefund: false,
@@ -134,14 +141,14 @@ export const _tktObjReducer = createReducer(
       }
    }),
 
-   on(addTabSerialToTktObj, (state, action) => {
+   on(addTabSerialToRovTktObj, (state, action) => {
 
       return {
          ...state,
          tktObj: {
             ...state.tktObj,
             tabSerialNum: action.tabSerialNum,
-            iPAddress: action.ipAddress,
+            ipAddress: action.ipAddress,
          }
       }
    }),
@@ -197,57 +204,27 @@ export const _tktObjReducer = createReducer(
       };
    }),
    
-   on(updateServedByAssociate, (state, action) => {
+   // on(updateRovServedByAssociate, (state, action) => {
 
-      return {
-         ...state,
-         tktObj: {
-            ...state.tktObj,
-            tktList: state.tktObj.tktList.map((itm: Rov_SalesTranCheckoutItem) => {
-               if (itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.indx) {
-                  return {
-                     ...itm,
-                     srvdByAssociateVal: action.indLocId,
-                     srvdByAssociateText: action.srvdByAssociateName
-                  }
-               }
-               else {
-                  return itm;
-               }
-            })
-         }
-      }
-   }),
-
-   on(updateAssocInAssocTips, (state, action) => {
-      
-      var assocTipsAry: AssociateSaleTips[] = [];
-
-      state.tktObj.tktList.forEach(function(val: Rov_SalesTranCheckoutItem, indx: number) {
-         
-         let assocTips: AssociateSaleTips = new AssociateSaleTips();
-         let aTips = assocTipsAry.filter(obj => obj.indivLocId == val.srvdByAssociateVal)[0];         
-
-         if(aTips) {
-            assocTips = aTips;
-            assocTips.tipSaleItemIdList.push(val.salesItemUID);
-         }
-         else {
-            assocTips = new AssociateSaleTips();
-            assocTips.indivLocId = val.srvdByAssociateVal;
-            assocTips.tipSaleItemIdList.push(val.salesItemUID);
-            assocTipsAry.push(assocTips)
-         }         
-      });
-
-      return {
-         ...state,
-         tktObj: {
-            ...state.tktObj,
-            associateTips: assocTipsAry
-         }
-      }
-   }),
+   //    return {
+   //       ...state,
+   //       tktObj: {
+   //          ...state.tktObj,
+   //          tktList: state.tktObj.tktList.map((itm: Rov_SalesTranCheckoutItem) => {
+   //             if (itm.salesItemUID == action.saleItemId && itm.ticketDetailId == action.indx) {
+   //                return {
+   //                   ...itm,
+   //                   srvdByAssociateVal: action.indLocId,
+   //                   srvdByAssociateText: action.srvdByAssociateName
+   //                }
+   //             }
+   //             else {
+   //                return itm;
+   //             }
+   //          })
+   //       }
+   //    }
+   // }),
 
    on(incSaleitemQty, (state, action) => {
 
@@ -302,7 +279,7 @@ export const _tktObjReducer = createReducer(
       }
    }),
 
-   on(addCustomerId, (state, action) => {
+   on(addRovCustomerId, (state, action) => {
       return {
          ...state,
          tktObj: {
@@ -311,7 +288,7 @@ export const _tktObjReducer = createReducer(
          }
       }
    }),
-   on(addNewCustomer, (state, action) => {
+   on(addNewRovCustomer, (state, action) => {
       return {
          ...state,
          tktObj: {
@@ -322,7 +299,7 @@ export const _tktObjReducer = createReducer(
       }
    }),
 
-   on(isSplitPayR5, (state, action) => {
+   on(isSplitPayRovR5, (state, action) => {
       return {
          ...state,
          tktObj: {
@@ -332,7 +309,7 @@ export const _tktObjReducer = createReducer(
       }
    }),
 
-   on(addTender, (state, action) => {
+   on(addRovTender, (state, action) => {
 
       let tenderListCopy: TicketTender[] = JSON.parse(JSON.stringify(state.tktObj.ticketTenderList));
       tenderListCopy = tenderListCopy.filter(tndr => tndr.tenderTypeCode != "SV");
@@ -381,7 +358,7 @@ export const _tktObjReducer = createReducer(
       }
    }),
 
-   on(addPinpadResp, (state, action) => {
+   on(addRovPinpadResp, (state, action) => {
    
       let respObj: ExchCardTndr = JSON.parse(JSON.stringify(action.respObj));
       respObj.ticketTenderId = state.tktObj.ticketTenderList.filter((tndr: TicketTender) => tndr.rrn == respObj.INVOICE)[0]?.ticketTenderId;
@@ -396,7 +373,7 @@ export const _tktObjReducer = createReducer(
       }
    }),
    
-   on(updateCheckoutTotals, (state, action) => {
+   on(updateRovCheckoutTotals, (state, action) => {
       /**
        * updateCheckoutTotals
        * - Calculates per-line amounts and ticket totals.
@@ -706,7 +683,7 @@ export const _tktObjReducer = createReducer(
       };
    }),
 
-   on(updateSaleitems, (state, action) => {
+   on(updateRovSaleitems, (state, action) => {
 
       const updatedTktList = state.tktObj.tktList.map((stateItem: Rov_SalesTranCheckoutItem) => stateItem.salesItemUID == action.item.salesItemUID ? action.item : stateItem);
       let assocTips: AssociateSaleTips = new AssociateSaleTips();
@@ -724,36 +701,36 @@ export const _tktObjReducer = createReducer(
       }
    }),
 
-   on(upsertAssocTips, (state, action) => {
+   // on(upsertAssocTips, (state, action) => {
 
-      let lineItemTotalDC = 0;
-      let lineItemTotalNDC = 0;
+   //    let lineItemTotalDC = 0;
+   //    let lineItemTotalNDC = 0;
 
-      state.tktObj.tktList.forEach(function(val: Rov_SalesTranCheckoutItem) {
-         lineItemTotalDC += action.logonDataSvc.getDfltCurrCode() == 'USD' ? val.lineItemDollarDisplayAmount : val.fcLineItemDollarDisplayAmount;
-         lineItemTotalNDC += action.logonDataSvc.getDfltCurrCode() == 'USD' ? val.fcLineItemDollarDisplayAmount : val.lineItemDollarDisplayAmount;
-      })
+   //    state.tktObj.tktList.forEach(function(val: Rov_SalesTranCheckoutItem) {
+   //       lineItemTotalDC += action.logonDataSvc.getDfltCurrCode() == 'USD' ? val.lineItemDollarDisplayAmount : val.fcLineItemDollarDisplayAmount;
+   //       lineItemTotalNDC += action.logonDataSvc.getDfltCurrCode() == 'USD' ? val.fcLineItemDollarDisplayAmount : val.lineItemDollarDisplayAmount;
+   //    })
 
-      return {
-         ...state,
-         tktObj: {
-            ...state.tktObj,
-            associateTips: action.assocTipsList,
-            totalSale: lineItemTotalDC + action.totalTipAmtDC,
-            totalSaleFC: lineItemTotalNDC + action.totalTipAmtNDC,
-            tipAmountDC: action.totalTipAmtDC,
-            tipAmountNDC: action.totalTipAmtNDC
-         },
-         tktTotals: {
-            ...state.tktTotals,
-            tipTotalDC: action.totalTipAmtDC,
-            tipTotalNDC: action.totalTipAmtNDC,
-            grandTotalDC: lineItemTotalDC + action.totalTipAmtDC,
-            grandTotalNDC: lineItemTotalNDC + action.totalTipAmtNDC
-         }
-      }
-   }),
-   on(updateTaxExempt, (state, action) => {
+   //    return {
+   //       ...state,
+   //       tktObj: {
+   //          ...state.tktObj,
+   //          associateTips: action.assocTipsList,
+   //          totalSale: lineItemTotalDC + action.totalTipAmtDC,
+   //          totalSaleFC: lineItemTotalNDC + action.totalTipAmtNDC,
+   //          tipAmountDC: action.totalTipAmtDC,
+   //          tipAmountNDC: action.totalTipAmtNDC
+   //       },
+   //       tktTotals: {
+   //          ...state.tktTotals,
+   //          tipTotalDC: action.totalTipAmtDC,
+   //          tipTotalNDC: action.totalTipAmtNDC,
+   //          grandTotalDC: lineItemTotalDC + action.totalTipAmtDC,
+   //          grandTotalNDC: lineItemTotalNDC + action.totalTipAmtNDC
+   //       }
+   //    }
+   // }),
+   on(updateRovTaxExempt, (state, action) => {
       return {
          ...state,
          tktObj: {
@@ -762,7 +739,7 @@ export const _tktObjReducer = createReducer(
          }
       }
    }),
-   on(upsertSaleItemExchCpn, (state, action) => {
+   on(upsertRovSaleItemExchCpn, (state, action) => {
       const exchRate = action.logonDataSvc.getExchangeRate();
       const dfltCurr = action.logonDataSvc.getDfltCurrCode(); // "USD" or not
       const isUsd = dfltCurr === "USD";
@@ -924,7 +901,7 @@ export const _tktObjReducer = createReducer(
       };
    }),
 
-   on(upsertSaleItemVndCpn, (state, action) => {
+   on(upsertRovSaleItemVndCpn, (state, action) => {
 
       let exchRate = action.logonDataSvc.getExchangeRate();
       let dfltCurrCode = action.logonDataSvc.getDfltCurrCode();
@@ -1001,7 +978,7 @@ export const _tktObjReducer = createReducer(
          },
       }
    }),
-   on(upsertTranExchCpn, (state, action) => {
+   on(upsertRovTranExchCpn, (state, action) => {
 
       let exchRate = action.logonDataSvc.getExchangeRate();
       let dfltCurr = action.logonDataSvc.getDfltCurrCode();
@@ -1027,7 +1004,7 @@ export const _tktObjReducer = createReducer(
       }
    }),
 
-   on(saveTenderObjSuccess, (state, action) => {
+   on(saveRovTenderObjSuccess, (state, action) => {
 
       return {
          ...state,
@@ -1064,7 +1041,7 @@ export const _tktObjReducer = createReducer(
          },
       }
    }),
-   on(saveTicketDetailSuccess, (state, action) => {
+   on(saveRovTicketDetailSuccess, (state, action) => {
       let isMapped = false;
       const requestItemDescription = (action.request.itemDescription || '').trim().toLowerCase();
 
@@ -1095,7 +1072,7 @@ export const _tktObjReducer = createReducer(
          }
       };
    }),
-   on(inactiveTicketDetailSuccess, (state, action) => {
+   on(inactiveRovTicketDetailSuccess, (state, action) => {
       return {
          ...state,
          tktObj: {
@@ -1104,7 +1081,7 @@ export const _tktObjReducer = createReducer(
          }
       };
    }),
-   on(saveCompleteTicketSplitSuccess, (state, action) => {
+   on(saveCompleteRovTicketSplitSuccess, (state, action) => {
       
       return {
          ...state,
@@ -1116,7 +1093,7 @@ export const _tktObjReducer = createReducer(
          saveTktRsltMdl: action.rslt
       }
    }),
-   on(saveTicketForGuestCheckSuccess, (state, action) => {
+   on(saveRovTicketForGuestCheckSuccess, (state, action) => {
       //console.log("saveTicketForGuestCheckSuccess", action.rslt);
       return {
          ...state,
@@ -1166,7 +1143,7 @@ export const _tktObjReducer = createReducer(
          saveTktRsltMdl: action.rslt
       }
    }),
-   on(updatePartPayData, (state, action) => {
+   on(updateRovPartPayData, (state, action) => {
       return {
          ...state,
          tktObj: {
@@ -1177,7 +1154,7 @@ export const _tktObjReducer = createReducer(
          }
       }
    }),
-   on(updateTenderRRN, (state, action) => {
+   on(updateRovTenderRRN, (state, action) => {
       return {
          ...state,
          tktObj: {
@@ -1197,7 +1174,7 @@ export const _tktObjReducer = createReducer(
          }
       }
    }),
-   on(addRefundReason, (state, action) => {
+   on(addRovRefundReason, (state, action) => {
       return {
          ...state,
          tktObj: {
@@ -1208,7 +1185,7 @@ export const _tktObjReducer = createReducer(
          }
       }
    }),
-   on(markTendersComplete, (state, action) => {
+   on(markRovTendersComplete, (state, action) => {
       return {
          ...state,
          tktObj: {
@@ -1222,7 +1199,7 @@ export const _tktObjReducer = createReducer(
          }
       }
    }),
-   on(markTicketComplete, (state, action) => {
+   on(markRovTicketComplete, (state, action) => {
       return {
          ...state,
          tktObj: {
@@ -1232,7 +1209,7 @@ export const _tktObjReducer = createReducer(
       }
    }),
 
-   on(loadTicketSuccess, (state, { tktObj: loadedTktObj }) => {
+   on(loadRovTicketSuccess, (state, { tktObj: loadedTktObj }) => {
 
       const cancelledTenderTypeIds = new Set(['XC', 'XR', 'MS', 'MR', 'GC'].map(type => (type)));
       const normalizeAuthNbr = (authNbr?: string | null) => (authNbr ?? '').trim();
@@ -1240,7 +1217,7 @@ export const _tktObjReducer = createReducer(
       const shipHandlingFc = rawLoadedTicket.fCShipHandling ?? rawLoadedTicket.fcShipHandling ?? rawLoadedTicket.shipHandlingFC ?? 0;
       const shipHandlingTaxAmtFc = rawLoadedTicket.fCShipHandlingTaxAmt ?? rawLoadedTicket.fcShipHandlingTaxAmt ?? rawLoadedTicket.shipHandlingTaxAmtFC ?? 0;
 
-      const tenderList = TicketTender.deepCopyTenderList(loadedTktObj.tenders).map(tndr => {
+      const tenderList = TicketTender.deepCopyTenderList(loadedTktObj.ticketTenderList).map(tndr => {
          const isAuthMissing = normalizeAuthNbr(tndr.authNbr).length === 0;
 
          if (cancelledTenderTypeIds.has(tndr.tenderTypeCode) && isAuthMissing) {
@@ -1252,12 +1229,18 @@ export const _tktObjReducer = createReducer(
          return tndr;
       });
 
-      return {...state,
+      let deepCopiedSaleItemList: Rov_SalesTranCheckoutItem[] = []
+      loadedTktObj.tktList.forEach((item: Rov_SalesTranCheckoutItem) => {
+         deepCopiedSaleItemList.push(Rov_SalesTranCheckoutItem.deepCopy(item));
+      });
+
+      return {
+         ...state,
          tktObj: {
             ...state.tktObj,
             transactionID: loadedTktObj.transactionID,
             ticketNumber: loadedTktObj.ticketNumber,
-            cancelTransactionID: 0,
+            cancelTransactionId: 0,
             isRefund: false,
             balanceDue: loadedTktObj.balanceDue,
             customerId: loadedTktObj.customer != null ? loadedTktObj.customer.customerUID : 0,
@@ -1265,20 +1248,19 @@ export const _tktObjReducer = createReducer(
             shipHandlingFC: shipHandlingFc,
             shipHandlingTaxAmt: loadedTktObj.shipHandlingTaxAmt ?? 0,
             shipHandlingTaxAmtFC: shipHandlingTaxAmtFc,
-            taxExempted: loadedTktObj.taxExempted == 1,
+            taxExempted: (loadedTktObj.taxExempted ?? false) as boolean,
             transactionDate: loadedTktObj.transactionDate ? new Date(loadedTktObj.transactionDate) : new Date(),
             tranStatus: TranStatusType.InProgress,
             ticketTenderList: tenderList,
-            tktList: Rov_SalesTranCheckoutItem.deepCopySaleItemList(loadedTktObj.items),
+            tktList: deepCopiedSaleItemList,
             customer: loadedTktObj.customer ? { ...loadedTktObj.customer } : {} as LTC_Customer,
-            
          }
       }
    })
 
    ,
 
-   on(loadInProgressTendersSuccess, (state, { tenders }) => {
+   on(loadRovInProgressTendersSuccess, (state, { tenders }) => {
       return {
          ...state,
          tktObj: {
@@ -1288,7 +1270,7 @@ export const _tktObjReducer = createReducer(
       }
    }),
 
-   on(updateShipHandling, (state, action) => {
+   on(updateRovShipHandling, (state, action) => {
       return {
          ...state,
          tktObj: {
@@ -1315,7 +1297,7 @@ export const _tktObjReducer = createReducer(
 )
 
 
-export function TktObjReducer(state: saleTranDataInterface, action: Action) {
+export function RovTktObjReducer(state: RovSaleTranDataInterface, action: Action) {
    return _tktObjReducer(state, action);
 
 }

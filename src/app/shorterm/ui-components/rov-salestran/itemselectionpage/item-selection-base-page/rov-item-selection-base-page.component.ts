@@ -88,6 +88,7 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
     eventConfig: EventConfig = {} as EventConfig;
 
     disableCheckoutBtn: boolean = true;
+    activeId: number = 0;
     activeSalesCatId: number = 0;
     activeDeptId: number = 0;
     tktCustomerId: number = 0;
@@ -120,12 +121,10 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
             }
 
             this._rovApiSvc.getConcessionMenuItem(this._logonDataSvc.getRovVendorLogonData().individualUID.toString(), 
-            this._logonDataSvc.getRovEventConfig().eventID, 
-            0, 
-            true).subscribe((data: RDeptCategoryResultModels) => {   
-
-                this.deptCategoryList = data.lstItemButtons;
-
+                this._logonDataSvc.getRovEventConfig().eventID, 
+                0, 
+                true).subscribe((data: RDeptCategoryResultModels) => {   
+                    this.deptCategoryList = data.lstItemButtons;
             });
             this.initializeItemSelectionPage();
         });
@@ -268,6 +267,11 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
     deptClicked(id: any) {
         this.activeDeptId = Number(id) || 0;
         //this.getSalesCategoryList(id);
+    }
+
+    deptClick(evt: Event, deptDepartmentUID: number | string) {
+        this.activeId = Number(deptDepartmentUID) || 0;
+        this.deptClicked(this.activeId);
     }
 
     saleCatClicked(id: any) {

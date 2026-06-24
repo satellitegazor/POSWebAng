@@ -11,7 +11,7 @@ import { CustomerSearchComponent } from '../../../../../longterm/customer-search
 import { EventConfig } from '../../../../models/event.config';
 import { TenderType, TenderTypeModel } from '../../../../../longterm/models/tender.type';
 
-import { addTender, removeTndrWithSaveCode, saveTicketForGuestCheck, updateCheckoutTotals, saveTicketForGuestCheckSuccess, isSplitPayR5 } from '../../../../store/ticketstore/rticket.action';
+import { addRovTender, removeRovTndrWithSaveCode, saveRovTicketForGuestCheck, updateRovCheckoutTotals, saveRovTicketForGuestCheckSuccess, isSplitPayRovR5 } from '../../../../store/ticketstore/rticket.action';
 import { getRCheckoutItemsSelector, getRTktObjSelector } from '../../../../store/ticketstore/rticket.selector';
 import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
 
@@ -148,8 +148,8 @@ export class RovCheckoutPageComponent implements OnInit {
 
   private async genericTenderClickProcessing(tndrCode: string): Promise<void> {
 
-    this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
-    this._store.dispatch(isSplitPayR5({ isSplitPayR5: (tndrCode == 'btnSplitPay') }));
+    this._store.dispatch(updateRovCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
+    this._store.dispatch(isSplitPayRovR5({ isSplitPayR5: (tndrCode == 'btnSplitPay') }));
 
     if ((tndrCode == 'btnSplitPay' && this.evtConfig.inProgTranId > 0) || this._logonDataSvc.getTranIsRefund()) {
       this._navigateToTenderPage(tndrCode);
@@ -167,14 +167,14 @@ export class RovCheckoutPageComponent implements OnInit {
       tndrObj.rrn = this._utilSvc.getUniqueRRN();
       tndrObj.tenderStatus = TenderStatusType.Complete;
       tndrObj.fcCurrCode = this._logonDataSvc.getRovEventConfig().currCode;
-      this._store.dispatch(addTender({ tndrObj }));
+      this._store.dispatch(addRovTender({ tndrObj }));
       var tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1)));
       if (tktObjData) {
-        this._store.dispatch(saveTicketForGuestCheck({ tktObj: tktObjData }));
+        this._store.dispatch(saveRovTicketForGuestCheck({ tktObj: tktObjData }));
 
         // Listen for saveTicketForGuestCheckSuccess to capture transaction ID
         this.actions$.pipe(
-          ofType(saveTicketForGuestCheckSuccess),
+          ofType(saveRovTicketForGuestCheckSuccess),
           take(1),
           map(action => action.rslt.transactionId)
         ).subscribe((transactionId) => {
@@ -182,7 +182,7 @@ export class RovCheckoutPageComponent implements OnInit {
           console.log('Transaction ID saved:', this._transactionId);
 
           // Update tender with transaction ID
-          this._store.dispatch(addTender({ tndrObj }));
+          this._store.dispatch(addRovTender({ tndrObj }));
           this._navigateToTenderPage(tndrCode);
         });
       }
@@ -199,15 +199,15 @@ export class RovCheckoutPageComponent implements OnInit {
       tndrObj.rrn = this._utilSvc.getUniqueRRN();
       tndrObj.tenderStatus = TenderStatusType.Complete;
       tndrObj.fcCurrCode = this._logonDataSvc.getRovEventConfig().currCode;
-      this._store.dispatch(addTender({ tndrObj }));
+      this._store.dispatch(addRovTender({ tndrObj }));
 
       var tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1)));
       if (tktObjData) {
-        this._store.dispatch(saveTicketForGuestCheck({ tktObj: tktObjData }));
+        this._store.dispatch(saveRovTicketForGuestCheck({ tktObj: tktObjData }));
 
         // Listen for saveTicketForGuestCheckSuccess to capture transaction ID
         this.actions$.pipe(
-          ofType(saveTicketForGuestCheckSuccess),
+          ofType(saveRovTicketForGuestCheckSuccess),
           take(1),
           map(action => action.rslt.transactionId)
         ).subscribe((transactionId) => {

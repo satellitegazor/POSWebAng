@@ -2,11 +2,11 @@
     <div class="panel" style="background-color: lightgrey;">
         <div class="panel-body ms-2 me-2 mt-2 mb-2">
             <div class="row bkgray">
-                <div class="col-md-3" *ngFor="let dept of deptList;">
-                    <button type="button"
+                <div class="col-md-3" *ngFor="let dept of deptCategoryList; let deptIndex = index;">
+                    <button type="button" name="deptBtn{{deptIndex}}"
                         [ngClass]="[ activeId === dept.departmentUID ? 'dpt btn btn-block btn-primary' : 'dpt btn btn-block btn-secondary' ]"
-                        style="margin-top: 10px;margin-bottom: 10px;" id="{{dept.departmentUID}}"
-                        (click)="deptClick($event, dept.departmentUID);">{{dept.departmentName}}</button>
+                    style="margin-top: 10px;margin-bottom: 10px;" id="deptBtn{{deptIndex}}" 
+                        (click)="deptClick($event, dept.departmentUID);">{{dept.description}}</button>
                 </div>
             </div>
         </div>
@@ -17,10 +17,10 @@
         <app-rov-key-pad></app-rov-key-pad>
     </div>
     <div class="col-md-7">
-        <app-tkt-sale-item
+        <app-rov-tkt-sale-item
             #tktSaleItemComponent
             (addMiscItemClicked)="btnAddMiscItemClicked()">
-        </app-tkt-sale-item>
+        </app-rov-tkt-sale-item>
     </div>
 </div>
 <div class="footer fixed-bottom cncsnFooter">

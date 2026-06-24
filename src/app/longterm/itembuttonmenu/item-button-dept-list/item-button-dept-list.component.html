@@ -2,10 +2,10 @@
     <div class="panel-body ms-2 me-2 mt-2 mb-2">
         <div class="row bkgray">
             <div style="display: none;">{{deptListRefreshEvent}}</div>
-            <div class="col-md-3" *ngFor="let dept of deptList;">
-                <button type="button"
+            <div class="col-md-3" *ngFor="let dept of deptList; let deptIndex = index;">
+                <button type="button" name="deptBtn{{deptIndex}}"
                     [ngClass]="[ activeId === dept.departmentUID ? 'dpt btn btn-block btn-primary' : 'dpt btn btn-block btn-secondary' ]"
-                    style="margin-top: 10px;margin-bottom: 10px;" id="{{dept.departmentUID}}"
+                    style="margin-top: 10px;margin-bottom: 10px;" id="dept{{dept.departmentUID}}"
                     (click)="deptClick($event, dept.departmentUID);">{{dept.departmentName}}</button> 
             </div>
         </div>

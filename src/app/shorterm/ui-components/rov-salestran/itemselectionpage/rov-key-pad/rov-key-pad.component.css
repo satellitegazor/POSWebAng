@@ -1,0 +1,14 @@
+button.keypad-btn,
+button.keypad-action-btn {
+	min-height: calc(55px * 1.1);
+	font-size: calc(1.25rem * 1.1);
+}
+
+button.keypad-enter-btn {
+	min-height: calc(140px * 1.1);
+	font-size: calc(1.25rem * 1.1);
+}
+
+button.keypad-enter-btn .display-6 {
+	font-size: calc(2.5rem * 1.1);
+}

@@ -5,9 +5,8 @@ import { SharedSubjectService } from '../../../../../shared-subject/shared-subje
 import { AssociateNamesListDetail } from "../../../../models/models"
 import { RovApiService } from "../../../../short-term.service";
 import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
-import { addSaleItem, updateServedByAssociate, decSaleitemQty, 
-    delSaleitemZeroQty, incSaleitemQty, updateAssocInAssocTips, 
-    updateCheckoutTotals, inactiveTicketDetail } from '../../../../store/ticketstore/rticket.action';
+import { addSaleItem, decSaleitemQty, delSaleitemZeroQty, incSaleitemQty,  
+    updateRovCheckoutTotals, inactiveRovTicketDetail } from '../../../../store/ticketstore/rticket.action';
 import { Rov_SalesTranCheckoutItem } from '../../../../models/r-salestran-checkout-item';
 import { ConditionalExpr } from '@angular/compiler';
 import { getRCheckoutItemsSelector, getRTranIdTicketNumber } from '../../../../store/ticketstore/rticket.selector';
@@ -77,13 +76,13 @@ export class RovTktSaleItemComponent implements OnInit {
         if(this.tktSaleItems[i].quantity == 1) {
 
             if (this.transactionId > 0) {
-                this._store.dispatch(inactiveTicketDetail({
+                this._store.dispatch(inactiveRovTicketDetail({
                     uid: this.indivId,
                     request: {
                         locEvtId: this.eventId,
                         tranId: this.transactionId,
                         ticketDetailId: this.tktSaleItems[i].ticketDetailId,
-                        appType: CPOSAppType.LongTerm,
+                        appType: CPOSAppType.ShortTerm,
                         userId: this.indivId,
                         voidTicket: false,
                         voidTypeCode: '',
@@ -95,30 +94,29 @@ export class RovTktSaleItemComponent implements OnInit {
             {
                 this._store.dispatch(delSaleitemZeroQty({saleItemId: this.tktSaleItems[i].salesItemUID, tktDtlId: this.tktSaleItems[i].ticketDetailId, defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));    
             }
-
         }
         else {
             this._store.dispatch(decSaleitemQty({ saleItemId: this.tktSaleItems[i].salesItemUID, tktDtlId: this.tktSaleItems[i].ticketDetailId , defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));
         }
-        this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
+        this._store.dispatch(updateRovCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
     }
 
     btnPlusClicked(evt: Event, i: number) {
         this._store.dispatch(incSaleitemQty({saleItemId: this.tktSaleItems[i].salesItemUID, tktDtlId: this.tktSaleItems[i].ticketDetailId, defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));
-        this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
+        this._store.dispatch(updateRovCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
     }
 
     public btnCheckoutClicked() {
 
-        this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
+        this._store.dispatch(updateRovCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
         this._router.navigate(['/checkout'])
     }
 
     onAssociateChange(evt: any, indivLocId: number, saleItemId: number, indx: number, srvdByAssociateVal: string) {
 
         let srvdByAssociateName = evt.target['options'][+evt.target.selectedIndex].innerText;
-        this._store.dispatch(updateServedByAssociate({ saleItemId, indx, indLocId: indivLocId, srvdByAssociateName: evt.target['options'][+evt.target.selectedIndex].innerText }))
-        this._store.dispatch(updateAssocInAssocTips({ saleItemId: saleItemId, indLocId: indivLocId }));
+        
+        
 
         return true;
     }

@@ -1,16 +1,16 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store";
 import { ROVEventConfigState } from "./roveventconfig.state";
 
-export const LOC_CONFIG_STATE = 'LocatonConfigState'
-const getLocConfigState = createFeatureSelector<ROVEventConfigState>(LOC_CONFIG_STATE)
+export const ROV_EVENT_CONFIG_STATE = 'RovEventConfigState'
+const getEventConfigState = createFeatureSelector<ROVEventConfigState>(ROV_EVENT_CONFIG_STATE)
 
-export const getEventConfigSelector = createSelector(getLocConfigState,
+export const getEventConfigSelector = createSelector(getEventConfigState,
     (state) => {
         return state ? state.eventConfig : null;
     });
 
 
-export const getEventConfigHeaderContextSelector = createSelector(getLocConfigState,
+export const getEventConfigHeaderContextSelector = createSelector(getEventConfigState,
     (state) => {
         const config = state && state.eventConfig
             ? state.eventConfig

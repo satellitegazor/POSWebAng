@@ -5,30 +5,34 @@ import { EMPTY, from, of } from "rxjs";
 import { catchError, concatMap, exhaustMap, map, mergeMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { RovApiService } from "../../short-term.service";
 import { Action } from "@ngrx/store";
-import { saveRTicketForGuestCheck, saveRTicketForGuestCheckFailed, saveRTicketForGuestCheckSuccess, saveCompleteTicketSplit, saveCompleteTicketSplitFailed, saveCompleteTicketSplitSuccess, saveTenderObj, saveTenderObjFailed, saveTenderObjSuccess, saveTicketDetail, saveTicketDetailFailed, saveTicketDetailSuccess, inactiveTicketDetail, inactiveTicketDetailFailed, inactiveTicketDetailSuccess, savePinpadResponse, savePinpadResponseFailed, savePinpadResponseSuccess, loadTicket, loadTicketFail, loadTicketSuccess, loadInProgressTenders, loadInProgressTendersFail, loadInProgressTendersSuccess, deleteDeclinedTenderFromStore } from "./rticket.action";
-import { saleTranDataInterface } from "./rticket.state";
+import { saveRovTicketForGuestCheck, saveRovTicketForGuestCheckFailed, saveRovTicketForGuestCheckSuccess, saveCompleteRovTicketSplit, saveCompleteRovTicketSplitFailed, saveCompleteRovTicketSplitSuccess, saveRovTenderObj, saveRovTenderObjFailed, saveRovTenderObjSuccess, saveRovTicketDetail, saveRovTicketDetailFailed, saveRovTicketDetailSuccess, inactiveRovTicketDetail, inactiveRovTicketDetailFailed, inactiveRovTicketDetailSuccess, saveRovPinpadResponse, saveRovPinpadResponseFailed, saveRovPinpadResponseSuccess, loadRovTicket, loadRovTicketFail, loadRovTicketSuccess, loadRovInProgressTenders, loadRovInProgressTendersFail, loadRovInProgressTendersSuccess, deleteDeclinedTenderFromStore } from "./rticket.action";
+import { RovSaleTranDataInterface } from "./rticket.state";
 import { getRTktObjSelector } from './rticket.selector';
 import { CPOSAppType } from "../../../services-misc/util.service"
 import { TenderStatusType, TranStatusType } from "../../../models/ticket.tender"
+import { PosApiService } from "../../../longterm/services/pos-api-service";
 //"src/app/models/ticket.tender";
 
 
 @Injectable()
-export class TicketObjectEffects {
-    constructor(private action$: Actions, private rovApiSvc: RovApiService, private store: Store<saleTranDataInterface>) {    }
+export class RovTicketObjectEffects {
+    constructor(private action$: Actions, 
+        private rovApiSvc: RovApiService, 
+        private ltcApiSvc: PosApiService,
+        private store: Store<RovSaleTranDataInterface>) {    }
 
     saveTicketForGuestCheckEffect$ = createEffect(() => {
         return this.action$.pipe(
-            ofType(saveRTicketForGuestCheck),
+            ofType(saveRovTicketForGuestCheck),
             mergeMap((action) => {
 
-                return this.rovApiSvc.saveRTicketForGuestCheck(action.tktObj).pipe(
+                return this.rovApiSvc.saveSplitPayments(action.tktObj).pipe(
                     map(rslt => {
-                        return saveRTicketForGuestCheckSuccess({rslt});
+                        return saveRovTicketForGuestCheckSuccess({rslt});
                     }),
                     catchError((errResp) => {
                         const errMessage = errResp + "Unable to save ticket data. Please logoff and logon again";
-                        return of(saveRTicketForGuestCheckFailed(errResp));
+                        return of(saveRovTicketForGuestCheckFailed(errResp));
                     })                        
                 )
             })
@@ -37,16 +41,16 @@ export class TicketObjectEffects {
 
     saveCompleteTicketSplitEffect$ = createEffect(() => {
         return this.action$.pipe(
-            ofType(saveCompleteTicketSplit),
+            ofType(saveCompleteRovTicketSplit),
             mergeMap((action) => {
 
-                return this.rovApiSvc.saveCompleteTicketSplit(action.tktObj).pipe(
+                return this.rovApiSvc.saveSplitPayments(action.tktObj).pipe(
                     map(rslt => {
-                        return saveCompleteTicketSplitSuccess({rslt});
+                        return saveCompleteRovTicketSplitSuccess({rslt});
                     }),
                     catchError((errResp) => {
                         const errMessage = errResp + "Unable to save ticket data. Please logoff and logon again";
-                        return of(saveCompleteTicketSplitFailed(errResp));
+                        return of(saveCompleteRovTicketSplitFailed(errResp));
                     })                        
                 )
             })
@@ -54,17 +58,17 @@ export class TicketObjectEffects {
     });
     saveTenderEffect$ = createEffect(() => {
         return this.action$.pipe(
-            ofType(saveTenderObj),
+            ofType(saveRovTenderObj),
             mergeMap((action) => {
 
-                return this.rovApiSvc.saveTenderObj(action.tndrObj).pipe(
+                return this.rovApiSvc.saveROVTenderObj(action.tndrObj).pipe(
                     map(data => {
                         //console.log("saveTenderObj success ");
-                        return saveTenderObjSuccess({data, tndrObj: action.tndrObj});
+                        return saveRovTenderObjSuccess({data, tndrObj: action.tndrObj});
                     }),
                     catchError((errResp) => {
                         const errMessage = errResp + "Unable to save ticket data. Please logoff and logon again";
-                        return of(saveTenderObjFailed(errResp));
+                        return of(saveRovTenderObjFailed(errResp));
                     })                        
                 )
             })
@@ -73,14 +77,14 @@ export class TicketObjectEffects {
 
     saveTicketDetailEffect$ = createEffect(() => {
         return this.action$.pipe(
-            ofType(saveTicketDetail),
+            ofType(saveRovTicketDetail),
             mergeMap((action) => {
-                return this.rovApiSvc.saveTicketDetail(action.uid, action.appType, action.request).pipe(
+                return this.ltcApiSvc.saveTicketDetail(action.uid, action.appType, action.request).pipe(
                     map(data => {
-                        return saveTicketDetailSuccess({ data, request: action.request });
+                        return saveRovTicketDetailSuccess({ data, request: action.request });
                     }),
                     catchError((error) => {
-                        return of(saveTicketDetailFailed({ error }));
+                        return of(saveRovTicketDetailFailed({ error }));
                     })
                 );
             })
@@ -89,14 +93,14 @@ export class TicketObjectEffects {
 
     inactiveTicketDetailEffect$ = createEffect(() => {
         return this.action$.pipe(
-            ofType(inactiveTicketDetail),
+            ofType(inactiveRovTicketDetail),
             mergeMap((action) => {
-                return this.rovApiSvc.inactiveTicketDetail(action.uid, action.request).pipe(
+                return this.ltcApiSvc.inactiveTicketDetail(action.uid, action.request).pipe(
                     map(data => {
-                        return inactiveTicketDetailSuccess({ data, request: action.request });
+                        return inactiveRovTicketDetailSuccess({ data, request: action.request });
                     }),
                     catchError((error) => {
-                        return of(inactiveTicketDetailFailed({ error }));
+                        return of(inactiveRovTicketDetailFailed({ error }));
                     })
                 );
             })
@@ -105,22 +109,22 @@ export class TicketObjectEffects {
 
     savePinpadResponseEffect$ = createEffect(() => {
         return this.action$.pipe(
-            ofType(savePinpadResponse),
+            ofType(saveRovPinpadResponse),
             withLatestFrom(this.store.pipe(select(getTktObjSelector))),
             exhaustMap(([action, tktObj]) => {
                 if (tktObj && tktObj.vMTndr) {
                     return this.rovApiSvc.saveFDMSTenderObj(tktObj.vMTndr[0], tktObj.transactionID, CPOSAppType.LongTerm, tktObj.individualUID).pipe(
                         map(resp => {
                             console.log("savePinpadResponse success ");
-                            return savePinpadResponseSuccess({respObj: resp.data});
+                            return saveRovPinpadResponseSuccess({respObj: resp.data});
                         }),
                         catchError((errResp) => {
                             const errMessage = errResp + "Unable to save pinpad response. Please logoff and logon again";
-                            return of(savePinpadResponseFailed(errResp));
+                            return of(saveRovPinpadResponseFailed(errResp));
                         })
                     );
                 } else {
-                    return of(savePinpadResponseFailed({msg: "No valid ticket object found to save pinpad response."}));
+                    return of(saveRovPinpadResponseFailed({msg: "No valid ticket object found to save pinpad response."}));
                 }
             })
         );
@@ -128,11 +132,11 @@ export class TicketObjectEffects {
     // Effect to trigger ticket load when inProgTranId > 0
     loadTicketEffect$ = createEffect(() => {
         return this.action$.pipe(
-            ofType(loadTicket),
+            ofType(loadRovTicket),
             mergeMap(action =>
                 this.rovApiSvc.getSingleTransaction(action.indivId, action.tranId, false, 0, false, false).pipe(
-                    map(singleTranObj => loadTicketSuccess({ tktObj: singleTranObj.ticket })),
-                    catchError(error => of(loadTicketFail({ errMessage: error.message || 'Unable to load in-progress ticket. Please logoff and logon again' })))
+                    map(singleTranObj => loadRovTicketSuccess({ tktObj: singleTranObj.ticket })),
+                    catchError(error => of(loadRovTicketFail({ errMessage: error.message || 'Unable to load in-progress ticket. Please logoff and logon again' })))
                 )
             )
         )
@@ -140,7 +144,7 @@ export class TicketObjectEffects {
 
     loadInProgressTendersAfterLoadTicket$ = createEffect(() => {
         return this.action$.pipe(
-            ofType(loadTicketSuccess),
+            ofType(loadRovTicketSuccess),
             withLatestFrom(this.store.pipe(select(getTktObjSelector))),
             mergeMap(([action, tktObj]) => {
                 const tranId = action.tktObj?.transactionID ?? 0;
@@ -154,8 +158,8 @@ export class TicketObjectEffects {
                 return this.rovApiSvc.getInProgressTenders(tranId, CPOSAppType.LongTerm, TenderStatusType.InProgress, uid).pipe(
                     
                     map(result => 
-                        loadInProgressTendersSuccess({ tenders: result?.tenders ?? result?.tenders ?? [] })),
-                    catchError(error => of(loadInProgressTendersFail({ errMessage: error.message || 'Unable to load in-progress tenders. Please logoff and logon again' })))
+                        loadRovInProgressTendersSuccess({ tenders: result?.tenders ?? result?.tenders ?? [] })),
+                    catchError(error => of(loadRovInProgressTendersFail({ errMessage: error.message || 'Unable to load in-progress tenders. Please logoff and logon again' })))
                 );
             })
         )
@@ -163,15 +167,15 @@ export class TicketObjectEffects {
 
     loadInProgressTendersEffect$ = createEffect(() => {
         return this.action$.pipe(
-            ofType(loadInProgressTenders),
+            ofType(loadRovInProgressTenders),
             mergeMap(action => {
                 if (!action.tranId || !action.uid) {
                     return EMPTY;
                 }
 
                 return this.rovApiSvc.getInProgressTenders(action.tranId, action.appType, action.tenderStatus, action.uid).pipe(
-                    map(result => loadInProgressTendersSuccess({ tenders: result?.tenders ?? result?.tenders ?? [] })),
-                    catchError(error => of(loadInProgressTendersFail({ errMessage: error.message || 'Unable to load in-progress tenders. Please logoff and logon again' })))
+                    map(result => loadRovInProgressTendersSuccess({ tenders: result?.tenders ?? result?.tenders ?? [] })),
+                    catchError(error => of(loadRovInProgressTendersFail({ errMessage: error.message || 'Unable to load in-progress tenders. Please logoff and logon again' })))
                 );
             })
         )
@@ -179,7 +183,7 @@ export class TicketObjectEffects {
 
     removeCancelledTenderAfterSave$ = createEffect(() => {
         return this.action$.pipe(
-            ofType(saveTenderObjSuccess),
+            ofType(saveRovTenderObjSuccess),
             mergeMap(action => {
                 const tndr = action.tndrObj;
                 if (!tndr
@@ -195,7 +199,7 @@ export class TicketObjectEffects {
 
     persistCancelledTendersOnLoad$ = createEffect(() => {
         return this.action$.pipe(
-            ofType(loadInProgressTendersSuccess),
+            ofType(loadRovInProgressTendersSuccess),
             withLatestFrom(this.store.pipe(select(getTktObjSelector))),
             mergeMap(([action, tktObj]) => {
 
@@ -215,7 +219,7 @@ export class TicketObjectEffects {
 
                 return from(
                     tendersToCancel.map(tndr =>
-                        saveTenderObj({
+                        saveRovTenderObj({
                             tndrObj: {
                                 ...tndr,
                                 tenderStatus: TenderStatusType.Cancelled,
