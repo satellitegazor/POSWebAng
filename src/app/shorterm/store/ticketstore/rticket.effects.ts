@@ -11,6 +11,7 @@ import { getRTktObjSelector } from './rticket.selector';
 import { CPOSAppType } from "../../../services-misc/util.service"
 import { TenderStatusType, TranStatusType } from "../../../models/ticket.tender"
 import { PosApiService } from "../../../longterm/services/pos-api-service";
+import { ROV_Ticket } from "../../models/rticket.split";
 //"src/app/models/ticket.tender";
 
 
@@ -110,10 +111,10 @@ export class RovTicketObjectEffects {
     savePinpadResponseEffect$ = createEffect(() => {
         return this.action$.pipe(
             ofType(saveRovPinpadResponse),
-            withLatestFrom(this.store.pipe(select(getTktObjSelector))),
+            withLatestFrom(this.store.pipe(select(getRTktObjSelector))),
             exhaustMap(([action, tktObj]) => {
                 if (tktObj && tktObj.vMTndr) {
-                    return this.rovApiSvc.saveFDMSTenderObj(tktObj.vMTndr[0], tktObj.transactionID, CPOSAppType.LongTerm, tktObj.individualUID).pipe(
+                    return this.ltcApiSvc.saveFDMSTenderObj(tktObj.vMTndr[0], tktObj.transactionID, CPOSAppType.ShortTerm, tktObj.individualUid).pipe(
                         map(resp => {
                             console.log("savePinpadResponse success ");
                             return saveRovPinpadResponseSuccess({respObj: resp.data});
@@ -135,7 +136,7 @@ export class RovTicketObjectEffects {
             ofType(loadRovTicket),
             mergeMap(action =>
                 this.rovApiSvc.getSingleTransaction(action.indivId, action.tranId, false, 0, false, false).pipe(
-                    map(singleTranObj => loadRovTicketSuccess({ tktObj: singleTranObj.ticket })),
+                    map(singleTranObj => loadRovTicketSuccess({ tktObj: singleTranObj.ticket?? new ROV_Ticket() })),
                     catchError(error => of(loadRovTicketFail({ errMessage: error.message || 'Unable to load in-progress ticket. Please logoff and logon again' })))
                 )
             )
@@ -145,17 +146,17 @@ export class RovTicketObjectEffects {
     loadInProgressTendersAfterLoadTicket$ = createEffect(() => {
         return this.action$.pipe(
             ofType(loadRovTicketSuccess),
-            withLatestFrom(this.store.pipe(select(getTktObjSelector))),
+            withLatestFrom(this.store.pipe(select(getRTktObjSelector))),
             mergeMap(([action, tktObj]) => {
                 const tranId = action.tktObj?.transactionID ?? 0;
-                const uid = tktObj?.individualUID ?? 0;
+                const uid = tktObj?.individualUid ?? 0;
                 const tranStatus = tktObj?.tranStatus ?? 0;
 
                 if (!tranId || !uid || tranStatus !== TranStatusType.InProgress) {
                     return EMPTY;
                 }
 
-                return this.rovApiSvc.getInProgressTenders(tranId, CPOSAppType.LongTerm, TenderStatusType.InProgress, uid).pipe(
+                return this.ltcApiSvc.getInProgressTenders(tranId, CPOSAppType.ShortTerm, TenderStatusType.InProgress, uid).pipe(
                     
                     map(result => 
                         loadRovInProgressTendersSuccess({ tenders: result?.tenders ?? result?.tenders ?? [] })),
@@ -173,7 +174,7 @@ export class RovTicketObjectEffects {
                     return EMPTY;
                 }
 
-                return this.rovApiSvc.getInProgressTenders(action.tranId, action.appType, action.tenderStatus, action.uid).pipe(
+                return this.ltcApiSvc.getInProgressTenders(action.tranId, action.appType, action.tenderStatus, action.uid).pipe(
                     map(result => loadRovInProgressTendersSuccess({ tenders: result?.tenders ?? result?.tenders ?? [] })),
                     catchError(error => of(loadRovInProgressTendersFail({ errMessage: error.message || 'Unable to load in-progress tenders. Please logoff and logon again' })))
                 );
@@ -200,7 +201,7 @@ export class RovTicketObjectEffects {
     persistCancelledTendersOnLoad$ = createEffect(() => {
         return this.action$.pipe(
             ofType(loadRovInProgressTendersSuccess),
-            withLatestFrom(this.store.pipe(select(getTktObjSelector))),
+            withLatestFrom(this.store.pipe(select(getRTktObjSelector))),
             mergeMap(([action, tktObj]) => {
 
                 const cancelledTenderTypeCodes = new Set(['XC', 'XR', 'MS', 'MR', 'GC'].map(type => (type)));
@@ -215,7 +216,7 @@ export class RovTicketObjectEffects {
                     return EMPTY;
                 }
 
-                const fallbackUserId = tktObj?.individualUID ? String(tktObj.individualUID) : '';
+                const fallbackUserId = tktObj?.individualUid ? String(tktObj.individualUid) : '';
 
                 return from(
                     tendersToCancel.map(tndr =>

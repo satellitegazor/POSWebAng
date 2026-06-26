@@ -7,17 +7,17 @@
             <div class="card-body">
                 <div class="mb-3">
                     <label class="form-label" for="exchangenumber">Exchange</label>
-                    <input type="text" class="form-control" id="exchangenumber" [(ngModel)]="exchangenum" maxlength="4"
+                    <input type="text" class="form-control" id="rovexchangenumber" [(ngModel)]="exchangenum" maxlength="4"
                         (change)="OnChangeExchangeNum($event)" />
                 </div>
                 <div class="mb-3">
                     <label class="form-label" for="vendornumber">Vendor Number</label>
-                    <input type="text" class="form-control" id="vendornumber" [(ngModel)]="vendornum" maxlength="8"
+                    <input type="text" class="form-control" id="rovvendornumber" [(ngModel)]="vendornum" maxlength="8"
                         (change)="OnChangeVendorNum($event)" />
                 </div>
                 <div class="mb-3">
-                    <label for="ddlEvent">Event</label>
-                    <select #ddlEvent id="ddlEvent" class="form-select dropdown"
+                    <label for="rovddlEvent">Event</label>
+                    <select #ddlEvent id="rovddlEvent" class="form-select dropdown"
                         (change)="onEventChange($event, ddlEvent.value)">
                         <option *ngFor="let ev of eventList" [selected]="ev.eventId == selectedEventId"
                             [value]="ev.eventId">
@@ -26,11 +26,11 @@
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label" for="pin">PIN</label>
-                    <input type="password" id="pin" [(ngModel)]="lpin" class="form-control" maxlength="4"
+                    <label class="form-label" for="rovpin">PIN</label>
+                    <input type="password" id="rovpin" [(ngModel)]="lpin" class="form-control" maxlength="4"
                         minlength="4" />
                 </div>
-                <button name="btnSubmit" id="btnSubmit" class="btn btn-primary" (click)="DoLogon($event)">Logon</button>
+                <button name="btnSubmit" id="rovbtnSubmit" class="btn btn-primary" (click)="DoLogon($event)">Logon</button>
             </div>
         </div>
 

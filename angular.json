@@ -29,6 +29,7 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
+              "src/web.config",
               {
                 "glob": "**/*.svg",
                 "input": "node_modules/flag-icons/flags/4x3",

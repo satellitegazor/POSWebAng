@@ -2,24 +2,27 @@ import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
-import { CouponType } from 'src/app/global/global.constants';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { LocationConfig } from '../../../models/location-config';
-import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCheckoutItem';
-import { updateSaleitems, updateTaxExempt } from '../../store/ticketstore/ticket.action';
-import { getCheckoutItemsSelector, getTicketTotals, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
-import { tktObjInitialState, saleTranDataInterface } from '../../store/ticketstore/ticket.state';
+import { CouponType } from '../../../../../global/global.constants';
+import { LogonDataService } from '../../../../../global/logon-data-service.service';
+import { EventConfig } from '../../../../models/event.config';
+import { Rov_SalesTranCheckoutItem } from '../../../../models/r-salestran-checkout-item';
+import { updateRovSaleitems, updateRovTaxExempt } from "../../../../store/ticketstore/rticket.action"
+import { getRCheckoutItemsSelector, getRTicketTotals, getRTktObjSelector } from '../../../../store/ticketstore/rticket.selector';
+import { RovTktObjInitialState, RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
 import { RovCouponsModalDlgComponent } from '../coupons/rov-coupons.component';
-import { RovTipsModalDlgComponent } from '../tips-modal-dlg/rov-tips-modal-dlg.component';
-import { currSymbls } from 'src/app/models/CurrencySymbols';
-import { UtilService } from 'src/app/services/util.service';
+
+import { currSymbls } from '../../../../../models/CurrencySymbols';
+import { UtilService } from '../../../../../services-misc/util.service';
 import { RovShipHandlingComponent } from '../ship-handling/rov-ship-handling.component';
+import { RovLogonDataService } from '../../../../rov-logon-data.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-rov-checkout-items',
-  templateUrl: './checkout-items.component.html',
-  styleUrls: ['./checkout-items.component.css'],
-  standalone: false
+  templateUrl: './rov-checkout-items.component.html',
+  styleUrls: ['./rov-checkout-items.component.css'],    
+  imports: [CommonModule, FormsModule, RovCouponsModalDlgComponent, RovShipHandlingComponent]
 })
 export class RovCheckoutItemsComponent implements OnInit, OnChanges {
 
@@ -30,16 +33,16 @@ export class RovCheckoutItemsComponent implements OnInit, OnChanges {
   };
 
 
-  constructor(private _store: Store<saleTranDataInterface>,
-    private _logonDataSvc: LogonDataService,
+  constructor(private _store: Store<RovSaleTranDataInterface>,
+    private _rovLogonDataSvc: RovLogonDataService,
     private _modalService: NgbModal,
     private _router: Router,
     private _utilSvc: UtilService) { }
 
-  allowTips: boolean = false;
+  
   useShipHandling: boolean = false;
-  tktDtlItems: SalesTransactionCheckoutItem[] = [];
-  locationConfig: LocationConfig = {} as LocationConfig;
+  tktDtlItems: Rov_SalesTranCheckoutItem[] = [];
+  evtConfig: EventConfig = {} as EventConfig;
 
   subTotalDC: number = 0;
   subTotalNDC: number = 0;
@@ -72,16 +75,15 @@ export class RovCheckoutItemsComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
 
-    this.locationConfig = this._logonDataSvc.getLocationConfig();
-    this.allowTips = this._logonDataSvc.getAllowTips();
-    this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
-    this.useShipHandling = this._logonDataSvc.getLocationConfig().useShipHndlng;
-    this.exchRate = this._logonDataSvc.getExchangeRate();
-    this.dfltCurrCode = this._logonDataSvc.getDfltCurrCode();
+    this.evtConfig = this._rovLogonDataSvc.getRovEventConfig();
+    this.isOConusLocation = this._rovLogonDataSvc.getIsForeignCurr();
+    this.useShipHandling = this._rovLogonDataSvc.getRovEventConfig().useShipHndlng;
+    this.exchRate = this._rovLogonDataSvc.getExchangeRate();
+    this.dfltCurrCode = this._rovLogonDataSvc.getDfltCurrCode();
     this.dcCurrSymbl = this._utilSvc.currencySymbols.get(this.dfltCurrCode);
-    this.ndcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getNonDfltCurrCode());
+    this.ndcCurrSymbl = this._utilSvc.currencySymbols.get(this._rovLogonDataSvc.getNonDfltCurrCode());
 
-    this._store.select(getCheckoutItemsSelector).subscribe(saleItems => {
+    this._store.select(getRCheckoutItemsSelector).subscribe(saleItems => {
       this.tktDtlItems = (saleItems ?? []); //.slice().reverse(); // Reverse to display in correct order
 
       //this.calcCheckoutTotals();
@@ -89,7 +91,7 @@ export class RovCheckoutItemsComponent implements OnInit, OnChanges {
     });
 
     if(this.useShipHandling) {
-      this._store.select(getTktObjSelector).subscribe(tktObj => {
+      this._store.select(getRTktObjSelector).subscribe(tktObj => {
         if(tktObj) {
           this.shipHandlingDC = this.dfltCurrCode == 'USD' ? tktObj.shipHandling : tktObj.shipHandlingFC;
           this.shipHandlingTaxAmtDC = this.dfltCurrCode == 'USD' ? tktObj.shipHandlingTaxAmt : tktObj.shipHandlingTaxAmtFC ?? 0;
@@ -114,7 +116,7 @@ export class RovCheckoutItemsComponent implements OnInit, OnChanges {
       return;
     }
 
-    this._store.select(getTicketTotals).subscribe(tktTotals => {
+    this._store.select(getRTicketTotals).subscribe(tktTotals => {
       this.subTotalDC = tktTotals.subTotalDC;
       this.subTotalNDC = tktTotals.subTotalNDC;
       this.tranExchCpnAmtDC = tktTotals.tranExchCpnAmtDC;
@@ -131,15 +133,15 @@ export class RovCheckoutItemsComponent implements OnInit, OnChanges {
   }
 
   TaxExemptChanged() {
-    this._store.dispatch(updateTaxExempt({ taxExempt: this.taxExempt }));
+    this._store.dispatch(updateRovTaxExempt({ taxExempt: this.taxExempt }));
   }
 
   btnAddRemove() {
-    this._router.navigateByUrl('/salestran');
+    this._router.navigateByUrl('/rov/ritemsel');
   }
 
   btnCancelClicked() {
-    this._router.navigateByUrl('/salestran');
+    this._router.navigateByUrl('/rov/ritemsel');
   }
 
   public calcCheckoutTotals() {
@@ -217,10 +219,7 @@ export class RovCheckoutItemsComponent implements OnInit, OnChanges {
 
   }
 
-  public DisplayTipsPopUp() {
-    const modalRef = this._modalService.open(RovTipsModalDlgComponent, this.modalOptions);
-    modalRef.componentInstance.tndrCode = "";
-  }
+
 
   public DisplayShippingHandlingPopUp() {
     const modalRef = this._modalService.open(RovShipHandlingComponent, this.modalOptions);

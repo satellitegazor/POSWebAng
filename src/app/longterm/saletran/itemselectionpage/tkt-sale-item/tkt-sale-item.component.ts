@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { AuthState } from 'src/app/authstate/auth.state';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
+import { AuthState } from '../../../../authstate/auth.state';
+import { LogonDataService } from '../../../../global/logon-data-service.service';
 import { SharedSubjectService } from '../../../../shared-subject/shared-subject.service';
 import { LTC_Associates } from '../../../models/location.associates';
 import { SaleItem } from '../../../models/sale.item'; 
@@ -15,9 +15,9 @@ import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCh
 import { ConditionalExpr } from '@angular/compiler';
 import { getCheckoutItemsSelector, getTranIdTicketNumber } from '../../store/ticketstore/ticket.selector';
 import { Router } from '@angular/router';
-import { CPOSAppType } from 'src/app/services-misc/util.service';
+import { CPOSAppType } from '../../../../services-misc/util.service';
 
-import { currSymbls } from 'src/app/models/CurrencySymbols';
+import { currSymbls } from '../../../../models/CurrencySymbols';
 
 @Component({
     selector: 'app-tkt-sale-item',
@@ -70,8 +70,7 @@ export class TktSaleItemComponent implements OnInit {
 
         this.dfltCurrSymbl = currSymbls.find(x => x.key == this._logonDataSvc.getDfltCurrCode())?.value ?? '$'; 
         this.exchRate = this._logonDataSvc.getExchangeRate();
-        this.dfltCurrCode = this._logonDataSvc.getDfltCurrCode();
-        
+        this.dfltCurrCode = this._logonDataSvc.getDfltCurrCode();        
     }
 
     btnMinusClicked(evt: Event, i: number) {

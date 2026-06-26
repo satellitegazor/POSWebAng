@@ -24,12 +24,16 @@ import { Rov_SalesTranCheckoutItem } from '../../../../models/r-salestran-checko
 import { RovApiService } from '../../../../short-term.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { RovCheckoutItemsComponent } from '../checkout-items/rov-checkout-items.component';
+import { RovPartPayComponent } from '../part-pay/rov-part-pay.component';
+import { RovBalanceDueComponent } from '../balance-due/rov-balance-due.component';
 
 @Component({
   selector: 'app-rov-checkout-page',
   templateUrl: './rov-checkout-page.component.html',
   styleUrls: ['./rov-checkout-page.component.css'],
-  imports: [CommonModule, FormsModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule, RovCheckoutItemsComponent, RovPartPayComponent, RovBalanceDueComponent],
 })
 export class RovCheckoutPageComponent implements OnInit {
 
@@ -143,7 +147,7 @@ export class RovCheckoutPageComponent implements OnInit {
       return;
     }
 
-    this.router.navigate([route], { queryParams: { code: tndrCode } });
+    this.router.navigate(["/rov/" + route], { queryParams: { code: tndrCode } });
   }
 
   private async genericTenderClickProcessing(tndrCode: string): Promise<void> {

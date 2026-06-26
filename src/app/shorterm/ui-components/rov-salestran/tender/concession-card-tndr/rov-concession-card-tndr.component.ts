@@ -1,33 +1,35 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
-import { saleTranDataInterface } from '../../store/ticketstore/rticket.state';
+import { CPOSWebSvcService } from '../../../../../services-pinpad/cposweb-svc.service';
+import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
 import { select, Store } from '@ngrx/store';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LogonDataService } from '../../../../global/logon-data-service.service';
-import { TicketSplit } from '../../../../models/rticket.split';
+import { RovLogonDataService } from "../../../../rov-logon-data.service"
+import { ROV_POSTicketSplit } from '../../../../models/rticket.split';
 import { filter, firstValueFrom, Subscription, take } from 'rxjs';
-import { getIsSplitPayR5, getRemainingBal, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
-import { TenderStatusType, TicketTender, TranStatusType } from '../../../../models/ticket.tender';
-import { TenderType } from '../../../models/tender.type';
-import { addPinpadResp, addTender, deleteDeclinedTenderFromStore, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, savePinpadResponse, saveTenderObj, updateTenderRRN } from '../../store/ticketstore/ticket.action';
-import { UtilService } from '../../../../services/util.service';
+import { getRIsSplitPayR5, getRRemainingBal, getRTktObjSelector } from '../../../../store/ticketstore/rticket.selector';
+import { TenderStatusType, TicketTender, TranStatusType } from '../../../../../models/ticket.tender';
+import { TenderType } from '../../../../../longterm/models/tender.type';
+import { addRovPinpadResp, addRovTender, deleteDeclinedTenderFromStore, markRovTendersComplete, markRovTicketComplete, saveCompleteRovTicketSplit, saveRovPinpadResponse, saveRovTenderObj, updateRovTenderRRN } from '../../../../store/ticketstore/rticket.action';
+import { UtilService } from '../../../../../services-misc/util.service';
 //import { VfoneCaptureTran } from '../../services/models/capture-tran.model';
 import { forkJoin } from 'rxjs';
-import { ExchCardTndr } from '../../../../models/exch.card.tndr';
-import { TenderUtil } from '../tender-util';
+import { ExchCardTndr } from '../../../../../models/exch.card.tndr';
+import { RovTenderUtil } from '../tender-util';
 import { RedeemGiftCardTenders } from '../gc-redeem-services/redeem-gift-card-tenders';
-import { ToastService } from '../../../../services/toast.service';
-import { DecimalPipe } from '@angular/common';
+import { ToastService } from "../../../../../services-misc/toast.service";
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { OConusRedeemGCWithPinPadService } from '../gc-redeem-services/oconus-redeeem-gc-with-pin-pad';
 import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
+import { getTktObjSelector } from 'src/app/longterm/saletran/store/ticketstore/ticket.selector';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-concession-card-tndr',
-  templateUrl: './concession-card-tndr.component.html',
-  styleUrls: ['./concession-card-tndr.component.css'],
-  standalone: false,
+  selector: 'app-rov-concession-card-tndr',
+  templateUrl: './rov-concession-card-tndr.component.html',
+  styleUrls: ['./rov-concession-card-tndr.component.css'],
+  imports: [DecimalPipe, CommonModule, FormsModule]  
 })
-export class ConcessionCardTndrComponent implements AfterViewInit {
+export class RovConcessionCardTndrComponent implements AfterViewInit {
 
   @ViewChild('btnApprove') btnApprove!: ElementRef<HTMLButtonElement>;
   @ViewChild('btnDecline') btnDecline!: ElementRef<HTMLButtonElement>;
@@ -39,10 +41,10 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
   private isSplitPay: boolean = false;
 
   constructor(
-    private _store: Store<saleTranDataInterface>,
+    private _store: Store<RovSaleTranDataInterface>,
     private activatedRoute: ActivatedRoute,
     private route: Router,
-    private _logonDataSvc: LogonDataService,
+    private _logonDataSvc: RovLogonDataService,
     private _utilSvc: UtilService,
     private _cposWebSvc: CPOSWebSvcService,
     private _toastSvc: ToastService,
@@ -52,7 +54,7 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
     this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
   }
 
-  private _tktObj: TicketSplit = {} as TicketSplit;
+  private _tktObj: ROV_POSTicketSplit = {} as ROV_POSTicketSplit;
   private subscription: Subscription = {} as Subscription;
   tenderAmountDC: number = 0;
   tenderAmountNDC: number = 0;
@@ -72,8 +74,8 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
 
 
     forkJoin([
-      this._store.select(getRemainingBal).pipe(take(1)),
-      this._store.select(getIsSplitPayR5).pipe(take(1)),
+      this._store.select(getRRemainingBal).pipe(take(1)),
+      this._store.select(getRIsSplitPayR5).pipe(take(1)),
       this.activatedRoute.queryParams.pipe(take(1))
     ]).subscribe(([tenderBal, isSplitPay, params]) => {
 
@@ -98,23 +100,23 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
     this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
     this._tndrObj.tenderTypeCode = this._logonDataSvc.getTranIsRefund() ? 'RC' : 'CC';
 
-    this._store.select(getTktObjSelector).subscribe(data => {
+    this._store.select(getRTktObjSelector).subscribe(data => {
       if (data == null)
         return;
       this._tktObj = data;
     }).unsubscribe();
 
     //console.log("filling tender object with data ");
-    this._tndrObj.tndMaintUserId = this._logonDataSvc.getLocationConfig().individualUID.toString();
+    this._tndrObj.tndMaintUserId = this._logonDataSvc.getRovEventConfig().individualUID.toString();
     this._tndrObj.tndMaintTimestamp = new Date(Date.now());
     this._tndrObj.tenderStatus = TenderStatusType.InProgress; // Assuming 1 is the
-    this._tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
+    this._tndrObj.fcCurrCode = this._logonDataSvc.getRovEventConfig().currCode;
     this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
     this._tndrObj.ticketTenderId = -Date.now() % 10000;
     this._tndrObj.authNbr = '';
 
     let tndrCopy = JSON.parse(JSON.stringify(this._tndrObj))
-    this._store.dispatch(addTender({ tndrObj: tndrCopy }));
+    this._store.dispatch(addRovTender({ tndrObj: tndrCopy }));
     //this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
 
   }
@@ -124,7 +126,7 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
 
   async btnApproveClick(evt: Event) {
 
-    var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+    var tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1))) || {} as ROV_POSTicketSplit;
     if (tktObjData == null) {
       console.error('Unable to fetch ticket object');
       return;
@@ -140,13 +142,13 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
     this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
 
     let tndrCopy = JSON.parse(JSON.stringify(this._tndrObj))
-    this._store.dispatch(addTender({ tndrObj: tndrCopy }));
+    this._store.dispatch(addRovTender({ tndrObj: tndrCopy }));
     //this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
 
-    var tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    var tktObjData1 = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1)));
 
     if (tktObjData1 != null &&
-      TenderUtil.IsTicketComplete(tktObjData1, this._logonDataSvc.getAllowPartPay())) {
+      RovTenderUtil.IsTicketComplete(tktObjData1, this._logonDataSvc.getAllowPartPay())) {
 
       if (tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0) {
 
@@ -190,13 +192,13 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
   }
 
   private async markTicketComplete() {
-    this._store.dispatch(markTendersComplete({ status: TenderStatusType.Complete }));
-    this._store.dispatch(markTicketComplete({ status: TranStatusType.Complete }));
+    this._store.dispatch(markRovTendersComplete({ status: TenderStatusType.Complete }));
+    this._store.dispatch(markRovTicketComplete({ status: TranStatusType.Complete }));
 
     // Fetch the updated ticket object after marking complete
-    const tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    const tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1)));
     if (tktObjData != null) {
-      this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData }));
+      this._store.dispatch(saveCompleteRovTicketSplit({ tktObj: tktObjData }));
       this.route.navigate(['/savetktsuccess']);
     }
     else {
@@ -215,7 +217,7 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
   }
 
   async markAndDeleteTender(tndrStatus: TenderStatusType = TenderStatusType.Cancelled) {
-    var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+    var tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1))) || {} as ROV_POSTicketSplit;
     if (tktObjData == null) {
       console.error('Unable to fetch ticket object');
       return;
@@ -226,8 +228,8 @@ export class ConcessionCardTndrComponent implements AfterViewInit {
     this._tndrObj.tenderStatus = Number(tndrStatus);
     this._tndrObj.tndMaintTimestamp = new Date(Date.now());
     this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
-    this._store.dispatch(addTender({ tndrObj: JSON.parse(JSON.stringify(this._tndrObj)) }));
-    this._store.dispatch(saveTenderObj({ tndrObj: JSON.parse(JSON.stringify(this._tndrObj)) }));
+    this._store.dispatch(addRovTender({ tndrObj: JSON.parse(JSON.stringify(this._tndrObj)) }));
+    this._store.dispatch(saveRovTenderObj({ tndrObj: JSON.parse(JSON.stringify(this._tndrObj)) }));
     this._store.dispatch(deleteDeclinedTenderFromStore({ rrn: this._tndrObj.rrn }));
 
   }

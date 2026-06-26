@@ -5,7 +5,7 @@ import { SharedSubjectService } from '../../../../../shared-subject/shared-subje
 import { AssociateNamesListDetail } from "../../../../models/models"
 import { RovApiService } from "../../../../short-term.service";
 import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
-import { addSaleItem, decSaleitemQty, delSaleitemZeroQty, incSaleitemQty,  
+import { addRovSaleItem, decRovSaleitemQty, delRovSaleitemZeroQty, incRovSaleitemQty,  
     updateRovCheckoutTotals, inactiveRovTicketDetail } from '../../../../store/ticketstore/rticket.action';
 import { Rov_SalesTranCheckoutItem } from '../../../../models/r-salestran-checkout-item';
 import { ConditionalExpr } from '@angular/compiler';
@@ -31,7 +31,6 @@ export class RovTktSaleItemComponent implements OnInit {
 
     tktSaleItems: Rov_SalesTranCheckoutItem[] = [];
     public allowTips: boolean = false;
-    public SaleAssocList: AssociateNamesListDetail[] = [];
     public indivId: number = 0;
 
     public dfltCurrSymbl: string = '$'
@@ -61,10 +60,6 @@ export class RovTktSaleItemComponent implements OnInit {
         this.allowTips = locConfig.allowTips;
         this.indivId = +this._logonDataSvc.getRovVendorLogonData().individualUID;        
 
-        this._saleTranSvc.getEventAssociates(this.eventId, String(this.indivId)).subscribe(data => {
-            this.SaleAssocList = data.associates
-        })
-
         this.dfltCurrSymbl = currSymbls.find(x => x.key == this._logonDataSvc.getDfltCurrCode())?.value ?? '$'; 
         this.exchRate = this._logonDataSvc.getExchangeRate();
         this.dfltCurrCode = this._logonDataSvc.getDfltCurrCode();
@@ -92,33 +87,24 @@ export class RovTktSaleItemComponent implements OnInit {
             } 
             else 
             {
-                this._store.dispatch(delSaleitemZeroQty({saleItemId: this.tktSaleItems[i].salesItemUID, tktDtlId: this.tktSaleItems[i].ticketDetailId, defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));    
+                this._store.dispatch(delRovSaleitemZeroQty({ deptUID: this.tktSaleItems[i].departmentUid, tktDtlId: this.tktSaleItems[i].ticketDetailId, defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));    
             }
         }
         else {
-            this._store.dispatch(decSaleitemQty({ saleItemId: this.tktSaleItems[i].salesItemUID, tktDtlId: this.tktSaleItems[i].ticketDetailId , defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));
+            this._store.dispatch(decRovSaleitemQty({ deptUID: this.tktSaleItems[i].departmentUid, tktDtlId: this.tktSaleItems[i].ticketDetailId , defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));
         }
         this._store.dispatch(updateRovCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
     }
 
     btnPlusClicked(evt: Event, i: number) {
-        this._store.dispatch(incSaleitemQty({saleItemId: this.tktSaleItems[i].salesItemUID, tktDtlId: this.tktSaleItems[i].ticketDetailId, defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));
+        this._store.dispatch(incRovSaleitemQty({deptUID: this.tktSaleItems[i].departmentUid, tktDtlId: this.tktSaleItems[i].ticketDetailId, defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));
         this._store.dispatch(updateRovCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
     }
 
     public btnCheckoutClicked() {
 
         this._store.dispatch(updateRovCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
-        this._router.navigate(['/checkout'])
-    }
-
-    onAssociateChange(evt: any, indivLocId: number, saleItemId: number, indx: number, srvdByAssociateVal: string) {
-
-        let srvdByAssociateName = evt.target['options'][+evt.target.selectedIndex].innerText;
-        
-        
-
-        return true;
+        this._router.navigate(['/rov/rchekout'])
     }
 
     btnAddMiscItemClicked($event: Event) {

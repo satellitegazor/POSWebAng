@@ -1,6 +1,6 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store";
-import { TicketSplit } from "src/app/models/ticket.split";
-import { Round2DecimalService } from "src/app/services-misc/round2-decimal.service";
+import { TicketSplit } from "../../../../models/ticket.split";
+import { Round2DecimalService } from "../../../../services-misc/round2-decimal.service";
 import { SalesTransactionCheckoutItem } from "../../../models/salesTransactionCheckoutItem";
 import { saleTranDataInterface } from "./ticket.state";
 

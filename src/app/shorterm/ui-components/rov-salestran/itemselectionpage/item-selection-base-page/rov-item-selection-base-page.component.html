@@ -4,7 +4,7 @@
             <div class="row bkgray">
                 <div class="col-md-3" *ngFor="let dept of deptCategoryList; let deptIndex = index;">
                     <button type="button" name="deptBtn{{deptIndex}}"
-                        [ngClass]="[ activeId === dept.departmentUID ? 'dpt btn btn-block btn-primary' : 'dpt btn btn-block btn-secondary' ]"
+                        [ngClass]="[ activeDeptId === dept.departmentUID ? 'dpt btn btn-block btn-primary' : 'dpt btn btn-block btn-secondary' ]"
                     style="margin-top: 10px;margin-bottom: 10px;" id="deptBtn{{deptIndex}}" 
                         (click)="deptClick($event, dept.departmentUID);">{{dept.description}}</button>
                 </div>
@@ -14,7 +14,63 @@
 </div>
 <div class="container-fluid row" style="width:100%">
     <div class="col-md-5 saleitems">
-        <app-rov-key-pad></app-rov-key-pad>
+        <!-- <app-rov-key-pad
+            (enterPressed)="onSaleItemPriceEntered($event)">
+        </app-rov-key-pad> -->
+        <div class="container-fluid p-0">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-2 p-md-3">
+                    <div class="row g-2 align-items-stretch">
+                        <div class="col-12">
+                            <input id="txtSaleItemPrice" name="txtSaleItemPrice"
+                                class="form-control form-control-lg text-end fw-semibold" type="text" readonly
+                                style="font-size: 1.2em;"
+                                autocomplete="off" [(ngModel)]="saleItemPrice" [ngModelOptions]="{ standalone: true }"
+                                [appPosCurrency]="''" placeholder="0.00" />
+                        </div>
+        
+                        <div class="col-12 col-md-8">
+                            <div class="row g-2 row-cols-3">
+                                <div class="col" *ngFor="let key of [7, 8, 9, 4, 5, 6, 1, 2, 3, 0]">
+                                    <button type="button" class="btn btn-outline-secondary btn-lg w-100 keypad-btn"
+                                        [id]="'btnQty' + key" [attr.name]="'btnQty' + key"
+                                        [attr.data-testid]="'qa-button-qty-' + key" (click)="appendDigit(key)">
+                                        <span class="fw-semibold">{{ key }}</span>
+                                    </button>
+                                </div>
+                                <div class="col">
+                                    <button type="button" class="btn btn-outline-secondary btn-lg w-100 keypad-btn"
+                                        id="btnQty00" name="btnQty00" data-testid="qa-button-qty-00"
+                                        (click)="appendDoubleZero()">
+                                        <span class="fw-semibold">00</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <div class="col-12 col-md-4">
+                            <div class="d-grid gap-2 h-100">
+                                <button type="button" class="btn btn-outline-primary btn-lg keypad-action-btn" id="btnQtyBack"
+                                    name="btnQtyBack" data-testid="qa-button-qty-back" (click)="backspace()">
+                                    Bksp
+                                </button>
+                                <button type="button" class="btn btn-outline-warning btn-lg keypad-action-btn" id="btnQtyClear"
+                                    name="btnQtyClear" data-testid="qa-button-qty-clear" (click)="clear()">
+                                    Clear
+                                </button>
+                                <button type="button" class="btn btn-success btn-lg flex-grow-1 keypad-enter-btn" id="btnQtyOK"
+                                    name="btnQtyOK" data-testid="qa-button-qty-enter" (click)="enter()">
+                                    <div class="d-flex flex-column align-items-center justify-content-center h-100">
+                                        <div class="display-6 lh-1">↵</div>
+                                        <div>Enter</div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-md-7">
         <app-rov-tkt-sale-item

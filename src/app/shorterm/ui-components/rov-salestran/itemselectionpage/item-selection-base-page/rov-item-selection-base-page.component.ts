@@ -20,7 +20,7 @@ import { getEventConfigSelector } from "../../../../store/roveventconfigstore/ro
 import { getEventConfigStart, setEventConfig } from '../../../../store/roveventconfigstore/roveventconfig.action';
 import { EventConfig } from '../../../../models/event.config';
 import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
-import { addTabSerialToRovTktObj, rovInitTktObj } from '../../../../store/ticketstore/rticket.action';
+import { addRovSaleItem, addTabSerialToRovTktObj, rovInitTktObj, updateRovCheckoutTotals } from '../../../../store/ticketstore/rticket.action';
 import { RovTicketLookupComponent } from '../../../ticket-lookup/rov-ticket-lookup.component';
 import { getRCheckoutItemsCount, getRTicketTotals, getRTktObjSelector } from '../../../../store/ticketstore/rticket.selector';
 import { initialROVEventConfigState, ROVEventConfigState } from '../../../../store/roveventconfigstore/roveventconfig.state';
@@ -35,26 +35,26 @@ import { RovKeyPadComponent } from '../rov-key-pad/rov-key-pad.component';
 import { RovDeptListComponent } from '../salesdept/rov-deptlist.component';
 import { ROV_Department } from '../../../../../longterm/models/ticket.list';
 import { RDeptCategoryResultModels, ROV_SaleTaxSaveStatusResultModel } from '../../../../models/models';
-
+import { Rov_SalesTranCheckoutItem } from '../../../../models/r-salestran-checkout-item';
+import { FormsModule } from '@angular/forms';
+import { PosCurrencyDirective } from '../../../../../directives/pos-currency.directive';
 
 
 @Component({
     selector: 'app-rov-item-selection-base-page',
     templateUrl: './rov-item-selection-base-page.component.html',
     styleUrls: ['./rov-item-selection-base-page.component.css'],
-    imports: [CommonModule, RovTktSaleItemComponent, RovCustomerSearchComponent, 
-        RovTicketLookupComponent, RovAddMiscItemDlgComponent, 
-        RovKeyPadComponent, RovDeptListComponent, RovTktSaleItemComponent
-        ]   
+    imports: [CommonModule, FormsModule, PosCurrencyDirective, RovTktSaleItemComponent]
 })
+
 export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
 
-       modalOptions: NgbModalOptions = {
-            backdrop: 'static',
-            keyboard: false,
-            centered: true
-        };
-    salesCategoryListRefreshEvent: any;
+    modalOptions: NgbModalOptions = {
+        backdrop: 'static',
+        keyboard: false,
+        centered: true
+    };
+    
     transactionId: number = 0;
     individualId: number = 0;
         
@@ -66,18 +66,12 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
         private router: Router,
         private _rovEventConfigStore: Store<ROVEventConfigState>,
         private _cposWebSvc: CPOSWebSvcService,
-        private _utilSvc: UtilService) {
-
-        //console.log('SalesCart constructor')
-        this.salesCategoryListRefreshEvent = new Subject<boolean>();
-    }
+        private _utilSvc: UtilService) {}
 
     public deptListRefreshEvent: Subject<boolean> = new Subject<boolean>();
-
     vendorLoginResult: VendorLoginResultsModel = {} as VendorLoginResultsModel;
 
     deptCategoryList: ROV_Department[] = [];
-    salesItemRsltMdl!: Observable<SaleItemResultsModel>;
 
     strongErrMessage: string = "";
     errMessage: string = "";
@@ -86,25 +80,27 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
     showErrMsg: boolean = false;
     
     eventConfig: EventConfig = {} as EventConfig;
-
     disableCheckoutBtn: boolean = true;
-    activeId: number = 0;
-    activeSalesCatId: number = 0;
+
     activeDeptId: number = 0;
     tktCustomerId: number = 0;
     tktCustomerLastName: string = '';
+    saleItemPrice: number = 0;
     pendingCheckoutAfterCustomer: boolean = false;
     private isAddMiscModalOpen: boolean = false;
     exchangeRate: string = '';
     defaultCurrencyCode: string = 'USD';
+    defCurrSymbl: string = '$';
     dcSubtotal: number = 0;
     ndcSubtotal: number = 0;
     private isDefaultCurrencyUsd: boolean = true;
     isForeignCurrency: boolean = false;
     dcCurrSymbol: string = '';
     ndcCurrSymbol: string = '';
+    checkOutItemCount: number = 0;
 
     customerReqdForSaleItems: boolean = false;
+    
 
     //public salesCategoryListRefresh: Subject<boolean> = new Subject<boolean>();
     public salesItemListRefresh: Subject<boolean> = new Subject<boolean>();
@@ -113,15 +109,43 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
     private tktSaleItemComponent: RovTktSaleItemComponent = {} as RovTktSaleItemComponent;
 
     ngOnInit(): void {
+        
+        let eventId = +(localStorage.getItem('event_id') || 0);
 
-        this._rovApiSvc.checkSalesTaxSaveStatus(this._logonDataSvc.getRovEventConfig().eventID, this.individualId).subscribe((data: ROV_SaleTaxSaveStatusResultModel) => {
+        this._rovApiSvc.GetEventConfig(eventId, this.vendorLoginResult.individualUID).subscribe(data => {
+
+            this.eventConfig = data.config;
+            this._rovEventConfigStore.dispatch(setEventConfig({ eventConfig: data.config }));
+
+            if (this.eventConfig.rgnCode == "CON") {
+                this._cposWebSvc.getsysinfo("asdf").subscribe((data) => {
+                    if (data.IsSuccess) {
+                        console.log("SysInfo Success: ", data);
+                        this._store.dispatch(addTabSerialToRovTktObj({ tabSerialNum: data.TabMachineName, ipAddress: data.IPAddress }));
+                    }
+                });
+            }
+            else {
+                this.defaultCurrencyCode = this.eventConfig.defaultCurrency ?? 'USD';
+                this.defCurrSymbl = this._utilSvc.currencySymbols.get(this.defaultCurrencyCode) || '';
+                this._cposWebSvc.pinpadHeartbeat("PING").subscribe(data => {
+                    if (data.IsSuccess) {
+                        const pinpadStatus = data;
+                        console.log("Pinpad Heartbeat Success: ", pinpadStatus);
+                        this._store.dispatch(addTabSerialToRovTktObj({ tabSerialNum: pinpadStatus.TabMachineName, ipAddress: pinpadStatus.IpAddress }));
+                    }
+                });
+            }
+        });
+
+        this._rovApiSvc.checkSalesTaxSaveStatus(eventId, this.individualId).subscribe((data: ROV_SaleTaxSaveStatusResultModel) => {
             if (data.saveStatus == false && (typeof data.defaultCurrency === 'undefined' || data.defaultCurrency.trim().length === 0)) {
                 this.router.navigate(['/rov/ritembtnmenu']);
                 return;
             }
 
             this._rovApiSvc.getConcessionMenuItem(this._logonDataSvc.getRovVendorLogonData().individualUID.toString(), 
-                this._logonDataSvc.getRovEventConfig().eventID, 
+                eventId, 
                 0, 
                 true).subscribe((data: RDeptCategoryResultModels) => {   
                     this.deptCategoryList = data.lstItemButtons;
@@ -132,14 +156,11 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
 
     private initializeItemSelectionPage(): void {
 
-        this.eventConfig = this._logonDataSvc.getRovEventConfig();
-        
         //console.log('SalesCart ngOnInit')
         this.vendorLoginResult = this._logonDataSvc.getRovVendorLogonData();
-        this.defaultCurrencyCode = this._logonDataSvc.getDfltCurrCode?.() ?? this._logonDataSvc.getRovEventConfig()?.defaultCurrency ?? 'USD';
+        this.defaultCurrencyCode = this._logonDataSvc.getDfltCurrCode?.() ?? this.eventConfig?.defaultCurrency ?? 'USD';
         
-        this.isDefaultCurrencyUsd = this.defaultCurrencyCode.toUpperCase() === 'USD';
-        
+        this.isDefaultCurrencyUsd = this.defaultCurrencyCode.toUpperCase() === 'USD';        
         let exchRateObj = this._logonDataSvc.getDailyExchRate();
         this.isForeignCurrency = exchRateObj?.isForeignCurr ?? false;
 
@@ -156,44 +177,12 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
         }
 
         this.dcCurrSymbol = this._utilSvc.currencySymbols.get(this.defaultCurrencyCode) || '';
-        this.ndcCurrSymbol = this._utilSvc.currencySymbols.get(this.defaultCurrencyCode != 'USD' ? "USD" : exchRateObj.currCode) || '';
+        this.ndcCurrSymbol = this._utilSvc.currencySymbols.get(this.defaultCurrencyCode != 'USD' ? "USD" : exchRateObj?.currCode) || '';
 
         let pinpadStatus: VerifoneCommStatus = new VerifoneCommStatus();
 
-        this._rovApiSvc.checkSalesTaxSaveStatus(this.eventConfig.eventID, 0)
-            .subscribe((data: ROV_SaleTaxSaveStatusResultModel) => {
-            if(data.saveStatus == null || data.saveStatus == false) {
-                this.router.navigate(['rov/ritembtnmenu']);
-                return;
-            }
-        });        
-        this._buildTktObj();
-
-        this._rovApiSvc.GetEventConfig(+this.eventConfig.eventID, this.vendorLoginResult.individualUID).subscribe(data => {
-
-            this.eventConfig = data.config;
-            this._rovEventConfigStore.dispatch(setEventConfig({ eventConfig: data.config }));
-
-            if(this.eventConfig.rgnCode == "CON") {
-                this._cposWebSvc.getsysinfo("asdf").subscribe((data) => {
-                    if (data.IsSuccess) {
-                        console.log("SysInfo Success: ", data);
-                        this._store.dispatch(addTabSerialToRovTktObj({ tabSerialNum: data.TabMachineName, ipAddress: data.IPAddress }));
-                    }
-                });
-            }
-            else {
-                this._cposWebSvc.pinpadHeartbeat("PING").subscribe(data => {
-                    if (data.IsSuccess) {
-                        pinpadStatus = data;
-                        console.log("Pinpad Heartbeat Success: ", pinpadStatus);
-                        this._store.dispatch(addTabSerialToRovTktObj({ tabSerialNum: pinpadStatus.TabMachineName, ipAddress: pinpadStatus.IpAddress }));
-                    }
-                });   
-            }         
-        });
-
         this._store.select(getRCheckoutItemsCount).subscribe(itemCount => {
+            this.checkOutItemCount = itemCount;
             this.disableCheckoutBtn = (itemCount == 0);
         })
 
@@ -225,67 +214,48 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {}
 
-
-
-    // public getSalesCategoryList(deptId: number): void {
-
-    //     this.saleCatList = [];
-    //     let allDeptList = this.allItemButtonMenuList.filter(item => item.departmentUID == deptId);
-    //     allDeptList.forEach(itm => {
-    //         let k = this.saleCatList.filter(ct => ct.salesCategoryUID == itm.salesCategoryID);
-    //         if (k.length == 0) {
-    //             let cat = new SalesCat();
-    //             cat.salesCategoryUID = itm.salesCategoryID;
-    //             cat.description = itm.salesCategoryDescription;
-    //             cat.departmentName = itm.description;
-    //             cat.departmentUID = itm.departmentUID;
-    //             cat.active = itm.salesCatActive;
-    //             cat.salesCatTypeUID = itm.salesCatTypeUID;
-    //             this.saleCatList.push(cat);
-    //         }
-    //     });
-    //     //console.log('setting salesCategoryListRefresh to true');
-    //     this.salesCategoryListRefreshEvent.next(true);
-
-    //     this.getSaleItemList(this.saleCatList[0].salesCategoryUID);
-    // }
-
-    // public getSaleItemList(categoryId: number): void {
-        
-    //     this.saleItemList = [];
-    //     let allCatList = this.allItemButtonMenuList.filter(item => item.salesCategoryID == categoryId);
-    //     allCatList.forEach(itm => {
-    //         let k = this.saleItemList.filter(si => si.salesItemID == itm.salesItemID);
-    //         if (k.length == 0) {
-    //             this.saleItemList.push(itm);
-    //         }
-    //     });
-    //     //console.log('setting salesItemListRefresh to true');
-    //     this.salesItemListRefresh.next(true)
-    // }
-
-    deptClicked(id: any) {
-        this.activeDeptId = Number(id) || 0;
-        //this.getSalesCategoryList(id);
-    }
-
     deptClick(evt: Event, deptDepartmentUID: number | string) {
-        this.activeId = Number(deptDepartmentUID) || 0;
-        this.deptClicked(this.activeId);
+        this.activeDeptId = Number(deptDepartmentUID) || 0;
+        this.addSaleItemtoCart();
     }
 
-    saleCatClicked(id: any) {
-        this.activeSalesCatId = Number(id) || 0;
-        //this.getSaleItemList(id);
+    addSaleItemtoCart() {
+
+        if (this.saleItemPrice > 0 && this.activeDeptId > 0) {
+
+            let rovDept: ROV_Department = this.deptCategoryList.filter(dept => dept.departmentUID === this.activeDeptId)[0];
+            let saleItem: Rov_SalesTranCheckoutItem = new Rov_SalesTranCheckoutItem();
+            saleItem.departmentUid = this.activeDeptId;
+            saleItem.unitPrice = this.saleItemPrice;
+            saleItem.salesItemDesc = rovDept ? rovDept.description : '';
+            //saleItem.salesItemUID = this._utilSvc.getUniqueNumberForDay();
+            saleItem.isMiscellaneous = false;
+            saleItem.custInfoReq = rovDept ? rovDept.custInfoReq : false;
+            saleItem.ticketDetailId = -1 * (this.checkOutItemCount + 1);
+            saleItem.salesTaxPct = rovDept ? rovDept.salesTaxPct : 0;
+            saleItem.lineItemDollarDisplayAmount = 0;
+            saleItem.lineItemTaxAmount = 0;
+            saleItem.discountAmount = 0;
+            saleItem.couponLineItemDollarAmount = 0;
+            saleItem.fcCouponLineItemDollarAmount = 0;
+            saleItem.dcCouponLineItemDollarAmount = 0;
+            saleItem.dcDiscountAmount = 0;
+            saleItem.dcLineItemTaxAmount = 0;
+            saleItem.quantity = 1;
+
+            this._store.dispatch(addRovSaleItem({ saleItem: saleItem, defCurrSymbl: this.defCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate() })); 
+            this._store.dispatch(updateRovCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
+            this.activeDeptId = 0;
+            this.saleItemPrice = 0;
+        }
+
+
     }
 
-    saleItemClicked(id: any) {
-        //console.log('Sale Item Clicked: ' + id);
-    }
-
-    private _buildTktObj() {
-
-    }
+    // onSaleItemPriceEntered(saleItemPrice: number): void {
+    //     this.saleItemPrice = saleItemPrice ?? 0;
+    //     this.addSaleItemtoCart();
+    // }
 
     btnCheckoutClick(evt: Event) {
         const isCustomerSaveReqd = this.eventConfig.busFuncCode == ROVBusinessFunctionCode.BUSFNC_LTR_OTHER_CASH_CARRY
@@ -349,7 +319,6 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
             if (!result) {
                 return;
             }
-
             // Keep payload handling local until store wiring is implemented.
             console.log('Misc item dialog result:', result);
         }).catch(() => {
@@ -358,4 +327,28 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
             this.isAddMiscModalOpen = false;
         });
     }
+
+    
+      appendDigit(digit: number): void {
+        const currentCents = Math.round((this.saleItemPrice ?? 0) * 100);
+        this.saleItemPrice = (currentCents * 10 + digit) / 100;
+      }
+    
+      appendDoubleZero(): void {
+        const currentCents = Math.round((this.saleItemPrice ?? 0) * 100);
+        this.saleItemPrice = currentCents;
+      }
+    
+      backspace(): void {
+        const currentCents = Math.round((this.saleItemPrice ?? 0) * 100);
+        this.saleItemPrice = Math.floor(currentCents / 10) / 100;
+      }
+    
+      clear(): void {
+        this.saleItemPrice = 0;
+      }
+    
+      enter(): void {
+        this.addSaleItemtoCart();
+      }
 }

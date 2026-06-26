@@ -46,8 +46,8 @@ export class RovLogonComponent implements OnInit {
 
   ngOnInit() {
 
-    this.exchangenum = this._localStorageSvc.getItemData('contract_exchange_number');
-    this.vendornum = this._localStorageSvc.getItemData('contract_vendor_number');
+    this.exchangenum = this._localStorageSvc.getItemData('rov_contract_exchange_number');
+    this.vendornum = this._localStorageSvc.getItemData('rov_contract_vendor_number');
 
     if (this.exchangenum != null && this.vendornum != null) {
       this.GetEvents();
@@ -144,8 +144,8 @@ export class RovLogonComponent implements OnInit {
       let eventSelected = this.eventList.filter(k => k.eventID == selectedEventId)[0];
 
       this._localStorageSvc.setItemData('event_id', this.selectedEventId.toString());
-      this._localStorageSvc.setItemData('contract_vendor_number', this.vendornum);
-      this._localStorageSvc.setItemData('contract_exchange_number', eventSelected.exchangeNumber);
+      this._localStorageSvc.setItemData('rov_contract_vendor_number', this.vendornum);
+      this._localStorageSvc.setItemData('rov_contract_exchange_number', eventSelected.exchangeNumber);
       this._localStorageSvc.setItemData('event_facility_number', eventSelected.facilityNumber);
       this._localStorageSvc.setItemData('event_ddlContract_Type', true.toString());
       //this._localStorageSvc.setItemData('event_facility_name', eventSelected.facilityName);
@@ -162,7 +162,7 @@ export class RovLogonComponent implements OnInit {
       let today: Date = new Date();
       this._localStorageSvc.setItemData('isFutureContract', (cstart > today ? true : false).toString());
       this._localStorageSvc.setItemData('jwtToken', data.tokenString);
-      this._localStorageSvc.setItemData('apptype', 'longterm')
+      this._localStorageSvc.setItemData('apptype', 'shortterm')
       //console.log('vendorlt sending data to subject');
       this._rovLogonDataSvc.setRovVendorLogonData(data);
 

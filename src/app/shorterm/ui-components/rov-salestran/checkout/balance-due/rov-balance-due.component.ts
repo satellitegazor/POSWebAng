@@ -1,15 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { getBalanceDue, getRemainingBal } from '../../store/ticketstore/ticket.selector';
-import { saleTranDataInterface } from '../../store/ticketstore/rticket.state';
-import { currSymbls } from 'src/app/models/CurrencySymbols';
+import { LogonDataService } from '../../../../../global/logon-data-service.service';
+import { getRBalanceDue, getRRemainingBal } from '../../../../store/ticketstore/rticket.selector';
+import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
+import { currSymbls } from '../../../../../models/CurrencySymbols';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-    selector: 'app-balance-due',
-    templateUrl: './balance-due.component.html',
-    styleUrls: ['./balance-due.component.css'],
-    standalone: false
+    selector: 'app-rov-balance-due',
+    templateUrl: './rov-balance-due.component.html',
+    styleUrls: ['./rov-balance-due.component.css'],
+    standalone: true,
+    imports: [CommonModule, FormsModule]
+
 })
 export class RovBalanceDueComponent implements OnInit {
 
@@ -18,7 +22,7 @@ export class RovBalanceDueComponent implements OnInit {
   public exchRate: number = 1;
   public dfltCurrCode: string = 'USD'
 
-  constructor(private _store: Store<saleTranDataInterface>, private _logonDataSvc: LogonDataService) { 
+  constructor(private _store: Store<RovSaleTranDataInterface>, private _logonDataSvc: LogonDataService) { 
 
     this.allowPartPay = _logonDataSvc.getAllowPartPay();
   }
@@ -32,7 +36,7 @@ export class RovBalanceDueComponent implements OnInit {
     this.dfltCurrCode = this._logonDataSvc.getDfltCurrCode();
 
 
-    this._store.select(getRemainingBal).subscribe(data => {
+    this._store.select(getRRemainingBal).subscribe(data => {
       this.balDue = this.dfltCurrCode == 'USD' ? data.amountUSD : data.amountFC;
     })
 

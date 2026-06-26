@@ -1,23 +1,23 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PosCurrencyDirective } from '../../../../directives/pos-currency.directive';
+import { PosCurrencyDirective } from '../../../../../directives/pos-currency.directive';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { PosApiService } from '../../../services/pos-api-service';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { saleTranDataInterface } from '../../store/ticketstore/rticket.state';
+import { RovApiService} from "../../../../short-term.service"
+import { RovLogonDataService } from "../../../../rov-logon-data.service"
+import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
 import { Store } from '@ngrx/store';
-import { UtilService } from 'src/app/services-misc/util.service';
+import { UtilService } from '../../../../../services-misc/util.service';
 import { Router } from '@angular/router';
-import { getTktObjSelector } from '../../store/ticketstore/ticket.selector';
-import { updateCheckoutTotals, updateShipHandling } from '../../store/ticketstore/ticket.action';
-import { ToastService } from 'src/app/services-misc/toast.service';
+import { getRTktObjSelector } from '../../../../store/ticketstore/rticket.selector';
+import { updateRovCheckoutTotals, updateRovShipHandling } from '../../../../store/ticketstore/rticket.action';
+import { ToastService } from '../../../../../services-misc/toast.service';
 
 @Component({
-  selector: 'app-ship-handling',
+  selector: 'app-rov-ship-handling',
   imports: [CommonModule, FormsModule, PosCurrencyDirective],
-  templateUrl: './ship-handling.component.html',
-  styleUrl: './ship-handling.component.css'
+  templateUrl: './rov-ship-handling.component.html',
+  styleUrls: ['./rov-ship-handling.component.css']
 })
 export class RovShipHandlingComponent {
   dfltCurrSymbl = '€';
@@ -32,19 +32,19 @@ export class RovShipHandlingComponent {
   shipHandlingAmountNDC: number = 0;
   shipHandlingTaxNDC: number = 0;
 
-  constructor(private modal: NgbModal, private _saleTranSvc: PosApiService, 
-    private _logonDataSvc: LogonDataService,
-    private _store: Store<saleTranDataInterface>, 
+  constructor(private modal: NgbModal, private rovApiSvc: RovApiService, 
+    private _logonDataSvc: RovLogonDataService,
+    private _store: Store<RovSaleTranDataInterface>, 
     private router: Router, private utilSvc: UtilService,
     private toastSvc: ToastService) {
       this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
   }
   
   ngOnInit(): void {
-    var locCnfg = this._logonDataSvc.getLocationConfig();
+    
     this.dfltCurrSymbl = this.utilSvc.currencySymbols.get(this._logonDataSvc.getDfltCurrCode()) ?? '';
 
-    this._store.select(getTktObjSelector).subscribe(tktObj => {
+    this._store.select(getRTktObjSelector).subscribe(tktObj => {
       if(tktObj) {
         this.shipHandlingAmountUIVal =  this.dfltCurrSymbl == '$' ? tktObj.shipHandling : tktObj.shipHandlingFC ?? 0;
         this.shipHandlingTaxPctUIVal = this.dfltCurrSymbl == '$' ? parseFloat(((tktObj.shipHandlingTaxAmt / tktObj.shipHandling) * 100).toCPOSFixed(2)) : (tktObj.shipHandlingFC ? parseFloat(((tktObj.shipHandlingTaxAmtFC / tktObj.shipHandlingFC) * 100).toCPOSFixed(2)) : 0);
@@ -112,8 +112,8 @@ export class RovShipHandlingComponent {
       this.shipHandlingAmountNDC = parseFloat((this._logonDataSvc.getDailyExchRate().exchangeRate > 0 ? parseFloat((this.shipHandlingAmountDC / this._logonDataSvc.getDailyExchRate().exchangeRate).toCPOSFixed(2)) : 0).toCPOSFixed(2));
       this.shipHandlingTaxNDC = parseFloat((this._logonDataSvc.getDailyExchRate().exchangeRate > 0 ? parseFloat((this.shipHandlingTaxDC / this._logonDataSvc.getDailyExchRate().exchangeRate).toCPOSFixed(2)) : 0).toCPOSFixed(2));
     }
-      this._store.dispatch(updateShipHandling({ dfltCurrSymbl: this.dfltCurrSymbl, shipHandlingAmountDC: this.shipHandlingAmountDC, shipHandlingTaxDC: this.shipHandlingTaxDC, shipHandlingAmountNDC: this.shipHandlingAmountNDC, shipHandlingTaxNDC: this.shipHandlingTaxNDC }));
-      this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
+      this._store.dispatch(updateRovShipHandling({ dfltCurrSymbl: this.dfltCurrSymbl, shipHandlingAmountDC: this.shipHandlingAmountDC, shipHandlingTaxDC: this.shipHandlingTaxDC, shipHandlingAmountNDC: this.shipHandlingAmountNDC, shipHandlingTaxNDC: this.shipHandlingTaxNDC }));
+      this._store.dispatch(updateRovCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
 
     this.toastSvc.info('The shipping & handling charges have been updated successfully.');
     this.modal.dismissAll();

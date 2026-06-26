@@ -1,29 +1,31 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { TenderStatusType, TicketTender, TranStatusType } from '../../../../models/ticket.tender';
-import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
-import { saleTranDataInterface } from '../../store/ticketstore/rticket.state';
+import { TenderStatusType, TicketTender, TranStatusType } from '../../../../../models/ticket.tender';
+import { CPOSWebSvcService } from '../../../../../services-pinpad/cposweb-svc.service';
+import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
 import { ActivatedRoute, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
-import { LogonDataService } from '../../../../global/logon-data-service.service';
-import { UtilService } from '../../../../services/util.service';
-import { TicketSplit } from '../../../../models/rticket.split';
-import { ExchCardTndr } from '../../../../models/exch.card.tndr';
+import { RovLogonDataService } from "../../../../rov-logon-data.service"
+import { UtilService } from '../../../../../services-misc/util.service';
+import { ROV_POSTicketSplit } from '../../../../models/rticket.split';
+import { ExchCardTndr } from '../../../../../models/exch.card.tndr';
 import { firstValueFrom, forkJoin, Subscription, take } from 'rxjs';
-import { getIsSplitPayR5, getRemainingBal, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
-import { TenderUtil } from '../tender-util';
-import { addTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj } from '../../store/ticketstore/ticket.action';
+import { getRIsSplitPayR5, getRRemainingBal, getRTktObjSelector } from '../../../../store/ticketstore/rticket.selector';
+import { RovTenderUtil } from '../tender-util';
+import { addRovTender, markRovTendersComplete, markRovTicketComplete, saveCompleteRovTicketSplit, saveRovTenderObj } from '../../../../store/ticketstore/rticket.action';
 import { RedeemGiftCardTenders } from '../gc-redeem-services/redeem-gift-card-tenders';
-import { ToastService } from '../../../../services/toast.service';
+import { ToastService } from "../../../../../services-misc/toast.service";
 import { OConusRedeemGCWithPinPadService } from '../gc-redeem-services/oconus-redeeem-gc-with-pin-pad';
 import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
+import { getRemainingBal, getTktObjSelector } from '../../../../../longterm/saletran/store/ticketstore/ticket.selector';
+import { markTendersComplete } from '../../../../../longterm/saletran/store/ticketstore/ticket.action';
 
 @Component({
-  selector: 'app-cash-tndr',
-  templateUrl: './cash-tndr.component.html',
-  styleUrls: ['./cash-tndr.component.css'],
+  selector: 'app-rov-cash-tndr',
+  templateUrl: './rov-cash-tndr.component.html',
+  styleUrls: ['./rov-cash-tndr.component.css'],
   standalone: false,
 })
-export class CashTndrComponent implements OnInit {
+export class RovCashTndrComponent implements OnInit {
 
   @ViewChild('btnApprove') btnApprove!: ElementRef<HTMLButtonElement>;
   @ViewChild('btnDecline') btnDecline!: ElementRef<HTMLButtonElement>;
@@ -38,19 +40,19 @@ export class CashTndrComponent implements OnInit {
   isOConusLocation: boolean = false;
 
   constructor(private _cposWebSvc: CPOSWebSvcService,
-    private _store: Store<saleTranDataInterface>,
+    private _store: Store<RovSaleTranDataInterface>,
     private activatedRoute: ActivatedRoute,
     private route: Router,
-    private _logonDataSvc: LogonDataService,
+    private rovLogonDataSvc: RovLogonDataService,
     private _utilSvc: UtilService,
     private _toastSvc: ToastService,
     private _oConusRedeemGCWithPinPad: OConusRedeemGCWithPinPadService,
     private _conusRedeemGCWithAurusAPI: ConusRedeemGCwithAurusAPI) {
     // Initialization logic can go here if needed
-    this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
+    this.isOConusLocation = this.rovLogonDataSvc.getIsForeignCurr();
   }
 
-  private _tktObj: TicketSplit = {} as TicketSplit;
+  private _tktObj: ROV_POSTicketSplit = {} as ROV_POSTicketSplit;
   private _captureTranResponse: ExchCardTndr = {} as ExchCardTndr;
   private subscription: Subscription = {} as Subscription;
 
@@ -69,20 +71,20 @@ export class CashTndrComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.dcCurrencyCode = this._logonDataSvc.getDfltCurrCode();
-    this.ndcCurrencyCode = this._logonDataSvc.getNonDfltCurrCode();
+    this.dcCurrencyCode = this.rovLogonDataSvc.getDfltCurrCode();
+    this.ndcCurrencyCode = this.rovLogonDataSvc.getNonDfltCurrCode();
 
     this.dcCurrSymbl = this._utilSvc.currencySymbols.get(this.dcCurrencyCode);
     this.ndcCurrSymbl = this._utilSvc.currencySymbols.get(this.ndcCurrencyCode);
 
     // Only fetch remaining balance if tenderAmount was not provided in queryParams
     forkJoin([
-      this._store.select(getRemainingBal).pipe(take(1)),
-      this._store.select(getIsSplitPayR5).pipe(take(1)),
+      this._store.select(getRRemainingBal).pipe(take(1)),
+      this._store.select(getRIsSplitPayR5).pipe(take(1)),
       this.activatedRoute.queryParams.pipe(take(1))
     ]).subscribe(([tenderBal, isSplitPay, params]) => {
 
-      this._tndrObj.tenderTypeCode = this._logonDataSvc.getTranIsRefund() ? 'RC' : 'CA';
+      this._tndrObj.tenderTypeCode = this.rovLogonDataSvc.getTranIsRefund() ? 'RC' : 'CA';
       this._tndrObj.rrn = this._utilSvc.getUniqueRRN();
       this._tndrObj.ticketTenderId = -Date.now() % 10000;
       this._tndrObj.tenderTypeDesc = this._utilSvc.tenderCodeDescMap.get(this._tndrObj.tenderTypeCode) || 'Cash';
@@ -106,7 +108,7 @@ export class CashTndrComponent implements OnInit {
     }).unsubscribe();
 
 
-    this._store.select(getTktObjSelector).subscribe(data => {
+    this._store.select(getRTktObjSelector).subscribe(data => {
       if (data == null)
         return;
       //console.log("getTktObjSelector data: ", data);
@@ -119,8 +121,8 @@ export class CashTndrComponent implements OnInit {
 
   private loadFastCashButtons(): void {
     // USD Fast Cash
-    let usdFastCash = this._logonDataSvc.getLocationConfig().usdFastcash;
-    let frgnFastCash = this._logonDataSvc.getLocationConfig().frgnFastcash;
+    let usdFastCash = this.rovLogonDataSvc.getRovEventConfig().usdFastcash;
+    let frgnFastCash = this.rovLogonDataSvc.getRovEventConfig().frgnFastcash;
 
     if (usdFastCash) {
       this.usdFastCashButtons = usdFastCash
@@ -160,14 +162,14 @@ export class CashTndrComponent implements OnInit {
 
     this._tndrObj.tenderStatus = TenderStatusType.InProgress;
     this._tndrObj.isAuthorized = true;
-    this._tndrObj.tenderTypeCode = this._logonDataSvc.getTranIsRefund() ? 'RC' : 'CA';
+    this._tndrObj.tenderTypeCode = this.rovLogonDataSvc.getTranIsRefund() ? 'RC' : 'CA';
     this._tndrObj.tndMaintTimestamp = new Date(Date.now());
     this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
-    this._store.dispatch(addTender({ tndrObj: this._tndrObj }));
+    this._store.dispatch(addRovTender({ tndrObj: this._tndrObj }));
 
     var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
 
-    if (tktObjData != null && TenderUtil.IsTicketComplete(tktObjData, this._logonDataSvc.getAllowPartPay())) {
+    if (tktObjData != null && RovTenderUtil.IsTicketComplete(tktObjData, this.rovLogonDataSvc.getAllowPartPay())) {
 
       if(tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0){
 
@@ -211,13 +213,13 @@ export class CashTndrComponent implements OnInit {
   }
 
   private async markTicketComplete() {
-    this._store.dispatch(markTendersComplete({ status: TenderStatusType.Complete }));
-    this._store.dispatch(markTicketComplete({ status: TranStatusType.Complete }));
+    this._store.dispatch(markRovTendersComplete({ status: TenderStatusType.Complete }));
+    this._store.dispatch(markRovTicketComplete({ status: TranStatusType.Complete }));
 
     // Fetch the updated ticket object after marking complete
-    const tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    const tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1)));
     if (tktObjData != null) {
-      this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData }));
+      this._store.dispatch(saveCompleteRovTicketSplit({ tktObj: tktObjData }));
       this.route.navigate(['/savetktsuccess']);
     }
     else {

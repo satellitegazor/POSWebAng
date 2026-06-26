@@ -5,7 +5,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Rov_SalesTranCheckoutItem } from '../../../../models/r-salestran-checkout-item';
 import { RovSaleTranDataInterface } from "../../../../store/ticketstore/rticket.state";
 import { Store } from '@ngrx/store';
-import { addSaleItem, saveRovTicketDetail, updateRovCheckoutTotals } from "../../../../store/ticketstore/rticket.action";
+import { addRovSaleItem, saveRovTicketDetail, updateRovCheckoutTotals } from "../../../../store/ticketstore/rticket.action";
 import { DailyExchRate } from '../../../../../models/exchange.rate';
 import { CPOSAppType, UtilService } from '../../../../../services-misc/util.service';
 import { PosCurrencyDirective } from '../../../../../directives/pos-currency.directive';
@@ -110,7 +110,7 @@ export class RovAddMiscItemDlgComponent {
       newMiscItem.ticketDetailId = -1 * new Date().getTime() % 1000; // Generate a temporary unique ID for the ticket detail (negative to avoid conflicts with real items)
 
 
-      this._store.dispatch(addSaleItem({ saleItem: newMiscItem, defCurrSymbl: this.defaultCurrSymbl, dailyExchRateObj: this.dailyExchRate }));
+      this._store.dispatch(addRovSaleItem({ saleItem: newMiscItem, defCurrSymbl: this.defaultCurrSymbl, dailyExchRateObj: this.dailyExchRate }));
 
       if (this.transactionId > 0) {
         // If transactionId is present, means ticket is already saved once and we are adding item to existing ticket, so we need to update served by associate for the new item

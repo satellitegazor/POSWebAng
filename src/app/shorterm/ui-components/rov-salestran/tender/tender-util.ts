@@ -1,9 +1,10 @@
-import { TicketSplit } from "src/app/models/ticket.split";
+
 import { TicketTender } from "src/app/models/ticket.tender";
+import { ROV_POSTicketSplit } from "src/app/shorterm/models/rticket.split";
 
-export class TenderUtil {
+export class RovTenderUtil {
 
-    public static IsTicketComplete(tktObj: TicketSplit, allowPartPay: boolean): boolean {
+    public static IsTicketComplete(tktObj: ROV_POSTicketSplit, allowPartPay: boolean): boolean {
 
         if (tktObj.tktList.length == 0) {
             //console.log("Ticket is empty, cannot be completed.");

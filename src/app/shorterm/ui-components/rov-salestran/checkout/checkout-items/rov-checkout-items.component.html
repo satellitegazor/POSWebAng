@@ -5,8 +5,7 @@
                 <thead class="table-dark">
                     <tr>
                         <th scope="col">Item Description</th>
-                        <th scope="col" *ngIf="!allowTips">Quantity</th>
-                        <th scope="col" *ngIf="allowTips">Serviced By</th>
+                        <th scope="col" class="text-end">Quantity</th>
                         <th scope="col" class="text-end">Unit Price</th>
                         <th scope="col" class="text-end">Discount</th>
                         <th scope="col" class="text-end">Exch Coupon</th>
@@ -17,11 +16,8 @@
                 <tbody>
                     <tr *ngFor="let itm of tktDtlItems; let i = index;">
                         <td>{{itm.salesItemDesc}}</td>
-                        <td class="text-end" *ngIf="!allowTips">
+                        <td class="text-end">
                             <span class="badge bg-secondary">{{itm.quantity}}</span>
-                        </td>
-                        <td *ngIf="allowTips">
-                            <span class="badge bg-info">{{itm.srvdByAssociateText}}</span>
                         </td>
                         <td class="text-end">
                             {{dcCurrSymbl}}{{itm.unitPrice | number:'1.2-2'}}
@@ -120,18 +116,7 @@
                     </a></td>
                     <td *ngIf="isOConusLocation" class="text-end fw-semibold">{{ndcCurrSymbl}}{{(shipHandlingNDC) | number:'1.2-2'}}</td>
                 </tr>
-                <tr *ngIf="allowTips">
-                    <td class="text-end">Tips:</td>
-                    <td class="text-end">
-                        <a class="text-primary text-decoration-none" id="tipsTotal" 
-                           (click)="DisplayTipsPopUp()" style="cursor: pointer;">
-                            {{dcCurrSymbl}}{{tipsTotal | number:'1.2-2'}}
-                        </a>
-                    </td>
-                    <td *ngIf="isOConusLocation" class="text-end">   
-                        {{ndcCurrSymbl}}{{tipsTotalNDC | number:'1.2-2'}}
-                    </td>
-                </tr>
+
                 <tr class="border-top border-2">
                     <td class="text-end fw-bold fs-5">Grand Total:</td>
                     <td class="text-end fw-bold fs-5 text-success">{{dcCurrSymbl}}{{grandTotal | number:'1.2-2'}}</td>

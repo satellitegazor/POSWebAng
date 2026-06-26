@@ -5,6 +5,7 @@ import { SbmStorageService } from '../services/sbm-session-storage.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { LocalStorageService } from '../../global/local-storage.service';
 
 @Component({
   selector: 'app-sbm-login',
@@ -18,7 +19,8 @@ export class SbmLoginComponent {
   constructor(
     private sbmApi: SbmWebApiService,
     private sbmSessionStorage: SbmStorageService,
-    private router: Router
+    private router: Router,
+    private _localStorageSvc: LocalStorageService, 
   ) {}
 
 
@@ -38,6 +40,7 @@ export class SbmLoginComponent {
           // Logon successful
           console.log('Logon successful', result);
           this.sbmSessionStorage.saveLogonResults(result);
+          this._localStorageSvc.setItemData('apptype', 'sbm')
           this.router.navigate(['/sbm/clist']);
         } else {
           // Logon failed

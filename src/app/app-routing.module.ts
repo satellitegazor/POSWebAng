@@ -4,8 +4,8 @@ import { ModuleWithProviders } from '@angular/core';
 import { AppModule } from './app.module';
  
 const appRoutes: Routes = [
-    { path: 'sbm', loadChildren: () => import('./sbm/sbm-module/sbm-module-routing.module').then(mod => mod.SBM_ROUTES) },
-    { path: 'rov', loadChildren: () => import('./shorterm/roving-routing.module').then(mod => mod.ROV_ROUTES) },
+    { path: 'sbm', loadChildren: () => import('./sbm/sbm-module/sbm-module-routing.module').then(mod => mod.SbmRoutingModule) },
+    //{ path: 'rov', loadChildren: () => import('./shorterm/roving-routing.module').then(mod => mod.RovingRoutingModule) },
     { path: 'vlogon', loadChildren: () => import('./logon/logon.module').then(mod => mod.LogonModule)  },
     { path: 'rov', loadChildren: () => import('./shorterm/roving.module').then(mod => mod.RovingModule) },
     { path: 'ltc', loadChildren: () => import('./longterm/long-term-route.module').then(mod => mod.LongTermRouteModule) },

@@ -1,23 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { TicketTotals } from 'src/app/models/ticket.split';
-import { Round2DecimalService } from 'src/app/services-misc/round2-decimal.service';
-import { updatePartPayData } from '../../store/ticketstore/ticket.action';
-import { getIsCustomerAddedToTicket, getTicketTotals } from '../../store/ticketstore/ticket.selector';
-import { saleTranDataInterface } from '../../store/ticketstore/rticket.state';
-import { UtilService } from 'src/app/services-misc/util.service';
-import { DailyExchRate } from 'src/app/models/exchange.rate';
+import { LogonDataService } from '../../../../../global/logon-data-service.service';
+import { TicketTotals } from '../../../../../models/ticket.split';
+import { Round2DecimalService } from "../../../../../services-misc/round2-decimal.service"
+import { updateRovPartPayData } from '../../../../store/ticketstore/rticket.action';
+import { getRIsCustomerAddedToTicket, getRTicketTotals } from '../../../../store/ticketstore/rticket.selector';
+import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
+import { UtilService } from '../../../../../services-misc/util.service';
+import { DailyExchRate } from "../../../../../models/exchange.rate"
 
 @Component({
-  selector: 'app-part-pay',
-  templateUrl: './part-pay.component.html',
-  styleUrls: ['./part-pay.component.css'],
-  standalone: false
+  selector: 'app-rov-part-pay',
+  templateUrl: './rov-part-pay.component.html',
+  styleUrls: ['./rov-part-pay.component.css'],
 })
 export class RovPartPayComponent implements OnInit {
 
-  constructor(private _store: Store<saleTranDataInterface>,
+  constructor(private _store: Store<RovSaleTranDataInterface>,
     private logonSvc: LogonDataService,
     private utilSvc: UtilService) { }
 
@@ -38,7 +37,7 @@ export class RovPartPayComponent implements OnInit {
 
     this.showPartPay = this.logonSvc.getAllowPartPay();
 
-    this._store.select(getTicketTotals).subscribe(tktTotals => {
+    this._store.select(getRTicketTotals).subscribe(tktTotals => {
 
 
       this.grandTotalDC = tktTotals.grandTotalDC;
@@ -54,7 +53,7 @@ export class RovPartPayComponent implements OnInit {
       }
     })
 
-    this._store.select(getIsCustomerAddedToTicket).subscribe(val => {
+    this._store.select(getRIsCustomerAddedToTicket).subscribe(val => {
       this.disablePartPay = !val;
     })
 
@@ -69,10 +68,10 @@ export class RovPartPayComponent implements OnInit {
     if (this.partPayPercent > 0) {
       this.partPayAmount = Number(((this.grandTotalDC - this.amtPaidDC) * this.partPayPercent / 100).toCPOSFixed(2));
       this.partPayAmountNDC = Number((this.partPayAmount * (this.dailyExchRateObj.isOneUSD ? this.dailyExchRateObj.oneUSDRate : (1 / this.dailyExchRateObj.oneUSDRate))).toCPOSFixed(2));
-      this._store.dispatch(updatePartPayData({ partPayFlag: true, partPayAmountDC: this.partPayAmount, partPayAmountNDC: this.partPayAmountNDC }));
+      this._store.dispatch(updateRovPartPayData({ partPayFlag: true, partPayAmountDC: this.partPayAmount, partPayAmountNDC: this.partPayAmountNDC }));
     }
     else {
-      this._store.dispatch(updatePartPayData({ partPayFlag: false, partPayAmountDC: 0, partPayAmountNDC: 0 }));
+      this._store.dispatch(updateRovPartPayData({ partPayFlag: false, partPayAmountDC: 0, partPayAmountNDC: 0 }));
     }
 
   }
@@ -81,10 +80,10 @@ export class RovPartPayComponent implements OnInit {
     this.partPayAmount = Round2DecimalService.round(event.target.value);
     if (this.partPayAmount > 0) {
       this.partPayPercent = Number((this.partPayAmount / (this.grandTotalDC - this.amtPaidDC) * 100).toCPOSFixed(2));
-      this._store.dispatch(updatePartPayData({ partPayFlag: true, partPayAmountDC: this.partPayAmount, partPayAmountNDC: this.partPayAmount }));
+      this._store.dispatch(updateRovPartPayData({ partPayFlag: true, partPayAmountDC: this.partPayAmount, partPayAmountNDC: this.partPayAmount }));
     }
     else {
-      this._store.dispatch(updatePartPayData({ partPayFlag: false, partPayAmountDC: 0, partPayAmountNDC: 0 }));
+      this._store.dispatch(updateRovPartPayData({ partPayFlag: false, partPayAmountDC: 0, partPayAmountNDC: 0 }));
     }
 
   }

@@ -4,7 +4,7 @@ import { RovLogonDataService } from '../../rov-logon-data.service';
 //import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
 import { AssociateSaleTips } from "../../../models/associate.sale.tips";
 import { LTC_Customer } from "../../../models/customer";
-import { RSaveTicketResultsModel, ROV_POSTicketSplit } from "../../models/rticket.split";
+import { RSaveTicketResultsModel, ROV_POSTicketSplit, ROV_Ticket } from "../../models/rticket.split";
 import { SaveTenderResultModel, SaveTenderResult, TicketTender } from '../../../models/ticket.tender';
 import { EventConfig } from '../../models/event.config'
 //import { LTC_Associates } from '../../../models/location.associates';
@@ -79,17 +79,17 @@ export const LOAD_INPROGRESS_TENDERS = '[RovEventConfig] Load InProgress Tenders
 export const LOAD_INPROGRESS_TENDERS_SUCCESS = '[RovEventConfig] Load InProgress Tenders Success'
 export const LOAD_INPROGRESS_TENDERS_FAIL = '[RovEventConfig] Load InProgress Tenders Fail'
 
-export const addSaleItem = createAction(ADD_ROV_SALE_ITEM,
+export const addRovSaleItem = createAction(ADD_ROV_SALE_ITEM,
     props<{saleItem: Rov_SalesTranCheckoutItem, defCurrSymbl: string, dailyExchRateObj: DailyExchRate}>());
 
-export const incSaleitemQty = createAction(INC_ROV_SALE_ITEM_QTY,
-    props<{ saleItemId: number, tktDtlId: number, defCurrSymbl: string, dailyExchRateObj: DailyExchRate }>());
+export const incRovSaleitemQty = createAction(INC_ROV_SALE_ITEM_QTY,
+    props<{ deptUID: number, tktDtlId: number, defCurrSymbl: string, dailyExchRateObj: DailyExchRate }>());
  
-export const decSaleitemQty = createAction(DEC_ROV_SALE_ITEM_QTY,
-    props<{ saleItemId: number, tktDtlId: number, defCurrSymbl: string, dailyExchRateObj: DailyExchRate }>());
+export const decRovSaleitemQty = createAction(DEC_ROV_SALE_ITEM_QTY,
+    props<{ deptUID: number, tktDtlId: number, defCurrSymbl: string, dailyExchRateObj: DailyExchRate }>());
 
-export const delSaleitemZeroQty = createAction(DELETE_SALE_ITEM,
-    props<{ saleItemId: number, tktDtlId: number, defCurrSymbl: string, dailyExchRateObj: DailyExchRate }>());    
+export const delRovSaleitemZeroQty = createAction(DELETE_SALE_ITEM,
+    props<{ deptUID: number, tktDtlId: number, defCurrSymbl: string, dailyExchRateObj: DailyExchRate }>());    
 
 export const rovInitTktObj = createAction(ROV_INIT_TKT_OBJ, 
     props<{eventConfig: EventConfig, individualUID: number}>());
@@ -192,7 +192,7 @@ export const loadRovTicket = createAction(LOAD_TICKET,
     props<{ tranId: number, eventId: number, indivId: number }>());
 
 export const loadRovTicketSuccess = createAction(LOAD_TICKET_SUCCESS,
-    props<{ tktObj: ROV_POSTicketSplit }>());
+    props<{ tktObj: ROV_Ticket }>());
 
 export const loadRovTicketFail = createAction(LOAD_TICKET_FAIL,
     props<{ errMessage: String }>());

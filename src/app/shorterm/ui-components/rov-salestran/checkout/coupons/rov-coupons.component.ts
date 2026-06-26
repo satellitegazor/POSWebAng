@@ -2,21 +2,25 @@ import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angula
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
-import { CouponType } from '../../../../global/global.constants';
-import { LogonDataService } from '../../../../global/logon-data-service.service';
-import { updateCheckoutTotals, upsertSaleItemExchCpn, upsertSaleItemVndCpn, upsertTranExchCpn } from '../../store/ticketstore/ticket.action';
-import { saleTranDataInterface } from '../../store/ticketstore/rticket.state';
-import { currSymbls } from '../../../../models/CurrencySymbols';
-import { ToastService, ToastType } from '../../../../services/toast.service';
-import { TicketSplit } from '../../../../models/rticket.split';
-import { getTktObjSelector } from '../../store/ticketstore/ticket.selector';
-import { UtilService } from '../../../../services/util.service';
+import { CouponType } from '../../../../../global/global.constants';
+import { RovLogonDataService } from "../../../../rov-logon-data.service"
+import { updateRovCheckoutTotals, upsertRovSaleItemExchCpn, upsertRovSaleItemVndCpn, upsertRovTranExchCpn } from '../../../../store/ticketstore/rticket.action';
+import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
+import { currSymbls } from '../../../../../models/CurrencySymbols';
+import { ToastService, ToastType } from '../../../../../services-misc/toast.service';
+import { ROV_POSTicketSplit } from "../../../../models/rticket.split"
+import { getRTktObjSelector } from '../../../../store/ticketstore/rticket.selector';
+import { UtilService } from '../../../../../services-misc/util.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { getTktObjSelector } from '../../../../../longterm/saletran/store/ticketstore/ticket.selector';
 
 @Component({
     selector: 'app-rov-coupons',
-    templateUrl: './coupons.component.html',
-    styleUrls: ['./coupons.component.css'],
-    standalone: false
+    templateUrl: './rov-coupons.component.html',
+    styleUrls: ['./rov-coupons.component.css'],
+    standalone: true,
+    imports: [CommonModule, FormsModule]
 })
 export class RovCouponsModalDlgComponent implements OnInit, AfterViewInit {
 
@@ -32,25 +36,27 @@ export class RovCouponsModalDlgComponent implements OnInit, AfterViewInit {
   public DiscountAmt: number = 0;
   public MaxDiscAmt: number = 0;
 
-  constructor(private modal: NgbModal, private logonDataSvc: LogonDataService, 
-    private _store: Store<saleTranDataInterface>, private toastSvc: ToastService,
+  constructor(private modal: NgbModal, 
+    private rovLogonDataSvc: RovLogonDataService, 
+    private _store: Store<RovSaleTranDataInterface>, 
+    private toastSvc: ToastService,
     private _utilSvc: UtilService) { }
 
   public dfltCurrSymbl: string = '$'
   public exchRate: number = 1;
   public dfltCurrCode: string = 'USD'
   public isOconusLocation: boolean = false;
-  tktObj: TicketSplit = {} as TicketSplit;
+  tktObj: ROV_POSTicketSplit = {} as ROV_POSTicketSplit;
   //public CurrSymbl: string = '$';
 
   ngOnInit(): void {
-    this.exchRate = this.logonDataSvc.getExchangeRate();
-    this.dfltCurrCode = this.logonDataSvc.getDfltCurrCode();
-    this.isOconusLocation = this.logonDataSvc.getIsForeignCurr();
+    this.exchRate = this.rovLogonDataSvc.getExchangeRate();
+    this.dfltCurrCode = this.rovLogonDataSvc.getDfltCurrCode();
+    this.isOconusLocation = this.rovLogonDataSvc.getIsForeignCurr();
 
     this.dfltCurrSymbl =  this._utilSvc.currencySymbols.get(this.dfltCurrCode) ?? '$';
 
-    this._store.select(getTktObjSelector).subscribe(tktObj => {
+    this._store.select(getRTktObjSelector).subscribe(tktObj => {
       if(tktObj) {
         this.tktObj = tktObj;
         if(this.CpnType == CouponType.exchCpnTran) {
@@ -81,19 +87,19 @@ export class RovCouponsModalDlgComponent implements OnInit, AfterViewInit {
     switch(this.CpnType) {
       case(CouponType.exchCpnItem): {
 
-        this._store.dispatch(upsertSaleItemExchCpn({logonDataSvc: this.logonDataSvc, saleItemId: this.SaleItemId, tktDtlId: this.TktDtlId, cpnPct: this.DiscountPct, cpnAmt: this.DiscountAmt}));
+        this._store.dispatch(upsertRovSaleItemExchCpn({logonDataSvc: this.rovLogonDataSvc, saleItemId: this.SaleItemId, tktDtlId: this.TktDtlId, cpnPct: this.DiscountPct, cpnAmt: this.DiscountAmt}));
       }
       break;
       case(CouponType.vndCpnItem):{
-        this._store.dispatch(upsertSaleItemVndCpn({logonDataSvc: this.logonDataSvc, saleItemId: this.SaleItemId, tktDtlId: this.TktDtlId, cpnPct: this.DiscountPct, cpnAmt: this.DiscountAmt}));
+        this._store.dispatch(upsertRovSaleItemVndCpn({logonDataSvc: this.rovLogonDataSvc, saleItemId: this.SaleItemId, tktDtlId: this.TktDtlId, cpnPct: this.DiscountPct, cpnAmt: this.DiscountAmt}));
       }
       break;
       case(CouponType.exchCpnTran): {
-        this._store.dispatch(upsertTranExchCpn({logonDataSvc: this.logonDataSvc, cpnPct: this.DiscountPct, cpnAmt: this.DiscountAmt}));
+        this._store.dispatch(upsertRovTranExchCpn({logonDataSvc: this.rovLogonDataSvc, cpnPct: this.DiscountPct, cpnAmt: this.DiscountAmt}));
       }
       break;
     }
-    this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this.logonDataSvc }));
+    this._store.dispatch(updateRovCheckoutTotals({ logonDataSvc: this.rovLogonDataSvc }));
     this.modal.dismissAll('');
   }
 

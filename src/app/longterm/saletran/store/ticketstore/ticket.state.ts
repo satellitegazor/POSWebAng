@@ -1,4 +1,4 @@
-import { SaveTicketResultsModel, TicketSplit, TicketTotals } from "src/app/models/ticket.split"
+import { SaveTicketResultsModel, TicketSplit, TicketTotals } from "../../../../models/ticket.split"
 import { LocationConfig } from "../../../models/location-config";
 
 export interface saleTranDataInterface {
