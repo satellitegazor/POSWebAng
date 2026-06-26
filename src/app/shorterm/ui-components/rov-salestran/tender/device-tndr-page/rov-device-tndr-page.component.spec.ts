@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DeviceTndrPageComponent } from './device-tndr-page.component';
+import { RovDeviceTndrPageComponent } from './rov-device-tndr-page.component';
 
 describe('TenderPageComponent', () => {
-  let component: DeviceTndrPageComponent;
-  let fixture: ComponentFixture<DeviceTndrPageComponent>;
+  let component: RovDeviceTndrPageComponent;
+  let fixture: ComponentFixture<RovDeviceTndrPageComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DeviceTndrPageComponent ]
+      declarations: [ RovDeviceTndrPageComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(DeviceTndrPageComponent);
+    fixture = TestBed.createComponent(RovDeviceTndrPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

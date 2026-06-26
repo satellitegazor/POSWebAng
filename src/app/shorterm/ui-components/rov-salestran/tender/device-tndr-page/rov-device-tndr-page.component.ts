@@ -1,39 +1,43 @@
 import { AfterContentInit, Component, OnInit, OnDestroy } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { TicketSplit } from 'src/app/models/ticket.split';
-import { getBalanceDue, getBalanceDueFC, getTktObjSelector, getRemainingBal, AmountUSDFC, getIsSplitPayR5 } from '../../store/ticketstore/ticket.selector';
-import { saleTranDataInterface } from '../../store/ticketstore/rticket.state';
+import { getRBalanceDue, getRBalanceDueFC, getRTktObjSelector, getRRemainingBal, AmountUSDFC, getRIsSplitPayR5 } from "../../../../store/ticketstore/rticket.selector";
+import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
-import { addPinpadResp, addTender, deleteDeclinedTenderFromStore, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, savePinpadResponse, saveTenderObj, saveTenderObjSuccess, saveTicketForGuestCheck, updateCheckoutTotals } from '../../store/ticketstore/ticket.action';
+import { addRovPinpadResp, addRovTender, deleteDeclinedRovTenderFromStore, markRovTendersComplete, markRovTicketComplete, saveCompleteRovTicketSplit, saveRovPinpadResponse, saveRovTenderObj, saveRovTenderObjSuccess, saveRovTicketForGuestCheck, updateRovCheckoutTotals } from '../../../../store/ticketstore/rticket.action';
 import { LocalStorageService } from 'src/app/global/local-storage.service';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { TenderType, TenderTypeModel } from '../../../models/tender.type';
-import { SalesTransactionCheckoutItem } from '../../../models/salesTransactionCheckoutItem';
+import { TenderType, TenderTypeModel } from '../../../../../longterm/models/tender.type';
+import { Rov_SalesTranCheckoutItem } from '../../../../models/r-salestran-checkout-item';
 import { AssociateSaleTips } from 'src/app/models/associate.sale.tips';
-import { getLocCnfgIsAllowTipsSelector } from '../../store/locationconfigstore/locationconfig.selector';
+
 import { combineLatest, filter, firstValueFrom, forkJoin, map, Observable, Subscription, take, Subject, takeUntil } from 'rxjs';
-import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
+import { CPOSWebSvcService } from '../../../../../services-pinpad/cposweb-svc.service';
 import { UtilService } from 'src/app/services-misc/util.service';
 import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
 import { Actions, ofType } from '@ngrx/effects';
 import { Round2DecimalService } from 'src/app/services-misc/round2-decimal.service';
 import { RootObject } from 'src/app/app.state';
 import { ToastService } from 'src/app/services-misc/toast.service';
-import { TenderUtil } from '../tender-util';
-import { RedeemGiftCardTenders } from '../gc-redeem-services/redeem-gift-card-tenders';
-import { OConusRedeemGCWithPinPadService } from '../gc-redeem-services/oconus-redeeem-gc-with-pin-pad';
+import { RovTenderUtil } from '../tender-util';
+import { RovRedeemGiftCardTenders } from '../gc-redeem-services/rov-redeem-gift-card-tenders';
+import { RovOConusRedeemGCWithPinPadService } from '../gc-redeem-services/rov-oconus-redeeem-gc-with-pin-pad';
 import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
+import { ROV_POSTicketSplit } from 'src/app/shorterm/models/rticket.split';
+import { markTendersComplete } from 'src/app/longterm/saletran/store/ticketstore/ticket.action';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-tender-page',
-  templateUrl: './device-tndr-page.component.html',
-  styleUrls: ['./device-tndr-page.component.css'],
-  standalone: false,
+  selector: 'app-rov-device-tndr-page',
+  templateUrl: './rov-device-tndr-page.component.html',
+  styleUrls: ['./rov-device-tndr-page.component.css'],
+  imports: [CommonModule, FormsModule]
 })
-export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDestroy {
+export class RovDeviceTndrPageComponent implements OnInit, AfterContentInit, OnDestroy {
 
-  constructor(private _store: Store<saleTranDataInterface>,
+  constructor(private _store: Store<RovSaleTranDataInterface>,
     private activatedRoute: ActivatedRoute,
     private route: Router,
     private _logonDataSvc: LogonDataService,
@@ -41,7 +45,7 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
     private _utilSvc: UtilService,
     private actions$: Actions,
     private _toastSvc: ToastService,
-    private _oConusRedeemGCWithPinPad: OConusRedeemGCWithPinPadService,
+    private _oConusRedeemGCWithPinPad: RovOConusRedeemGCWithPinPadService,
     private _conusRedeemGCWithAurusAPI: ConusRedeemGCwithAurusAPI) {
   }
 
@@ -64,7 +68,7 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
   public isOConusLocation: boolean = false;
 
   ngOnInit(): void {
-    this._store.select(getIsSplitPayR5).subscribe(flag => {
+    this._store.select(getRIsSplitPayR5).subscribe(flag => {
       this.isSplitPay = flag;
     }).unsubscribe();
     this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
@@ -90,8 +94,8 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
     }
 
     combineLatest([
-      this._store.select(getRemainingBal).pipe(take(1)),
-      this._store.select(getIsSplitPayR5).pipe(take(1)),
+      this._store.select(getRRemainingBal).pipe(take(1)),
+      this._store.select(getRIsSplitPayR5).pipe(take(1)),
       this.activatedRoute.queryParams.pipe(take(1))
     ]).subscribe(([tenderBal, isSplitPay, params]) => {
 
@@ -138,15 +142,15 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
 
   private async getTransactionId(isRefund: boolean): Promise<number> {
 
-    var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+    var tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1))) || {} as TicketSplit;
     if (tktObjData != null) {
       this._tndrObj.tenderTransactionId = tktObjData.transactionID;
-      this._store.dispatch(addTender({ tndrObj: this._tndrObj }));
-      this._store.dispatch(saveTenderObj({ tndrObj: this._tndrObj }));
+      this._store.dispatch(addRovTender({ tndrObj: this._tndrObj }));
+      this._store.dispatch(saveRovTenderObj({ tndrObj: this._tndrObj }));
 
-      // Subscribe to saveTenderObjSuccess to capture the generated ticketTenderId
+      // Subscribe to saveRovTenderObjSuccess to capture the generated ticketTenderId
       this.subscription = this.actions$.pipe(
-        ofType(saveTenderObjSuccess),
+        ofType(saveRovTenderObjSuccess),
         take(1),
         map(action => action.data.data.ticketTenderId)
       ).subscribe((tenderId) => {
@@ -184,7 +188,7 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
           if (data.rslt.IsSuccessful) {
 
             // Fetch the updated tender from store state that has ticketTenderId from DB
-            var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+            var tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1))) || {} as TicketSplit;
             if (tktObjData == null) {
               console.error('Unable to fetch ticket object');
               this.authorizationInProgress = false;
@@ -200,7 +204,7 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
             }
 
             // Copy the saved tender which already has ticketTenderId
-            var tndrCopy = TenderUtil.copyTenderObj(savedTender);
+            var tndrCopy = RovTenderUtil.copyTenderObj(savedTender);
 
             tndrCopy.rrn = this.InvoiceId;
             tndrCopy.isAuthorized = true;
@@ -239,8 +243,8 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
               tndrCopy.tenderStatus = TenderStatusType.Declined;
             }
 
-            this._store.dispatch(addTender({ tndrObj: tndrCopy }));
-            this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
+            this._store.dispatch(addRovTender({ tndrObj: tndrCopy }));
+            this._store.dispatch(saveRovTenderObj({ tndrObj: tndrCopy }));
 
             if(!isPaymentApproved) {
               this._toastSvc.error('Payment was declined. Please try again or use a different payment method.');
@@ -250,11 +254,11 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
             }
 
             // Use the pre-stored tender ID for the pinpad response
-            this._store.dispatch(addPinpadResp({ respObj: this._captureTranResponse }));
-            this._store.dispatch(savePinpadResponse({ respObj: this._captureTranResponse }));
-            var tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+            this._store.dispatch(addRovPinpadResp({ respObj: this._captureTranResponse }));
+            this._store.dispatch(saveRovPinpadResponse({ respObj: this._captureTranResponse }));
+            var tktObjData1 = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1))) || {} as ROV_POSTicketSplit;
 
-            if (TenderUtil.IsTicketComplete(tktObjData1, this._logonDataSvc.getAllowPartPay())) {
+            if (RovTenderUtil.IsTicketComplete(tktObjData1, this._logonDataSvc.getAllowPartPay())) {
 
               if (tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0) {
 
@@ -314,17 +318,17 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
   }
 
   private async markTicketComplete() {
-    this._store.dispatch(markTendersComplete({ status: TenderStatusType.Complete }));
-    this._store.dispatch(markTicketComplete({ status: TranStatusType.Complete }));
+    this._store.dispatch(markRovTendersComplete({ status: TenderStatusType.Complete }));
+    this._store.dispatch(markRovTicketComplete({ status: TranStatusType.Complete }));
 
     // Fetch the updated ticket object after marking complete
-    const tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    const tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1)));
     if (tktObjData != null) {
-      this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData }));
-      this.route.navigate(['/savetktsuccess']);
+      this._store.dispatch(saveCompleteRovTicketSplit({ tktObj: tktObjData }));
+      this.route.navigate(['/rov/rsavetktsuccess']);
     }
     else {
-      this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
+      this.route.navigate(this.isSplitPay ? ['/rov/rsplitpay'] : ['/rov/rchekout']);
     }
   }
   /**
@@ -348,21 +352,21 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
       tndrObj.tenderTypeDesc = tndrTypeObj.tenderTypeDesc.valueOf();
     }
 
-    this._store.dispatch(addTender({ tndrObj }));
+    this._store.dispatch(addRovTender({ tndrObj }));
 
-    var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    var tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1)));
 
     if (tktObjData != null) {
-      this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData }));
+      this._store.dispatch(saveCompleteRovTicketSplit({ tktObj: tktObjData }));
     }
     
-    this.route.navigate(['/savetktsuccess']);
+    this.route.navigate(['/rov/rsavetktsuccess']);
 
   }
 
   async btnDecline(evt: Event) {
 
-    var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+    var tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1))) || {} as ROV_POSTicketSplit;
     if (tktObjData == null) {
       console.error('Unable to fetch ticket object');
       this.authorizationInProgress = false;
@@ -378,14 +382,14 @@ export class DeviceTndrPageComponent implements OnInit, AfterContentInit, OnDest
     }
 
     // Copy the saved tender which already has ticketTenderId
-    var tndrCopy = TenderUtil.copyTenderObj(savedTender);
+    var tndrCopy = RovTenderUtil.copyTenderObj(savedTender);
 
     tndrCopy.tenderStatus = TenderStatusType.Declined;
-    this._store.dispatch(addTender({ tndrObj: tndrCopy }));
-    this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
-    this._store.dispatch(deleteDeclinedTenderFromStore({ rrn: this.InvoiceId }));
+    this._store.dispatch(addRovTender({ tndrObj: tndrCopy }));
+    this._store.dispatch(saveRovTenderObj({ tndrObj: tndrCopy }));
+    this._store.dispatch(deleteDeclinedRovTenderFromStore({ rrn: this.InvoiceId }));
 
-    this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
+    this.route.navigate(this.isSplitPay ? ['/rov/rsplitpay'] : ['/rov/rchekout']);
   }
 
   // async getRemainingBalance() {

@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { PosApiService, Conus_GC_Balance_Model } from '../../../services/pos-api-service';
+import { PosApiService } from '../../../../../longterm/services/pos-api-service';
+import { Conus_GC_Balance_Model } from "../../../../../longterm/models/misc.models";
 import { TicketTender } from 'src/app/models/ticket.tender';
 import { catchError, concatMap, delay, finalize, from, map, Observable, of, switchMap, tap, toArray } from 'rxjs';
-import { saleTranDataInterface } from '../../store/ticketstore/rticket.state';
+import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
 import { Store } from '@ngrx/store';
-import { addTender, saveTenderObj } from '../../store/ticketstore/ticket.action';
+import { addRovTender, saveRovTenderObj } from '../../../../store/ticketstore/rticket.action';
 import { ToastService } from 'src/app/services-misc/toast.service';
-import { UiBlockService } from 'src/app/services/ui-block.service';
+import { UiBlockService } from 'src/app/services-misc/ui-block.service';
 import { GlobalConstants } from 'src/app/global/global.constants';
 import { CPOSAppType } from 'src/app/services-misc/util.service';
 
@@ -19,7 +20,7 @@ export class ConusRedeemGCwithAurusAPI {
   constructor(
     private _logonDataSvc: LogonDataService,
     private _salesTranSvc: PosApiService,
-    private _store: Store<saleTranDataInterface>,
+    private _store: Store<RovSaleTranDataInterface>,
     private _toastSvc: ToastService,
     private _uiBlockSvc: UiBlockService) { }
 
@@ -73,8 +74,8 @@ export class ConusRedeemGCwithAurusAPI {
 
                 this._toastSvc.success(`Gift Card Redeemed Successfully: Auth ${response.stAuth}`);
 
-                this._store.dispatch(addTender({ tndrObj: tndrCopy }));
-                this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
+                this._store.dispatch(addRovTender({ tndrObj: tndrCopy }));
+                this._store.dispatch(saveRovTenderObj({ tndrObj: tndrCopy }));
               }),
               catchError(error => {
                 this._toastSvc.error(

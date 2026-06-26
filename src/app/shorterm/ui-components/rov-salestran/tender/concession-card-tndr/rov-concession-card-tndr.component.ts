@@ -9,16 +9,16 @@ import { filter, firstValueFrom, Subscription, take } from 'rxjs';
 import { getRIsSplitPayR5, getRRemainingBal, getRTktObjSelector } from '../../../../store/ticketstore/rticket.selector';
 import { TenderStatusType, TicketTender, TranStatusType } from '../../../../../models/ticket.tender';
 import { TenderType } from '../../../../../longterm/models/tender.type';
-import { addRovPinpadResp, addRovTender, deleteDeclinedTenderFromStore, markRovTendersComplete, markRovTicketComplete, saveCompleteRovTicketSplit, saveRovPinpadResponse, saveRovTenderObj, updateRovTenderRRN } from '../../../../store/ticketstore/rticket.action';
+import { addRovPinpadResp, addRovTender, deleteDeclinedRovTenderFromStore, markRovTendersComplete, markRovTicketComplete, saveCompleteRovTicketSplit, saveRovPinpadResponse, saveRovTenderObj, updateRovTenderRRN } from '../../../../store/ticketstore/rticket.action';
 import { UtilService } from '../../../../../services-misc/util.service';
 //import { VfoneCaptureTran } from '../../services/models/capture-tran.model';
 import { forkJoin } from 'rxjs';
 import { ExchCardTndr } from '../../../../../models/exch.card.tndr';
 import { RovTenderUtil } from '../tender-util';
-import { RedeemGiftCardTenders } from '../gc-redeem-services/redeem-gift-card-tenders';
+import { RovRedeemGiftCardTenders } from '../gc-redeem-services/rov-redeem-gift-card-tenders';
 import { ToastService } from "../../../../../services-misc/toast.service";
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { OConusRedeemGCWithPinPadService } from '../gc-redeem-services/oconus-redeeem-gc-with-pin-pad';
+import { RovOConusRedeemGCWithPinPadService } from '../gc-redeem-services/rov-oconus-redeeem-gc-with-pin-pad';
 import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
 import { getTktObjSelector } from 'src/app/longterm/saletran/store/ticketstore/ticket.selector';
 import { FormsModule } from '@angular/forms';
@@ -48,7 +48,7 @@ export class RovConcessionCardTndrComponent implements AfterViewInit {
     private _utilSvc: UtilService,
     private _cposWebSvc: CPOSWebSvcService,
     private _toastSvc: ToastService,
-    private _oConusRedeemGCWithPinPad: OConusRedeemGCWithPinPadService,
+    private _oConusRedeemGCWithPinPad: RovOConusRedeemGCWithPinPadService,
     private _conusRedeemGCWithAurusAPI: ConusRedeemGCwithAurusAPI) {
     // Initialization logic can go here if needed
     this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
@@ -187,7 +187,7 @@ export class RovConcessionCardTndrComponent implements AfterViewInit {
 
     }
     else {
-      this.route.navigate([this.isSplitPay ? '/splitpay' : '/checkout']);
+      this.route.navigate([this.isSplitPay ? '/rov/rsplitpay' : '/rov/rchekout']);
     }
   }
 
@@ -199,21 +199,21 @@ export class RovConcessionCardTndrComponent implements AfterViewInit {
     const tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1)));
     if (tktObjData != null) {
       this._store.dispatch(saveCompleteRovTicketSplit({ tktObj: tktObjData }));
-      this.route.navigate(['/savetktsuccess']);
+      this.route.navigate(['/rov/rsavetktsuccess']);
     }
     else {
-      this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
+      this.route.navigate(this.isSplitPay ? ['/rov/rsplitpay'] : ['/rov/rchekout']);
     }
   }
 
   btnDeclineClick(evt: Event) {
     this.markAndDeleteTender(TenderStatusType.Declined);
-    this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
+    this.route.navigate(this.isSplitPay ? ['/rov/rsplitpay'] : ['/rov/rchekout']);
   }
 
   btnCancelClick(evt: Event) {
     this.markAndDeleteTender();
-    this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
+    this.route.navigate(this.isSplitPay ? ['/rov/rsplitpay'] : ['/rov/rchekout']);
   }
 
   async markAndDeleteTender(tndrStatus: TenderStatusType = TenderStatusType.Cancelled) {
@@ -230,7 +230,7 @@ export class RovConcessionCardTndrComponent implements AfterViewInit {
     this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
     this._store.dispatch(addRovTender({ tndrObj: JSON.parse(JSON.stringify(this._tndrObj)) }));
     this._store.dispatch(saveRovTenderObj({ tndrObj: JSON.parse(JSON.stringify(this._tndrObj)) }));
-    this._store.dispatch(deleteDeclinedTenderFromStore({ rrn: this._tndrObj.rrn }));
+    this._store.dispatch(deleteDeclinedRovTenderFromStore({ rrn: this._tndrObj.rrn }));
 
   }
 }

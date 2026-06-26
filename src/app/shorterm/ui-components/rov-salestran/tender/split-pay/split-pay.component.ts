@@ -2,28 +2,28 @@ import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, TemplateRef } 
 import { Actions, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
-import { getBalanceDue, getTktObjSelector, getTicketTendersSelector, getBalanceDueFC, getTicketTotalToPayUSD, getTicketTotalToPayFC } from '../../store/ticketstore/ticket.selector';
-import { saleTranDataInterface } from '../../store/ticketstore/rticket.state';
-import { PosApiService } from '../../../services/pos-api-service';
+import { getRBalanceDue, getRTktObjSelector, getRTicketTendersSelector, getRBalanceDueFC, getRTicketTotalToPayUSD, getRTicketTotalToPayFC } from '../../../../store/ticketstore/rticket.selector';
+import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
+import { PosApiService } from '../../../../../longterm/services/pos-api-service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { SharedSubjectService } from 'src/app/shared-subject/shared-subject.service';
-import { TenderType, TenderTypeModel } from '../../../models/tender.type';
+import { TenderType, TenderTypeModel } from '../../../../../longterm/models/tender.type';
 import { filter, firstValueFrom, forkJoin, Subscription, take } from 'rxjs';
-import { RovTipsModalDlgComponent } from '../../checkout/tips-modal-dlg/rov-tips-modal-dlg.component';
-import { updateCheckoutTotals, addTender, saveTicketForGuestCheck, saveTicketForGuestCheckSuccess, saveTicketForGuestCheckFailed, removeTndrWithSaveCode, saveTenderObj, saveCompleteTicketSplit, markTendersComplete, markTicketComplete, saveTenderObjSuccess, saveTenderObjFailed, resetTktObj } from '../../store/ticketstore/ticket.action';
+import { updateRovCheckoutTotals, addRovTender, saveRovTicketForGuestCheck, saveRovTicketForGuestCheckSuccess, saveRovTicketForGuestCheckFailed, removeRovTndrWithSaveCode, saveRovTenderObj, saveCompleteRovTicketSplit, markRovTendersComplete, markRovTicketComplete, saveRovTenderObjSuccess, saveRovTenderObjFailed, resetRovTktObj } from '../../../../store/ticketstore/rticket.action';
 import { AlertModalComponent } from 'src/app/alert-modal/alert-modal.component';
 import { UtilService } from 'src/app/services-misc/util.service';
-import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
-import { TenderUtil } from '../tender-util';
-import { RedeemGiftCardTenders } from '../gc-redeem-services/redeem-gift-card-tenders';
+import { CPOSWebSvcService } from '../../../../../services-pinpad/cposweb-svc.service';
+import { RovTenderUtil } from '../tender-util';
+import { RovRedeemGiftCardTenders } from '../gc-redeem-services/rov-redeem-gift-card-tenders';
 import { ToastService } from 'src/app/services-misc/toast.service';
 import { TicketSplit } from 'src/app/models/ticket.split';
-import { OConusRedeemGCWithPinPadService } from '../gc-redeem-services/oconus-redeeem-gc-with-pin-pad';
+import { RovOConusRedeemGCWithPinPadService } from '../gc-redeem-services/rov-oconus-redeeem-gc-with-pin-pad';
 import { MilstarRefundReqData } from '../../../../../services-pinpad/models/milstar-refund-req-data';
 import { VoidTranInput } from '../../../../../services-pinpad/models/void-tran-input';
 import { VfoneCaptureTran } from '../../../../../services-pinpad/models/capture-tran.model';
+import { RovLogonDataService } from 'src/app/shorterm/rov-logon-data.service';
 
 @Component({
   selector: 'app-split-pay',
@@ -68,17 +68,17 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
 
 
   constructor(private _saleTranSvc: PosApiService,
-    private _logonDataSvc: LogonDataService,
+    private _logonDataSvc: RovLogonDataService,
     private _sharedSubSvc: SharedSubjectService,
     private modalService: NgbModal,
-    private _store: Store<saleTranDataInterface>,
+    private _store: Store<RovSaleTranDataInterface>,
     private actions$: Actions,
     private router: Router,
     private activRoute: ActivatedRoute,
     private _utlSvc: UtilService,
     private _cposWebSvc: CPOSWebSvcService,
     private _toastSvc: ToastService,
-    private _redeemGiftCardTndrsSvc: OConusRedeemGCWithPinPadService) { }
+    private _redeemGiftCardTndrsSvc: RovOConusRedeemGCWithPinPadService) { }
 
   tndrs: TicketTender[] = [];
   totalToPayDC: number = 0;
@@ -112,9 +112,9 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
     let paidSoFarNDC: number = 0;
 
     forkJoin([
-      this._store.select(getTicketTotalToPayUSD).pipe(take(1)),
-      this._store.select(getTicketTotalToPayFC).pipe(take(1)),
-      this._store.select(getTicketTendersSelector).pipe(take(1))
+      this._store.select(getRTicketTotalToPayUSD).pipe(take(1)),
+      this._store.select(getRTicketTotalToPayFC).pipe(take(1)),
+      this._store.select(getRTicketTendersSelector).pipe(take(1))
     ]).subscribe(([totalUSD, totalFC, tndrs]) => {
 
       this.totalToPayDC = this.dcCurrSymbl == '$' ? totalUSD : totalFC;
@@ -141,11 +141,11 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
   }
 
   async saveCompleteTicketSplit() {
-    this._store.dispatch(markTendersComplete({ status: TenderStatusType.Complete }));
-    this._store.dispatch(markTicketComplete({ status: TranStatusType.Complete }));
-    var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    this._store.dispatch(markRovTendersComplete({ status: TenderStatusType.Complete }));
+    this._store.dispatch(markRovTicketComplete({ status: TranStatusType.Complete }));
+    var tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1)));
     if (tktObjData != null) {
-      this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData }));
+      this._store.dispatch(saveCompleteRovTicketSplit({ tktObj: tktObjData }));
       this.router.navigate(['/savetktsuccess']);
     }
   }
@@ -256,7 +256,7 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
     try 
     {
       const tenderList = TicketTender.deepCopyTenderList(this.tndrs);
-      const individualId = this._logonDataSvc.getLocationConfig().individualUID;
+      const individualId = this._logonDataSvc.getRovEventConfig().individualUID;
 
       for (const tender of tenderList) 
       {
@@ -278,7 +278,7 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
   }
 
   private async processCancelledTender(tender: TicketTender, individualId: number): Promise<void> {
-    const tndrCopy = TenderUtil.copyTenderObj(tender);
+    const tndrCopy = RovTenderUtil.copyTenderObj(tender);
     const cardEnding = tndrCopy.cardEndingNbr || 'N/A';
     const tenderAmount = Number(tndrCopy.tenderAmount || 0).toCPOSFixed(2);
 
@@ -355,18 +355,18 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
   private async persistTenderUpdate(tndrObj: TicketTender): Promise<void> {
     const tndrCopy = TicketTender.deepCopy(tndrObj);
 
-    this._store.dispatch(addTender({ tndrObj: tndrCopy }));
-    this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
+    this._store.dispatch(addRovTender({ tndrObj: tndrCopy }));
+    this._store.dispatch(saveRovTenderObj({ tndrObj: tndrCopy }));
 
     const saveResult = await firstValueFrom(
       this.actions$.pipe(
-        ofType(saveTenderObjSuccess, saveTenderObjFailed),
-        filter(action => action.type === saveTenderObjFailed.type || !action.data?.data?.rrn || action.data.data.rrn === tndrCopy.rrn),
+        ofType(saveRovTenderObjSuccess, saveRovTenderObjFailed),
+        filter(action => action.type === saveRovTenderObjFailed.type || !action.data?.data?.rrn || action.data.data.rrn === tndrCopy.rrn),
         take(1)
       )
     );
 
-    if (saveResult.type === saveTenderObjFailed.type) {
+    if (saveResult.type === saveRovTenderObjFailed.type) {
       throw new Error('Unable to save voided tender ' + tndrCopy.rrn + '.');
     }
   }
@@ -374,31 +374,31 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
   private async finalizeVoidedSaleTransaction(): Promise<void> {
     this.voidRefundProgressMessage = 'Finalizing voided sale transaction...';
 
-    this._store.dispatch(markTicketComplete({ status: TranStatusType.Void }));
+    this._store.dispatch(markRovTicketComplete({ status: TranStatusType.Void }));
 
-    const tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    const tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1)));
     if (tktObjData) {
       this._toastSvc.info('Ticket ' + tktObjData.ticketNumber + ' voided successfully.');
       tktObjData.ticketNumber
 
-      this._store.dispatch(saveTicketForGuestCheck({ tktObj: tktObjData }));
+      this._store.dispatch(saveRovTicketForGuestCheck({ tktObj: tktObjData }));
 
       const saveTicketResult = await firstValueFrom(
         this.actions$.pipe(
-          ofType(saveTicketForGuestCheckSuccess, saveTicketForGuestCheckFailed),
+          ofType(saveRovTicketForGuestCheckSuccess, saveRovTicketForGuestCheckFailed),
           take(1)
         )
       );
 
-      if (saveTicketResult.type === saveTicketForGuestCheckFailed.type) {
+      if (saveTicketResult.type === saveRovTicketForGuestCheckFailed.type) {
         throw new Error('Unable to save the voided transaction.');
       }
     }
 
-    const locConfig = this._logonDataSvc.getLocationConfig();
+    const evtConfig = this._logonDataSvc.getRovEventConfig();
     sessionStorage.setItem('inProgTranId', '0');
     sessionStorage.setItem('inProgTranTabSerialNum', '');
-    this._store.dispatch(resetTktObj({ locConfig }));
+    this._store.dispatch(resetRovTktObj({ eventConfig: evtConfig }));
     this.router.navigate(['/salestran']);
   }
 
@@ -408,7 +408,7 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
       return; // Ignore the click if within debounce window
     }
     //console.log('SplitPay component btnTndrClick called with event:', evt);
-    this._store.dispatch(updateCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
+    this._store.dispatch(updateRovCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
 
     let tndrCode = (evt.target as Element).id
     let busMdl = this._logonDataSvc.getBusinessModel()

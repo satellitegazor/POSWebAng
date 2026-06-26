@@ -10,11 +10,11 @@ import { Rov_SalesTranCheckoutItem } from "../../models/r-salestran-checkout-ite
 import { addRovSaleItem, incRovSaleitemQty, decRovSaleitemQty, rovInitTktObj, addRovCustomerId, 
    addNewRovCustomer, addRovTender, updateRovSaleitems, updateRovCheckoutTotals, 
    delRovSaleitemZeroQty, updateRovTaxExempt, upsertRovSaleItemExchCpn, upsertRovSaleItemVndCpn, 
-   upsertRovTranExchCpn, saveRovTicketForGuestCheckSuccess, resetTktObj, updateRovPartPayData, 
+   upsertRovTranExchCpn, saveRovTicketForGuestCheckSuccess, resetRovTktObj, updateRovPartPayData, 
    removeRovTndrWithSaveCode, saveCompleteRovTicketSplitSuccess, addRovPinpadResp, 
    saveRovTenderObjSuccess, saveRovTicketDetailSuccess, inactiveRovTicketDetailSuccess, 
    saveRovPinpadResponse, updateRovTenderRRN, markRovTendersComplete, markRovTicketComplete, 
-   addTabSerialToRovTktObj, isSplitPayRovR5, deleteDeclinedTenderFromStore, loadRovTicketSuccess, 
+   addTabSerialToRovTktObj, isSplitPayRovR5, deleteDeclinedRovTenderFromStore, loadRovTicketSuccess, 
    loadRovInProgressTendersSuccess, updateRovShipHandling, addRovRefundReason } from "./rticket.action";
 import { Round2DecimalService } from "../../../services-misc/round2-decimal.service";
 import { RovTktObjInitialState, RovSaleTranDataInterface } from "./rticket.state";
@@ -71,7 +71,7 @@ export const _tktObjReducer = createReducer(
 
    
 
-      on(resetTktObj, (state, action) => {
+      on(resetRovTktObj, (state, action) => {
 
       //console.log("resetTktObj called");
 
@@ -348,7 +348,7 @@ export const _tktObjReducer = createReducer(
       }
    }),
 
-   on(deleteDeclinedTenderFromStore, (state, action) => {
+   on(deleteDeclinedRovTenderFromStore, (state, action) => {
       return {
          ...state,
          tktObj: {

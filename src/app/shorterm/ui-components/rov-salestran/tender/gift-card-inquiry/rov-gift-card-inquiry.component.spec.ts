@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GiftCardInquiryComponent } from './gift-card-inquiry.component';
+import { RovGiftCardInquiryComponent } from './rov-gift-card-inquiry.component';
 
 describe('GiftCardInquiryComponent', () => {
-  let component: GiftCardInquiryComponent;
-  let fixture: ComponentFixture<GiftCardInquiryComponent>;
+  let component: RovGiftCardInquiryComponent;
+  let fixture: ComponentFixture<RovGiftCardInquiryComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GiftCardInquiryComponent]
+      imports: [RovGiftCardInquiryComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(GiftCardInquiryComponent);
+    fixture = TestBed.createComponent(RovGiftCardInquiryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

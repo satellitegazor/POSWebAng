@@ -12,11 +12,10 @@ import { firstValueFrom, forkJoin, Subscription, take } from 'rxjs';
 import { getRIsSplitPayR5, getRRemainingBal, getRTktObjSelector } from '../../../../store/ticketstore/rticket.selector';
 import { RovTenderUtil } from '../tender-util';
 import { addRovTender, markRovTendersComplete, markRovTicketComplete, saveCompleteRovTicketSplit, saveRovTenderObj } from '../../../../store/ticketstore/rticket.action';
-import { RedeemGiftCardTenders } from '../gc-redeem-services/redeem-gift-card-tenders';
+import { RovRedeemGiftCardTenders } from '../gc-redeem-services/rov-redeem-gift-card-tenders';
 import { ToastService } from "../../../../../services-misc/toast.service";
-import { OConusRedeemGCWithPinPadService } from '../gc-redeem-services/oconus-redeeem-gc-with-pin-pad';
+import { RovOConusRedeemGCWithPinPadService } from '../gc-redeem-services/rov-oconus-redeeem-gc-with-pin-pad';
 import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
-import { getRemainingBal, getTktObjSelector } from '../../../../../longterm/saletran/store/ticketstore/ticket.selector';
 import { markTendersComplete } from '../../../../../longterm/saletran/store/ticketstore/ticket.action';
 
 @Component({
@@ -46,7 +45,7 @@ export class RovCashTndrComponent implements OnInit {
     private rovLogonDataSvc: RovLogonDataService,
     private _utilSvc: UtilService,
     private _toastSvc: ToastService,
-    private _oConusRedeemGCWithPinPad: OConusRedeemGCWithPinPadService,
+    private _oConusRedeemGCWithPinPad: RovOConusRedeemGCWithPinPadService,
     private _conusRedeemGCWithAurusAPI: ConusRedeemGCwithAurusAPI) {
     // Initialization logic can go here if needed
     this.isOConusLocation = this.rovLogonDataSvc.getIsForeignCurr();
@@ -167,7 +166,7 @@ export class RovCashTndrComponent implements OnInit {
     this._tndrObj.tenderTransactionId = this._tktObj.transactionID;
     this._store.dispatch(addRovTender({ tndrObj: this._tndrObj }));
 
-    var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    var tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1)));
 
     if (tktObjData != null && RovTenderUtil.IsTicketComplete(tktObjData, this.rovLogonDataSvc.getAllowPartPay())) {
 
@@ -208,7 +207,7 @@ export class RovCashTndrComponent implements OnInit {
 
     }
     else {
-      this.route.navigate([this.isSplitPay ? '/splitpay' : '/checkout']);
+      this.route.navigate([this.isSplitPay ? '/rov/rsplitpay' : '/rov/rchekout']);
     }
   }
 
@@ -220,17 +219,17 @@ export class RovCashTndrComponent implements OnInit {
     const tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1)));
     if (tktObjData != null) {
       this._store.dispatch(saveCompleteRovTicketSplit({ tktObj: tktObjData }));
-      this.route.navigate(['/savetktsuccess']);
+      this.route.navigate(['/rov/savetktsuccess']);
     }
     else {
-      this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
+      this.route.navigate(this.isSplitPay ? ['/rov/rsplitpay'] : ['/rov/rchekout']);
     }
   }
 
   btnCancelClick($event: PointerEvent) {
-    this.route.navigate([this.isSplitPay ? '/splitpay' : '/checkout']);
+    this.route.navigate([this.isSplitPay ? '/rov/rsplitpay' : '/rov/rchekout']);
   }
   btnDeclineClick($event: PointerEvent) {
-    this.route.navigate([this.isSplitPay ? '/splitpay' : '/checkout']);
+    this.route.navigate([this.isSplitPay ? '/rov/rsplitpay' : '/rov/rchekout']);
   }
 }

@@ -2,31 +2,36 @@ import { AfterContentInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { ToastService } from 'src/app/services-misc/toast.service';
-import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
+import { CPOSWebSvcService } from '../../../../../services-pinpad/cposweb-svc.service';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
 import { UtilService } from 'src/app/services-misc/util.service';
 import { Actions, ofType } from '@ngrx/effects';
-import { getIsSplitPayR5, getRemainingBal, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
+import { getRIsSplitPayR5, getRRemainingBal, getRTktObjSelector } from '../../../../store/ticketstore/rticket.selector';
 import { combineLatest, filter, firstValueFrom, map, Subject, Subscription, take, takeUntil } from 'rxjs';
 import { TicketSplit } from 'src/app/models/ticket.split';
 import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
 import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
-import { addTender, deleteDeclinedTenderFromStore, isSplitPayR5, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj, saveTenderObjFailed, saveTenderObjSuccess } from '../../store/ticketstore/ticket.action';
+import { addRovTender, deleteDeclinedRovTenderFromStore, isSplitPayRovR5, markRovTendersComplete, markRovTicketComplete, saveCompleteRovTicketSplit, saveRovTenderObj, saveRovTenderObjFailed, saveRovTenderObjSuccess } from '../../../../store/ticketstore/rticket.action';
 import { AurusGiftCardInquiryResp } from '../../../../../services-pinpad/models/gift-card-enquiry-response';
-import { TenderUtil } from '../tender-util';
+import { RovTenderUtil } from '../tender-util';
 import { AurusGiftCardRedeemResp, GCRedeemInput } from '../../../../../services-pinpad/models/aurus-gift-card-redeem-resp';
-import { OConusRedeemGCWithPinPadService } from '../gc-redeem-services/oconus-redeeem-gc-with-pin-pad';
+import { RovOConusRedeemGCWithPinPadService } from '../gc-redeem-services/rov-oconus-redeeem-gc-with-pin-pad';
 import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
 import { HTTP_TRANSFER_CACHE_ORIGIN_MAP } from '@angular/common/http';
-import { PosApiService, Conus_GC_Balance_Model } from '../../../services/pos-api-service';
+import { Conus_GC_Balance_Model } from "../../../../../longterm/models/misc.models";
+import { PosApiService } from '../../../../../longterm/services/pos-api-service';
 import { GlobalConstants } from 'src/app/global/global.constants';
+import { ROV_POSTicketSplit } from 'src/app/shorterm/models/rticket.split';
+import { RovSaleTranDataInterface } from 'src/app/shorterm/store/ticketstore/rticket.state';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 @Component({
-  selector: 'app-gift-card-inquiry',
-  templateUrl: './gift-card-inquiry.component.html',
-  styleUrl: './gift-card-inquiry.component.css',
-  standalone: false,
+  selector: 'app-rov-gift-card-inquiry',
+  templateUrl: './rov-gift-card-inquiry.component.html',
+  styleUrls: ['./rov-gift-card-inquiry.component.css'],
+  imports: [CommonModule, FormsModule]
 })
-export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDestroy {
+export class RovGiftCardInquiryComponent implements OnInit, AfterContentInit, OnDestroy {
 
 
   private isSplitPay: boolean = false;
@@ -34,7 +39,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
   private destroy$ = new Subject<void>(); // Subject to manage subscription cleanup
   private authorizationInProgress: boolean = false; // Flag to prevent multiple authorization calls
 
-  private _tktObj: TicketSplit = {} as TicketSplit;
+  private _tktObj: ROV_POSTicketSplit = {} as ROV_POSTicketSplit;
   public tenderAmountDC: number = 0;
   public tenderAmountNDC: number = 0;
   public dcCurrSymbl: string = '';
@@ -49,7 +54,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
   isOConusLocation: boolean = false;
 
 
-  constructor(private _store: Store,
+  constructor(private _store: Store<RovSaleTranDataInterface>,
     private activatedRoute: ActivatedRoute,
     private route: Router,
     private _logonDataSvc: LogonDataService,
@@ -57,14 +62,14 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
     private _utilSvc: UtilService,
     private actions$: Actions,
     private _toastSvc: ToastService,
-    private _redeemGiftCardTndrsSvc: OConusRedeemGCWithPinPadService,
+    private _redeemGiftCardTndrsSvc: RovOConusRedeemGCWithPinPadService,
     private _conusRedeemGCWithAurusAPI: ConusRedeemGCwithAurusAPI,
     private _salesTranSvc: PosApiService) { 
       this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
     }
 
   ngOnInit(): void {
-    this._store.select(getIsSplitPayR5).subscribe(flag => {
+    this._store.select(getRIsSplitPayR5).subscribe(flag => {
       this.isSplitPay = flag;
     }).unsubscribe();
   }
@@ -88,8 +93,8 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
     }
 
     combineLatest([
-      this._store.select(getRemainingBal).pipe(take(1)),
-      this._store.select(getIsSplitPayR5).pipe(take(1)),
+      this._store.select(getRRemainingBal).pipe(take(1)),
+      this._store.select(getRIsSplitPayR5).pipe(take(1)),
       this.activatedRoute.queryParams.pipe(take(1))
     ]).subscribe(([tenderBal, isSplitPay, params]) => {
 
@@ -130,15 +135,15 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
   }
 
   async getTransactionId(isRefund: boolean) {
-    var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+    var tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1))) || {} as ROV_POSTicketSplit;
     if (tktObjData != null) {
       this._tndrObj.tenderTransactionId = tktObjData.transactionID;
-      this._store.dispatch(addTender({ tndrObj: this._tndrObj }));
-      this._store.dispatch(saveTenderObj({ tndrObj: this._tndrObj }));
+      this._store.dispatch(addRovTender({ tndrObj: this._tndrObj }));
+      this._store.dispatch(saveRovTenderObj({ tndrObj: this._tndrObj }));
 
-      // Subscribe to saveTenderObjSuccess to capture the generated ticketTenderId
+      // Subscribe to saveRovTenderObjSuccess to capture the generated ticketTenderId
       this.subscription = this.actions$.pipe(
-        ofType(saveTenderObjSuccess),
+        ofType(saveRovTenderObjSuccess),
         take(1),
         map(action => action.data.data.ticketTenderId)
       ).subscribe((tenderId) => {
@@ -177,7 +182,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
             this.isWaitingForPinpad = false;
             this.authorizationInProgress = false;
             // Fetch the updated tender from store state that has ticketTenderId from DB
-            var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+            var tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1))) || {} as ROV_POSTicketSplit;
             if (tktObjData == null) {
               console.error('Unable to fetch ticket object');
               this.route.navigate(['/splitpay']);
@@ -197,24 +202,24 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
             if (duplicateTndr) {
               // The in-progress tender created for this inquiry must be explicitly cancelled.
               // We persist the cancellation first so DB and client state remain consistent.
-              const cancelledTender = TenderUtil.copyTenderObj(savedTender);
+              const cancelledTender = RovTenderUtil.copyTenderObj(savedTender);
               cancelledTender.tenderStatus = TenderStatusType.Cancelled;
               cancelledTender.tndMaintTimestamp = new Date(Date.now());
 
-              this._store.dispatch(saveTenderObj({ tndrObj: cancelledTender }));
+              this._store.dispatch(saveRovTenderObj({ tndrObj: cancelledTender }));
 
               // Wait for save result before mutating local store entry.
               const saveResult = await firstValueFrom(
                 this.actions$.pipe(
-                  ofType(saveTenderObjSuccess, saveTenderObjFailed),
+                  ofType(saveRovTenderObjSuccess, saveRovTenderObjFailed),
                   filter(action => !('data' in action) || !action.data?.data?.rrn || action.data.data.rrn === cancelledTender.rrn),
                   take(1)
                 )
               );
 
               // Remove only after successful persistence so refresh/load does not resurrect it.
-              if (saveResult.type === saveTenderObjSuccess.type) {
-                this._store.dispatch(deleteDeclinedTenderFromStore({ rrn: cancelledTender.rrn }));
+              if (saveResult.type === saveRovTenderObjSuccess.type) {
+                this._store.dispatch(deleteDeclinedRovTenderFromStore({ rrn: cancelledTender.rrn }));
               }
 
               this._toastSvc.warning('This gift card "' + data.CardEndingNbr + '" has already been used for payment. Please use another gift card or tender method.');
@@ -225,15 +230,15 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
             // Handle the MSR card data here
             if(data.rslt.IsSuccessful) {
 
-              let gcTender = TenderUtil.copyTenderObj(savedTender);
+              let gcTender = RovTenderUtil.copyTenderObj(savedTender);
               gcTender.cardEndingNbr = data.CardEndingNbr;
               gcTender.inStoreCardNbrTmp = data.AcctNumFIPS;
               gcTender.tracking = data.AcctNumFIPS;
               gcTender.gcExpiryMonth = data.CardExpiryMonth;
               gcTender.gcExpiryYear = data.CardExpiryYear;
 
-              this._store.dispatch(addTender({ tndrObj: gcTender }))
-              this._store.dispatch(saveTenderObj({ tndrObj: gcTender }));
+              this._store.dispatch(addRovTender({ tndrObj: gcTender }))
+              this._store.dispatch(saveRovTenderObj({ tndrObj: gcTender }));
 
               this.getGiftCardBalanceForConus(gcTender);
             }
@@ -275,7 +280,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
 
 
           // Fetch the updated tender from store state that has ticketTenderId from DB
-          var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+          var tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1))) || {} as ROV_POSTicketSplit;
           if (tktObjData == null) {
             console.error('Unable to fetch ticket object');
             this.route.navigate(['/splitpay']);
@@ -295,24 +300,24 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
           if(duplicateTndr) {
             // The in-progress tender created for this inquiry must be explicitly cancelled.
             // We persist the cancellation first so DB and client state remain consistent.
-            const cancelledTender = TenderUtil.copyTenderObj(savedTender);
+            const cancelledTender = RovTenderUtil.copyTenderObj(savedTender);
             cancelledTender.tenderStatus = TenderStatusType.Cancelled;
             cancelledTender.tndMaintTimestamp = new Date(Date.now());
 
-            this._store.dispatch(saveTenderObj({ tndrObj: cancelledTender }));
+            this._store.dispatch(saveRovTenderObj({ tndrObj: cancelledTender }));
 
             // Wait for save result before mutating local store entry.
             const saveResult = await firstValueFrom(
               this.actions$.pipe(
-                ofType(saveTenderObjSuccess, saveTenderObjFailed),
+                ofType(saveRovTenderObjSuccess, saveRovTenderObjFailed),
                 filter(action => !('data' in action) || !action.data?.data?.rrn || action.data.data.rrn === cancelledTender.rrn),
                 take(1)
               )
             );
 
             // Remove only after successful persistence so refresh/load does not resurrect it.
-            if (saveResult.type === saveTenderObjSuccess.type) {
-              this._store.dispatch(deleteDeclinedTenderFromStore({ rrn: cancelledTender.rrn }));
+            if (saveResult.type === saveRovTenderObjSuccess.type) {
+              this._store.dispatch(deleteDeclinedRovTenderFromStore({ rrn: cancelledTender.rrn }));
             }
 
             this._toastSvc.warning('This gift card "' + data.CardNbrF6L4 + '" has already been used for payment. Please use another gift card or tender method.');
@@ -323,7 +328,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
 
           // Transaction was approved
           this._toastSvc.success('Gift Card Inquiry Successful. Balance Amount: ' + data.BalanceAmount.toCPOSFixed(2));
-          var tndrCopy = TenderUtil.copyTenderObj(savedTender);
+          var tndrCopy = RovTenderUtil.copyTenderObj(savedTender);
 
           tndrCopy.rrn = this.InvoiceId;
           tndrCopy.isAuthorized = false;
@@ -341,13 +346,13 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
           tndrCopy.tndrTimeStamp = new Date(Date.now());
           tndrCopy.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
 
-          this._store.dispatch(addTender({ tndrObj: tndrCopy }));
-          this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
+          this._store.dispatch(addRovTender({ tndrObj: tndrCopy }));
+          this._store.dispatch(saveRovTenderObj({ tndrObj: tndrCopy }));
 
           //this._toastSvc.success('Gift Card Tender Added Successfully.');
-          var tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+          var tktObjData1 = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1))) || {} as ROV_POSTicketSplit;
 
-          if (TenderUtil.IsTicketComplete(tktObjData1, this._logonDataSvc.getAllowPartPay())) {
+          if (RovTenderUtil.IsTicketComplete(tktObjData1, this._logonDataSvc.getAllowPartPay())) {
             if (tktObjData1.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0) {
               // Redeem Gift Card Tenders
               this._redeemGiftCardTndrsSvc.redeem(tktObjData1.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false)).subscribe({
@@ -368,7 +373,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
             }
           }
           else {
-            this._store.dispatch(isSplitPayR5({ isSplitPayR5: true }));
+            this._store.dispatch(isSplitPayRovR5({ isSplitPayR5: true }));
             this.route.navigate(['/splitpay']);
           }
         }
@@ -424,7 +429,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
 
           if(data.results.success) {
 
-          var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+          var tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1))) || {} as ROV_POSTicketSplit;
           if (tktObjData == null) {
             console.error('Unable to fetch ticket object');
             this.route.navigate(['/splitpay']);
@@ -441,7 +446,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
           }
           // Transaction was approved
           this._toastSvc.success('Gift Card Inquiry Successful. Balance Amount: ' + data.balance.toCPOSFixed(2));
-          var tndrCopy = TenderUtil.copyTenderObj(savedTender);
+          var tndrCopy = RovTenderUtil.copyTenderObj(savedTender);
 
           tndrCopy.rrn = this.InvoiceId;
           if(data.balance < tndrCopy.tenderAmount) {
@@ -454,13 +459,13 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
           tndrCopy.gcExpiryYear = gcTender.gcExpiryYear;
           tndrCopy.gcExpiryMonth = gcTender.gcExpiryMonth;
 
-          this._store.dispatch(addTender({ tndrObj: tndrCopy }));
-          this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
+          this._store.dispatch(addRovTender({ tndrObj: tndrCopy }));
+          this._store.dispatch(saveRovTenderObj({ tndrObj: tndrCopy }));
 
           //this._toastSvc.success('Gift Card Tender Added Successfully.');
-          var tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+          var tktObjData1 = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1))) || {} as ROV_POSTicketSplit;
 
-          if (TenderUtil.IsTicketComplete(tktObjData1, this._logonDataSvc.getAllowPartPay())) {
+          if (RovTenderUtil.IsTicketComplete(tktObjData1, this._logonDataSvc.getAllowPartPay())) {
             const yetToRedeemGCTenders = tktObjData1.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false);
             if (yetToRedeemGCTenders.length > 0) {
               this._conusRedeemGCWithAurusAPI.redeem(yetToRedeemGCTenders).subscribe({
@@ -481,7 +486,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
             }
           }
           else {
-            this._store.dispatch(isSplitPayR5({ isSplitPayR5: true }));
+            this._store.dispatch(isSplitPayRovR5({ isSplitPayR5: true }));
             this.route.navigate(['/splitpay']);
           }
           }
@@ -500,12 +505,12 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
   }
 
   private async markTicketComplete() {
-    this._store.dispatch(markTendersComplete({ status: 4 }));
-    this._store.dispatch(markTicketComplete({ status: 2 }));
+    this._store.dispatch(markRovTendersComplete({ status: 4 }));
+    this._store.dispatch(markRovTicketComplete({ status: 2 }));
     // Fetch the updated ticket object after marking complete
-    const tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    const tktObjData1 = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1)));
     if (tktObjData1 != null) {
-      this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData1 }));
+      this._store.dispatch(saveCompleteRovTicketSplit({ tktObj: tktObjData1 }));
       this.route.navigate(['/savetktsuccess']);
     }
     else {
@@ -529,26 +534,26 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
           if (data.rslt.IsSuccessful) {
             this._toastSvc.success('Gift Card Redeem Successful.');
 
-            var tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+            var tktObjData1 = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1))) || {} as TicketSplit;
             if (data.ResponseText.toUpperCase().includes("APPROVED") || data.ResponseText.toUpperCase().includes("APPROVAL")
               && data.AuthorizedAmount > 0) {
 
                 if(data.AuthorizedAmount < gcTndr.tenderAmount) {
                   this._toastSvc.warning('Gift Card Redeem Amount is less than Tender Amount. Please use another tender method for remaining balance.');
-                  let tndrCopy = TenderUtil.copyTenderObj(gcTndr);
+                  let tndrCopy = RovTenderUtil.copyTenderObj(gcTndr);
                   tndrCopy.isAuthorized = true;
                   tndrCopy.authNbr = data.ApprovalCode;
                   tndrCopy.cardEndingNbr = data.CardEndingNbr;
                   tndrCopy.traceId = "false";
                   tndrCopy.tenderAmount = data.AuthorizedAmount;
                   tndrCopy.fcTenderAmount = data.AuthorizedAmount * this._logonDataSvc.getExchangeRate();
-                  this._store.dispatch(addTender({ tndrObj: tndrCopy }));
-                  this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
-                  this.route.navigate(['/splitpay']);
+                  this._store.dispatch(addRovTender({ tndrObj: tndrCopy }));
+                  this._store.dispatch(saveRovTenderObj({ tndrObj: tndrCopy }));
+                  this.route.navigate(['/rov/rsplitpay']);
                   return;
                 }
                 else {
-                  let tndrCopy = TenderUtil.copyTenderObj(gcTndr);
+                  let tndrCopy = RovTenderUtil.copyTenderObj(gcTndr);
                   tndrCopy.isAuthorized = true;
                   tndrCopy.authNbr = data.ApprovalCode;
                   tndrCopy.cardEndingNbr = data.CardEndingNbr;
@@ -558,26 +563,26 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
                   tndrCopy.tndMaintTimestamp = new Date(Date.now());
                   tndrCopy.tndrTimeStamp = new Date(Date.now());
                   
-                  this._store.dispatch(addTender({ tndrObj: tndrCopy }));
-                  this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
-                  this._store.dispatch(markTendersComplete({ status: TenderStatusType.Complete }));
-                  this._store.dispatch(markTicketComplete({ status: TranStatusType.Complete }));
-                  var tktObjDataUpdated = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+                  this._store.dispatch(addRovTender({ tndrObj: tndrCopy }));
+                  this._store.dispatch(saveRovTenderObj({ tndrObj: tndrCopy }));
+                  this._store.dispatch(markRovTendersComplete({ status: TenderStatusType.Complete }));
+                  this._store.dispatch(markRovTicketComplete({ status: TranStatusType.Complete }));
+                  var tktObjDataUpdated = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1))) || {} as ROV_POSTicketSplit;
 
-                  this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjDataUpdated }));
-                  this.route.navigate(['/savetktsuccess']);
+                  this._store.dispatch(saveCompleteRovTicketSplit({ tktObj: tktObjDataUpdated }));
+                  this.route.navigate(['/rov/rsavetktsuccess']);
                   return;
                 }            
               }
             else {
               this._toastSvc.error('Gift Card Redeem Failed: ' + data.rslt.ReturnMsg + '.<br/>Please use another tender method.');
 
-              let tndrCopy = TenderUtil.copyTenderObj(gcTndr);
+              let tndrCopy = RovTenderUtil.copyTenderObj(gcTndr);
               tndrCopy.isAuthorized = false;
               tndrCopy.tenderStatus = TenderStatusType.Declined;
-              this._store.dispatch(addTender({ tndrObj: tndrCopy }));
-              this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
-              this._store.dispatch(deleteDeclinedTenderFromStore({ rrn: this.InvoiceId }));
+              this._store.dispatch(addRovTender({ tndrObj: tndrCopy }));
+              this._store.dispatch(saveRovTenderObj({ tndrObj: tndrCopy }));
+              this._store.dispatch(deleteDeclinedRovTenderFromStore({ rrn: this.InvoiceId }));
 
               this.route.navigate(['/splitpay']);
               this.btnCancelClick(new PointerEvent('auto-decline'));
@@ -589,7 +594,7 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
 
   async btnCancelClick($event: PointerEvent) {
 
-    var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
+    var tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1))) || {} as ROV_POSTicketSplit;
     if (tktObjData == null) {
       console.error('Unable to fetch ticket object');
       this.authorizationInProgress = false;
@@ -607,12 +612,12 @@ export class GiftCardInquiryComponent implements OnInit, AfterContentInit, OnDes
     }
 
     // Copy the saved tender which already has ticketTenderId
-    var tndrCopy = TenderUtil.copyTenderObj(savedTender);
+    var tndrCopy = RovTenderUtil.copyTenderObj(savedTender);
 
     tndrCopy.tenderStatus = TenderStatusType.Declined;
-    this._store.dispatch(addTender({ tndrObj: tndrCopy }));
-    this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
-    this._store.dispatch(deleteDeclinedTenderFromStore({ rrn: this.InvoiceId }));
+    this._store.dispatch(addRovTender({ tndrObj: tndrCopy }));
+    this._store.dispatch(saveRovTenderObj({ tndrObj: tndrCopy }));
+    this._store.dispatch(deleteDeclinedRovTenderFromStore({ rrn: this.InvoiceId }));
 
     this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
   }

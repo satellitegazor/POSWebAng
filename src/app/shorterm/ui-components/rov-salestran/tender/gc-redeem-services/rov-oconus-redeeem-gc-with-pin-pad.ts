@@ -1,24 +1,24 @@
 import { Injectable } from '@angular/core';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
+import { CPOSWebSvcService } from '../../../../../services-pinpad/cposweb-svc.service';
 import { TicketTender } from 'src/app/models/ticket.tender';
 import { catchError, concatMap, delay, finalize, forkJoin, from, map, Observable, of, switchMap, tap, toArray } from 'rxjs';
-import { saleTranDataInterface } from '../../store/ticketstore/rticket.state';
+import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
 import { Store } from '@ngrx/store';
-import { addTender, saveTenderObj } from '../../store/ticketstore/ticket.action';
+import { addRovTender, saveRovTenderObj } from '../../../../store/ticketstore/rticket.action';
 import { ToastService } from 'src/app/services-misc/toast.service';
 import { GCRedeemInput } from '../../../../../services-pinpad/models/aurus-gift-card-redeem-resp';
-import { UiBlockService } from 'src/app/services/ui-block.service';
+import { UiBlockService } from '../../../../../services-misc/ui-block.service';
 import { UtilService } from 'src/app/services-misc/util.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class OConusRedeemGCWithPinPadService {
+export class RovOConusRedeemGCWithPinPadService {
 
   constructor(private _logonDataSvc: LogonDataService, 
     private _cposWebSvc: CPOSWebSvcService,
-    private _store: Store<saleTranDataInterface>,
+    private _store: Store<RovSaleTranDataInterface>,
     private _toastSvc: ToastService,
     private _uiBlockSvc: UiBlockService,
     private _utilSvc: UtilService) { }
@@ -56,8 +56,8 @@ export class OConusRedeemGCWithPinPadService {
 
                     this._toastSvc.success(`Gift Card Redeemed Successfully: Card Ending Nbr ${response.CardEndingNbr}, Approved Amount ${tndrCopy.tenderAmount}`);
 
-                    this._store.dispatch(addTender({ tndrObj: tndrCopy }));
-                    this._store.dispatch(saveTenderObj({ tndrObj: tndrCopy }));
+                    this._store.dispatch(addRovTender({ tndrObj: tndrCopy }));
+                    this._store.dispatch(saveRovTenderObj({ tndrObj: tndrCopy }));
                   }),
                   catchError(error => {
                     this._toastSvc.error(`Error redeeming gift card for tender ID ${tender.ticketTenderId}: ${error.message || error}`);

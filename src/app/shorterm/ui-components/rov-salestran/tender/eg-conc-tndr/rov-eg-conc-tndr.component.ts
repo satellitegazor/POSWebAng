@@ -1,7 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { TenderStatusType, TicketTender } from 'src/app/models/ticket.tender';
-import { CPOSWebSvcService } from '../../../services/cposweb-svc.service';
-import { saleTranDataInterface } from '../../store/ticketstore/rticket.state';
+import { CPOSWebSvcService } from '../../../../../services-pinpad/cposweb-svc.service';
+import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
 import { ActivatedRoute, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { LogonDataService } from 'src/app/global/logon-data-service.service';
@@ -9,23 +9,25 @@ import { UtilService } from 'src/app/services-misc/util.service';
 import { TicketSplit } from 'src/app/models/ticket.split';
 import { ExchCardTndr } from 'src/app/models/exch.card.tndr';
 import { firstValueFrom, forkJoin, Subscription, take } from 'rxjs';
-import { getIsSplitPayR5, getRemainingBal, getTktObjSelector } from '../../store/ticketstore/ticket.selector';
-import { TenderUtil } from '../tender-util';
-import { addTender, markTendersComplete, markTicketComplete, saveCompleteTicketSplit, saveTenderObj } from '../../store/ticketstore/ticket.action';
-import { RedeemGiftCardTenders } from '../gc-redeem-services/redeem-gift-card-tenders';
+import { getRIsSplitPayR5, getRRemainingBal, getRTktObjSelector } from '../../../../store/ticketstore/rticket.selector';
+import { RovTenderUtil } from '../tender-util';
+import { addRovTender, markRovTendersComplete, markRovTicketComplete, saveCompleteRovTicketSplit, saveRovTenderObj } from '../../../../store/ticketstore/rticket.action';
+import { RovRedeemGiftCardTenders } from '../gc-redeem-services/rov-redeem-gift-card-tenders';
 import { ToastService } from 'src/app/services-misc/toast.service';
-import { DecimalPipe } from '@angular/common';
-import { OConusRedeemGCWithPinPadService } from '../gc-redeem-services/oconus-redeeem-gc-with-pin-pad';
+import { CommonModule, DecimalPipe } from '@angular/common';
+import { RovOConusRedeemGCWithPinPadService } from '../gc-redeem-services/rov-oconus-redeeem-gc-with-pin-pad';
 import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
+import { ROV_POSTicketSplit } from 'src/app/shorterm/models/rticket.split';
+import { FormsModule } from '@angular/forms';
 
 
 @Component({
-  selector: 'app-eg-conc-tndr',
-  templateUrl: './eg-conc-tndr.component.html',
-  styleUrl: './eg-conc-tndr.component.css',
-  standalone: false,
+  selector: 'app-rov-eg-conc-tndr',
+  templateUrl: './rov-eg-conc-tndr.component.html',
+  styleUrls: ['./rov-eg-conc-tndr.component.css'],
+  imports : [DecimalPipe, CommonModule, FormsModule]
 })
-export class EgConcTndrComponent {
+export class RovEgConcTndrComponent {
 
   private isSplitPay: boolean = false;
 
@@ -41,19 +43,19 @@ export class EgConcTndrComponent {
   isOConusLocation: boolean = false;
 
   constructor(private _cposWebSvc: CPOSWebSvcService,
-    private _store: Store<saleTranDataInterface>,
+    private _store: Store<RovSaleTranDataInterface>,
     private activatedRoute: ActivatedRoute,
     private route: Router,
     private _logonDataSvc: LogonDataService,
     private _utilSvc: UtilService,
     private _toastSvc: ToastService,
-    private _oConusRedeemGCWithPinPad: OConusRedeemGCWithPinPadService,
+    private _oConusRedeemGCWithPinPad: RovOConusRedeemGCWithPinPadService,
     private _conusRedeemGCWithAurusAPI: ConusRedeemGCwithAurusAPI) {
     // Initialization logic can go here if needed
     this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
   }
 
-  private _tktObj: TicketSplit = {} as TicketSplit;
+  private _tktObj: ROV_POSTicketSplit = {} as ROV_POSTicketSplit;
   private _captureTranResponse: ExchCardTndr = {} as ExchCardTndr;
   private subscription: Subscription = {} as Subscription;
 
@@ -65,8 +67,8 @@ export class EgConcTndrComponent {
     this.ndcCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getNonDfltCurrCode());
 
     forkJoin([
-      this._store.select(getRemainingBal).pipe(take(1)),
-      this._store.select(getIsSplitPayR5).pipe(take(1)),
+      this._store.select(getRRemainingBal).pipe(take(1)),
+      this._store.select(getRIsSplitPayR5).pipe(take(1)),
       this.activatedRoute.queryParams.pipe(take(1))
     ]).subscribe(([tenderBal, isSplitPay, params]) => {
 
@@ -94,7 +96,7 @@ export class EgConcTndrComponent {
 
     }).unsubscribe();
 
-    this._store.select(getTktObjSelector).subscribe(data => {
+    this._store.select(getRTktObjSelector).subscribe(data => {
       if (data == null)
         return;
       
@@ -113,10 +115,10 @@ export class EgConcTndrComponent {
     this._tndrObj.tenderTypeDesc = this._utilSvc.tenderCodeDescMap.get(this._tndrObj.tenderTypeCode) || 'Eagle Cash';
     this._tndrObj.fcCurrCode = this._logonDataSvc.getLocationConfig().currCode;
     this._tndrObj.ticketTenderId = -Date.now() % 10000;
-    this._store.dispatch(addTender({ tndrObj: this._tndrObj }));
+    this._store.dispatch(addRovTender({ tndrObj: this._tndrObj }));
 
-    var tktObjData = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1))) || {} as TicketSplit;
-    if (tktObjData != null && TenderUtil.IsTicketComplete(tktObjData, this._logonDataSvc.getAllowPartPay())) {
+    var tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1))) || {} as ROV_POSTicketSplit;
+    if (tktObjData != null && RovTenderUtil.IsTicketComplete(tktObjData, this._logonDataSvc.getAllowPartPay())) {
 
       if (tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false).length > 0) {
 
@@ -159,24 +161,24 @@ export class EgConcTndrComponent {
   }
 
   async btnDeclineClick(evt: Event) {
-    this.route.navigate([this.isSplitPay ? '/splitpay' : '/checkout']);
+    this.route.navigate([this.isSplitPay ? '/rov/rsplitpay' : '/rov/rchekout']);
   }
 
   async btnCancelClick(evt: Event) {
-    this.route.navigate([this.isSplitPay ? '/splitpay' : '/checkout']);
+    this.route.navigate([this.isSplitPay ? '/rov/rsplitpay' : '/rov/rchekout']);
   }
 
   private async markTicketComplete() {
-    this._store.dispatch(markTendersComplete({ status: 4 }));
-    this._store.dispatch(markTicketComplete({ status: 2 }));
+    this._store.dispatch(markRovTendersComplete({ status: 4 }));
+    this._store.dispatch(markRovTicketComplete({ status: 2 }));
     // Fetch the updated ticket object after marking complete
-    const tktObjData1 = await firstValueFrom(this._store.pipe(select(getTktObjSelector), take(1)));
+    const tktObjData1 = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1)));
     if (tktObjData1 != null) {
-      this._store.dispatch(saveCompleteTicketSplit({ tktObj: tktObjData1 }));
-      this.route.navigate(['/savetktsuccess']);
+      this._store.dispatch(saveCompleteRovTicketSplit({ tktObj: tktObjData1 }));
+      this.route.navigate(['/rov/savetktsuccess']);
     }
     else {
-      this.route.navigate(this.isSplitPay ? ['/splitpay'] : ['/checkout']);
+      this.route.navigate(this.isSplitPay ? ['/rov/rsplitpay'] : ['/rov/rchekout']);
     }
   }
 

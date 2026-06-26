@@ -28,8 +28,8 @@ export const SAVE_COMPLETE_ROV_TICKET_SPLIT = '[SaveCompleteRovTicket] Start'
 export const SAVE_COMPLETE_ROV_TICKET_SPLIT_SUCCESS = '[SaveCompleteRovTicket] Success'
 export const SAVE_COMPLETE_ROV_TICKET_SPLIT_FAILED = '[SaveCompleteRovTicket] Failure'
 
-export const ADD_CUST_ID = 'add CustomerId to RovTktObj';
-export const ADD_NEW_CUST = 'add New Customer to RovTktObj';
+export const ADD_ROV_CUST_ID = 'add CustomerId to RovTktObj';
+export const ADD_NEW_ROV_CUST = 'add New Customer to RovTktObj';
 export const ADD_TENDER_OBJ = 'addTenderToRovTktObj';
 export const ADD_PINPAD_RESP = 'addPinpadResponse';
 export const APP_REFUND_REASON = 'addRefundReason';
@@ -53,7 +53,7 @@ export const INACTIVE_TICKET_DETAIL = 'inactiveRovTicketDetail';
 export const INACTIVE_TICKET_DETAIL_SUCCESS = 'inactiveRovTicketDetailSuccess';
 export const INACTIVE_TICKET_DETAIL_FAILED = 'inactiveRovTicketDetailFailed';
 
-export const DELETE_DECLINED_TNDR = 'deleteRovDeclinedTender';
+export const DELETE_DECLINED_ROV_TNDR = 'deleteRovDeclinedTender';
 
 export const SAVE_PINPAD_RESP = 'saveRovPinpadResponse';
 export const SAVE_PINPAD_RESP_SUCCESS = 'saveRovPinpadResponseSuccess';
@@ -97,7 +97,7 @@ export const rovInitTktObj = createAction(ROV_INIT_TKT_OBJ,
 export const addTabSerialToRovTktObj = createAction(ADD_TAB_SERIAL_TO_ROV_TKT_OBJ,
     props<{ tabSerialNum: string, ipAddress: string }>());
 
-export const resetTktObj = createAction(RESET_ROV_TKT_OBJ, 
+export const resetRovTktObj = createAction(RESET_ROV_TKT_OBJ, 
     props<{ eventConfig: EventConfig }>());
 
 export const saveRovTicketForGuestCheck = createAction(SAVE_ROV_TICKET_SPLIT,
@@ -139,7 +139,7 @@ export const inactiveRovTicketDetailSuccess = createAction(INACTIVE_TICKET_DETAI
 export const inactiveRovTicketDetailFailed = createAction(INACTIVE_TICKET_DETAIL_FAILED,
     props<{error: any}>());
 
-export const deleteDeclinedTenderFromStore = createAction(DELETE_DECLINED_TNDR, props<{rrn: string}>());
+export const deleteDeclinedRovTenderFromStore = createAction(DELETE_DECLINED_ROV_TNDR, props<{rrn: string}>());
 
 export const saveRovPinpadResponse = createAction(SAVE_PINPAD_RESP,
     props<{respObj: ExchCardTndr}>());
@@ -148,10 +148,10 @@ export const saveRovPinpadResponseSuccess = createAction(SAVE_PINPAD_RESP_SUCCES
 export const saveRovPinpadResponseFailed = createAction(SAVE_PINPAD_RESP_FAILED,
     props<{msg: string}>());
 
-export const addRovCustomerId = createAction(ADD_CUST_ID, 
+export const addRovCustomerId = createAction(ADD_ROV_CUST_ID, 
     props<{custId: number}>());
 
-export const addNewRovCustomer = createAction(ADD_CUST_ID, 
+export const addNewRovCustomer = createAction(ADD_NEW_ROV_CUST, 
     props<{custObj: LTC_Customer}>());
 
 export const addRovTender = createAction(ADD_TENDER_OBJ,
