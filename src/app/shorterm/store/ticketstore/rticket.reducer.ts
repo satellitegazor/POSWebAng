@@ -47,7 +47,10 @@ export const _tktObjReducer = createReducer(
             shipHandling: 0,
             shipHandlingTaxAmt: 0,
             shipHandlingFC: 0,
-            shipHandlingTaxAmtFC: 0
+            shipHandlingTaxAmtFC: 0,
+            customer: {
+               custMaintTimestamp: new Date(Date.now()),
+            } as LTC_Customer,
 
          }
       }
@@ -234,7 +237,7 @@ export const _tktObjReducer = createReducer(
             ...state.tktObj,
             tktList: state.tktObj.tktList.map((itm: Rov_SalesTranCheckoutItem) => {
                let unitPriceNDC = action.defCurrSymbl == '$' ? itm.unitPrice * action.dailyExchRateObj.exchangeRate : (itm.unitPrice / action.dailyExchRateObj.exchangeRate);
-               if (itm.departmentUid == action.deptUID && itm.ticketDetailId == action.tktDtlId) {
+               if (itm.departmentUID == action.deptUID && itm.ticketDetailId == action.tktDtlId) {
                   return {
                      ...itm,
                      quantity: itm.quantity + 1,
@@ -254,7 +257,7 @@ export const _tktObjReducer = createReducer(
          tktObj: {
             ...state.tktObj,
             tktList: state.tktObj.tktList.map((itm: Rov_SalesTranCheckoutItem) => {
-               if (itm.departmentUid == action.deptUID && itm.ticketDetailId == action.tktDtlId && itm.quantity > 1) {
+               if (itm.departmentUID == action.deptUID && itm.ticketDetailId == action.tktDtlId && itm.quantity > 1) {
                   return {
                      ...itm,
                      quantity: itm.quantity - 1,
@@ -274,7 +277,7 @@ export const _tktObjReducer = createReducer(
          ...state,
          tktObj: {
             ...state.tktObj,
-            tktList: state.tktObj.tktList.filter((itm: Rov_SalesTranCheckoutItem) => (itm.departmentUid != action.deptUID && (action.tktDtlId == 0 || itm.ticketDetailId != action.tktDtlId)))
+            tktList: state.tktObj.tktList.filter((itm: Rov_SalesTranCheckoutItem) => (itm.departmentUID != action.deptUID && (action.tktDtlId == 0 || itm.ticketDetailId != action.tktDtlId)))
          }
       }
    }),

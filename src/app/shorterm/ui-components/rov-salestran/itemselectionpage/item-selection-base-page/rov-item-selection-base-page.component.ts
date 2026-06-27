@@ -225,7 +225,7 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
 
             let rovDept: ROV_Department = this.deptCategoryList.filter(dept => dept.departmentUID === this.activeDeptId)[0];
             let saleItem: Rov_SalesTranCheckoutItem = new Rov_SalesTranCheckoutItem();
-            saleItem.departmentUid = this.activeDeptId;
+            saleItem.departmentUID = this.activeDeptId;
             saleItem.unitPrice = this.saleItemPrice;
             saleItem.salesItemDesc = rovDept ? rovDept.description : '';
             //saleItem.salesItemUID = this._utilSvc.getUniqueNumberForDay();

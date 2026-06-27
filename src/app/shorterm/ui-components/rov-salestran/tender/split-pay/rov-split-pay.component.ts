@@ -1,37 +1,39 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, TemplateRef } from '@angular/core';
 import { Actions, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
-import { TenderStatusType, TicketTender, TranStatusType } from 'src/app/models/ticket.tender';
+import { TenderStatusType, TicketTender, TranStatusType } from '../../../../../models/ticket.tender';
 import { getRBalanceDue, getRTktObjSelector, getRTicketTendersSelector, getRBalanceDueFC, getRTicketTotalToPayUSD, getRTicketTotalToPayFC } from '../../../../store/ticketstore/rticket.selector';
 import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
 import { PosApiService } from '../../../../../longterm/services/pos-api-service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { LogonDataService } from 'src/app/global/logon-data-service.service';
-import { SharedSubjectService } from 'src/app/shared-subject/shared-subject.service';
+import { LogonDataService } from '../../../../../global/logon-data-service.service';
+import { SharedSubjectService } from '../../../../../shared-subject/shared-subject.service';
 import { TenderType, TenderTypeModel } from '../../../../../longterm/models/tender.type';
 import { filter, firstValueFrom, forkJoin, Subscription, take } from 'rxjs';
 import { updateRovCheckoutTotals, addRovTender, saveRovTicketForGuestCheck, saveRovTicketForGuestCheckSuccess, saveRovTicketForGuestCheckFailed, removeRovTndrWithSaveCode, saveRovTenderObj, saveCompleteRovTicketSplit, markRovTendersComplete, markRovTicketComplete, saveRovTenderObjSuccess, saveRovTenderObjFailed, resetRovTktObj } from '../../../../store/ticketstore/rticket.action';
-import { AlertModalComponent } from 'src/app/alert-modal/alert-modal.component';
-import { UtilService } from 'src/app/services-misc/util.service';
+import { AlertModalComponent } from '../../../../../alert-modal/alert-modal.component';
+import { UtilService } from '../../../../../services-misc/util.service';
 import { CPOSWebSvcService } from '../../../../../services-pinpad/cposweb-svc.service';
 import { RovTenderUtil } from '../tender-util';
 import { RovRedeemGiftCardTenders } from '../gc-redeem-services/rov-redeem-gift-card-tenders';
-import { ToastService } from 'src/app/services-misc/toast.service';
-import { TicketSplit } from 'src/app/models/ticket.split';
+import { ToastService } from '../../../../../services-misc/toast.service';
+import { ROV_POSTicketSplit } from '../../../../models/rticket.split';
 import { RovOConusRedeemGCWithPinPadService } from '../gc-redeem-services/rov-oconus-redeeem-gc-with-pin-pad';
 import { MilstarRefundReqData } from '../../../../../services-pinpad/models/milstar-refund-req-data';
 import { VoidTranInput } from '../../../../../services-pinpad/models/void-tran-input';
 import { VfoneCaptureTran } from '../../../../../services-pinpad/models/capture-tran.model';
-import { RovLogonDataService } from 'src/app/shorterm/rov-logon-data.service';
+import { RovLogonDataService } from '../../../../rov-logon-data.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-split-pay',
-  templateUrl: './split-pay.component.html',
-  styleUrls: ['./split-pay.component.css'],
-  standalone: false
+  selector: 'app-rov-split-pay',
+  templateUrl: './rov-split-pay.component.html',
+  styleUrls: ['./rov-split-pay.component.css'],
+  imports: [AlertModalComponent, CommonModule, FormsModule, ReactiveFormsModule]
 })
-export class SplitPayComponent implements OnInit, AfterViewInit {
+export class RovSplitPayComponent implements OnInit, AfterViewInit {
   @ViewChild('dcTndrAmt') dcTndrAmtInput!: ElementRef;
   @ViewChild('voidPaymentsConfirmDialog') voidPaymentsConfirmDialog!: TemplateRef<unknown>;
 
@@ -416,29 +418,29 @@ export class SplitPayComponent implements OnInit, AfterViewInit {
     let tndrCompRoute = '';
     switch (tndrCode) {
       case 'CC':
-        tndrCompRoute = 'cctender';
+        tndrCompRoute = 'rcctender';
         break;
       case 'EG':
       case 'RC':
-        tndrCompRoute = 'eaglecash';
+        tndrCompRoute = 'reaglecash';
         break;
       case 'CA':
       case 'CR':
-        tndrCompRoute = 'cashcheck';
+        tndrCompRoute = 'rcashcheck';
         break;
       case 'XC':
       case 'XR':
       case 'MS':
       case 'MR':
-        tndrCompRoute = 'pinpadtran';
+        tndrCompRoute = 'rpinpadtran';
         break;
       case 'GC':
-        tndrCompRoute = 'gcinquiry';
+        tndrCompRoute = 'rgcinquiry';
         break;
     }
 
 
-    this.router.navigate([tndrCompRoute], { queryParams: { code: tndrCode, tenderAmountDC: this.yetToPayDC, tenderAmountNDC: this.yetToPayNDC } })
+    this.router.navigate(["/rov/" +tndrCompRoute], { queryParams: { code: tndrCode, tenderAmountDC: this.yetToPayDC, tenderAmountNDC: this.yetToPayNDC } })
 
   }
 

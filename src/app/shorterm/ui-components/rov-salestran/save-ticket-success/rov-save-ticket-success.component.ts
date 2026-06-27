@@ -1,24 +1,25 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { saleTranDataInterface } from '../store/ticketstore/rticket.state';
+import { RovSaleTranDataInterface } from '../../../store/ticketstore/rticket.state';
 import { Store } from '@ngrx/store';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { LogonDataService } from '../../../global/logon-data-service.service';
-import { resetTktObj, saveTicketForGuestCheckSuccess } from '../store/ticketstore/ticket.action';
-import { SaveTicketResultsModel } from '../../../models/rticket.split';
-import { getSavedTicketResult } from '../store/ticketstore/ticket.selector';
+import { RovLogonDataService } from "../../../rov-logon-data.service";
+import { resetRovTktObj, saveRovTicketForGuestCheckSuccess } from '../../../store/ticketstore/rticket.action';
+import { RSaveTicketResultsModel } from '../../../models/rticket.split';
+import { getRSavedTicketResult } from '../../../store/ticketstore/rticket.selector';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { PinValidateComponent } from '../../pin-validate/pin-validate.component';
-import { TicketStatusDlgComponent } from '../ticket-status-dlg/ticket-status-dlg.component';
-import { TicketStatusLocationData } from '../../models/ticket.status.location.models';
+
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { VendorLoginResultsModel } from '../../../models/vendor.login.results.model';
+import { VendorLoginResultsModel } from '../../../../models/vendor.login.results.model';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-rov-save-ticket-success',
-    templateUrl: './save-ticket-success.component.html',
-    styleUrls: ['./save-ticket-success.component.css'],
-    standalone: false
+    templateUrl: './rov-save-ticket-success.component.html',
+    styleUrls: ['./rov-save-ticket-success.component.css'],
+    imports : [PinValidateComponent, CommonModule, FormsModule]
 })
 export class RovSaveTicketSuccessComponent implements OnInit, OnDestroy {
 
@@ -29,44 +30,39 @@ export class RovSaveTicketSuccessComponent implements OnInit, OnDestroy {
     size: 'lg'
   };
 
-  ticketStatusData: TicketStatusLocationData = new TicketStatusLocationData();
+  
   private _hasOpenedTicketStatusDialog = false;
   private _destroy$ = new Subject<void>();
   private _selectorSubscription: any;
 
 
-  constructor(private _store: Store<saleTranDataInterface>,
+  constructor(private _store: Store<RovSaleTranDataInterface>,
     private activatedRoute: ActivatedRoute,
     private route: Router,
-    private _logonDataSvc: LogonDataService,
+    private _logonDataSvc: RovLogonDataService,
     private _modalService: NgbModal){
 
   }
 
-  saveTktRsltMdl: SaveTicketResultsModel = {} as SaveTicketResultsModel;
+  saveTktRsltMdl: RSaveTicketResultsModel = {} as RSaveTicketResultsModel;
 
   tktSaveResultMessage: string = '';
   businessFunctionCode: string = '';
 
-  laundryBusFuncCodes: string[] = ['BUSFNC_ALT', 'BUSFNC_LNDRYCLN', 'BUSFNC_LNDRYCLN_WALT'];
-
   ngOnInit(): void {
 
-    let locConfig = this._logonDataSvc.getLocationConfig();
-    this.businessFunctionCode = locConfig.busFuncCode;
+    let evtConfig = this._logonDataSvc.getRovEventConfig();
+    this.businessFunctionCode = evtConfig.busFuncCode;
 
     // Only subscribe to selector when this component is actively displayed
-    this._selectorSubscription = this._store.select(getSavedTicketResult)
+    this._selectorSubscription = this._store.select(getRSavedTicketResult)
       .pipe(
         takeUntil(this._destroy$)
       )
       .subscribe(data => {
         this.saveTktRsltMdl = data;
         this.tktSaveResultMessage = this.saveTktRsltMdl.ticketNumber > 0 ? ('Ticket save Successful')  : 'Ticket saving...';
-        this._syncTicketStatusData();
-        if (this.laundryBusFuncCodes.includes(this.businessFunctionCode)) {
-          this._openTicketStatusDialogIfNeeded();
-        }
+
       });
   }
 
@@ -81,63 +77,21 @@ export class RovSaveTicketSuccessComponent implements OnInit, OnDestroy {
     sessionStorage.setItem('inProgTranId', '0');
     sessionStorage.setItem('inProgTranTabSerialNum', '');
 
-    let locConfig = this._logonDataSvc.getLocationConfig();
+    let evtConfig = this._logonDataSvc.getRovEventConfig();
     this._logonDataSvc.setTranIsRefund(false);
     
-    this._store.dispatch(resetTktObj({ locConfig: locConfig }));
+    this._store.dispatch(resetRovTktObj({ eventConfig: evtConfig }));
 
-    if(locConfig.pinReqdForSalesTran) {
+    if(evtConfig.pinReqdForSalesTran) {
       const modalRef = this._modalService.open(PinValidateComponent);
       modalRef.result.then((loginResult?: VendorLoginResultsModel) => {
         if (loginResult?.isAuthorized) {
-          this.route.navigate(['/salestran']);
+          this.route.navigate(['/ritemsel']);
         }
       }).catch(() => undefined);
     }
     else {
-      this.route.navigate(['/salestran'])
+      this.route.navigate(['/ritemsel'])
     }
   }
-
-  private _syncTicketStatusData(): void {
-    this.ticketStatusData = Object.assign(new TicketStatusLocationData(), this.ticketStatusData, {
-      balanceDue: this.saveTktRsltMdl.balanceDue ?? this.ticketStatusData.balanceDue,
-      ticketNumber: this.saveTktRsltMdl.ticketNumber ?? this.ticketStatusData.ticketNumber,
-      transactionID: this.saveTktRsltMdl.transactionId ?? this.ticketStatusData.transactionID,
-      readyByDate: this.ticketStatusData.readyByDate ?? new Date(),
-      tktStatusId: this.ticketStatusData.tktStatusId || 1,
-    });
-  }
-
-  private _openTicketStatusDialogIfNeeded(): void {
-    if (this._hasOpenedTicketStatusDialog) {
-      return;
-    }
-
-    if (this._logonDataSvc.getTranIsRefund()) {
-      return;
-    }
-
-    if (!this.laundryBusFuncCodes.includes(this.businessFunctionCode)) {
-      return;
-    }
-
-    if ((this.saveTktRsltMdl.ticketNumber ?? 0) <= 0) {
-      return;
-    }
-
-    this._hasOpenedTicketStatusDialog = true;
-
-    const modalRef = this._modalService.open(TicketStatusDlgComponent, this.modalOptions);
-    modalRef.componentInstance.title = 'Ticket Status';
-    modalRef.componentInstance.ticketStatus = Object.assign(new TicketStatusLocationData(), this.ticketStatusData);
-    modalRef.componentInstance.showBalanceFields = (this.ticketStatusData.balanceDue ?? 0) > 0;
-
-    modalRef.result.then((ticketStatus?: TicketStatusLocationData) => {
-      if (ticketStatus) {
-        this.ticketStatusData = Object.assign(new TicketStatusLocationData(), ticketStatus);
-      }
-    }).catch(() => undefined);
-  }
-
 }

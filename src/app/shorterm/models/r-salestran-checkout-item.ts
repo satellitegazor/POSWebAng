@@ -19,10 +19,10 @@ export class Rov_SalesTranCheckoutItem {
 	dtlMaintTimestamp: Date = new Date(0);
 	dtlMaintUserId: string = '';
 	isMiscellaneous: boolean = false;
-	locationUid: number = 0;
-	facilityUid: number = 0;
-	departmentUid: number = 0;
-	businessFunctionUid: number = 0;
+	locationUID: number = 0;
+	facilityUID: number = 0;
+	departmentUID: number = 0;
+	businessFunctionUID: number = 0;
 	deptName: string = '';
 	custInfoReq: boolean = false;
 	applyCouponsAfterTax: boolean = false;
@@ -49,9 +49,6 @@ export class Rov_SalesTranCheckoutItem {
     exchCpnAmountNDC: number = 0;
     contractUID: number = 0;
     eventID: number = 0;
-    facilityUID: number = 0;
-    departmentUID: number = 0;
-    businessFunctionUID: number = 0;
     fcLineItemTaxAmount: number = 0;
     vndCpnAmountNDC: number = 0;
     vndCpnAmountDC: number = 0;

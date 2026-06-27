@@ -8,16 +8,20 @@ import { getRIsCustomerAddedToTicket, getRTicketTotals } from '../../../../store
 import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
 import { UtilService } from '../../../../../services-misc/util.service';
 import { DailyExchRate } from "../../../../../models/exchange.rate"
+import { RovLogonDataService } from 'src/app/shorterm/rov-logon-data.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-rov-part-pay',
   templateUrl: './rov-part-pay.component.html',
   styleUrls: ['./rov-part-pay.component.css'],
+  imports: [CommonModule, FormsModule]
 })
 export class RovPartPayComponent implements OnInit {
 
   constructor(private _store: Store<RovSaleTranDataInterface>,
-    private logonSvc: LogonDataService,
+    private logonSvc: RovLogonDataService,
     private utilSvc: UtilService) { }
 
   partPayAmount: number = 0;
@@ -57,7 +61,7 @@ export class RovPartPayComponent implements OnInit {
       this.disablePartPay = !val;
     })
 
-    this.defaultCurr = this.utilSvc.currencySymbols.get(this.logonSvc.getLocationConfig().defaultCurrency) ?? '$';
+    this.defaultCurr = this.utilSvc.currencySymbols.get(this.logonSvc.getRovEventConfig().defaultCurrency) ?? '$';
     this.dailyExchRateObj = this.logonSvc.getDailyExchRate();
   }
 

@@ -23,7 +23,7 @@ import { ToastService } from 'src/app/services-misc/toast.service';
 import { RovTenderUtil } from '../tender-util';
 import { RovRedeemGiftCardTenders } from '../gc-redeem-services/rov-redeem-gift-card-tenders';
 import { RovOConusRedeemGCWithPinPadService } from '../gc-redeem-services/rov-oconus-redeeem-gc-with-pin-pad';
-import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
+import { RovConusRedeemGCwithAurusAPI } from '../gc-redeem-services/rov-conus-redeem-gc-with-aurus-api';
 import { ROV_POSTicketSplit } from 'src/app/shorterm/models/rticket.split';
 import { markTendersComplete } from 'src/app/longterm/saletran/store/ticketstore/ticket.action';
 import { CommonModule } from '@angular/common';
@@ -46,7 +46,7 @@ export class RovDeviceTndrPageComponent implements OnInit, AfterContentInit, OnD
     private actions$: Actions,
     private _toastSvc: ToastService,
     private _oConusRedeemGCWithPinPad: RovOConusRedeemGCWithPinPadService,
-    private _conusRedeemGCWithAurusAPI: ConusRedeemGCwithAurusAPI) {
+    private _conusRedeemGCWithAurusAPI: RovConusRedeemGCwithAurusAPI) {
   }
 
   private _tktObj: TicketSplit = {} as TicketSplit;

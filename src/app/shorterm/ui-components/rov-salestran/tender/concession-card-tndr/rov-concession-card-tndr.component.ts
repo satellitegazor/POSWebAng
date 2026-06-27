@@ -19,7 +19,7 @@ import { RovRedeemGiftCardTenders } from '../gc-redeem-services/rov-redeem-gift-
 import { ToastService } from "../../../../../services-misc/toast.service";
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { RovOConusRedeemGCWithPinPadService } from '../gc-redeem-services/rov-oconus-redeeem-gc-with-pin-pad';
-import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
+import { RovConusRedeemGCwithAurusAPI } from '../gc-redeem-services/rov-conus-redeem-gc-with-aurus-api';
 import { getTktObjSelector } from 'src/app/longterm/saletran/store/ticketstore/ticket.selector';
 import { FormsModule } from '@angular/forms';
 
@@ -49,7 +49,7 @@ export class RovConcessionCardTndrComponent implements AfterViewInit {
     private _cposWebSvc: CPOSWebSvcService,
     private _toastSvc: ToastService,
     private _oConusRedeemGCWithPinPad: RovOConusRedeemGCWithPinPadService,
-    private _conusRedeemGCWithAurusAPI: ConusRedeemGCwithAurusAPI) {
+    private _conusRedeemGCWithAurusAPI: RovConusRedeemGCwithAurusAPI) {
     // Initialization logic can go here if needed
     this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
   }

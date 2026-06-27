@@ -16,7 +16,7 @@ import { RovRedeemGiftCardTenders } from '../gc-redeem-services/rov-redeem-gift-
 import { ToastService } from 'src/app/services-misc/toast.service';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { RovOConusRedeemGCWithPinPadService } from '../gc-redeem-services/rov-oconus-redeeem-gc-with-pin-pad';
-import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
+import { RovConusRedeemGCwithAurusAPI } from '../gc-redeem-services/rov-conus-redeem-gc-with-aurus-api';
 import { ROV_POSTicketSplit } from 'src/app/shorterm/models/rticket.split';
 import { FormsModule } from '@angular/forms';
 
@@ -50,7 +50,7 @@ export class RovEgConcTndrComponent {
     private _utilSvc: UtilService,
     private _toastSvc: ToastService,
     private _oConusRedeemGCWithPinPad: RovOConusRedeemGCWithPinPadService,
-    private _conusRedeemGCWithAurusAPI: ConusRedeemGCwithAurusAPI) {
+    private _conusRedeemGCWithAurusAPI: RovConusRedeemGCwithAurusAPI) {
     // Initialization logic can go here if needed
     this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
   }

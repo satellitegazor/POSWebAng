@@ -223,9 +223,9 @@ export class RovApiService {
     return this.httpClient.post<MobileBase>(url, JSON.stringify(request), { headers: this.headerObjs });
   }
 
-  public saveSplitPayments(request: ROV_POSTicketSplit): Observable<SaveTicketResultsModel> {
+  public saveSplitPayments(model: ROV_POSTicketSplit): Observable<SaveTicketResultsModel> {
     const url = GlobalConstants.CPOS_SVCS_URL + '/rov/SaveSplitPayments?guid=' + encodeURIComponent(GlobalConstants.PUT_GUID);
-    return this.httpClient.put<SaveTicketResultsModel>(url, JSON.stringify(request), { headers: this.headerObjs });
+    return this.httpClient.put<SaveTicketResultsModel>(url, JSON.stringify(model), { headers: this.headerObjs });
   }
 
   public saveROVTenderObj(tndrObj: TicketTender): Observable<SaveTenderResultModel> {

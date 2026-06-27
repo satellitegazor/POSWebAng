@@ -15,7 +15,7 @@ import { addRovTender, markRovTendersComplete, markRovTicketComplete, saveComple
 import { RovRedeemGiftCardTenders } from '../gc-redeem-services/rov-redeem-gift-card-tenders';
 import { ToastService } from "../../../../../services-misc/toast.service";
 import { RovOConusRedeemGCWithPinPadService } from '../gc-redeem-services/rov-oconus-redeeem-gc-with-pin-pad';
-import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
+import { RovConusRedeemGCwithAurusAPI } from '../gc-redeem-services/rov-conus-redeem-gc-with-aurus-api';
 import { markTendersComplete } from '../../../../../longterm/saletran/store/ticketstore/ticket.action';
 
 @Component({
@@ -46,7 +46,7 @@ export class RovCashTndrComponent implements OnInit {
     private _utilSvc: UtilService,
     private _toastSvc: ToastService,
     private _oConusRedeemGCWithPinPad: RovOConusRedeemGCWithPinPadService,
-    private _conusRedeemGCWithAurusAPI: ConusRedeemGCwithAurusAPI) {
+    private _conusRedeemGCWithAurusAPI: RovConusRedeemGCwithAurusAPI) {
     // Initialization logic can go here if needed
     this.isOConusLocation = this.rovLogonDataSvc.getIsForeignCurr();
   }

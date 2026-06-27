@@ -16,7 +16,7 @@ import { AurusGiftCardInquiryResp } from '../../../../../services-pinpad/models/
 import { RovTenderUtil } from '../tender-util';
 import { AurusGiftCardRedeemResp, GCRedeemInput } from '../../../../../services-pinpad/models/aurus-gift-card-redeem-resp';
 import { RovOConusRedeemGCWithPinPadService } from '../gc-redeem-services/rov-oconus-redeeem-gc-with-pin-pad';
-import { ConusRedeemGCwithAurusAPI } from '../gc-redeem-services/conus-redeem-gc-with-aurus-api';
+import { RovConusRedeemGCwithAurusAPI } from '../gc-redeem-services/rov-conus-redeem-gc-with-aurus-api';
 import { HTTP_TRANSFER_CACHE_ORIGIN_MAP } from '@angular/common/http';
 import { Conus_GC_Balance_Model } from "../../../../../longterm/models/misc.models";
 import { PosApiService } from '../../../../../longterm/services/pos-api-service';
@@ -63,7 +63,7 @@ export class RovGiftCardInquiryComponent implements OnInit, AfterContentInit, On
     private actions$: Actions,
     private _toastSvc: ToastService,
     private _redeemGiftCardTndrsSvc: RovOConusRedeemGCWithPinPadService,
-    private _conusRedeemGCWithAurusAPI: ConusRedeemGCwithAurusAPI,
+    private _conusRedeemGCWithAurusAPI: RovConusRedeemGCwithAurusAPI,
     private _salesTranSvc: PosApiService) { 
       this.isOConusLocation = this._logonDataSvc.getIsForeignCurr();
     }

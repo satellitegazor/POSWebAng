@@ -8,7 +8,7 @@ import { TicketTender, TranStatusType } from "../../models/ticket.tender";
 import { Rov_SalesTranCheckoutItem } from "./r-salestran-checkout-item"
 
 export class ROV_POSTicketSplit {
-    ticketRrn: string = '';
+    
     eventId: number = 0;
     transactionDate: Date = new Date(0);
     individualUid: number = 0;

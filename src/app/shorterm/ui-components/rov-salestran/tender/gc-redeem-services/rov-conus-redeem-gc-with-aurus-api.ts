@@ -15,7 +15,7 @@ import { CPOSAppType } from 'src/app/services-misc/util.service';
 @Injectable({
   providedIn: 'root'
 })
-export class ConusRedeemGCwithAurusAPI {
+export class RovConusRedeemGCwithAurusAPI {
 
   constructor(
     private _logonDataSvc: LogonDataService,

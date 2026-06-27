@@ -8,8 +8,11 @@ import { RovCheckoutPageComponent } from './ui-components/rov-salestran/checkout
 import { RovItemButtonPageComponent } from './ui-components/itembuttonmenu/item-button-page/rov-item-button-page.component';
 import { RovCashTndrComponent } from './ui-components/rov-salestran/tender/cash-tndr/rov-cash-tndr.component';
 import { RovEgConcTndrComponent } from "./ui-components/rov-salestran/tender/eg-conc-tndr/rov-eg-conc-tndr.component";
-import { SplitPayComponent } from './ui-components/rov-salestran/tender/split-pay/split-pay.component';
+import { RovSplitPayComponent } from './ui-components/rov-salestran/tender/split-pay/rov-split-pay.component';
 import { RovDeviceTndrPageComponent } from './ui-components/rov-salestran/tender/device-tndr-page/rov-device-tndr-page.component';
+import { RovGiftCardInquiryComponent } from './ui-components/rov-salestran/tender/gift-card-inquiry/rov-gift-card-inquiry.component';
+import { RovConcessionCardTndrComponent } from './ui-components/rov-salestran/tender/concession-card-tndr/rov-concession-card-tndr.component';
+import { RovSaveTicketSuccessComponent } from './ui-components/rov-salestran/save-ticket-success/rov-save-ticket-success.component';
 
 export const ROV_ROUTES: Routes = [
   { path: 'rlogon', component: RovLogonComponent },
@@ -17,10 +20,13 @@ export const ROV_ROUTES: Routes = [
   { path: 'ritemsel', component: RovItemSelectionBasePageComponent },
   { path: 'rchekout', component: RovCheckoutPageComponent },
   { path: 'ritembtnmenu', component: RovItemButtonPageComponent},
-  { path: 'splitpay', component: SplitPayComponent },
+  { path: 'rsplitpay', component: RovSplitPayComponent },
   { path: 'pinpadtran', component: RovDeviceTndrPageComponent },
   { path: 'eaglecash', component: RovEgConcTndrComponent },
   { path: 'cashcheck', component: RovCashTndrComponent },
+  { path: 'gcinquiry', component: RovGiftCardInquiryComponent },
+  { path: 'cctender', component: RovConcessionCardTndrComponent },
+  { path: 'rsavetktsuccess', component: RovSaveTicketSuccessComponent } // Default route for ROV module
 ];
 
 @NgModule({

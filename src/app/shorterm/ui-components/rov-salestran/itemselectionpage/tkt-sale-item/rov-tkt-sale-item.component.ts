@@ -87,17 +87,17 @@ export class RovTktSaleItemComponent implements OnInit {
             } 
             else 
             {
-                this._store.dispatch(delRovSaleitemZeroQty({ deptUID: this.tktSaleItems[i].departmentUid, tktDtlId: this.tktSaleItems[i].ticketDetailId, defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));    
+                this._store.dispatch(delRovSaleitemZeroQty({ deptUID: this.tktSaleItems[i].departmentUID, tktDtlId: this.tktSaleItems[i].ticketDetailId, defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));    
             }
         }
         else {
-            this._store.dispatch(decRovSaleitemQty({ deptUID: this.tktSaleItems[i].departmentUid, tktDtlId: this.tktSaleItems[i].ticketDetailId , defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));
+            this._store.dispatch(decRovSaleitemQty({ deptUID: this.tktSaleItems[i].departmentUID, tktDtlId: this.tktSaleItems[i].ticketDetailId , defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));
         }
         this._store.dispatch(updateRovCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
     }
 
     btnPlusClicked(evt: Event, i: number) {
-        this._store.dispatch(incRovSaleitemQty({deptUID: this.tktSaleItems[i].departmentUid, tktDtlId: this.tktSaleItems[i].ticketDetailId, defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));
+        this._store.dispatch(incRovSaleitemQty({deptUID: this.tktSaleItems[i].departmentUID, tktDtlId: this.tktSaleItems[i].ticketDetailId, defCurrSymbl: this.dfltCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate()}));
         this._store.dispatch(updateRovCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
     }
 

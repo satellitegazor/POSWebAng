@@ -3,9 +3,9 @@ import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { select, State, Store } from "@ngrx/store";
 import { EMPTY, from, of } from "rxjs";
 import { catchError, concatMap, exhaustMap, map, mergeMap, take, tap, withLatestFrom } from 'rxjs/operators';
-import { RovApiService } from "../../short-term.service";
+import { RovApiService, SaveSplitPaymentsRequest } from "../../short-term.service";
 import { Action } from "@ngrx/store";
-import { saveRovTicketForGuestCheck, saveRovTicketForGuestCheckFailed, saveRovTicketForGuestCheckSuccess, saveCompleteRovTicketSplit, saveCompleteRovTicketSplitFailed, saveCompleteRovTicketSplitSuccess, saveRovTenderObj, saveRovTenderObjFailed, saveRovTenderObjSuccess, saveRovTicketDetail, saveRovTicketDetailFailed, saveRovTicketDetailSuccess, inactiveRovTicketDetail, inactiveRovTicketDetailFailed, inactiveRovTicketDetailSuccess, saveRovPinpadResponse, saveRovPinpadResponseFailed, saveRovPinpadResponseSuccess, loadRovTicket, loadRovTicketFail, loadRovTicketSuccess, loadRovInProgressTenders, loadRovInProgressTendersFail, loadRovInProgressTendersSuccess, deleteDeclinedTenderFromStore } from "./rticket.action";
+import { saveRovTicketForGuestCheck, saveRovTicketForGuestCheckFailed, saveRovTicketForGuestCheckSuccess, saveCompleteRovTicketSplit, saveCompleteRovTicketSplitFailed, saveCompleteRovTicketSplitSuccess, saveRovTenderObj, saveRovTenderObjFailed, saveRovTenderObjSuccess, saveRovTicketDetail, saveRovTicketDetailFailed, saveRovTicketDetailSuccess, inactiveRovTicketDetail, inactiveRovTicketDetailFailed, inactiveRovTicketDetailSuccess, saveRovPinpadResponse, saveRovPinpadResponseFailed, saveRovPinpadResponseSuccess, loadRovTicket, loadRovTicketFail, loadRovTicketSuccess, loadRovInProgressTenders, loadRovInProgressTendersFail, loadRovInProgressTendersSuccess, deleteDeclinedRovTenderFromStore } from "./rticket.action";
 import { RovSaleTranDataInterface } from "./rticket.state";
 import { getRTktObjSelector } from './rticket.selector';
 import { CPOSAppType } from "../../../services-misc/util.service"
@@ -193,7 +193,7 @@ export class RovTicketObjectEffects {
                     || !tndr.rrn) {
                     return EMPTY;
                 }
-                return of(deleteDeclinedTenderFromStore({ rrn: tndr.rrn }));
+                return of(deleteDeclinedRovTenderFromStore({ rrn: tndr.rrn }));
             })
         );
     });
