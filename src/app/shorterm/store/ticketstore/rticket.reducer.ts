@@ -56,8 +56,6 @@ export const _tktObjReducer = createReducer(
       }
    }),
 
-
-
    on(removeRovTndrWithSaveCode, (state, action) => {
       let tndrCode: string = action.tndrCode;
       //console.log("removeTndrWithSaveCode called with code: " + tndrCode);
@@ -74,13 +72,9 @@ export const _tktObjReducer = createReducer(
 
    
 
-      on(resetRovTktObj, (state, action) => {
-
-      //console.log("resetTktObj called");
+   on(resetRovTktObj, (state, action) => {
 
       let _utilSvc = new UtilService();
-
-      //let logonDataSvc = action._logonDataSvc;
       let eventConfig = action.eventConfig;
       return {
          ...state,
@@ -404,7 +398,6 @@ export const _tktObjReducer = createReducer(
       const isUsd = dfltCurrCode == "USD";
       const transExchDC = isUsd ? transExchAmtUsd : transExchAmtNdc;
       const transExchNDC = isUsd ? transExchAmtNdc : transExchAmtUsd;
-
       const useTransExch = transExchPct > 0 || transExchDC > 0 || transExchNDC > 0;
 
       // Copy list
@@ -625,12 +618,12 @@ export const _tktObjReducer = createReducer(
          }
          item.lineItemDollarDisplayAmount = isUsd ? lineTotalDC : lineTotalNDC;
 
-         item.fcLineItemTaxAmount = isUsd ? lineTaxNDC : lineTaxDC;
-         item.fcDiscountAmount = isUsd ? vendorDiscNDC : vendorDiscDC;
+         item.dCLineItemTaxAmount = isUsd ? lineTaxNDC : lineTaxDC;
+         item.dCDiscountAmount = isUsd ? vendorDiscNDC : vendorDiscDC;
          if (!useTransExch) {
-            item.fcCouponLineItemDollarAmount = isUsd ? exchDiscNDC : exchDiscDC;
+            item.dCCouponLineItemDollarAmount = isUsd ? exchDiscNDC : exchDiscDC;
          }
-         item.fcLineItemDollarDisplayAmount = isUsd ? lineTotalNDC : lineTotalDC;
+         item.dCLineItemDollarDisplayAmount = isUsd ? lineTotalNDC : lineTotalDC;
 
          // Accumulate totals
          subtotalDC += lineSubDC;
@@ -844,10 +837,10 @@ export const _tktObjReducer = createReducer(
          const item = updatedList[i];
 
          const itemLineDisplayDC = item.lineItemDollarDisplayAmount;
-         const itemLineDisplayNDC = item.fcLineItemDollarDisplayAmount;
+         const itemLineDisplayNDC = item.dCLineItemDollarDisplayAmount;
 
          const itemTaxDC = item.lineItemTaxAmount;
-         const itemTaxNDC = item.fcLineItemTaxAmount;
+         const itemTaxNDC = item.dCLineItemTaxAmount;
 
          const itemSavingsDC = item.vndCpnAmountDC + item.exchCpnAmountDC;
          const itemSavingsNDC = item.vndCpnAmountNDC + item.exchCpnAmountNDC;

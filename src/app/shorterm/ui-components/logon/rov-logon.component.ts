@@ -17,6 +17,8 @@ import { Store } from '@ngrx/store';
 import { addTabSerialToRovTktObj, rovInitTktObj, loadRovTicket, loadRovTicketSuccess, updateRovCheckoutTotals } from '../../store/ticketstore/rticket.action';
 import { CPOSWebSvcService } from '../../../services-pinpad/cposweb-svc.service';
 import { ofType } from '@ngrx/effects';
+import { ROVEventConfigState } from '../../store/roveventconfigstore/roveventconfig.state';
+import { setEventConfig, updateEventConfigPostLogon } from '../../store/roveventconfigstore/roveventconfig.action';
 
 
 @Component({
@@ -42,6 +44,7 @@ export class RovLogonComponent implements OnInit {
     private _rovLogonDataSvc: RovLogonDataService,
     private router: Router,
     private _tktObjStore: Store<RovTktObjState>,
+    private _evtConfigStore: Store<ROVEventConfigState>,
     private _cposWebSvc: CPOSWebSvcService) { }
 
   ngOnInit() {
@@ -167,18 +170,18 @@ export class RovLogonComponent implements OnInit {
       this._rovLogonDataSvc.setRovVendorLogonData(data);
 
       // Keep app header/login state in sync even when reset-PIN or training flows short-circuit.
-      // this._locConfigStore.dispatch(updateLocationConfigPostLogon({
-      //     associateName: data.associateName,
-      //     associateRole: data.associateRole,
-      //     associateRoleDesc: data.associateRoleDesc,
-      //     contractNumber: this.vendornum,
-      //     contractUID: +data.contractUID,
-      //     facilityName: location.facilityName,
-      //     locationName: location.facilityName,
-      //     facilityNumber: location.facilityNumber,
-      //     vendorNumber: this.vendornum,
-      //     vendorName: data.userIdentity.fullName
-      // }));
+      this._evtConfigStore.dispatch(updateEventConfigPostLogon({
+          associateName: data.associateName,
+          associateRole: data.associateRole,
+          associateRoleDesc: data.associateRoleDesc,
+          contractNumber: this.vendornum,
+          contractUID: +data.contractUID,
+          eventName: eventSelected.eventName,  
+          facilityNumber: eventSelected.facilityNumber,
+          vendorNumber: this.vendornum,
+          vendorName: data.userIdentity.fullName,
+          facilityName: ''
+      }));
 
 
 
@@ -245,6 +248,7 @@ export class RovLogonComponent implements OnInit {
       this._rovLogonDataSvc.setRovEventConfig(evtConfigMdl?.config ?? null);
       let evConfig = this._rovLogonDataSvc.getRovEventConfig();
       this._tktObjStore.dispatch(rovInitTktObj({ eventConfig: evConfig, individualUID: +locModel.individualUID }));
+      this._evtConfigStore.dispatch(setEventConfig({ eventConfig: evConfig }));
 
       this._rovApiSvc.getTenderTypes(+locModel.individualUID).subscribe(tenderTypes => {
         this._rovLogonDataSvc.setTenderTypes(tenderTypes);
@@ -274,6 +278,7 @@ export class RovLogonComponent implements OnInit {
 
         locModel.privActConfmComplete = data.privActConfmComplete;
         this._rovLogonDataSvc.setRovEventConfig(evtConfigMdl?.config ?? null);
+        this._evtConfigStore.dispatch(setEventConfig({ eventConfig: evtConfigMdl?.config ?? null }));
         this.router.navigate(['rov/rmainmenu']);        
         //this.router.navigate(["rov/ritembtnmenu"]);
       }

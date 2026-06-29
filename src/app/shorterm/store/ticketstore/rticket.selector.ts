@@ -84,7 +84,7 @@ export interface AmountUSDFC {
     state.tktObj.associateTips.forEach(tip => tipTotalUSD += parseFloat((tip.tipAmount).toCPOSFixed(2)));
 
     state.tktObj.ticketTenderList.forEach(tndr => tenderTotalFC += parseFloat((tndr.tenderTypeCode != "SV" ? tndr.fcTenderAmount : 0).toCPOSFixed(2)));
-    state.tktObj.tktList.forEach(itm => ticketTotalFC += parseFloat((itm.fcLineItemDollarDisplayAmount ?? 0).toCPOSFixed(2)));
+    state.tktObj.tktList.forEach(itm => ticketTotalFC += parseFloat((itm.dCLineItemDollarDisplayAmount ?? 0).toCPOSFixed(2)));
     state.tktObj.associateTips.forEach(tip => tipTotalFC += parseFloat((tip.tipAmtLocCurr).toCPOSFixed(2)));
 
     if (state.tktObj.isPartialPay) {
@@ -143,7 +143,7 @@ export const getRIsCustomerAddedToTicket = createSelector(getRTktObjState,
           return Round2DecimalService.round(state.tktObj.partialAmountFC);
         }
         let ticketTotalFC: number = 0;
-        state.tktObj.tktList.forEach(itm => ticketTotalFC += itm.fcLineItemDollarDisplayAmount);
+        state.tktObj.tktList.forEach(itm => ticketTotalFC += itm.dCLineItemDollarDisplayAmount);
         let tipTotalFC: number = 0;
         state.tktObj.associateTips.forEach(tip => tipTotalFC += tip.tipAmtLocCurr);
        

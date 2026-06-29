@@ -97,7 +97,7 @@ export class RovAddMiscItemDlgComponent {
       newMiscItem.departmentUID = result.departmentId;
       newMiscItem.salesItemDesc = result.itemDescription;
       newMiscItem.unitPrice = this.defaultCurrSymbl == '$' ? result.price : parseFloat((result.price / this.dailyExchRate.exchangeRate).toCPOSFixed(2));
-      newMiscItem.fcUnitPrice = this.defaultCurrSymbl == '$' ? parseFloat((result.price * this.dailyExchRate.exchangeRate).toCPOSFixed(2)) : result.price;
+      newMiscItem.dCUnitPrice = this.defaultCurrSymbl == '$' ? parseFloat((result.price * this.dailyExchRate.exchangeRate).toCPOSFixed(2)) : result.price;
       newMiscItem.salesTaxPct = result.taxPct;
       newMiscItem.noOfTags = result.tags;
       newMiscItem.isMiscellaneous = true;
@@ -127,14 +127,14 @@ export class RovAddMiscItemDlgComponent {
             itemDescription: newMiscItem.salesItemDesc,
             quantity: newMiscItem.quantity,
             unitPrice: newMiscItem.unitPrice,
-            fcUnitPrice: newMiscItem.fcUnitPrice,
+            fcUnitPrice: newMiscItem.dCUnitPrice,
             salesTaxPct: newMiscItem.salesTaxPct,
             discountAmount: newMiscItem.discountAmount,
             fcDiscountAmount: newMiscItem.fcDiscountAmount,
             couponLineItemDollarAmount: newMiscItem.couponLineItemDollarAmount,
             fcCouponLineItemDollarAmount: newMiscItem.fcCouponLineItemDollarAmount,
             lineItemDollarDisplayAmount: newMiscItem.lineItemDollarDisplayAmount,
-            fcLineItemDollarDisplayAmount: newMiscItem.fcLineItemDollarDisplayAmount,
+            fcLineItemDollarDisplayAmount: newMiscItem.dCLineItemDollarDisplayAmount,
             lineItemTaxAmount: newMiscItem.lineItemTaxAmount,
             fcLineItemTaxAmount: newMiscItem.fcLineItemTaxAmount,
             deptUID: newMiscItem.departmentUID,

@@ -25,7 +25,7 @@ export const _getEventConfigReducer = createReducer(
 
         return {
             ...state,
-            eventCnfg: primaryConfig
+            eventConfig: primaryConfig
         };
     }),
     on(setEventConfig, (state, action) => {
@@ -35,7 +35,7 @@ export const _getEventConfigReducer = createReducer(
 
         return {
             ...state,
-            eventCnfg: state.eventConfig
+            eventConfig: state.eventConfig
                 ? mergeNonNull(state.eventConfig as any, action.eventConfig as any)
                 : action.eventConfig
         };
@@ -47,7 +47,7 @@ export const _getEventConfigReducer = createReducer(
 
         return {
             ...state,
-            eventCnfg: {
+            eventConfig: {
                 ...state.eventConfig,
                 associateName: action.associateName,
                 associateRole: action.associateRole,

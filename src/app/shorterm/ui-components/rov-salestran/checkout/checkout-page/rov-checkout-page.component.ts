@@ -5,13 +5,13 @@ import { Router } from '@angular/router';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap'
 import { select, Store } from '@ngrx/store';
 import { RovLogonDataService } from '../../../../rov-logon-data.service';
-import { TenderStatusType, TicketTender } from '../../../../../models/ticket.tender';
+import { TenderStatusType, TicketTender, TranStatusType } from '../../../../../models/ticket.tender';
 import { SharedSubjectService } from '../../../../../shared-subject/shared-subject.service';
 import { CustomerSearchComponent } from '../../../../../longterm/customer-search/customer-search.component';
 import { EventConfig } from '../../../../models/event.config';
 import { TenderType, TenderTypeModel } from '../../../../../longterm/models/tender.type';
 
-import { addRovTender, removeRovTndrWithSaveCode, saveRovTicketForGuestCheck, updateRovCheckoutTotals, saveRovTicketForGuestCheckSuccess, isSplitPayRovR5 } from '../../../../store/ticketstore/rticket.action';
+import { addRovTender, removeRovTndrWithSaveCode, saveRovTicketForGuestCheck, updateRovCheckoutTotals, saveRovTicketForGuestCheckSuccess, isSplitPayRovR5, markRovTendersComplete, markRovTicketComplete, saveCompleteRovTicketSplit } from '../../../../store/ticketstore/rticket.action';
 import { getRCheckoutItemsSelector, getRTktObjSelector } from '../../../../store/ticketstore/rticket.selector';
 import { RovSaleTranDataInterface } from '../../../../store/ticketstore/rticket.state';
 
@@ -71,12 +71,17 @@ export class RovCheckoutPageComponent implements OnInit {
   tenderButtonWidthPercent: number = 0;
   isRefund: boolean = false;
   isInCompleteTicket: boolean = false;
+  busModel: string = '';
+  
   private _transactionId: number = 0; // Store transaction ID from saveTicketForGuestCheck
+
 
   public ngOnInit(): void {
 
     //console.log('CheckoutPage component ngOnInit called');
     this.evtConfig = this._logonDataSvc.getRovEventConfig();
+    this.busModel = this.evtConfig.busFuncCode;
+
     this.isInCompleteTicket = this.evtConfig.inProgTranId > 0;
     this.isOConus = this.evtConfig.rgnCode != "CON";
     this.dfltCurrSymbl = this._utilSvc.currencySymbols.get(this._logonDataSvc.getDfltCurrCode()) ?? '';
@@ -95,7 +100,7 @@ export class RovCheckoutPageComponent implements OnInit {
 
       items.forEach((itm: Rov_SalesTranCheckoutItem) => {
         this.tenderAmount += itm.lineItemDollarDisplayAmount ?? 0;
-        this.fcTenderAmount += itm.fcLineItemDollarDisplayAmount ?? 0;
+        this.fcTenderAmount += itm.dCLineItemDollarDisplayAmount ?? 0;
       })
     })
 
@@ -262,10 +267,43 @@ export class RovCheckoutPageComponent implements OnInit {
 
     this._displayTenders = this._tenderTypesModel.types?.filter((tndr: TenderType) => tndr.isRefundType == this.isRefund && tndr.tenderTypeCode);
 
-    this.tenderButtonWidthPercent = 99 / (this._displayTenders?.length + (this.isRefund ? 1 : 2)); // +1 for split pay button
+    this.tenderButtonWidthPercent = 99 / (this._displayTenders?.length + (this.isRefund ? 1 : 2) + (this.busModel === 'BUSFNC_LTR_OTHER_CASH_CARRY' ? 1 : 0)); // +1 for split pay button
   }
 
   closeCustSearchDlg() {
     this.displayCustSearchDlg = "none";
+  }
+
+  btnDeferPayment(evt: Event) {
+    if (!this._isClickAllowed()) {
+      return; // Ignore the click if within debounce window
+    }
+
+    let deferTndr: TicketTender = new TicketTender();
+    deferTndr.tenderTypeCode = "DP";
+    deferTndr.tenderAmount = this.tenderAmount;
+    deferTndr.fcTenderAmount = this.tenderAmount * this._logonDataSvc.getExchangeRate();
+    deferTndr.tndMaintTimestamp = new Date(Date.now())
+    deferTndr.rrn = this._utilSvc.getUniqueRRN();
+    deferTndr.tenderStatus = TenderStatusType.Complete;
+    deferTndr.fcCurrCode = this._logonDataSvc.getRovEventConfig().currCode;
+    this._store.dispatch(addRovTender({ tndrObj: deferTndr }));
+    this._navigateToTenderPage("btnDeferPayment");
+    this.markTicketCompleteAndSave();
+  }
+
+  private async markTicketCompleteAndSave() {
+    this._store.dispatch(markRovTendersComplete({ status: TenderStatusType.Complete }));
+    this._store.dispatch(markRovTicketComplete({ status: TranStatusType.Complete }));
+
+    // Fetch the updated ticket object after marking complete
+    const tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1)));
+    if (tktObjData != null) {
+      this._store.dispatch(saveCompleteRovTicketSplit({ tktObj: tktObjData }));
+      this.router.navigate(['/rov/rsavetktsuccess']);
+    }
+    else {
+      this.router.navigate(['/rov/rchekout']);
+    }
   }
 }

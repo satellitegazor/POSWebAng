@@ -20,13 +20,15 @@ export const ROV_ROUTES: Routes = [
   { path: 'ritemsel', component: RovItemSelectionBasePageComponent },
   { path: 'rchekout', component: RovCheckoutPageComponent },
   { path: 'ritembtnmenu', component: RovItemButtonPageComponent},
+  { path: 'splitpay', component: RovSplitPayComponent },
   { path: 'rsplitpay', component: RovSplitPayComponent },
   { path: 'pinpadtran', component: RovDeviceTndrPageComponent },
   { path: 'eaglecash', component: RovEgConcTndrComponent },
   { path: 'cashcheck', component: RovCashTndrComponent },
   { path: 'gcinquiry', component: RovGiftCardInquiryComponent },
   { path: 'cctender', component: RovConcessionCardTndrComponent },
-  { path: 'rsavetktsuccess', component: RovSaveTicketSuccessComponent } // Default route for ROV module
+  { path: 'rsavetktsuccess', component: RovSaveTicketSuccessComponent }, // Default route for ROV module
+  { path: 'savetktsuccess', component: RovSaveTicketSuccessComponent }
 ];
 
 @NgModule({

@@ -20,7 +20,6 @@ import { ToastService } from "../../../../../services-misc/toast.service";
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { RovOConusRedeemGCWithPinPadService } from '../gc-redeem-services/rov-oconus-redeeem-gc-with-pin-pad';
 import { RovConusRedeemGCwithAurusAPI } from '../gc-redeem-services/rov-conus-redeem-gc-with-aurus-api';
-import { getTktObjSelector } from 'src/app/longterm/saletran/store/ticketstore/ticket.selector';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -156,7 +155,7 @@ export class RovConcessionCardTndrComponent implements AfterViewInit {
           // Redeem Gift Card Tenders
           this._oConusRedeemGCWithPinPad.redeem(tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false)).subscribe({
             next: () => {
-              this.markTicketComplete();
+              this.markTicketCompleteAndSave();
               return true;
             },
             error: (error) => {
@@ -168,7 +167,7 @@ export class RovConcessionCardTndrComponent implements AfterViewInit {
         else {
           this._conusRedeemGCWithAurusAPI.redeem(tktObjData.ticketTenderList.filter(t => t.tenderTypeCode == 'GC' && t.isAuthorized == false)).subscribe({
             next: () => {
-              this.markTicketComplete();
+              this.markTicketCompleteAndSave();
               return true;
             },
             error: (error) => {
@@ -182,7 +181,7 @@ export class RovConcessionCardTndrComponent implements AfterViewInit {
         //new RedeemGiftCardTenders().redeem(this._store, this._cposWebSvc, this._logonDataSvc, this._toastSvc);
       }
       else {
-        this.markTicketComplete();
+        this.markTicketCompleteAndSave();
       }
 
     }
@@ -191,7 +190,7 @@ export class RovConcessionCardTndrComponent implements AfterViewInit {
     }
   }
 
-  private async markTicketComplete() {
+  private async markTicketCompleteAndSave() {
     this._store.dispatch(markRovTendersComplete({ status: TenderStatusType.Complete }));
     this._store.dispatch(markRovTicketComplete({ status: TranStatusType.Complete }));
 

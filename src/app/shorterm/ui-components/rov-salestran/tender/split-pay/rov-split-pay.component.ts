@@ -148,7 +148,7 @@ export class RovSplitPayComponent implements OnInit, AfterViewInit {
     var tktObjData = await firstValueFrom(this._store.pipe(select(getRTktObjSelector), take(1)));
     if (tktObjData != null) {
       this._store.dispatch(saveCompleteRovTicketSplit({ tktObj: tktObjData }));
-      this.router.navigate(['/savetktsuccess']);
+      this.router.navigate(['/rov/savetktsuccess']);
     }
   }
 
@@ -225,7 +225,7 @@ export class RovSplitPayComponent implements OnInit, AfterViewInit {
 
   onCancelClick(): void {
     if (this.tndrs.length === 0) {
-      this.router.navigate(['/checkout']);
+      this.router.navigate(['/rov/chekout']);
       return;
     }
 
@@ -418,30 +418,28 @@ export class RovSplitPayComponent implements OnInit, AfterViewInit {
     let tndrCompRoute = '';
     switch (tndrCode) {
       case 'CC':
-        tndrCompRoute = 'rcctender';
+        tndrCompRoute = 'cctender';
         break;
       case 'EG':
       case 'RC':
-        tndrCompRoute = 'reaglecash';
+        tndrCompRoute = 'eaglecash';
         break;
       case 'CA':
       case 'CR':
-        tndrCompRoute = 'rcashcheck';
+        tndrCompRoute = 'cashcheck';
         break;
       case 'XC':
       case 'XR':
       case 'MS':
       case 'MR':
-        tndrCompRoute = 'rpinpadtran';
+        tndrCompRoute = 'pinpadtran';
         break;
       case 'GC':
-        tndrCompRoute = 'rgcinquiry';
+        tndrCompRoute = 'gcinquiry';
         break;
     }
 
-
     this.router.navigate(["/rov/" +tndrCompRoute], { queryParams: { code: tndrCode, tenderAmountDC: this.yetToPayDC, tenderAmountNDC: this.yetToPayNDC } })
-
   }
 
 }

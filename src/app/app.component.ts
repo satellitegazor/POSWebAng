@@ -7,6 +7,8 @@ import { saleTranDataInterface } from './longterm/saletran/store/ticketstore/tic
 import { LogonDataService } from './global/logon-data-service.service';
 import { UiBlockService } from './services-misc/ui-block.service';
 import { getLocCnfgHeaderContextSelector } from './longterm/saletran/store/locationconfigstore/locationconfig.selector';
+import { getRTktObjSelector } from './shorterm/store/ticketstore/rticket.selector';
+import { getEventConfigHeaderContextSelector } from './shorterm/store/roveventconfigstore/roveventconfig.selector';
 
 @Component({
     selector: 'app-root',
@@ -36,13 +38,27 @@ logonUserRoleType: string = '';
       this._logonDataSvc.clearTenderTypes();
       this.route.navigate(['/vlogon']);
     }
+    else if (sessionStorage.getItem("userType") === "vendorst") {
+      this._logonDataSvc.clearTenderTypes();
+      this.route.navigate(['/rov/rlogon']);
+    }
     else if(sessionStorage.getItem("userType") === "sbm") {
       this.route.navigate(['/sbm/login']);
     }
   }
 
   gotoMainMenu() {
-    this.route.navigate(['/mainmenu']);
+
+    let appType = localStorage.getItem('apptype');
+    if (appType === 'longterm') {
+      this.route.navigate(['/mainmenu']);
+    }
+    else if (appType === 'shortterm') {
+      this.route.navigate(['/rov/rmainmenu']);
+    }
+    else if (appType === 'sbm') {
+      this.route.navigate(['/sbm/mainmenu']);
+    }
   }
 
   Region: String = 'Europe';
@@ -141,35 +157,76 @@ logonUserRoleType: string = '';
 
   public ngOnInit(): void {
     
-    this._store.pipe(
-      select(getTktObjSelector),
-      map((tktObj) => tktObj?.ticketNumber ?? 0),
-      takeUntil(this._destroy$)
-    ).subscribe((ticketNumber) => {
-      this.TicketNumber = ticketNumber;
-    });
+    this.DisplayVendorAssociateDetails();
+  }
 
-    this._uiBlockSvc.isBlocked$.pipe(takeUntil(this._destroy$)).subscribe((isBlocked) => {
-      this.isUiBlocked = isBlocked;
-    });
+  DisplayVendorAssociateDetails(): void {
+    let appType = localStorage.getItem('apptype');
+    if(appType === 'longterm') {
+      this._store.pipe(
+        select(getTktObjSelector),
+        map((tktObj) => tktObj?.ticketNumber ?? 0),
+        takeUntil(this._destroy$)
+      ).subscribe((ticketNumber) => {
+        this.TicketNumber = ticketNumber;
+      });
 
-    this._uiBlockSvc.message$.pipe(takeUntil(this._destroy$)).subscribe((message) => {
-      this.uiBlockMessage = message;
-    });
+      this._uiBlockSvc.isBlocked$.pipe(takeUntil(this._destroy$)).subscribe((isBlocked) => {
+        this.isUiBlocked = isBlocked;
+      });
 
-    this._store.pipe(
-      select(getLocCnfgHeaderContextSelector),
-      takeUntil(this._destroy$)
-    ).subscribe((headerContext) => {
-      this.VendorName = headerContext.vendorName;
-      this.LocationName = headerContext.locationName;
-      this.logonUserName = headerContext.associateName;
-      this.logonUserRole = headerContext.associateRoleDesc;
-      this.logonUserRoleType = headerContext.associateRole;
-      this.isUserLoggedIn = !!headerContext.associateName;
-      this.VendorNumber = headerContext.vendorNumber;
-      this.facilityNumber = headerContext.facilityNumber;
-    });
+      this._uiBlockSvc.message$.pipe(takeUntil(this._destroy$)).subscribe((message) => {
+        this.uiBlockMessage = message;
+      });
+
+      this._store.pipe(
+        select(getLocCnfgHeaderContextSelector),
+        takeUntil(this._destroy$)
+      ).subscribe((headerContext) => {
+        this.VendorName = headerContext.vendorName;
+        this.LocationName = headerContext.locationName;
+        this.logonUserName = headerContext.associateName;
+        this.logonUserRole = headerContext.associateRoleDesc;
+        this.logonUserRoleType = headerContext.associateRole;
+        this.isUserLoggedIn = !!headerContext.associateName;
+        this.VendorNumber = headerContext.vendorNumber;
+        this.facilityNumber = headerContext.facilityNumber;
+      });
+    }
+    else if(appType === 'shortterm') {
+      this._store.pipe(
+        select(getRTktObjSelector),
+        map((tktObj) => tktObj?.ticketNumber ?? 0),
+        takeUntil(this._destroy$)
+      ).subscribe((ticketNumber) => {
+        this.TicketNumber = ticketNumber;
+      });
+
+      this._uiBlockSvc.isBlocked$.pipe(takeUntil(this._destroy$)).subscribe((isBlocked) => {
+        this.isUiBlocked = isBlocked;
+      });
+
+      this._uiBlockSvc.message$.pipe(takeUntil(this._destroy$)).subscribe((message) => {
+        this.uiBlockMessage = message;
+      });
+
+      this._store.pipe(
+        select(getEventConfigHeaderContextSelector),
+        takeUntil(this._destroy$)
+      ).subscribe((headerContext) => {
+        this.VendorName = headerContext.vendorName;
+        this.LocationName = headerContext.eventName;
+        this.logonUserName = headerContext.associateName;
+        this.logonUserRole = headerContext.associateRoleDesc;
+        this.logonUserRoleType = headerContext.associateRole;
+        this.isUserLoggedIn = !!headerContext.associateName;
+        this.VendorNumber = headerContext.vendorNumber;
+        this.facilityNumber = headerContext.facilityNumber;
+      });
+    }
+    else if(appType === 'sbm') {
+      //return this.VendorName + ' - ' + this.LocationName + ' | ' + this.logonUserName + ' (' + this.logonUserRole + ')';
+    }
   }
 
   public ngOnDestroy(): void {

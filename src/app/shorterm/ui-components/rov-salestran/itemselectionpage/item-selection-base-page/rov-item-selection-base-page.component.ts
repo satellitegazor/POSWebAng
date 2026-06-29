@@ -10,7 +10,6 @@ import { SaleItemResultsModel } from '../../../../../longterm/models/sale.item.r
 import { RovApiService } from "../../../../short-term.service";
 import { RovTktSaleItemComponent } from '../tkt-sale-item/rov-tkt-sale-item.component';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
-import { CustomerSearchComponent } from '../../../../../longterm/customer-search/customer-search.component';
 
 import { getEventSaleItemsStart, getEventSaleItemsActionSuccess, getEventSaleitemsFail } from '../../../../store/saleitemstore/saleitem.action';
 import { props, Store } from '@ngrx/store';
@@ -238,10 +237,11 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
             saleItem.discountAmount = 0;
             saleItem.couponLineItemDollarAmount = 0;
             saleItem.fcCouponLineItemDollarAmount = 0;
-            saleItem.dcCouponLineItemDollarAmount = 0;
-            saleItem.dcDiscountAmount = 0;
-            saleItem.dcLineItemTaxAmount = 0;
+            saleItem.dCCouponLineItemDollarAmount = 0;
+            saleItem.dCDiscountAmount = 0;
+            saleItem.dCLineItemTaxAmount = 0;
             saleItem.quantity = 1;
+            saleItem.dCUnitPrice = 0;
 
             this._store.dispatch(addRovSaleItem({ saleItem: saleItem, defCurrSymbl: this.defCurrSymbl, dailyExchRateObj: this._logonDataSvc.getDailyExchRate() })); 
             this._store.dispatch(updateRovCheckoutTotals({ logonDataSvc: this._logonDataSvc }));
@@ -274,7 +274,7 @@ export class RovItemSelectionBasePageComponent implements OnInit, OnDestroy {
 
     btnCustDetailsClick(evt: Event) {
         this.displayCustSearchDlg = "display";
-        const modalRef = this.modalService.open(CustomerSearchComponent, this.modalOptions);
+        const modalRef = this.modalService.open(RovCustomerSearchComponent, this.modalOptions);
         modalRef.componentInstance.data = evt.type;
     }
 

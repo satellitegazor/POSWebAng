@@ -165,7 +165,7 @@ export class RovCouponsModalDlgComponent implements OnInit, AfterViewInit {
 
         const itemDisplay = this.dfltCurrCode === 'USD'
           ? item.lineItemDollarDisplayAmount
-          : item.fcLineItemDollarDisplayAmount;
+          : item.dCLineItemDollarDisplayAmount;
 
         if (itemDiscDC > itemDisplay) {
           this.toastSvc.show('Exchange coupon cannot be applied as it results in negative lineItemDollarDisplayAmount', "error");
