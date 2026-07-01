@@ -23,51 +23,53 @@ export class RovMainMenuComponent {
     centered: true
   };
 
-goToTicketLookUp() {
-  this.router.navigate(['/ticketlookup']);
-}
-goToNoSaleReport() {
-  this.openPinValidate(() => this.router.navigate(['/rovnosalereport']));
-}
-goToEnterSalesTransRefund() {
-  this.openPinValidate(() => {
-    const modalRef = this._modalService.open(RefundReasonDlgComponent, this.pinModalOptions);
-    modalRef.result.then(() => {
-      this._logonDataSvc.setTranIsRefund(true);
-      this.router.navigate(['rov/rovsalestran'], { queryParams: { refund: true } });
-    }).catch(() => undefined);
-  });
-}
-goToTicketStatus() {
-  this.router.navigate(['rov/ticketstatus']);
-}
-goToEndOfDayReport() {
-  this.openPinValidate(() => this.router.navigate(['rov/rovrptnosale']));
-}
-goToAdminMenu() {
-  this.openPinValidate((loginResult) => {
-    if (this.isManagerUser(loginResult)) {
-      this.router.navigate(['rov/rovadminmenu']);
-      return;
-    }
-
-    this._toastSvc.error('Only manager users can access Rov Admin Menu.');
-  });
-}
   constructor(
     private router: Router,
     private _modalService: NgbModal,
     private _toastSvc: ToastService,
     private _logonDataSvc: LogonDataService,
-    private _localStorageSvc: LocalStorageService, 
-  ) {}
+    private _localStorageSvc: LocalStorageService,
+  ) { }
 
-  goToSalesTransaction(): void {
-    this.openPinValidate(() => this.router.navigate(['rov/ritemsel']));
+  goToTicketLookUp() {
+    this.router.navigate(['/ticketlookup']);
+  }
+  goToNoSaleReport() {
+    this.openPinValidate(() => this.router.navigate(['/rovnosalereport']));
+  }
+  goToEnterSalesTransRefund() {
+    this.openPinValidate(() => {
+      const modalRef = this._modalService.open(RefundReasonDlgComponent, this.pinModalOptions);
+      modalRef.result.then(() => {
+        this._logonDataSvc.setTranIsRefund(true);
+        this.router.navigate(['rov/rovsalestran'], { queryParams: { refund: true } });
+      }).catch(() => undefined);
+    });
+  }
+  goToTicketStatus() {
+    this.router.navigate(['rov/ticketstatus']);
+  }
+  goToEndOfDayReport() {
+    this.openPinValidate(() => this.router.navigate(['rov/rovrptnosale']));
+  }
+  goToAdminMenu() {
+    this.openPinValidate((loginResult) => {
+      if (this.isManagerUser(loginResult)) {
+        this.router.navigate(['rov/rovadminmenu']);
+        return;
+      }
+
+      this._toastSvc.error('Only manager users can access Rov Admin Menu.');
+    });
   }
 
-  goToReports(): void {
-    this.openPinValidate(() => this.router.navigate(['rov/rovreportsmenu']));
+
+  goToSalesTransaction(): void {
+    this.openPinValidate(() => this.router.navigate(['/rov/ritemsel']));
+  }
+
+  goToReportsMenu(): void {
+    this.openPinValidate(() => this.router.navigate(['/rov/rovrptmenu']));
   }
 
   private openPinValidate(onAuthorized: (loginResult: VendorLoginResultsModel) => void): void {

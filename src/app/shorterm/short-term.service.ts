@@ -19,7 +19,8 @@ import {
   ROV_AssociatePINUpdateResultsModel,
   RLogonModel,
   ROV_SaleTaxSaveStatusResultModel,
-  ROV_SaleTaxSaveModel
+  ROV_SaleTaxSaveModel,
+  ROV_SettlementSummaryResultsModel
 } from './models/models';
 import { SendEmailRequest } from '../models/misc-models';
 import { ROV_Event, SingleTransactionId } from '../longterm/models/ticket.list';
@@ -298,6 +299,21 @@ export class RovApiService {
       + '&FrgnCurr=' + FrgnCurr;
 
     return this.httpClient.get<ROV_SalesTranRptSummaryModel>(url, { headers: this.headerObjs });
+  }
+
+  public getSettlementReport(
+    cid: number,
+    eid: number,
+    uid: string,
+    forDt: string = ''
+  ): Observable<ROV_SettlementSummaryResultsModel> {
+    const url = GlobalConstants.CPOS_SVCS_URL + '/rov/GetSettlementReport?guid=' + encodeURIComponent(GlobalConstants.GET_GUID)
+      + '&cid=' + cid.toString()
+      + '&eid=' + eid.toString()
+      + '&uid=' + encodeURIComponent(uid)
+      + '&forDt=' + encodeURIComponent(forDt);
+
+    return this.httpClient.get<ROV_SettlementSummaryResultsModel>(url, { headers: this.headerObjs });
   }
 
   public sendEmail(uid: string, request: SendEmailRequest, guid: string = GlobalConstants.POST_GUID): Observable<MobileBase> {

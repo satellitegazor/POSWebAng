@@ -17,11 +17,11 @@
 					<!-- Row 1: Location Name / Vendor Number -->
 					<div class="row g-3 align-items-end mb-2">
 						<div class="col-12 col-md-2">
-							<label class="form-label fw-semibold mb-1">Location Name</label>
+							<label class="form-label fw-semibold mb-1">Event Name</label>
 						</div>
 						<div class="col-12 col-md-4">
 							<div class="border rounded p-2 bg-light">
-								<span id="ucrFacName">{{ displayLocationName }}</span>
+								<span id="ucrFacName">{{ displayEventName }}</span>
 							</div>
 						</div>
 						<div class="col-12 col-md-2">
@@ -39,7 +39,7 @@
 						</div>
 						<div class="col-12 col-md-4">
 							<div class="border rounded p-2 bg-light">
-								<span id="ucrContractNumberDisplay">{{ stlmtRptDataMdl?.contract?.contractNumber }}</span>
+								<span id="ucrContractNumberDisplay">{{ contract?.contractNumber }}</span>
 							</div>
 						</div>
 					</div>
@@ -48,25 +48,13 @@
 						<div class="col-12 col-md-2">
 							<label class="form-label fw-semibold mb-1">Time Period</label>
 						</div>
-						<div class="col-12 col-md-2">
-							<label for="selMonth" class="form-label mb-1">Month</label>
-							<select id="selMonth" class="form-select form-select-sm" [(ngModel)]="selectedMonth">
-								<option *ngFor="let m of months" [value]="m.value">{{ m.label }}</option>
-							</select>
-						</div>
-						<div class="col-12 col-md-2">
-							<label for="selYear" class="form-label mb-1">Year</label>
-							<select id="selYear" class="form-select form-select-sm" [(ngModel)]="selectedYear">
-								<option *ngFor="let y of years" [value]="y">{{ y }}</option>
-							</select>
-						</div>
 						<div class="col-12 col-md-3">
 							<div class="d-flex gap-3 align-items-center pt-1">
 								<span class="text-muted small">
-									From: <strong>{{ stlmtRptDataMdl?.fromDate }}</strong>
+									From: <strong>{{ eventStartDate }}</strong>
 								</span>
 								<span class="text-muted small">
-									To: <strong>{{ stlmtRptDataMdl?.toDate }}</strong>
+									To: <strong>{{ eventEndDate }}</strong>
 								</span>
 							</div>
 						</div>
@@ -114,8 +102,8 @@
 							<th *ngIf="group.feeId !== 1" class="text-end">Exchange Fee %</th>
 							<th *ngIf="group.feeId !== 1" class="text-end">Exchange Fee $</th>
 							<th class="text-end">Exchange Coupons</th>
-							<th *ngIf="group.feeId !== 2" class="text-end">Net Exchange Fee (Flat)</th>
-							<th *ngIf="group.feeId !== 1" class="text-end">Net Exchange Fee (%)</th>
+							<th *ngIf="group.feeId == 3" class="text-end">Net Exchange Flat Fee (223-01)</th>
+							<th *ngIf="group.feeId == 3" class="text-end">Net Exchange Percent Fee (223-01)</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -129,8 +117,8 @@
 							<td *ngIf="group.feeId !== 1" class="text-end">{{ d.feeType | number:'1.2-2' }}%</td>
 							<td *ngIf="group.feeId !== 1" class="text-end">{{ formatCurrency(d.exchangeFeePrcnt) }}</td>
 							<td class="text-end">{{ formatDeduction(d.exchangeCoupons) }}</td>
-							<td *ngIf="group.feeId !== 2" class="text-end">{{ formatCurrency(d.netExchangeFeeFlat) }}</td>
-							<td *ngIf="group.feeId !== 1" class="text-end">{{ formatCurrency(d.netExchangeFeePrcnt) }}</td>
+							<td *ngIf="group.feeId == 3" class="text-end">{{ formatCurrency(d.netExchangeFeeFlat) }}</td>
+							<td *ngIf="group.feeId == 3" class="text-end">{{ formatCurrency(d.netExchangeFeePrcnt) }}</td>
 						</tr>
 						<!-- Facility Totals Row -->
 						<tr class="row-total">

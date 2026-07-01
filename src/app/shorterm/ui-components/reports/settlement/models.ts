@@ -1,5 +1,5 @@
-import { MobileBase } from '../../../models/mobile.base';
-import { LTC_Contract } from '../../models/contract.models';
+import { MobileBase } from '../../../../models/mobile.base';
+import { ROV_Contract } from "../../../../sbm/models/contract.models"
 
 export class LTC_SettlementDetails {
 	facilityNumber: string = '';
@@ -51,7 +51,7 @@ export class LTC_SettlementReportSummary {
 
 export class SettlementReportResultModel {
 	results: MobileBase = {} as MobileBase;
-	contract: LTC_Contract = new LTC_Contract();
+	contract: ROV_Contract = new ROV_Contract();
 	settlementReport: LTC_SettlementReportSummary = new LTC_SettlementReportSummary();
 	contractId: number = 0;
 	locationId: number = 0;

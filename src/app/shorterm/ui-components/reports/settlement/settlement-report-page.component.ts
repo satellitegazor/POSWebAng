@@ -5,12 +5,16 @@ import { Router } from '@angular/router';
 import { RovApiService } from '../../../short-term.service'
 import { SendEmailRequest } from '../../../../models/misc-models';
 import { LTC_SettlementDetails, SettlementReportResultModel } from './models';
-import { LogonDataService } from '../../../../global/logon-data-service.service';
 import { ToastService } from '../../../../services-misc/toast.service';
+import { RovLogonDataService } from "../../../rov-logon-data.service";
+import { AssociateNamesListDetail, ROV_SettlementDetails, ROV_SettlementSummaryResultsModel } from '../../../models/models';
+import { EventConfig } from '../../../models/event.config';
+import { SbmWebApiService } from '../../../../sbm/services/sbm-web-api.service';
+import { ROV_Contract, ROV_ContractResultsModel } from '../../../../sbm/models/contract.models';
 
 export interface FacilityGroup {
   facilityNumber: string;
-  details: LTC_SettlementDetails[];
+  details: ROV_SettlementDetails[];
   feeId: number;
   feePerc: number;
   totGrSales: number;
@@ -55,19 +59,26 @@ export interface NonPacAccountingRow {
   templateUrl: './settlement-report-page.component.html',
   styleUrls: ['./settlement-report-page.component.css']
 })
-export class SettlementReportPageComponent implements OnInit {
+export class RovSettlementReportPageComponent implements OnInit {
 
-  stlmtRptDataMdl: SettlementReportResultModel | null = null;
+  stlmtRptDataMdl: ROV_SettlementSummaryResultsModel | null = null;
   selectedMonth: number = new Date().getMonth() + 1;
   selectedYear: number = new Date().getFullYear();
+  eventStartDate: string = '';
+  eventEndDate: string = '';
+  eventName: string = '';
+
   indivId: number = 0;
-  public SaleAssocList: LTC_Associates[] = [];
+  
+  public SaleAssocList: AssociateNamesListDetail[] = [];
   showEmailPopup: boolean = false;
   selectedEmailOption: 'self' | 'manager' | 'custom' = 'self';
   customEmailAddress: string = '';
   emailSubmitError: string = '';
   emailSubmitSuccess: string = '';
   isSendingEmail: boolean = false;
+  evtConfig: EventConfig | null = null;
+  contract: ROV_Contract | null = null;
 
   readonly months = [
     { value: 1, label: 'January' },  { value: 2, label: 'February' },
@@ -84,34 +95,41 @@ export class SettlementReportPageComponent implements OnInit {
   }
 
   constructor(
-    private posApiService: PosApiService,
-    private logonDataSvc: LogonDataService,
+    private posApiService: RovApiService,
+    private logonDataSvc: RovLogonDataService,
+    private sbmApiSvc: SbmWebApiService,
     private router: Router,
     private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
-    const locCnfg = this.logonDataSvc.getLocationConfig();
-    this.indivId = locCnfg.individualUID || 0;
-    const month = this.getMonthToken();
-    this.getSettlmntRptData(locCnfg.contractUID, month, String(locCnfg.individualUID), locCnfg.locationUID);
+    const evtCnfg = this.logonDataSvc.getRovEventConfig();
+    this.sbmApiSvc.loadROVContract(evtCnfg.contractUID, String(evtCnfg.individualUID))
+      .subscribe((data: ROV_ContractResultsModel) => {  
+        this.contract = data.contract;
+        this.indivId = evtCnfg.individualUID || 0;
+        this.evtConfig = evtCnfg;
+        this.eventStartDate = data.contract?.facility?.events?.find(e => e.eventID === evtCnfg.eventID)?.eventStartDate.toString() || '';
+        this.eventEndDate = data.contract?.facility?.events?.find(e => e.eventID === evtCnfg.eventID)?.eventEndDate.toString() || '';
+        this.eventName = data.contract?.facility?.events?.find(e => e.eventID === evtCnfg.eventID)?.eventName || '';
+        const month = this.getMonthToken();
+        this.getSettlmntRptData(evtCnfg.contractUID, month, String(evtCnfg.individualUID), evtCnfg.eventID);
+      });
+
   }
 
-  getSettlmntRptData(cid: number = 0, month: string = '', uid: string = '', lid: number = 0): void {
+  getSettlmntRptData(contractId: number = 0, month: string = '', uid: string = '', eventId: number = 0): void {
 
-    const locCnfg = this.logonDataSvc.getLocationConfig();
+    const locCnfg = this.logonDataSvc.getRovEventConfig();
     // Clear previous results so stale Fee Summary data is not displayed during/after refresh.
     this.stlmtRptDataMdl = null;
     this.SaleAssocList = [];
 
-    this.posApiService.getSettlementReport(cid, month, uid, lid, locCnfg.rgnCode)
+    this.posApiService.getSettlementReport(contractId, eventId, uid, month)
       .subscribe({
         next: result => {
           this.stlmtRptDataMdl = result;
-          if (result.selectedMonth) this.selectedMonth = result.selectedMonth;
-          if (result.selectedYear) this.selectedYear = result.selectedYear;
-
-          this.loadAssociateEmails(lid, Number(uid) || this.indivId);
+          this.loadAssociateEmails(contractId, eventId, Number(uid) || this.indivId, uid);
         },
         error: () => {
           this.stlmtRptDataMdl = null;
@@ -120,10 +138,10 @@ export class SettlementReportPageComponent implements OnInit {
       });
   }
 
-  private loadAssociateEmails(locationId: number, individualUID: number): void {
-    this.posApiService.getLocationAssociates(locationId, String(individualUID)).subscribe({
+  private loadAssociateEmails(contractId: number, eventId: number, individualUID: number, uid: string): void {
+    this.posApiService.GetAssociateNamesList(contractId, eventId, individualUID, uid).subscribe({
       next: data => {
-        this.SaleAssocList = data?.associates ?? [];
+        this.SaleAssocList = data?.associateListSummary?.associateDetails ?? [];
       },
       error: () => {
         this.SaleAssocList = [];
@@ -132,9 +150,9 @@ export class SettlementReportPageComponent implements OnInit {
   }
 
   refreshReport(): void {
-    const locCnfg = this.logonDataSvc.getLocationConfig();
+    const evtCnfg = this.logonDataSvc.getRovEventConfig();
     const month = this.getMonthToken();
-    this.getSettlmntRptData(locCnfg.contractUID, month, String(locCnfg.individualUID), locCnfg.locationUID);
+    this.getSettlmntRptData(evtCnfg.contractUID, month, String(evtCnfg.individualUID), evtCnfg.eventID);
   }
 
   private getMonthToken(): string {
@@ -142,13 +160,13 @@ export class SettlementReportPageComponent implements OnInit {
   }
 
   get hasSettlementData(): boolean {
-    return (this.stlmtRptDataMdl?.settlementReport?.settlementDetails?.length ?? 0) > 0;
+    return (this.stlmtRptDataMdl?.rovSettlementReport?.settlementDetails?.length ?? 0) > 0;
     
   }
 
   get facilityGroups(): FacilityGroup[] {
-    const details = this.stlmtRptDataMdl?.settlementReport?.settlementDetails ?? [];
-    const map = new Map<string, LTC_SettlementDetails[]>();
+    const details = this.stlmtRptDataMdl?.rovSettlementReport?.settlementDetails ?? [];
+    const map = new Map<string, ROV_SettlementDetails[]>();
     for (const d of details) {
       if (!map.has(d.facilityNumber)) map.set(d.facilityNumber, []);
       map.get(d.facilityNumber)!.push(d);
@@ -156,7 +174,7 @@ export class SettlementReportPageComponent implements OnInit {
     return Array.from(map.entries()).map(([fn, dets]) => this.buildFacilityGroup(fn, dets));
   }
 
-  private buildFacilityGroup(facilityNumber: string, details: LTC_SettlementDetails[]): FacilityGroup {
+  private buildFacilityGroup(facilityNumber: string, details: ROV_SettlementDetails[]): FacilityGroup {
     const g: FacilityGroup = {
       facilityNumber, details,
       feeId: details[0]?.feeId ?? 0,
@@ -186,7 +204,6 @@ export class SettlementReportPageComponent implements OnInit {
       g.taxCollected += d.totalSalesTax;
       g.taxRefunded += d.totalRefundTax;
       g.noTaxSales += d.noTaxSales;
-      g.envTax += d.envTax;
 
       // Keep group fee id aligned with inferred data when backend sends 0/unknown fee id.
       if (g.feeId === 0 && feeMode !== 0) {
@@ -221,7 +238,6 @@ export class SettlementReportPageComponent implements OnInit {
 
   get grandTotals(): FacilityGroup & { total: number; camChrgAmt: number } {
     const groups = this.facilityGroups;
-    const camChrgAmt = this.stlmtRptDataMdl?.settlementReport?.camChrgAmt ?? 0;
     const derivedGrandFeeId = groups.some(g => g.feeId === 3)
       ? 3
       : groups.some(g => g.feeId === 2)
@@ -232,7 +248,7 @@ export class SettlementReportPageComponent implements OnInit {
     const gt: any = {
       facilityNumber: '', details: [],
       feeId: derivedGrandFeeId,
-      feePerc: 0, camChrgAmt,
+      feePerc: 0, 
       totGrSales: 0, totLess: 0, totNSales: 0,
       totExFeeFlat: 0, totExFeePrcnt: 0, totExFee: 0, totExCou: 0,
       totNExFeeFlat: 0, totNExFeePrcnt: 0, totNExFee: 0, totEqipfee: 0,
@@ -249,14 +265,13 @@ export class SettlementReportPageComponent implements OnInit {
       gt.envTax += f.envTax;
     }
     gt.total = gt.feeId === 3
-      ? Math.max(gt.totNExFeePrcnt, gt.totNExFeeFlat) + gt.totEqipfee + camChrgAmt
-      : gt.totNExFee + gt.totEqipfee + camChrgAmt;
+      ? Math.max(gt.totNExFeePrcnt, gt.totNExFeeFlat) + gt.totEqipfee
+      : gt.totNExFee + gt.totEqipfee;
     return gt;
   }
 
   get tenderSummary(): TenderSummary {
-    const tndrDetails = this.stlmtRptDataMdl?.settlementReport?.oconusStlmntTndrDetails ?? [];
-    const katusa = this.stlmtRptDataMdl?.settlementReport?.katusaTotals ?? 0;
+    const tndrDetails = this.stlmtRptDataMdl?.rovSettlementReport?.oconusStlmntTndrDetails ?? [];
     const s: TenderSummary = {
       msTndrCnt: 0, msTranCnt: 0, msTotals: 0, percMSfee: 0, netMSTotals: 0,
       gcTndrCnt: 0, gcTranCnt: 0, gcTotals: 0,
@@ -264,7 +279,7 @@ export class SettlementReportPageComponent implements OnInit {
       ccTndrCnt: 0, ccTranCnt: 0, ccTotals: 0,
       caTndrCnt: 0, caTranCnt: 0, caTotals: 0,
       ckTndrCnt: 0, ckTranCnt: 0, ckTotals: 0,
-      tndrCntTot: 0, tranCntTot: 0, gTndrTot: katusa,
+      tndrCntTot: 0, tranCntTot: 0, gTndrTot: 0,
       dueCncsn: 0, netAmtDueCncsn: 0
     };
     for (const t of tndrDetails) {
@@ -284,63 +299,65 @@ export class SettlementReportPageComponent implements OnInit {
     s.percXCfee = Math.round(0.02 * s.xcTotals * 100) / 100;
     s.netMSTotals = Math.round((s.msTotals - s.percMSfee) * 100) / 100;
     s.netXCTotals = Math.round((s.xcTotals - s.percXCfee) * 100) / 100;
-    s.dueCncsn = s.xcTotals + s.gcTotals + s.msTotals + s.ckTotals + katusa;
-    s.netAmtDueCncsn = Math.round((s.gcTotals + s.ckTotals + katusa + s.netXCTotals + s.netMSTotals) * 100) / 100;
+    s.dueCncsn = s.xcTotals + s.gcTotals + s.msTotals + s.ckTotals;
+    s.netAmtDueCncsn = Math.round((s.gcTotals + s.ckTotals + s.netXCTotals + s.netMSTotals) * 100) / 100;
     return s;
   }
 
   get showOconusTenders(): boolean {
-    return (this.stlmtRptDataMdl?.settlementReport?.oconusStlmntTndrDetails?.length ?? 0) > 0;
+    return (this.stlmtRptDataMdl?.rovSettlementReport?.oconusStlmntTndrDetails?.length ?? 0) > 0;
   }
 
   get businessModels(): string {
-    return this.stlmtRptDataMdl?.businessModels ?? '';
+    //return this.stlmtRptDataMdl?.rovSettlementReport?. ?? '';
+    return "";
   }
 
   get isPACRegion(): boolean {
-    return (this.stlmtRptDataMdl?.contract?.regionCode ?? '') === 'OCONP';
+    //return (this.stlmtRptDataMdl?.rovSettlementReport?.contract?.regionCode ?? '') === 'OCONP';
+    return this.evtConfig?.rgnCode === 'OCONP';
   }
 
   get frgnCurr(): boolean {
-    const currencyCode = (this.stlmtRptDataMdl?.contract?.currencyCode ?? '').toUpperCase();
-    return currencyCode !== '' && currencyCode !== 'USD' && currencyCode !== 'NONP' && currencyCode !== 'NONE';
+    return this.evtConfig?.currCode !== "USD";
+    //const currencyCode = (this.stlmtRptDataMdl?.rovSettlementReport?.?.currencyCode ?? '').toUpperCase();
+    //return currencyCode !== '' && currencyCode !== 'USD' && currencyCode !== 'NONP' && currencyCode !== 'NONE';
   }
 
   get isNBFF(): boolean {
-    return this.businessModels.includes('6') || !!(this.stlmtRptDataMdl?.settlementReport?.camChrgFacNbr ?? '');
+    //return this.businessModels.includes('6') || !!(this.stlmtRptDataMdl?.settlementReport?.camChrgFacNbr ?? '');
+    return false;
   }
 
-  get selectedLocation() {
-    const locations = this.stlmtRptDataMdl?.contract?.locations ?? [];
-    if (!locations.length) {
+  get selectedEvent() {
+    const events = this.contract?.facility.events ?? [];
+    if (!events.length) {
       return null;
     }
 
-    const fallbackLocId = this.logonDataSvc.getLocationConfig()?.locationUID ?? 0;
-    const locationId = this.stlmtRptDataMdl?.locationId ?? fallbackLocId;
-    return locations.find(x => x.locationUID === locationId) ?? locations[0];
+    const fallbackEventId = this.logonDataSvc.getRovEventConfig()?.eventID ?? 0;    
+    return events.find(x => x.eventID === fallbackEventId) ?? events[0];
   }
 
   get useShipHandling(): boolean {
-    return this.selectedLocation?.useShipHndlng ?? false;
+    return this.selectedEvent?.useShipHndlng ?? false;
   }
 
   get facNumber(): string {
-    return this.selectedLocation?.facilityNumber ?? '';
+    return this.selectedEvent?.facilityNumber ?? '';
   }
 
-  get displayLocationName(): string {
-    return this.selectedLocation?.locationName ?? this.stlmtRptDataMdl?.locationName ?? '';
+  get displayEventName(): string {
+    let evt = this.contract?.facility.events.find(e => e.eventID === this.evtConfig?.eventID);
+    return `${evt?.eventName ?? ''} (${evt?.eventStartDate?.toString() ?? ''} - ${evt?.eventEndDate?.toString() ?? ''})`;
   }
 
   get displayVendorNumber(): string {
-    return this.stlmtRptDataMdl?.contract?.concessionaire?.vendorNumber
-      || this.stlmtRptDataMdl?.contract?.vendorNumber
-      || '';
+    return this.contract?.vendorNumber ?? '';
   }
 
   get showKatusa(): boolean {
-    return this.stlmtRptDataMdl?.showKatusa ?? false;
+    return false;
   }
 
   get netTaxes(): number {
@@ -355,7 +372,7 @@ export class SettlementReportPageComponent implements OnInit {
   get paymentDueAafesPac(): number {
     const gt = this.grandTotals;
     const ts = this.tenderSummary;
-    const insurance = this.stlmtRptDataMdl?.settlementReport?.insuranceFee ?? 0;
+    const insurance = this.stlmtRptDataMdl?.rovSettlementReport?.insuranceFee ?? 0;
     return Math.abs((gt.totNExFee + gt.totEqipfee + insurance) - ts.netAmtDueCncsn);
   }
 
@@ -389,7 +406,7 @@ export class SettlementReportPageComponent implements OnInit {
   get isReimbursementDue(): boolean {
     const gt = this.grandTotals;
     const ts = this.tenderSummary;
-    const insurance = this.stlmtRptDataMdl?.settlementReport?.insuranceFee ?? 0;
+    const insurance = this.stlmtRptDataMdl?.rovSettlementReport?.insuranceFee ?? 0;
     return ts.netAmtDueCncsn > (gt.totNExFee + gt.totEqipfee + insurance);
   }
 
@@ -427,7 +444,7 @@ export class SettlementReportPageComponent implements OnInit {
       EmailContent: this.buildSettlementReportHtml()
     };
 
-    const uid = this.logonDataSvc.getLocationConfig()?.individualUID || this.indivId;
+    const uid = this.logonDataSvc.getRovEventConfig()?.individualUID || this.indivId;
     this.isSendingEmail = true;
     this.posApiService.sendEmail(String(uid), request).subscribe({
       next: result => {
@@ -449,11 +466,12 @@ export class SettlementReportPageComponent implements OnInit {
   }
 
   get selfAssociateEmail(): string {
-    return this.SaleAssocList.find(assoc => assoc.individualUID === this.indivId)?.emailAddress?.trim() || '';
+    return this.SaleAssocList.find(assoc => assoc.associateID === this.indivId)?.emailAddress?.trim() || '';
   }
 
   get managerAssociateEmail(): string {
-    return this.SaleAssocList.find(assoc => (assoc.code || '').toUpperCase() === 'RLTYP_CONC_MNGR')?.emailAddress?.trim() || '';
+    //return this.SaleAssocList.find(assoc => (assoc.role || '').toUpperCase() === 'RLTYP_CONC_MNGR')?.emailAddress?.trim() || '';
+    return "";
   }
 
   private getSelectedRecipientEmail(): string {
@@ -471,18 +489,18 @@ export class SettlementReportPageComponent implements OnInit {
   }
 
   private buildEmailSubject(): string {
-    const fromDate = this.stlmtRptDataMdl?.fromDate || '';
-    const toDate = this.stlmtRptDataMdl?.toDate || '';
-    return `Settlement Report - ${this.displayLocationName} (${fromDate} to ${toDate})`;
+    const month =  ""
+    
+    return `Settlement Report - ${this.displayEventName} (${month})`;
   }
 
   private buildSettlementReportHtml(): string {
     const safe = (val: string) => this.escapeHtml(val || '');
     const gt = this.grandTotals;
-    const sr = this.stlmtRptDataMdl?.settlementReport;
+    const sr = this.stlmtRptDataMdl?.rovSettlementReport;
     const groups = this.facilityGroups;
-    const fromDate = this.stlmtRptDataMdl?.fromDate || '';
-    const toDate = this.stlmtRptDataMdl?.toDate || '';
+    const fromDate = this.eventStartDate || '';
+    const toDate = this.eventEndDate || '';
     const paymentDueLabel = this.isPACRegion
       ? (this.isReimbursementDue ? 'Reimbursement Due Concession' : 'Payment Due AAFES (A+A1+A2) - B')
       : `Payment Due AAFES (A+A1${this.isNBFF ? '+A2' : ''})`;
@@ -532,18 +550,15 @@ export class SettlementReportPageComponent implements OnInit {
         <tr><td style="padding:6px; border:1px solid #dee2e6;">Net Amount Due Concession (B)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(this.tenderSummary.netAmtDueCncsn))}</td></tr>`
       : `
         <tr><td style="padding:6px; border:1px solid #dee2e6;">Net Exchange Fee (A)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(gt.totNExFee))}</td></tr>
-        <tr><td style="padding:6px; border:1px solid #dee2e6;">Equipment Rental (A1)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(gt.totEqipfee))}</td></tr>
-        ${this.isNBFF && (sr?.camChrgAmt ?? 0) !== 0
-          ? `<tr><td style="padding:6px; border:1px solid #dee2e6;">CAM Charges (A2)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(sr?.camChrgAmt ?? 0))}</td></tr>`
-          : ''}`;
+        <tr><td style="padding:6px; border:1px solid #dee2e6;">Equipment Rental (A1)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(gt.totEqipfee))}</td></tr>`;
 
     return `
       <div style="font-family: Arial, Helvetica, sans-serif; color:#1f2937;">
         <div style="padding:12px; border:1px solid #d1d5db; border-radius:8px; margin-bottom:16px; background:#f8fafc;">
           <h2 style="margin:0 0 8px 0; color:#0d6efd;">Settlement Report</h2>
-          <div><strong>Location:</strong> ${safe(this.displayLocationName)} (${safe(this.facNumber)})</div>
+          <div><strong>Location:</strong> ${safe(this.displayEventName)} (${safe(this.facNumber)})</div>
           <div><strong>Vendor Number:</strong> ${safe(this.displayVendorNumber)}</div>
-          <div><strong>Contract Number:</strong> ${safe(this.stlmtRptDataMdl?.contract?.contractNumber || '')}</div>
+          <div><strong>Contract Number:</strong> ${safe(this.contract?.contractNumber || '')}</div>
           <div><strong>Date Range:</strong> ${safe(fromDate)} to ${safe(toDate)}</div>
         </div>
 
