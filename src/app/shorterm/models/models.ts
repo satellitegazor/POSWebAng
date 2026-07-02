@@ -282,12 +282,12 @@ export class ROV_SalesTranRptSummaryModel {
 }
 
 export class ROV_SalesTranRptSummary {
-	eventId: number = 0;
+	eventID: number = 0;
 	eventName: string = '';
 	tenderTypeCode: string = '';
 	tenderTypeDescription: string = '';
 	associate: string = '';
-	individualUid: number = 0;
+	individualUID: number = 0;
 	displayOrder: number = 0;
 	nbrTrans: number = 0;
 	nbrTender: number = 0;
@@ -309,14 +309,14 @@ export class ROV_SalesTranRptDetailModel {
 export class ROV_SalesTranRptDetail {
 	ticketNumber: number = 0;
 	transactionId: number = 0;
-	eventId: number = 0;
-	individualUid: number = 0;
+	eventID: number = 0;
+	individualUID: number = 0;
 	associate: string = '';
 	transactionDate: string = '';
 	tenderTypeCode: string = '';
 	tenderTypeDescription: string = '';
 	displayOrder: number = 0;
-	partPayUid: number = 0;
+	partPayUID: number = 0;
 	taxExempted: string = '';
 	nbrTrans: number = 0;
 	totalAmount: number = 0;
@@ -653,6 +653,17 @@ export class ROV_DepartmentSummaryDetail {
 export class ROV_SettlementSummaryResultsModel {
 	results: any = null;
 	rovSettlementReport: ROV_SettlementReportSummary | null = null;
+	contract: any = null;
+	fromDate: string = '';
+	toDate: string = '';
+	selectedMonth: number = 0;
+	selectedYear: number = 0;
+	locationName: string = '';
+	storeName: string = '';
+	showKatusa: boolean = false;
+	showPaymentDueDate: boolean = false;
+	businessModels: string = '';
+	source: string = '';
 }
 
 export class ROV_PastEventRecentSalesResultsModel {
@@ -662,12 +673,18 @@ export class ROV_PastEventRecentSalesResultsModel {
 
 export class ROV_SettlementReportSummary {
 	settlementDetails: ROV_SettlementDetails[] = [];
+	tips: number = 0;
 	shippingnHandling: number = 0;
+	shipHandling: number = 0;
 	exchCpnsCount: number = 0;
 	rfndTranCount: number = 0;
 	cnclTktsCount: number = 0;
 	insuranceFee: number = 0;
 	oconusStlmntTndrDetails: any[] = [];
+	katusaCount: number = 0;
+	katusaTotals: number = 0;
+	camChrgAmt: number = 0;
+	camChrgFacNbr: string = '';
 }
 
 export class ROV_SettlementDetails {
@@ -690,6 +707,8 @@ export class ROV_SettlementDetails {
 	totalExchangeCoupon: number = 0;
 	totalVendorDiscount: number = 0;
 	noTaxSales: number = 0;
+	envTax: number = 0;
+	businessModel: string = '';
 }
 
 export class ROV_DERDiscrepancyModel {

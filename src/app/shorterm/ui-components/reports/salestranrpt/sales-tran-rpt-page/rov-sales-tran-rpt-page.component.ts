@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { RovSalesTranRptDetailComponent } from '../detail/detail.component';
+import { RovSalesTranRptDetailComponent } from '../detail/rov-detail.component';
 
 import { filter, take } from 'rxjs';
 import { RovApiService } from '../../../../short-term.service';
@@ -16,8 +16,8 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-rov-sales-tran-rpt-page',
   imports: [CommonModule, FormsModule, RovSalesTranRptDetailComponent],
-  templateUrl: './sales-tran-rpt-page.component.html',
-  styleUrls: ['./sales-tran-rpt-page.component.css']
+  templateUrl: './rov-sales-tran-rpt-page.component.html',
+  styleUrls: ['./rov-sales-tran-rpt-page.component.css']
 })
 export class RovSalesTranRptPageComponent implements OnInit {
 
@@ -109,7 +109,7 @@ export class RovSalesTranRptPageComponent implements OnInit {
       this.uid
     ).subscribe(reportObj => {
 
-        this.rptSummaryData = reportObj.summary;
+        this.rptSummary = reportObj.summary;
       
 
       this.RenderSummaryReport();
@@ -124,7 +124,7 @@ export class RovSalesTranRptPageComponent implements OnInit {
       false,
       this.uid
     ).subscribe(reportObj => {
-      this.rptDetailData = reportObj.detail;
+      this.rptDetail = reportObj.detail;
     });
 
     this.rovApiSvc.GetAssociateNamesList(this.contractId, this.eventId, this.indivId, String(this.indivId))
@@ -278,11 +278,11 @@ export class RovSalesTranRptPageComponent implements OnInit {
 
   btnSalesTran($event: Event) {
     $event.preventDefault();
-    this.router.navigate(['/salestran']);
+    this.router.navigate(['/rov/ritemsel']);
   }
   btnReportsMenu($event: Event) {
     $event.preventDefault();
-    this.router.navigate(['/reportsmenu']);
+    this.router.navigate(['/rov/rovrptmenu']);
   }
   btnEmailClick($event: Event) {
     $event.preventDefault();

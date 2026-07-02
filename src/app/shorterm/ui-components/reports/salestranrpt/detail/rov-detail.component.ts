@@ -2,6 +2,9 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/cor
 import { ROV_SalesTranRptDetail } from '../../../../models/models';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { EventConfig } from '../../../../models/event.config';
+import { RovLogonDataService } from 'src/app/shorterm/rov-logon-data.service';
 
 type SortColumn =
   | 'ticketId'
@@ -19,9 +22,9 @@ type SortDirection = 'asc' | 'desc';
 
 @Component({
     selector: 'app-rov-sales-tran-rpt-detail',
-    templateUrl: './detail.component.html',
-    styleUrls: ['./detail.component.css'],
-    imports: [CommonModule, FormsModule]
+  templateUrl: './rov-detail.component.html',
+  styleUrls: ['./rov-detail.component.css'],
+    imports: [CommonModule, FormsModule, RouterModule]
 })
 export class RovSalesTranRptDetailComponent implements OnInit {
 
@@ -31,10 +34,14 @@ export class RovSalesTranRptDetailComponent implements OnInit {
   sortedRptDetail: ROV_SalesTranRptDetail[] = [];
   sortColumn: SortColumn = 'date';
   sortDirection: SortDirection = 'desc';
+  evtConfig: EventConfig = new EventConfig();
+  busFuncCode: string = '';
 
-  constructor() { }
+  constructor(private logonDataSvc: RovLogonDataService) { }
 
   ngOnInit(): void {
+    this.evtConfig = this.logonDataSvc.getRovEventConfig();
+    this.busFuncCode = this.evtConfig.busFuncCode;
     this.applySort();
   }
 
@@ -123,5 +130,4 @@ export class RovSalesTranRptDetailComponent implements OnInit {
         return '';
     }
   }
-
 }

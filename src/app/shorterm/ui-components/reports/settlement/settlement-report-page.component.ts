@@ -119,16 +119,20 @@ export class RovSettlementReportPageComponent implements OnInit {
   }
 
   getSettlmntRptData(contractId: number = 0, month: string = '', uid: string = '', eventId: number = 0): void {
-
-    const locCnfg = this.logonDataSvc.getRovEventConfig();
     // Clear previous results so stale Fee Summary data is not displayed during/after refresh.
     this.stlmtRptDataMdl = null;
     this.SaleAssocList = [];
 
-    this.posApiService.getSettlementReport(contractId, eventId, uid, month)
+    this.posApiService.getSettlementReport(contractId, eventId, uid, "")
       .subscribe({
         next: result => {
           this.stlmtRptDataMdl = result;
+          if (result.selectedMonth) {
+            this.selectedMonth = result.selectedMonth;
+          }
+          if (result.selectedYear) {
+            this.selectedYear = result.selectedYear;
+          }
           this.loadAssociateEmails(contractId, eventId, Number(uid) || this.indivId, uid);
         },
         error: () => {
@@ -238,6 +242,7 @@ export class RovSettlementReportPageComponent implements OnInit {
 
   get grandTotals(): FacilityGroup & { total: number; camChrgAmt: number } {
     const groups = this.facilityGroups;
+    const camChrgAmt = this.camChargeAmount;
     const derivedGrandFeeId = groups.some(g => g.feeId === 3)
       ? 3
       : groups.some(g => g.feeId === 2)
@@ -248,7 +253,7 @@ export class RovSettlementReportPageComponent implements OnInit {
     const gt: any = {
       facilityNumber: '', details: [],
       feeId: derivedGrandFeeId,
-      feePerc: 0, 
+      feePerc: 0, camChrgAmt,
       totGrSales: 0, totLess: 0, totNSales: 0,
       totExFeeFlat: 0, totExFeePrcnt: 0, totExFee: 0, totExCou: 0,
       totNExFeeFlat: 0, totNExFeePrcnt: 0, totNExFee: 0, totEqipfee: 0,
@@ -265,13 +270,14 @@ export class RovSettlementReportPageComponent implements OnInit {
       gt.envTax += f.envTax;
     }
     gt.total = gt.feeId === 3
-      ? Math.max(gt.totNExFeePrcnt, gt.totNExFeeFlat) + gt.totEqipfee
-      : gt.totNExFee + gt.totEqipfee;
+      ? Math.max(gt.totNExFeePrcnt, gt.totNExFeeFlat) + gt.totEqipfee + camChrgAmt
+      : gt.totNExFee + gt.totEqipfee + camChrgAmt;
     return gt;
   }
 
   get tenderSummary(): TenderSummary {
     const tndrDetails = this.stlmtRptDataMdl?.rovSettlementReport?.oconusStlmntTndrDetails ?? [];
+    const katusa = this.showKatusa ? (this.stlmtRptDataMdl?.rovSettlementReport?.katusaTotals ?? 0) : 0;
     const s: TenderSummary = {
       msTndrCnt: 0, msTranCnt: 0, msTotals: 0, percMSfee: 0, netMSTotals: 0,
       gcTndrCnt: 0, gcTranCnt: 0, gcTotals: 0,
@@ -279,7 +285,7 @@ export class RovSettlementReportPageComponent implements OnInit {
       ccTndrCnt: 0, ccTranCnt: 0, ccTotals: 0,
       caTndrCnt: 0, caTranCnt: 0, caTotals: 0,
       ckTndrCnt: 0, ckTranCnt: 0, ckTotals: 0,
-      tndrCntTot: 0, tranCntTot: 0, gTndrTot: 0,
+      tndrCntTot: 0, tranCntTot: 0, gTndrTot: katusa,
       dueCncsn: 0, netAmtDueCncsn: 0
     };
     for (const t of tndrDetails) {
@@ -299,8 +305,8 @@ export class RovSettlementReportPageComponent implements OnInit {
     s.percXCfee = Math.round(0.02 * s.xcTotals * 100) / 100;
     s.netMSTotals = Math.round((s.msTotals - s.percMSfee) * 100) / 100;
     s.netXCTotals = Math.round((s.xcTotals - s.percXCfee) * 100) / 100;
-    s.dueCncsn = s.xcTotals + s.gcTotals + s.msTotals + s.ckTotals;
-    s.netAmtDueCncsn = Math.round((s.gcTotals + s.ckTotals + s.netXCTotals + s.netMSTotals) * 100) / 100;
+    s.dueCncsn = s.xcTotals + s.gcTotals + s.msTotals + s.ckTotals + katusa;
+    s.netAmtDueCncsn = Math.round((s.gcTotals + s.ckTotals + katusa + s.netXCTotals + s.netMSTotals) * 100) / 100;
     return s;
   }
 
@@ -309,8 +315,16 @@ export class RovSettlementReportPageComponent implements OnInit {
   }
 
   get businessModels(): string {
-    //return this.stlmtRptDataMdl?.rovSettlementReport?. ?? '';
-    return "";
+    const reportBusinessModels = this.stlmtRptDataMdl?.businessModels ?? '';
+    if (reportBusinessModels) {
+      return reportBusinessModels;
+    }
+
+    const detailModels = (this.stlmtRptDataMdl?.rovSettlementReport?.settlementDetails ?? [])
+      .map(detail => detail.businessModel)
+      .filter((model): model is string => !!model);
+
+    return Array.from(new Set(detailModels)).join('');
   }
 
   get isPACRegion(): boolean {
@@ -325,8 +339,7 @@ export class RovSettlementReportPageComponent implements OnInit {
   }
 
   get isNBFF(): boolean {
-    //return this.businessModels.includes('6') || !!(this.stlmtRptDataMdl?.settlementReport?.camChrgFacNbr ?? '');
-    return false;
+    return this.businessModels.includes('6') || !!(this.stlmtRptDataMdl?.rovSettlementReport?.camChrgFacNbr ?? '');
   }
 
   get selectedEvent() {
@@ -357,7 +370,24 @@ export class RovSettlementReportPageComponent implements OnInit {
   }
 
   get showKatusa(): boolean {
-    return false;
+    return this.stlmtRptDataMdl?.showKatusa
+      ?? ((this.stlmtRptDataMdl?.rovSettlementReport?.katusaCount ?? 0) > 0 || (this.stlmtRptDataMdl?.rovSettlementReport?.katusaTotals ?? 0) > 0);
+  }
+
+  get reportFromDate(): string {
+    return this.stlmtRptDataMdl?.fromDate || this.eventStartDate || '';
+  }
+
+  get reportToDate(): string {
+    return this.stlmtRptDataMdl?.toDate || this.eventEndDate || '';
+  }
+
+  get camChargeAmount(): number {
+    return this.stlmtRptDataMdl?.rovSettlementReport?.camChrgAmt ?? 0;
+  }
+
+  get camChargeFacilityNumber(): string {
+    return this.stlmtRptDataMdl?.rovSettlementReport?.camChrgFacNbr ?? '';
   }
 
   get netTaxes(): number {
@@ -370,10 +400,16 @@ export class RovSettlementReportPageComponent implements OnInit {
   }
 
   get paymentDueAafesPac(): number {
-    const gt = this.grandTotals;
     const ts = this.tenderSummary;
-    const insurance = this.stlmtRptDataMdl?.rovSettlementReport?.insuranceFee ?? 0;
-    return Math.abs((gt.totNExFee + gt.totEqipfee + insurance) - ts.netAmtDueCncsn);
+    return Math.abs(this.pacFeeTotal - ts.netAmtDueCncsn);
+  }
+
+  get pacPaymentDueLabel(): string {
+    if (this.isReimbursementDue) {
+      return `B - (A+A1+A2${this.isNBFF ? '+A3' : ''}):`;
+    }
+
+    return `Payment Due AAFES (A+A1+A2${this.isNBFF ? '+A3' : ''}) - B:`;
   }
 
   get nonPacAccountingRows(): NonPacAccountingRow[] {
@@ -404,13 +440,19 @@ export class RovSettlementReportPageComponent implements OnInit {
   }
 
   get isReimbursementDue(): boolean {
-    const gt = this.grandTotals;
     const ts = this.tenderSummary;
-    const insurance = this.stlmtRptDataMdl?.rovSettlementReport?.insuranceFee ?? 0;
-    return ts.netAmtDueCncsn > (gt.totNExFee + gt.totEqipfee + insurance);
+    return ts.netAmtDueCncsn > this.pacFeeTotal;
   }
 
-  onEmail(): void {
+  private get pacFeeTotal(): number {
+    const gt = this.grandTotals;
+    const insurance = this.stlmtRptDataMdl?.rovSettlementReport?.insuranceFee ?? 0;
+    const camCharge = this.isNBFF ? this.camChargeAmount : 0;
+    return gt.totNExFee + gt.totEqipfee + insurance + camCharge;
+  }
+
+  btnEmailClick($event: Event): void {
+    $event.preventDefault();
     this.selectedEmailOption = this.selfAssociateEmail ? 'self' : (this.managerAssociateEmail ? 'manager' : 'custom');
     this.customEmailAddress = '';
     this.emailSubmitError = '';
@@ -489,9 +531,7 @@ export class RovSettlementReportPageComponent implements OnInit {
   }
 
   private buildEmailSubject(): string {
-    const month =  ""
-    
-    return `Settlement Report - ${this.displayEventName} (${month})`;
+    return `Settlement Report - ${this.displayEventName} (${this.reportFromDate} to ${this.reportToDate})`;
   }
 
   private buildSettlementReportHtml(): string {
@@ -499,10 +539,10 @@ export class RovSettlementReportPageComponent implements OnInit {
     const gt = this.grandTotals;
     const sr = this.stlmtRptDataMdl?.rovSettlementReport;
     const groups = this.facilityGroups;
-    const fromDate = this.eventStartDate || '';
-    const toDate = this.eventEndDate || '';
+    const fromDate = this.reportFromDate;
+    const toDate = this.reportToDate;
     const paymentDueLabel = this.isPACRegion
-      ? (this.isReimbursementDue ? 'Reimbursement Due Concession' : 'Payment Due AAFES (A+A1+A2) - B')
+      ? this.pacPaymentDueLabel.replace(/:$/, '')
       : `Payment Due AAFES (A+A1${this.isNBFF ? '+A2' : ''})`;
     const paymentDueValue = this.isPACRegion ? this.paymentDueAafesPac : this.paymentDueAafes;
 
@@ -547,10 +587,12 @@ export class RovSettlementReportPageComponent implements OnInit {
         <tr><td style="padding:6px; border:1px solid #dee2e6;">Net Exchange Fee (A)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(gt.totNExFee))}</td></tr>
         <tr><td style="padding:6px; border:1px solid #dee2e6;">Equipment Rental (A1)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(gt.totEqipfee))}</td></tr>
         <tr><td style="padding:6px; border:1px solid #dee2e6;">Insurance Amount (A2)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(sr?.insuranceFee ?? 0))}</td></tr>
+        ${this.isNBFF && this.camChargeAmount !== 0 ? `<tr><td style="padding:6px; border:1px solid #dee2e6;">CAM Charges (A3)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(this.camChargeAmount))}</td></tr>` : ''}
         <tr><td style="padding:6px; border:1px solid #dee2e6;">Net Amount Due Concession (B)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(this.tenderSummary.netAmtDueCncsn))}</td></tr>`
       : `
         <tr><td style="padding:6px; border:1px solid #dee2e6;">Net Exchange Fee (A)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(gt.totNExFee))}</td></tr>
-        <tr><td style="padding:6px; border:1px solid #dee2e6;">Equipment Rental (A1)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(gt.totEqipfee))}</td></tr>`;
+        <tr><td style="padding:6px; border:1px solid #dee2e6;">Equipment Rental (A1)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(gt.totEqipfee))}</td></tr>
+        ${this.isNBFF && this.camChargeAmount !== 0 ? `<tr><td style="padding:6px; border:1px solid #dee2e6;">CAM Charges (A2)</td><td style="padding:6px; border:1px solid #dee2e6; text-align:right;">${safe(this.formatCurrency(this.camChargeAmount))}</td></tr>` : ''}`;
 
     return `
       <div style="font-family: Arial, Helvetica, sans-serif; color:#1f2937;">
@@ -632,10 +674,10 @@ export class RovSettlementReportPageComponent implements OnInit {
   }
 
   goToReportsMenu(): void {
-    this.router.navigate(['/rptmenu']);
+    this.router.navigate(['/rov/rovrptmenu']);
   }
 
   goToSalesTransaction(): void {
-    this.router.navigate(['/salestran']);
+    this.router.navigate(['/rov/ritemsel']);
   }
 }

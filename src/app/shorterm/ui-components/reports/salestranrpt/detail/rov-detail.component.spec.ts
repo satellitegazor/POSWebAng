@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RovSalesTranRptDetailComponent } from './detail.component';
+import { RovSalesTranRptDetailComponent } from './rov-detail.component';
 
 describe('DetailComponent', () => {
   let component: RovSalesTranRptDetailComponent;

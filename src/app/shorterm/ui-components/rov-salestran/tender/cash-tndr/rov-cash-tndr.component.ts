@@ -17,12 +17,15 @@ import { ToastService } from "../../../../../services-misc/toast.service";
 import { RovOConusRedeemGCWithPinPadService } from '../gc-redeem-services/rov-oconus-redeeem-gc-with-pin-pad';
 import { RovConusRedeemGCwithAurusAPI } from '../gc-redeem-services/rov-conus-redeem-gc-with-aurus-api';
 import { markTendersComplete } from '../../../../../longterm/saletran/store/ticketstore/ticket.action';
+import { PosCurrencyDirective } from '../../../../../directives/pos-currency.directive';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-rov-cash-tndr',
   templateUrl: './rov-cash-tndr.component.html',
   styleUrls: ['./rov-cash-tndr.component.css'],
-  standalone: false,
+  imports: [PosCurrencyDirective, CommonModule, FormsModule, ReactiveFormsModule]
 })
 export class RovCashTndrComponent implements OnInit {
 

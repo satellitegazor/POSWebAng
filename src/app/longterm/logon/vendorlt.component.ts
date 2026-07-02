@@ -214,7 +214,7 @@ export class VendorLTComponent implements OnInit {
             let inProgTranId = locCnfgData.configs[0].inProgTranId;
             if (inProgTranId > 0) {
 
-                this._toastSvc.info("An incomplete ticket has been found. Please complete it or void it!!");
+                this._toastSvc.info_wClick("An incomplete ticket has been found. Please complete it or void it!!");
                 this._tktObjStore.dispatch(loadTicket({ tranId: inProgTranId, locationId: locModel.locationUID, indivId: locModel.individualUID }))
 
                 this._cposWebSvc.pinpadHeartbeat("PING").subscribe(data => {

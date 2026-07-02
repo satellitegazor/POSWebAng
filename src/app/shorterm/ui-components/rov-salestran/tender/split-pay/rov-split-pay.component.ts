@@ -26,12 +26,13 @@ import { VfoneCaptureTran } from '../../../../../services-pinpad/models/capture-
 import { RovLogonDataService } from '../../../../rov-logon-data.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { PosCurrencyDirective } from "../../../../../directives/pos-currency.directive"
 
 @Component({
   selector: 'app-rov-split-pay',
   templateUrl: './rov-split-pay.component.html',
   styleUrls: ['./rov-split-pay.component.css'],
-  imports: [AlertModalComponent, CommonModule, FormsModule, ReactiveFormsModule]
+  imports: [AlertModalComponent, CommonModule, FormsModule, ReactiveFormsModule, PosCurrencyDirective]
 })
 export class RovSplitPayComponent implements OnInit, AfterViewInit {
   @ViewChild('dcTndrAmt') dcTndrAmtInput!: ElementRef;

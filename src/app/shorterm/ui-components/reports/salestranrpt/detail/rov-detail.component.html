@@ -10,7 +10,8 @@
                         <th scope="col" class="text-center sort-header" (click)="sortBy('date')">
                             Date <span class="sort-indicator">{{ getSortDirectionSymbol('date') }}</span>
                         </th>
-                        <th *ngIf="categorizedBy == 'L' || categorizedBy == 'F'" scope="col" class="text-start">Facility</th>
+                        <th *ngIf="busFuncCode == 'BUSFNC_LTR_OTHER_CASH_CARRY'">Form Number</th>
+                        
                         <th *ngIf="categorizedBy == 'A'" scope="col" class="text-start">Associate</th>
                         <th scope="col" class="text-end sort-header" (click)="sortBy('mdseSales')">
                             Mdse Sales <span class="sort-indicator">{{ getSortDirectionSymbol('mdseSales') }}</span>
@@ -18,16 +19,13 @@
                         <th scope="col" class="text-end sort-header" (click)="sortBy('tax')">
                             Tax <span class="sort-indicator">{{ getSortDirectionSymbol('tax') }}</span>
                         </th>
-                        <th scope="col" class="text-end sort-header" (click)="sortBy('envTax')">
-                            Env. Tax <span class="sort-indicator">{{ getSortDirectionSymbol('envTax') }}</span>
-                        </th>
                         <th scope="col" class="text-end sort-header" (click)="sortBy('concessionDiscount')">
                             Concession Discount <span class="sort-indicator">{{ getSortDirectionSymbol('concessionDiscount') }}</span>
                         </th>
                         <th scope="col" class="text-end sort-header" (click)="sortBy('exchangeCoupons')">
                             Exchange Cpns <span class="sort-indicator">{{ getSortDirectionSymbol('exchangeCoupons') }}</span>
                         </th>
-                        <th scope="col" class="text-end d-none">KATUSA Cpns</th>
+                        
                         <th scope="col" class="text-center d-none sort-header" (click)="sortBy('tip')">
                             Tip <span class="sort-indicator">{{ getSortDirectionSymbol('tip') }}</span>
                         </th>
@@ -45,14 +43,12 @@
                             <a [routerLink]="['/ltktrcpt']" [queryParams]="{ txnid: detail.transactionId, frmSalesTrnRpt: true, src: 'V' }">{{detail.ticketNumber}}</a>
                         </td>
                         <td class="text-center">{{detail.transactionDate | date:'MM/dd/yyyy'}}</td>
-                        <td *ngIf="categorizedBy == 'L' || categorizedBy == 'F'" class="text-start">{{detail.facilityNumber}}</td>
+                        <td *ngIf="busFuncCode == 'BUSFNC_LTR_OTHER_CASH_CARRY'">{{detail.formNumber}}</td>
                         <td *ngIf="categorizedBy == 'A'" class="text-start">{{detail.associate}}</td>
                         <td class="text-end">{{detail.sales | currency}}</td>
                         <td class="text-end">{{detail.salesTax | currency}}</td>
-                        <td class="text-end">{{detail.envTax | currency}}</td>
                         <td class="text-end">{{detail.vendorCoupons | currency}}</td>
                         <td class="text-end">{{detail.exchangeCoupons | currency}}</td>
-                        <td class="text-end d-none">{{detail.katusaCoupons | currency}}</td>
                         <td class="text-center d-none">{{detail.tipAmount | currency}}</td>
                         <td class="text-end">{{getTotal(detail) | currency}}</td>
                         <td class="text-center">{{detail.tenderTypeDescription}}</td>

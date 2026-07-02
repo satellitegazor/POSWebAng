@@ -13,7 +13,7 @@ import { RovDeviceTndrPageComponent } from './ui-components/rov-salestran/tender
 import { RovGiftCardInquiryComponent } from './ui-components/rov-salestran/tender/gift-card-inquiry/rov-gift-card-inquiry.component';
 import { RovConcessionCardTndrComponent } from './ui-components/rov-salestran/tender/concession-card-tndr/rov-concession-card-tndr.component';
 import { RovSaveTicketSuccessComponent } from './ui-components/rov-salestran/save-ticket-success/rov-save-ticket-success.component';
-import { RovSalesTranRptPageComponent } from './ui-components/reports/salestranrpt/sales-tran-rpt-page/sales-tran-rpt-page.component';
+import { RovSalesTranRptPageComponent } from './ui-components/reports/salestranrpt/sales-tran-rpt-page/rov-sales-tran-rpt-page.component';
 import { RovSettlementReportPageComponent } from './ui-components/reports/settlement/settlement-report-page.component';
 import { RovReportsMenuComponent } from './ui-components/reports/reports-menu/rov-reports-menu.component';
 
